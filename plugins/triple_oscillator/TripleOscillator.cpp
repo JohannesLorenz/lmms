@@ -62,8 +62,6 @@ Plugin::Descriptor PLUGIN_EXPORT tripleoscillator_plugin_descriptor =
 
 }
 
-
-
 OscillatorObject::OscillatorObject( Model * _parent, int _idx ) :
 	Model( _parent ),
 	m_volumeModel( DefaultVolume / NUM_OF_OSCILLATORS, MinVolume,
