@@ -414,13 +414,18 @@ void AutomationPatternView::dragEnterEvent( QDragEnterEvent * _dee )
 	}
 }
 
-
+#include <QDebug>
 
 
 void AutomationPatternView::dropEvent( QDropEvent * _de )
 {
 	QString type = StringPairDrag::decodeKey( _de );
 	QString val = StringPairDrag::decodeValue( _de );
+
+	qDebug() << "AutomationPatternView::dropEvent: type: " << type << ", value: " << val;
+	qDebug() << "mimetype: " << _de->mimeData()->text();
+
+
 	if( type == "automatable_model" )
 	{
 		AutomatableModel * mod = dynamic_cast<AutomatableModel *>(

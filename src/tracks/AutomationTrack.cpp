@@ -24,6 +24,7 @@
  *
  */
 
+#include <QDebug>
 #include "AutomationTrack.h"
 #include "AutomationPattern.h"
 #include "Engine.h"
@@ -161,6 +162,7 @@ void AutomationTrackView::dropEvent( QDropEvent * _de )
 {
 	QString type = StringPairDrag::decodeKey( _de );
 	QString val = StringPairDrag::decodeValue( _de );
+	qDebug() << "AutomationTrackView::dropEvent: type: " << type << ", value: " << val;
 	if( type == "automatable_model" )
 	{
 		AutomatableModel * mod = dynamic_cast<AutomatableModel *>(

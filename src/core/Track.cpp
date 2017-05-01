@@ -45,6 +45,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QStyleOption>
+#include <QDebug>
 
 
 #include "AutomationPattern.h"
@@ -2666,6 +2667,7 @@ void TrackView::dropEvent( QDropEvent * de )
 {
 	QString type = StringPairDrag::decodeKey( de );
 	QString value = StringPairDrag::decodeValue( de );
+	qDebug() << "TrackView::dropEvent: type: " << type << ", value: " << value;
 	if( type == ( "track_" + QString::number( m_track->type() ) ) )
 	{
 		// value contains our XML-data so simply create a

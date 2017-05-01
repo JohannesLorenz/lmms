@@ -366,13 +366,17 @@ void TrackContainerView::stopRubberBand()
 	m_rubberBand->setEnabled( false );
 }
 
-
+#include <QDebug>
 
 
 void TrackContainerView::dropEvent( QDropEvent * _de )
 {
 	QString type = StringPairDrag::decodeKey( _de );
 	QString value = StringPairDrag::decodeValue( _de );
+
+	qDebug() << "TrackContainerView::dropEvent: type: " << type << ", value: " << value;
+
+
 	if( type == "instrument" )
 	{
 		InstrumentTrack * it = dynamic_cast<InstrumentTrack *>(

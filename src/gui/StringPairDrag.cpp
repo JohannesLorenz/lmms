@@ -28,6 +28,8 @@
 #include <QMimeData>
 #include <QDragEnterEvent>
 #include <QDropEvent>
+#include <QDebug>
+
 
 
 #include "StringPairDrag.h"
@@ -76,11 +78,13 @@ StringPairDrag::~StringPairDrag()
 bool StringPairDrag::processDragEnterEvent( QDragEnterEvent * _dee,
 						const QString & _allowed_keys )
 {
+	qDebug() << "processDragEnterEvent(): " << _dee->mimeData()->formats();
 	if( !_dee->mimeData()->hasFormat( mimeType() ) )
 	{
 		return( false );
 	}
 	QString txt = _dee->mimeData()->data( mimeType() );
+	qDebug() << "processDragEnterEvent(): OK: " << txt;
 	if( _allowed_keys.split( ',' ).contains( txt.section( ':', 0, 0 ) ) )
 	{
 		_dee->acceptProposedAction();
