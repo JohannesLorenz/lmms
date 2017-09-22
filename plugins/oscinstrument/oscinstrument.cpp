@@ -103,34 +103,10 @@ void OscInstrument::playNote(NotePlayHandle *_n, sampleFrame *)
 	if( tfp == 0 )
 	{
 		const int baseVelocity = instrumentTrack()->midiPort()->baseVelocity();
-
 		osc_plugin->sendOsc("/noteOn", "iii", 0, midiNote, baseVelocity);
-
-/*		SF2PluginData * pluginData = new SF2PluginData;
-		pluginData->midiNote = midiNote;
-		pluginData->lastPanning = 0;
-		pluginData->lastVelocity = _n->midiVelocity( baseVelocity );
-		pluginData->fluidVoice = NULL;
-		pluginData->isNew = true;
-		pluginData->offset = _n->offset();
-		pluginData->noteOffSent = false;
-
-		_n->m_pluginData = pluginData;
-
-		// insert the nph to the playing notes vector
-		m_playingNotesMutex.lock();
-		m_playingNotes.append( _n );
-		m_playingNotesMutex.unlock();*/
 	}
 	else if( _n->isReleased() && ! _n->instrumentTrack()->isSustainPedalPressed() ) // note is released during this period
 	{
-	/*	SF2PluginData * pluginData = static_cast<SF2PluginData *>( _n->m_pluginData );
-		pluginData->offset = _n->framesBeforeRelease();
-		pluginData->isNew = false;
-
-		m_playingNotesMutex.lock();
-		m_playingNotes.append( _n );
-		m_playingNotesMutex.unlock();*/
 		osc_plugin->sendOsc("/noteOff", "ii", 0, midiNote);
 	}
 	else if( _n->framesLeft() <= 0 )
@@ -156,12 +132,20 @@ void OscInstrument::saveSettings( QDomDocument & _doc,
 		m_pluginMutex.unlock();
 		sleep(2);
 
+		qDebug() << "size: " << tf.size();
+
 		QByteArray a = tf.readAll();
 		QDomDocument doc( "mydoc" );
-		if( doc.setContent( a ) )
+		QString err; int line, column;
+		if( doc.setContent( a, &err, &line, &column ) )
 		{
 			QDomNode n = _doc.importNode( doc.documentElement(), true );
 			_this.appendChild( n );
+		}
+		else {
+			qDebug() << "Error: " << err << " in line " << line
+				<< ", column " << column;
+			assert(false);
 		}
 	}
 }
@@ -177,15 +161,7 @@ void OscInstrument::loadSettings( const QDomElement & _this )
 		return;
 	}
 
-/*	m_portamentoModel.loadSettings( _this, "portamento" );
-	m_filterFreqModel.loadSettings( _this, "filterfreq" );
-	m_filterQModel.loadSettings( _this, "filterq" );
-	m_bandwidthModel.loadSettings( _this, "bandwidth" );
-	m_fmGainModel.loadSettings( _this, "fmgain" );
-	m_resCenterFreqModel.loadSettings( _this, "rescenterfreq" );
-	m_resBandwidthModel.loadSettings( _this, "resbandwidth" );
-	m_forwardMidiCcModel.loadSettings( _this, "forwardmidicc" );
-*/
+/*	m_portamentoModel.loadSettings( _this, "portamento" ); */
 	QDomDocument doc;
 	QDomElement data = _this.firstChildElement( "Osc-data" );
 	if( data.isNull() )
@@ -216,12 +192,6 @@ void OscInstrument::loadSettings( const QDomElement & _this )
 				switch( c.toInt() )
 				{
 					case C_portamento: updatePortamento(); break;
-					case C_filtercutoff: updateFilterFreq(); break;
-					case C_filterq: updateFilterQ(); break;
-					case C_bandwidth: updateBandwidth(); break;
-					case C_fmamp: updateFmGain(); break;
-					case C_resonance_center: updateResCenterFreq(); break;
-					case C_resonance_bandwidth: updateResBandwidth(); break;
 					default:
 						break;
 				}
@@ -239,7 +209,7 @@ void OscInstrument::loadSettings( const QDomElement & _this )
 void OscInstrument::loadFile( const QString & _file )
 {
 	m_pluginMutex.lock();
-	osc_plugin->sendOsc("/load-master", "s", _file.toAscii().data());
+	osc_plugin->sendOsc("/load-master", "s", _file.toLatin1().data());
 	m_pluginMutex.unlock();
 /*	const std::string fn = QSTR_TO_STDSTR( _file );
 	if( m_remotePlugin )
@@ -515,30 +485,6 @@ OscView::OscView( Instrument * _instrument, QWidget * _parent ) :
 	m_portamento->setHintText( tr( "Portamento:" ), "" );
 	m_portamento->setLabel( tr( "PORT" ) );
 
-	m_filterFreq = new Knob( knobBright_26, this );
-	m_filterFreq->setHintText( tr( "Filter Frequency:" ), "" );
-	m_filterFreq->setLabel( tr( "FREQ" ) );
-
-	m_filterQ = new Knob( knobBright_26, this );
-	m_filterQ->setHintText( tr( "Filter Resonance:" ), "" );
-	m_filterQ->setLabel( tr( "RES" ) );
-
-	m_bandwidth = new Knob( knobBright_26, this );
-	m_bandwidth->setHintText( tr( "Bandwidth:" ), "" );
-	m_bandwidth->setLabel( tr( "BW" ) );
-
-	m_fmGain = new Knob( knobBright_26, this );
-	m_fmGain->setHintText( tr( "FM Gain:" ), "" );
-	m_fmGain->setLabel( tr( "FM GAIN" ) );
-
-	m_resCenterFreq = new Knob( knobBright_26, this );
-	m_resCenterFreq->setHintText( tr( "Resonance center frequency:" ), "" );
-	m_resCenterFreq->setLabel( tr( "RES CF" ) );
-
-	m_resBandwidth = new Knob( knobBright_26, this );
-	m_resBandwidth->setHintText( tr( "Resonance bandwidth:" ), "" );
-	m_resBandwidth->setLabel( tr( "RES BW" ) );
-
 	m_forwardMidiCC = new LedCheckBox( tr( "Forward MIDI Control Changes" ), this );
 */
 	m_toggleUIButton = new QPushButton( tr( "Show GUI" ), this );
@@ -573,12 +519,6 @@ OscView::OscView( Instrument * _instrument, QWidget * _parent ) :
 	l->addWidget( m_toggleUIButton, 0, 0, 1, 4 );
 	l->setRowStretch( 1, 5 );
 	l->addWidget( m_portamento, 2, 0 );
-	l->addWidget( m_filterFreq, 2, 1 );
-	l->addWidget( m_filterQ, 2, 2 );
-	l->addWidget( m_bandwidth, 2, 3 );
-	l->addWidget( m_fmGain, 3, 0 );
-	l->addWidget( m_resCenterFreq, 3, 1 );
-	l->addWidget( m_resBandwidth, 3, 2 );
 	l->addWidget( m_forwardMidiCC, 4, 0, 1, 4 );
 
 	l->setRowStretch( 5, 10 );
@@ -666,15 +606,7 @@ void OscView::modelChanged()
 	OscInstrument * m = castModel<OscInstrument>();
 
 /*	// set models for controller knobs
-	m_portamento->setModel( &m->m_portamentoModel );
-	m_filterFreq->setModel( &m->m_filterFreqModel );
-	m_filterQ->setModel( &m->m_filterQModel );
-	m_bandwidth->setModel( &m->m_bandwidthModel );
-	m_fmGain->setModel( &m->m_fmGainModel );
-	m_resCenterFreq->setModel( &m->m_resCenterFreqModel );
-	m_resBandwidth->setModel( &m->m_resBandwidthModel );
-
-	m_forwardMidiCC->setModel( &m->m_forwardMidiCcModel ); */
+	m_portamento->setModel( &m->m_portamentoModel ); */
 
 	m_toggleUIButton->setChecked( m->m_hasGUI );
 }
