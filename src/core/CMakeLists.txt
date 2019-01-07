@@ -61,6 +61,9 @@ set(LMMS_SRCS
 	core/SampleRecordHandle.cpp
 	core/SerializingObject.cpp
 	core/Song.cpp
+	core/Lv2ControlBase.cpp
+	core/Lv2Manager.cpp
+	core/Lv2SubPluginFeatures.cpp
 	core/TempoSyncKnobModel.cpp
 	core/ToolPlugin.cpp
 	core/Track.cpp
