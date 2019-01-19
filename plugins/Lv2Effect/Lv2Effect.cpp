@@ -49,13 +49,9 @@ Plugin::Descriptor PLUGIN_EXPORT lv2effect_plugin_descriptor =
 
 Lv2Effect::Lv2Effect(Model* parent, const Descriptor::SubPluginFeatures::Key *key) :
 	Effect(&lv2effect_plugin_descriptor, parent, key),
-	m_controls(this, key->attributes["plugin"])
+	m_controls(this, key->attributes["uri"])
 {
 	qDebug() << "Constructing LV2 effect";
-	if(!m_controls.inPorts.left)
-		m_controls.issue(Lv2FxControls::effectWithoutInput);
-	else if(!m_controls.inPorts.right)
-		m_controls.issue(Lv2FxControls::noMonoSupport);
 }
 
 Lv2Effect::~Lv2Effect()
@@ -70,26 +66,18 @@ bool Lv2Effect::processAudioBuffer(sampleFrame *buf, const fpp_t frames)
 	}
 
 	Lv2FxControls& ctrl = m_controls;
-	// always >0, so the cast is OK
-	unsigned framesUnsigned = static_cast<unsigned>(frames);
 
-	for (std::size_t f = 0; f < framesUnsigned; ++f)
-	{
-		ctrl.inPorts.left->m_data.m_audioData.buffer[f] = buf[f][0];
-		ctrl.inPorts.right->m_data.m_audioData.buffer[f] = buf[f][1];
-	}
+	ctrl.inPorts().left->copyBuffersFromLmms(buf, 0, frames);
+	ctrl.inPorts().right->copyBuffersFromLmms(buf, 1, frames);
 
-	m_controls.copyModelsToControlPorts();
+	m_controls.copyModelsFromLmms();
 
 //	m_pluginMutex.lock();
-	ctrl.m_instance->run(Engine::mixer()->processingSampleRate());
+	ctrl.run(static_cast<unsigned>(frames));
 //	m_pluginMutex.unlock();
 
-	for (std::size_t f = 0; f < framesUnsigned; ++f)
-	{
-		buf[f][0] = ctrl.outPorts.left->m_data.m_audioData.buffer[f];
-		buf[f][1] = ctrl.outPorts.right->m_data.m_audioData.buffer[f];
-	}
+	ctrl.outPorts().left->copyBuffersToLmms(buf, 0, frames);
+	ctrl.outPorts().right->copyBuffersToLmms(buf, 1, frames);
 
 	return isRunning();
 }

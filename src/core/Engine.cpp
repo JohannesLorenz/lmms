@@ -69,6 +69,7 @@ void LmmsCore::init( bool renderOnly )
 
 #ifdef LMMS_HAVE_LV2
 	s_lv2Manager = new Lv2Manager;
+	s_lv2Manager->initPlugins();
 #endif
 	s_ladspaManager = new Ladspa2LMMS;
 

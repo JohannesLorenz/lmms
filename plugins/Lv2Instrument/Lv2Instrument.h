@@ -52,18 +52,18 @@ public:
 		 Descriptor::SubPluginFeatures::Key* key);
 	~Lv2Instrument() override;
 
-	void saveSettings(QDomDocument &doc, QDomElement &that) override;
-	void loadSettings(const QDomElement &that) override;
-	void loadFile(const QString &file) override {
+	void saveSettings(QDomDocument &doc, QDomElement &that) override;  // XXX
+	void loadSettings(const QDomElement &that) override; // XXX
+	void loadFile(const QString &file) override { // XXX
 		Lv2ControlBase::loadFile(file); }
 
 #ifdef LV2_INSTRUMENT_USE_MIDI
 	bool handleMidiEvent(const MidiEvent &event,
-		const MidiTime &time = MidiTime(), f_cnt_t offset = 0) override;
+		const MidiTime &time = MidiTime(), f_cnt_t offset = 0) override; // XXX
 #else
-	void playNote(NotePlayHandle *nph, sampleFrame *) override;
+	void playNote(NotePlayHandle *nph, sampleFrame *) override; // XXX
 #endif
-	void play(sampleFrame *buf) override;
+	void play(sampleFrame *buf) override; // XXX
 
 	Flags flags() const override
 	{

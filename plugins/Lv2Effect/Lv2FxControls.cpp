@@ -30,12 +30,12 @@
 #include "Lv2Effect.h"
 #include "Lv2FxControlDialog.h"
 
-Lv2FxControls::Lv2FxControls(class Lv2Effect *effect, const QString& uniqueName) :
+Lv2FxControls::Lv2FxControls(class Lv2Effect *effect, const QString& uri) :
 	EffectControls(effect),
-	Lv2ControlBase(uniqueName),
+	Lv2ControlBase(uri),
 	m_effect(effect)
 {
-	if (m_plugin)
+	//if (m_plugin)
 	{
 		connect(Engine::mixer(), SIGNAL(sampleRateChanged()), this,
 			SLOT(reloadPlugin()));
@@ -69,7 +69,7 @@ void Lv2FxControls::loadSettings(const QDomElement &that)
 
 int Lv2FxControls::controlCount()
 {
-	return static_cast<int>(Lv2ControlBase::m_controlCount);
+	return static_cast<int>(Lv2ControlBase::controlCount());
 }
 
 EffectControlDialog *Lv2FxControls::createView()

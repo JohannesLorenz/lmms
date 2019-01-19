@@ -36,30 +36,29 @@
 #include "ConfigManager.h"
 #include "Plugin.h"
 #include "PluginFactory.h"
+#include "Lv2ControlBase.h"
 
-Lv2Manager::Lv2Manager()
+void Lv2Manager::initPlugins()
 {
-//	world = lilv_world_new();
-//	lilv_world_load_all(world);
-//	plugins = lilv_world_get_all_plugins(world);
-	m_world.load_all();
 	Lilv::Plugins plugins = m_world.get_all_plugins();
 
 	for(LilvIter* itr = plugins.begin(); !plugins.is_end(itr);
 		itr = plugins.next(itr))
 	{
 		Lilv::Plugin curPlug = plugins.get(itr);
-		Lilv::PluginClass curClass = curPlug.get_class();
-		qDebug() << "Class URI:" << curClass.get_uri().as_uri();
 
 		Lv2Info info(curPlug);
-
-		info.m_uri = curPlug.get_uri().as_uri(); // TODO: duplicate to key?
-
-		info.m_type = Plugin::Effect; // TODO!!!
+		std::vector<Lv2Issue> issues;
+		info.m_type = Lv2ControlBase::check(curPlug, issues, true);
+		info.m_valid = issues.empty();
 
 		m_lv2InfoMap[curPlug.get_uri().as_uri()] = std::move(info);
 	}
+}
+
+Lv2Manager::Lv2Manager()
+{
+	m_world.load_all();
 
 
 #if 0
@@ -119,72 +118,26 @@ Lv2Manager::~Lv2Manager()
 	}
 }
 
-Plugin::PluginTypes Lv2Manager::computePluginType(Lilv::Plugin *plugin)
+// unused + untested yet
+bool Lv2Manager::isSubclassOf(Lilv::PluginClass& clss, const char* uriStr)
 {
-/*	plugin->get_class().
-	if()
-	{
+	Lilv::PluginClasses allClasses = m_world.get_plugin_classes();
+	Lilv::PluginClass root = m_world.get_plugin_class();
+	Lilv::PluginClass gen = allClasses.get_by_uri(uri(uriStr));
 
-	}*/
-	return Plugin::PluginTypes::Effect;
-#if 0
-	LV2_Handle *plug = desc->instantiate();
-
-	struct TypeChecker final : public virtual lv2::audio::visitor
+	// lv2:Generator is what can be generating an LMMS instrument track
+	// lv2:Instrument is lv:Generator with MIDI/piano input
+	// => LMMS "Instrument" corresponds to lv2:Generator
+	auto clssEq = [](Lilv::PluginClass& pc1, Lilv::PluginClass& pc2) -> bool
 	{
-		std::size_t m_inCount = 0, m_outCount = 0;
-		void visit(lv2::audio::in &) override { ++m_inCount; }
-		void visit(lv2::audio::out &) override { ++m_outCount; }
-		void visit(lv2::audio::stereo::in &) override { ++++m_inCount; }
-		void visit(lv2::audio::stereo::out &) override
-		{
-			++++m_outCount;
-		}
-	} tyc;
-
-	for (const lv2::simple_str &portname : desc->port_names())
-	{
-		try
-		{
-			plug->port(portname.data()).accept(tyc);
-		}
-		catch (lv2::port_not_found &)
-		{
-			return Plugin::PluginTypes::Undefined;
-		}
-	}
-
-	delete plug;
-
-	Plugin::PluginTypes res;
-	if (tyc.m_inCount > 2 || tyc.m_outCount > 2)
-	{
-		res = Plugin::PluginTypes::Undefined;
-	} // TODO: enable mono effects?
-	else if (tyc.m_inCount == 2 && tyc.m_outCount == 2)
-	{
-		res = Plugin::PluginTypes::Effect;
-	}
-	else if (tyc.m_inCount == 0 && tyc.m_outCount == 2)
-	{
-		res = Plugin::PluginTypes::Instrument;
-	}
-	else
-	{
-		res = Plugin::PluginTypes::Other;
-	}
-
-	qDebug() << "Plugin type of " << lv2::unique_name(*desc).c_str() << ":";
-	qDebug() << (res == Plugin::PluginTypes::Undefined
-			? "  undefined"
-			: res == Plugin::PluginTypes::Effect
-				? "  effect"
-				: res == Plugin::PluginTypes::Instrument
-					? "  instrument"
-					: "  other");
-
-	return res;
-#endif
+		return lilv_node_equals(pc1.get_uri().me, pc2.get_uri().me);
+	};
+	bool isGen = false;
+	for (;
+		clssEq(clss, root) && (isGen = clssEq(clss, gen));
+		clss = allClasses.get_by_uri(clss.get_parent_uri())
+	) ;
+	return isGen;
 }
 
 Lilv::Plugin *Lv2Manager::getPlugin(const std::string &uri)

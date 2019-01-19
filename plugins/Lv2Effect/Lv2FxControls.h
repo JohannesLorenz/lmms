@@ -36,11 +36,11 @@ class Lv2FxControls : public EffectControls, public Lv2ControlBase
 	void setNameFromFile(const QString &name) override;
 
 public:
-	Lv2FxControls(class Lv2Effect *effect, const QString &uniqueName);
+	Lv2FxControls(class Lv2Effect *effect, const QString &uri);
 	~Lv2FxControls() override {}
 
-	void saveSettings(QDomDocument &_doc, QDomElement &_parent) override;
-	void loadSettings(const QDomElement &that) override;
+	void saveSettings(QDomDocument &_doc, QDomElement &_parent) override; // XXX
+	void loadSettings(const QDomElement &that) override; // XXX
 	inline QString nodeName() const override
 	{
 		return Lv2ControlBase::nodeName();

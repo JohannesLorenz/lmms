@@ -38,7 +38,7 @@ public:
 	Lv2Effect(Model* parent, const Descriptor::SubPluginFeatures::Key* _key);
 	~Lv2Effect() override;
 
-	bool processAudioBuffer( sampleFrame* buf, const fpp_t frames ) override;
+	bool processAudioBuffer( sampleFrame* buf, const fpp_t frames ) override; // XXX
 
 	EffectControls* controls() override { return &m_controls; }
 

@@ -68,14 +68,14 @@ void Lv2Instrument::setNameFromFile(const QString &name)
 Lv2Instrument::Lv2Instrument(InstrumentTrack *instrumentTrackArg,
 	Descriptor::SubPluginFeatures::Key *key) :
 	Instrument(instrumentTrackArg, &lv2instrument_plugin_descriptor, key),
-	Lv2ControlBase(key->attributes["plugin"])
+	Lv2ControlBase(key->attributes["uri"])
 {
 #ifdef LV2_INSTRUMENT_USE_MIDI
 	for (int i = 0; i < NumKeys; ++i) {
 		m_runningNotes[i] = 0;
 	}
 #endif
-	if (m_plugin)
+	//if (m_plugin)
 	{
 		connect(instrumentTrack()->pitchRangeModel(), SIGNAL(dataChanged()),
 			this, SLOT(updatePitchRange()));
@@ -152,21 +152,16 @@ void Lv2Instrument::playNote(NotePlayHandle *nph, sampleFrame *)
 
 void Lv2Instrument::play(sampleFrame *buf)
 {
-	if (m_plugin)
+	//if (m_plugin)
 	{
-		// always >0, so the cast is OK
-		unsigned fpp = static_cast<unsigned>(
-			Engine::mixer()->framesPerPeriod());
 
+		fpp_t fpp = Engine::mixer()->framesPerPeriod();
 	//	m_pluginMutex.lock();
-		m_instance->run(Engine::mixer()->processingSampleRate());
+		run(static_cast<unsigned>(fpp));
 	//	m_pluginMutex.unlock();
 
-		for (std::size_t f = 0; f < fpp; ++f)
-		{
-			buf[f][0] = outPorts.left->m_data.m_audioData.buffer[f];
-			buf[f][1] = outPorts.right->m_data.m_audioData.buffer[f];
-		}
+		outPorts().left->copyBuffersToLmms(buf, 0, fpp);
+		outPorts().right->copyBuffersToLmms(buf, 1, fpp);
 	}
 	instrumentTrack()->processAudioBuffer(
 		buf, Engine::mixer()->framesPerPeriod(), nullptr);
@@ -280,7 +275,7 @@ Lv2InsView::Lv2InsView(Instrument *_instrument, QWidget *_parent) :
 Lv2InsView::~Lv2InsView()
 {
 	Lv2Instrument *model = castModel<Lv2Instrument>();
-	if (model && false /* TODO: check if plugin has UI extension */ && model->m_hasGUI)
+	if (model && /* DISABLES CODE */ (false) /* TODO: check if plugin has UI extension */ && model->hasGui())
 	{
 		qDebug() << "shutting down UI...";
 		// TODO: tell plugin to hide the UI
@@ -323,16 +318,16 @@ void Lv2InsView::modelChanged()
 	/*	// set models for controller knobs
 		m_portamento->setModel( &m->m_portamentoModel ); */
 
-	m_toggleUIButton->setChecked(m->m_hasGUI);
+	m_toggleUIButton->setChecked(m->hasGui());
 }
 
 void Lv2InsView::toggleUI()
 {
 	Lv2Instrument *model = castModel<Lv2Instrument>();
-	if (false /* TODO: check if plugin has the UI extension */ &&
-		model->m_hasGUI != m_toggleUIButton->isChecked())
+	if (/* DISABLES CODE */ (false) /* TODO: check if plugin has the UI extension */ &&
+		model->hasGui() != m_toggleUIButton->isChecked())
 	{
-		model->m_hasGUI = m_toggleUIButton->isChecked();
+		model->setHasGui(m_toggleUIButton->isChecked());
 		// TODO: show the UI
 		ControllerConnection::finalizeConnections();
 	}

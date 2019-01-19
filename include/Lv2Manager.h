@@ -38,45 +38,48 @@
 //! Class to keep track of all LV2 plugins
 class Lv2Manager
 {
-	Plugin::PluginTypes computePluginType(Lilv::Plugin *plugin);
-
 	Lilv::World m_world;
 
 public:
-	Lilv::Node newUri(const char* uri) {
-		return m_world.new_uri(uri);
+	Lilv::Node uri(const char* uriStr)
+	{
+		// TODO: fix this when new lilvmm is released
+		LilvNode* node = m_world.new_uri(uriStr);
+		Lilv::Node deepCopy(node);
+		return node;
 	}
 
 	struct Lv2Info
 	{
-		/*const*/ QString m_uri; // TODO: remove?
-		//LV2_Descriptor *m_descriptor;
 		Lilv::Plugin m_plugin;
 		Plugin::PluginTypes m_type;
 		Lv2Info(const Lv2Info &) = delete;
 		Lv2Info(Lv2Info&& other) :
-			m_uri(std::move(other.m_uri)),
 			m_plugin(other.m_plugin.me),
-			m_type(std::move(other.m_type))
+			m_type(std::move(other.m_type)),
+			m_valid(std::move(other.m_valid))
 		{
 		}
 		Lv2Info& operator=(Lv2Info&& other)
 		{
-			m_uri = std::move(other.m_uri);
 			m_plugin = other.m_plugin.me;
 			m_type = std::move(other.m_type);
+			m_valid = std::move(other.m_valid);
 			return *this;
 		}
 		//! use only for std::map internals
 		Lv2Info() : m_plugin(nullptr) {}
 		Lv2Info(Lilv::Plugin& plug) : m_plugin(plug.me) {}
 		void cleanup();
+		bool m_valid = false;
 	};
+
+	void initPlugins();
 
 	Lv2Manager();
 	~Lv2Manager();
 
-	//! returns a descriptor with @p uniqueName or nullptr if none exists
+	//! Return a descriptor with @p uniqueName or nullptr if none exists
 	//! @param uniqueName The lv2::unique_name of the plugin
 	Lilv::Plugin *getPlugin(const std::string &uri);
 	Lilv::Plugin *getPlugin(const QString uri);
@@ -104,6 +107,7 @@ public:
 
 private:
 	std::map<std::string, Lv2Info> m_lv2InfoMap;
+	bool isSubclassOf(Lilv::PluginClass &clss, const char *uriStr);
 };
 
 #endif // LMMS_HAVE_LV2

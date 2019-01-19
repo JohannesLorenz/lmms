@@ -34,6 +34,7 @@
 #include <lv2.h>
 
 #include "Knob.h"
+#include "LcdSpinBox.h"
 #include "LedCheckbox.h"
 #include "Lv2Effect.h"
 #include "Lv2FxControls.h"
@@ -56,7 +57,7 @@ Lv2FxControlDialog::Lv2FxControlDialog(Lv2FxControls *controls) :
 	connect(m_reloadPluginButton, SIGNAL(toggled(bool)), this,
 		SLOT(reloadPlugin()));
 
-	if (false) // TODO: check if the plugin has the UI extension
+	if (/* DISABLES CODE */ (false)) // TODO: check if the plugin has the UI extension
 	{
 		m_toggleUIButton = new QPushButton(tr("Show GUI"), this);
 		m_toggleUIButton->setCheckable(true);
@@ -73,54 +74,69 @@ Lv2FxControlDialog::Lv2FxControlDialog(Lv2FxControls *controls) :
 		grid->addWidget(m_toggleUIButton, 0, 3, 1, 3);
 	}
 
+	struct SetupWidget : public Lv2ControlBase::Visitor
+	{
+		QWidget* wdg = nullptr; // output
+		Lv2FxControlDialog* dlg; // input
+		void visit(Lv2ControlBase::ControlPort& ctrl) override
+		{
+			if(ctrl.m_flow == Lv2ControlBase::PortFlow::Input)
+			{
+				using PortVis = Lv2ControlBase::PortVis;
+
+				switch (ctrl.m_vis)
+				{
+					case PortVis::None:
+					{
+						Knob *k = new Knob(dlg);
+						k->setModel(ctrl.
+							m_connectedModel.m_floatModel);
+						assert(k->model());
+						wdg = k;
+						break;
+					}
+					case PortVis::Integer:
+					case PortVis::Enumeration:
+					{
+						IntModel* mdl =
+							ctrl.m_connectedModel.m_intModel;
+						int range = 1 + mdl->maxValue() - mdl->minValue();
+						LcdSpinBox *l = new LcdSpinBox(3/*log(range)*/, dlg);
+						l->setModel(ctrl.
+							m_connectedModel.m_intModel);
+						assert(l->model());
+						wdg = l;
+						break;
+					}
+					case PortVis::Toggled:
+					{
+						LedCheckBox *l = new LedCheckBox(dlg);
+						l->setModel(ctrl.
+							m_connectedModel.m_boolModel);
+						assert(l->model());
+						wdg = l;
+						break;
+					}
+				}
+				qDebug() << "WDG:" << wdg;
+			}
+		}
+	};
+
 	const int rowNum = 6; // just some guess for what might look good
 	int wdgNum = 0;
-	for (Lv2ControlBase::Port &port : controls->getPorts())
+	for (Lv2ControlBase::PortBase* port : controls->getPorts())
 	{
-		if(port.m_type != Lv2ControlBase::PortType::Control)
-			continue;
+		SetupWidget setup;
+		setup.dlg = this;
+		port->accept(setup);
 
-		using PortVis = Lv2ControlBase::PortVis;
-		QWidget *wdg;
-		switch (port.m_vis)
-		{
-			case PortVis::None:
-			{
-				Knob *k = new Knob(this);
-				k->setModel(port.m_data.m_controlData.
-					m_connectedModel.m_floatModel);
-				wdg = k;
-				break;
-			}
-			case PortVis::Integer:
-			case PortVis::Enumeration:
-			{
-				Knob *k = new Knob(this);
-				k->setModel(port.m_data.m_controlData.
-					m_connectedModel.m_intModel);
-				wdg = k;
-				break;
-			}
-			case PortVis::Toggled:
-			{
-				LedCheckBox *l = new LedCheckBox(this);
-				l->setModel(port.m_data.m_controlData.
-					m_connectedModel.m_boolModel);
-				wdg = l;
-				break;
-			}
-		}
-
-		if (wdg)
+		if(setup.wdg)
 		{
 			// start in row one, add widgets cell by cell
-			grid->addWidget(
-				wdg, 1 + wdgNum / rowNum, wdgNum % rowNum);
+			grid->addWidget(setup.wdg,
+				1 + wdgNum / rowNum, wdgNum % rowNum);
 			++wdgNum;
-		}
-		else
-		{
-			qDebug() << "this should never happen...";
 		}
 	}
 }
@@ -145,7 +161,7 @@ void Lv2FxControlDialog::modelChanged()
 	/*	// set models for controller knobs
 		m_portamento->setModel( &m->m_portamentoModel ); */
 
-	m_toggleUIButton->setChecked(lv2Controls()->m_hasGUI);
+	m_toggleUIButton->setChecked(lv2Controls()->hasGui());
 }
 
 void Lv2FxControlDialog::toggleUI()

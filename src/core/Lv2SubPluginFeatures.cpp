@@ -46,7 +46,10 @@
 Lilv::Plugin *Lv2SubPluginFeatures::getPlugin(
 	const Plugin::Descriptor::SubPluginFeatures::Key &k)
 {
-	return Engine::getLv2Manager()->getPlugin(k.attributes["plugin"]);
+	Lilv::Plugin* result = Engine::getLv2Manager()->
+		getPlugin(k.attributes["uri"]);
+	assert(result);
+	return result;
 }
 
 Lv2SubPluginFeatures::Lv2SubPluginFeatures(Plugin::PluginTypes _type) :
@@ -61,6 +64,9 @@ void Lv2SubPluginFeatures::fillDescriptionWidget(
 
 	QLabel *label = new QLabel(_parent);
 	label->setText(QWidget::tr("Name: ") + plug->get_name().as_string());
+
+	QLabel *label2 = new QLabel(_parent);
+	label2->setText(QWidget::tr("URI: ") + plug->get_uri().as_uri());
 
 	QWidget *maker = new QWidget(_parent);
 	QHBoxLayout *l = new QHBoxLayout(maker);
@@ -148,7 +154,7 @@ void Lv2SubPluginFeatures::listSubPluginKeys(
 	for (const std::pair<const std::string, Lv2Manager::Lv2Info> &pr :
 		*lv2Mgr)
 	{
-		if (pr.second.m_type == m_type)
+		if (pr.second.m_type == m_type && pr.second.m_valid)
 		{
 			using KeyType =
 				Plugin::Descriptor::SubPluginFeatures::Key;
@@ -158,8 +164,8 @@ void Lv2SubPluginFeatures::listSubPluginKeys(
 
 
 			_kl.push_back(KeyType(_desc, plug.get_name().as_string(), atm));
-			// qDebug() << "Found LV2 sub plugin key of type" <<
-			// m_type << ":" << _kl.back().name;
+			//qDebug() << "Found LV2 sub plugin key of type" <<
+			//	m_type << ":" << pr.first.c_str();
 		}
 	}
 }
