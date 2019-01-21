@@ -30,84 +30,127 @@
 #ifdef LMMS_HAVE_LV2
 
 #include <map>
-#include <lv2.h>
-#include <lilv/lilvmm.hpp>
+#include <lilv/lilv.h>
 
+#include "Lv2Basics.h"
 #include "Plugin.h"
+
+
+/*
+	all Lv2 classes in relation (use our "4 spaces per tab rule" to view):
+
+	explanation:
+		"x = {y z}" means class "x" consists of classes "y" and "z"
+			(and probably other classes not mentioned)
+		"x = {y*}" me}ns class "x" references/uses class "y"
+
+	core:
+		Lv2Proc =			{LilvInstance}
+		Lv2ControlBase =	{Lv2Proc, Lv2Proc... (2 for mono, 1 for stereo)}
+		Lv2Manager =		{LilvPlugin*, LilvPlugin* ...}
+							(creates Lv2ControlBase, Lv2ControlBase...)
+
+		Lv2FxControls =		{LilvControlBase}
+		Lv2Effect =			{Effect + Lv2FxControls}
+							(takes Lv2SubPluginFeatures in ctor)
+		Lv2Instrument =		{Instrument + LilvControlBase}
+							(takes Lv2SubPluginFeatures in ctor)
+
+	gui:
+		Lv2ViewProc	=			{Lv2Proc*}
+		Lv2ViewBase =			{Lv2ViewProc, Lv2ViewProc...
+								 (2 for mono, 1 for stereo)}
+		Lv2FxControlDialog =	{EffectControlDialog + Lv2ViewBase}
+		Lv2InsView =			{InstrumentView + Lv2ViewBase}
+
+	Lv2SubPluginFeatures:
+		Lv2SubPluginFeatures =		{Lv2Manager*}
+		Lv2Effect::Descriptor =		{Lv2SubPluginFeatures}
+		Lv2Instrument::Descriptor =	{Lv2SubPluginFeatures}
+*/
+
 
 //! Class to keep track of all LV2 plugins
 class Lv2Manager
 {
-	Lilv::World m_world;
+	LilvWorld* m_world;
 
 public:
-	Lilv::Node uri(const char* uriStr)
+	void initPlugins();
+
+	Lv2Manager();
+	~Lv2Manager();
+
+
+	AutoLilvNode uri(const char* uriStr)
 	{
-		// TODO: fix this when new lilvmm is released
-		LilvNode* node = m_world.new_uri(uriStr);
-		Lilv::Node deepCopy(node);
-		return node;
+		return AutoLilvNode(lilv_new_uri(m_world, uriStr));
 	}
 
+	//! Class representing info for one plugin
 	struct Lv2Info
 	{
-		Lilv::Plugin m_plugin;
-		Plugin::PluginTypes m_type;
+	public:
+		//! use only for std::map internals
+		Lv2Info() : m_plugin(nullptr) {}
+		//! ctor used inside Lv2Manager
+		Lv2Info(const LilvPlugin* plug, Plugin::PluginTypes type, bool valid) :
+			m_plugin(plug), m_type(type), m_valid(valid) {}
 		Lv2Info(const Lv2Info &) = delete;
 		Lv2Info(Lv2Info&& other) :
-			m_plugin(other.m_plugin.me),
+			m_plugin(other.m_plugin),
 			m_type(std::move(other.m_type)),
 			m_valid(std::move(other.m_valid))
 		{
 		}
 		Lv2Info& operator=(Lv2Info&& other)
 		{
-			m_plugin = other.m_plugin.me;
+			m_plugin = other.m_plugin;
 			m_type = std::move(other.m_type);
 			m_valid = std::move(other.m_valid);
 			return *this;
 		}
-		//! use only for std::map internals
-		Lv2Info() : m_plugin(nullptr) {}
-		Lv2Info(Lilv::Plugin& plug) : m_plugin(plug.me) {}
-		void cleanup();
+		bool isValid() const { return m_valid; }
+		Plugin::PluginTypes type() const { return m_type; }
+		const LilvPlugin* plugin() const { return m_plugin; }
+	private:
+		const LilvPlugin* m_plugin;
+		Plugin::PluginTypes m_type;
 		bool m_valid = false;
 	};
 
-	void initPlugins();
-
-	Lv2Manager();
-	~Lv2Manager();
-
 	//! Return a descriptor with @p uniqueName or nullptr if none exists
 	//! @param uniqueName The lv2::unique_name of the plugin
-	Lilv::Plugin *getPlugin(const std::string &uri);
-	Lilv::Plugin *getPlugin(const QString uri);
+	const LilvPlugin *getPlugin(const std::string &uri);
+	const LilvPlugin *getPlugin(const QString uri);
 
-	struct Iterator
+	class Iterator
 	{
-		std::map<std::string, Lv2Info>::iterator itr;
+		std::map<std::string, Lv2Info>::iterator m_itr;
+	public:
 		bool operator!=(const Iterator &other)
 		{
-			return itr != other.itr;
+			return m_itr != other.m_itr;
 		}
 		Iterator &operator++()
 		{
-			++itr;
+			++m_itr;
 			return *this;
 		}
 		std::pair<const std::string, Lv2Info> &operator*()
 		{
-			return *itr;
+			return *m_itr;
 		}
+		Iterator(std::map<std::string, Lv2Info>::iterator itr) :
+			m_itr(itr) {}
 	};
 
-	Iterator begin() { return {m_lv2InfoMap.begin()}; }
-	Iterator end() { return {m_lv2InfoMap.end()}; }
+	Iterator begin() { return Iterator(m_lv2InfoMap.begin()); }
+	Iterator end() { return Iterator(m_lv2InfoMap.end()); }
 
 private:
 	std::map<std::string, Lv2Info> m_lv2InfoMap;
-	bool isSubclassOf(Lilv::PluginClass &clss, const char *uriStr);
+	bool isSubclassOf(const LilvPluginClass *clvss, const char *uriStr);
 };
 
 #endif // LMMS_HAVE_LV2

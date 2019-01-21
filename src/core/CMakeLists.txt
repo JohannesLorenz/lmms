@@ -30,7 +30,13 @@ set(LMMS_SRCS
 	core/LadspaControl.cpp
 	core/LadspaManager.cpp
 	core/LfoController.cpp
+	core/LinkedModelGroups.cpp
 	core/LocklessAllocator.cpp
+	core/Lv2ControlBase.cpp
+	core/Lv2Ports.cpp
+	core/Lv2Proc.cpp
+	core/Lv2Manager.cpp
+	core/Lv2SubPluginFeatures.cpp
 	core/MemoryHelper.cpp
 	core/MemoryManager.cpp
 	core/MeterModel.cpp
@@ -40,6 +46,7 @@ set(LMMS_SRCS
 	core/MixerWorkerThread.cpp
 	core/MixHelpers.cpp
 	core/Model.cpp
+	core/ModelVisitor.cpp
 	core/Note.cpp
 	core/NotePlayHandle.cpp
 	core/Oscillator.cpp
@@ -49,6 +56,7 @@ set(LMMS_SRCS
 	core/PlayHandle.cpp
 	core/Plugin.cpp
 	core/PluginFactory.cpp
+	core/PluginIssue.cpp
 	core/PresetPreviewPlayHandle.cpp
 	core/ProjectJournal.cpp
 	core/ProjectRenderer.cpp
@@ -61,9 +69,6 @@ set(LMMS_SRCS
 	core/SampleRecordHandle.cpp
 	core/SerializingObject.cpp
 	core/Song.cpp
-	core/Lv2ControlBase.cpp
-	core/Lv2Manager.cpp
-	core/Lv2SubPluginFeatures.cpp
 	core/TempoSyncKnobModel.cpp
 	core/ToolPlugin.cpp
 	core/Track.cpp

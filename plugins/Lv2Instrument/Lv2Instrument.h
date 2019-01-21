@@ -33,6 +33,7 @@
 #include "InstrumentView.h"
 #include "Note.h"
 #include "Lv2ControlBase.h"
+#include "Lv2ViewBase.h"
 
 // whether to use MIDI vs playHandle
 // currently only MIDI works
@@ -40,31 +41,41 @@
 
 class QPushButton;
 
+
 class Lv2Instrument : public Instrument, public Lv2ControlBase
 {
 	Q_OBJECT
-
-	DataFile::Types settingsType() override;
-	void setNameFromFile(const QString &name) override;
-
 public:
+	/*
+		initialization
+	*/
 	Lv2Instrument(InstrumentTrack *instrumentTrackArg,
 		 Descriptor::SubPluginFeatures::Key* key);
 	~Lv2Instrument() override;
+	//! Must be checked after ctor or reload
+	bool isValid() const;
 
-	void saveSettings(QDomDocument &doc, QDomElement &that) override;  // XXX
-	void loadSettings(const QDomElement &that) override; // XXX
-	void loadFile(const QString &file) override { // XXX
-		Lv2ControlBase::loadFile(file); }
+	/*
+		load/save
+	*/
+	void saveSettings(QDomDocument &doc, QDomElement &that) override;
+	void loadSettings(const QDomElement &that) override;
+	void loadFile(const QString &file) override;
 
+	/*
+		realtime funcs
+	*/
 #ifdef LV2_INSTRUMENT_USE_MIDI
 	bool handleMidiEvent(const MidiEvent &event,
-		const MidiTime &time = MidiTime(), f_cnt_t offset = 0) override; // XXX
+		const MidiTime &time = MidiTime(), f_cnt_t offset = 0) override;
 #else
-	void playNote(NotePlayHandle *nph, sampleFrame *) override; // XXX
+	void playNote(NotePlayHandle *nph, sampleFrame *) override;
 #endif
-	void play(sampleFrame *buf) override; // XXX
+	void play(sampleFrame *buf) override;
 
+	/*
+		misc
+	*/
 	Flags flags() const override
 	{
 #ifdef LV2_INSTRUMENT_USE_MIDI
@@ -73,41 +84,45 @@ public:
 		return IsSingleStreamed;
 #endif
 	}
-
 	PluginView *instantiateView(QWidget *parent) override;
 
 private slots:
 	void updatePitchRange();
-	void reloadPlugin() { Lv2ControlBase::reloadPlugin(); }
+	void reloadPlugin();
+	void updateLinkStatesFromGlobal();
 
 private:
+	QString nodeName() const override;
+	DataFile::Types settingsType() override;
+	void setNameFromFile(const QString &name) override;
+
 #ifdef LV2_INSTRUMENT_USE_MIDI
 	int m_runningNotes[NumKeys];
 #endif
+
 	friend class Lv2InsView;
-	QString nodeName() const override;
 };
 
-class Lv2InsView : public InstrumentView
+
+class Lv2InsView : public InstrumentView, public Lv2ViewBase
 {
 	Q_OBJECT
 public:
-	Lv2InsView(Instrument *_instrument, QWidget *_parent);
+	Lv2InsView(Lv2Instrument *_instrument, QWidget *_parent);
 	virtual ~Lv2InsView();
 
 protected:
 	virtual void dragEnterEvent(QDragEnterEvent *_dee);
 	virtual void dropEvent(QDropEvent *_de);
 
+private slots:
+	void reloadPlugin();
+	void toggleUI();
+	void toggleHelp(bool visible);
+
 private:
 	void modelChanged();
-
-	QPushButton *m_toggleUIButton;
-	QPushButton *m_reloadPluginButton;
-
-private slots:
-	void toggleUI();
-	void reloadPlugin();
 };
+
 
 #endif // LV2_INSTRUMENT_H

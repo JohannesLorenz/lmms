@@ -1,7 +1,7 @@
 /*
- * Lv2ControlDialog.h - control dialog for amplifier effect
+ * ModelVisitor.h - visitors for automatable models
  *
- * Copyright (c) 2018-2019 Johannes Lorenz <j.git$$$lorenz-ho.me, $$$=@>
+ * Copyright (c) 2019-2019 Johannes Lorenz <j.git$$$lorenz-ho.me, $$$=@>
  *
  * This file is part of LMMS - https://lmms.io
  *
@@ -22,32 +22,32 @@
  *
  */
 
-#ifndef LV2_FX_CONTROL_DIALOG_H
-#define LV2_FX_CONTROL_DIALOG_H
+#ifndef MODELVISITOR_H
+#define MODELVISITOR_H
 
-#include "EffectControlDialog.h"
-#include "Lv2ViewBase.h"
+class BoolModel;
+class IntModel;
+class FloatModel;
+class ComboBoxModel;
 
-class Lv2FxControls;
-
-
-class Lv2FxControlDialog : public EffectControlDialog, public Lv2ViewBase
+class ModelVisitor
 {
-	Q_OBJECT
-
 public:
-	Lv2FxControlDialog(Lv2FxControls *controls);
-	virtual ~Lv2FxControlDialog() override {}
-
-private slots:
-	void reloadPlugin();
-	void toggleUI();
-	void toggleHelp(bool visible);
-
-private:
-	Lv2FxControls *lv2Controls();
-	void modelChanged() override;
+	virtual void visit(BoolModel& ) {}
+	virtual void visit(IntModel& ) {}
+	virtual void visit(FloatModel& ) {}
+	virtual void visit(ComboBoxModel& ) {}
+	virtual ~ModelVisitor();
 };
 
+class ConstModelVisitor
+{
+public:
+	virtual void visit(const BoolModel& ) {}
+	virtual void visit(const IntModel& ) {}
+	virtual void visit(const FloatModel& ) {}
+	virtual void visit(const ComboBoxModel& ) {}
+	virtual ~ConstModelVisitor();
+};
 
-#endif
+#endif // MODELVISITOR_H

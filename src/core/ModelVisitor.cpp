@@ -1,7 +1,7 @@
 /*
- * Lv2ControlDialog.h - control dialog for amplifier effect
+ * ModelVisitor.cpp - visitors for automatable models
  *
- * Copyright (c) 2018-2019 Johannes Lorenz <j.git$$$lorenz-ho.me, $$$=@>
+ * Copyright (c) 2019-2019 Johannes Lorenz <j.git$$$lorenz-ho.me, $$$=@>
  *
  * This file is part of LMMS - https://lmms.io
  *
@@ -22,32 +22,7 @@
  *
  */
 
-#ifndef LV2_FX_CONTROL_DIALOG_H
-#define LV2_FX_CONTROL_DIALOG_H
+#include "ModelVisitor.h"
 
-#include "EffectControlDialog.h"
-#include "Lv2ViewBase.h"
-
-class Lv2FxControls;
-
-
-class Lv2FxControlDialog : public EffectControlDialog, public Lv2ViewBase
-{
-	Q_OBJECT
-
-public:
-	Lv2FxControlDialog(Lv2FxControls *controls);
-	virtual ~Lv2FxControlDialog() override {}
-
-private slots:
-	void reloadPlugin();
-	void toggleUI();
-	void toggleHelp(bool visible);
-
-private:
-	Lv2FxControls *lv2Controls();
-	void modelChanged() override;
-};
-
-
-#endif
+ModelVisitor::~ModelVisitor() {}
+ConstModelVisitor::~ConstModelVisitor() {}

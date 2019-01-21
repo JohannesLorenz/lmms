@@ -35,11 +35,16 @@
 #include "InstrumentPlayHandle.h"
 #include "InstrumentTrack.h"
 #include "Mixer.h"
+#include "LedCheckbox.h"
+#include "Lv2Proc.h"
 #include "Lv2SubPluginFeatures.h"
 #include "StringPairDrag.h" // DnD
 #include "gui_templates.h"
 #include "embed.h"
 #include "plugin_export.h"
+
+
+
 
 Plugin::Descriptor PLUGIN_EXPORT lv2instrument_plugin_descriptor =
 {
@@ -55,32 +60,36 @@ Plugin::Descriptor PLUGIN_EXPORT lv2instrument_plugin_descriptor =
 	new Lv2SubPluginFeatures(Plugin::Instrument)
 };
 
-DataFile::Types Lv2Instrument::settingsType()
-{
-	return DataFile::InstrumentTrackSettings;
-}
 
-void Lv2Instrument::setNameFromFile(const QString &name)
-{
-	instrumentTrack()->setName(name);
-}
+
+
+/*
+	Lv2Instrument
+*/
+
 
 Lv2Instrument::Lv2Instrument(InstrumentTrack *instrumentTrackArg,
 	Descriptor::SubPluginFeatures::Key *key) :
 	Instrument(instrumentTrackArg, &lv2instrument_plugin_descriptor, key),
-	Lv2ControlBase(key->attributes["uri"])
+	Lv2ControlBase(this, key->attributes["uri"])
 {
-#ifdef LV2_INSTRUMENT_USE_MIDI
-	for (int i = 0; i < NumKeys; ++i) {
-		m_runningNotes[i] = 0;
-	}
-#endif
-	//if (m_plugin)
+	if(Lv2ControlBase::isValid())
 	{
+#ifdef LV2_INSTRUMENT_USE_MIDI
+		for (int i = 0; i < NumKeys; ++i) {
+			m_runningNotes[i] = 0;
+		}
+#endif
 		connect(instrumentTrack()->pitchRangeModel(), SIGNAL(dataChanged()),
 			this, SLOT(updatePitchRange()));
 		connect(Engine::mixer(), SIGNAL(sampleRateChanged()),
-			this, SLOT(reloadPlugin())); // TODO: refactor to Lv2ControlBase?
+			this, SLOT(reloadPlugin()));
+		if(multiChannelLinkModel()) {
+			connect(multiChannelLinkModel(), SIGNAL(dataChanged()),
+				this, SLOT(updateLinkStatesFromGlobal()));
+			connect(getGroup(0), SIGNAL(linkStateChanged(int, bool)),
+					this, SLOT(linkPort(int, bool)));
+		}
 
 		// now we need a play-handle which cares for calling play()
 		InstrumentPlayHandle *iph =
@@ -89,6 +98,9 @@ Lv2Instrument::Lv2Instrument(InstrumentTrack *instrumentTrackArg,
 	}
 }
 
+
+
+
 Lv2Instrument::~Lv2Instrument()
 {
 	Engine::mixer()->removePlayHandlesOfTypes(instrumentTrack(),
@@ -96,87 +108,37 @@ Lv2Instrument::~Lv2Instrument()
 						  PlayHandle::TypeInstrumentPlayHandle);
 }
 
+
+
+
+bool Lv2Instrument::isValid() const { return Lv2ControlBase::isValid(); }
+
+
+
+
 void Lv2Instrument::saveSettings(QDomDocument &doc, QDomElement &that)
 {
 	Lv2ControlBase::saveSettings(doc, that);
 }
+
+
+
 
 void Lv2Instrument::loadSettings(const QDomElement &that)
 {
 	Lv2ControlBase::loadSettings(that);
 }
 
-// not yet working
-#ifndef LV2_INSTRUMENT_USE_MIDI
-void Lv2Instrument::playNote(NotePlayHandle *nph, sampleFrame *)
+
+
+
+void Lv2Instrument::loadFile(const QString &file)
 {
-	// no idea what that means
-	if (nph->isMasterNote() || (nph->hasParent() && nph->isReleased()))
-	{
-		return;
-	}
-
-	const f_cnt_t tfp = nph->totalFramesPlayed();
-
-	const float LOG440 = 2.643452676f;
-
-	int midiNote = (int)floor(
-		12.0 * (log2(nph->unpitchedFrequency()) - LOG440) - 4.0);
-
-	qDebug() << "midiNote: " << midiNote << ", r? " << nph->isReleased();
-	// out of range?
-	if (midiNote <= 0 || midiNote >= 128)
-	{
-		return;
-	}
-
-	if (tfp == 0)
-	{
-		const int baseVelocity =
-			instrumentTrack()->midiPort()->baseVelocity();
-		m_plugin->send_osc("/noteOn", "iii", 0, midiNote, baseVelocity);
-	}
-	else if (nph->isReleased() &&
-		!nph->instrumentTrack()
-			 ->isSustainPedalPressed()) // note is released during
-						    // this period
-	{
-		m_plugin->send_osc("/noteOff", "ii", 0, midiNote);
-	}
-	else if (nph->framesLeft() <= 0)
-	{
-		m_plugin->send_osc("/noteOff", "ii", 0, midiNote);
-	}
-}
-#endif
-
-void Lv2Instrument::play(sampleFrame *buf)
-{
-	//if (m_plugin)
-	{
-
-		fpp_t fpp = Engine::mixer()->framesPerPeriod();
-	//	m_pluginMutex.lock();
-		run(static_cast<unsigned>(fpp));
-	//	m_pluginMutex.unlock();
-
-		outPorts().left->copyBuffersToLmms(buf, 0, fpp);
-		outPorts().right->copyBuffersToLmms(buf, 1, fpp);
-	}
-	instrumentTrack()->processAudioBuffer(
-		buf, Engine::mixer()->framesPerPeriod(), nullptr);
+	Lv2ControlBase::loadFile(file);
 }
 
-void Lv2Instrument::updatePitchRange()
-{
-	qDebug() << "Lmms: Cannot update pitch range for lv2 plugin:"
-		    "not implemented yet";
-}
 
-QString Lv2Instrument::nodeName() const
-{
-	return Lv2ControlBase::nodeName();
-}
+
 
 #ifdef LV2_INSTRUMENT_USE_MIDI
 bool Lv2Instrument::handleMidiEvent(
@@ -231,9 +193,82 @@ bool Lv2Instrument::handleMidiEvent(
 #else
 	(void)event;
 #endif
+	// those can be called from GUI threads while the plugin is running,
+	// so this requires caching, e.g. in ringbuffers
 	return true;
 }
 #endif
+
+
+
+
+// not yet working
+#ifndef LV2_INSTRUMENT_USE_MIDI
+void Lv2Instrument::playNote(NotePlayHandle *nph, sampleFrame *)
+{
+	// no idea what that means
+	if (nph->isMasterNote() || (nph->hasParent() && nph->isReleased()))
+	{
+		return;
+	}
+
+	const f_cnt_t tfp = nph->totalFramesPlayed();
+
+	const float LOG440 = 2.643452676f;
+
+	int midiNote = (int)floor(
+		12.0 * (log2(nph->unpitchedFrequency()) - LOG440) - 4.0);
+
+	qDebug() << "midiNote: " << midiNote << ", r? " << nph->isReleased();
+	// out of range?
+	if (midiNote <= 0 || midiNote >= 128)
+	{
+		return;
+	}
+
+	if (tfp == 0)
+	{
+		const int baseVelocity =
+			instrumentTrack()->midiPort()->baseVelocity();
+		m_plugin->send_osc("/noteOn", "iii", 0, midiNote, baseVelocity);
+	}
+	else if (nph->isReleased() &&
+		!nph->instrumentTrack()
+			 ->isSustainPedalPressed()) // note is released during
+						    // this period
+	{
+		m_plugin->send_osc("/noteOff", "ii", 0, midiNote);
+	}
+	else if (nph->framesLeft() <= 0)
+	{
+		m_plugin->send_osc("/noteOff", "ii", 0, midiNote);
+	}
+	// those can be called from GUI threads while the plugin is running,
+	// so this requires caching, e.g. in ringbuffers
+}
+#endif
+
+
+
+
+void Lv2Instrument::play(sampleFrame *buf)
+{
+	//if (m_plugin)
+	{
+		copyModelsFromLmms();
+
+		fpp_t fpp = Engine::mixer()->framesPerPeriod();
+
+		run(static_cast<unsigned>(fpp));
+
+		copyBuffersToLmms(buf, fpp);
+	}
+	instrumentTrack()->processAudioBuffer(
+		buf, Engine::mixer()->framesPerPeriod(), nullptr);
+}
+
+
+
 
 PluginView *Lv2Instrument::instantiateView(QWidget *parent)
 {
@@ -243,44 +278,92 @@ PluginView *Lv2Instrument::instantiateView(QWidget *parent)
 
 
 
-Lv2InsView::Lv2InsView(Instrument *_instrument, QWidget *_parent) :
-	InstrumentView(_instrument, _parent)
+void Lv2Instrument::updatePitchRange()
+{
+	qDebug() << "Lmms: Cannot update pitch range for lv2 plugin:"
+				"not implemented yet";
+}
+
+
+
+
+void Lv2Instrument::reloadPlugin() { Lv2ControlBase::reloadPlugin(); }
+
+
+
+
+void Lv2Instrument::updateLinkStatesFromGlobal()
+{
+	Lv2ControlBase::updateLinkStatesFromGlobal();
+}
+
+
+
+
+QString Lv2Instrument::nodeName() const
+{
+	return Lv2ControlBase::nodeName();
+}
+
+
+
+
+DataFile::Types Lv2Instrument::settingsType()
+{
+	return DataFile::InstrumentTrackSettings;
+}
+
+
+
+
+void Lv2Instrument::setNameFromFile(const QString &name)
+{
+	instrumentTrack()->setName(name);
+}
+
+
+
+
+/*
+	Lv2InsView
+*/
+
+
+Lv2InsView::Lv2InsView(Lv2Instrument *_instrument, QWidget *_parent) :
+	InstrumentView(_instrument, _parent),
+	Lv2ViewBase(this, _instrument)
 {
 	setAutoFillBackground(true);
-
-	QGridLayout *l = new QGridLayout(this);
-
-	m_toggleUIButton = new QPushButton(tr("Show GUI"), this);
-	m_toggleUIButton->setCheckable(true);
-	m_toggleUIButton->setChecked(false);
-	m_toggleUIButton->setIcon(embed::getIconPixmap("zoom"));
-	m_toggleUIButton->setFont(pointSize<8>(m_toggleUIButton->font()));
-	connect(m_toggleUIButton, SIGNAL(toggled(bool)), this,
-		SLOT(toggleUI()));
-	m_toggleUIButton->setWhatsThis(
-		tr("Click here to show or hide the graphical user interface "
-		   "(GUI) of LV2."));
-
-	m_reloadPluginButton = new QPushButton(tr("Reload Plugin"), this);
-
-	connect(m_reloadPluginButton, SIGNAL(toggled(bool)), this,
-		SLOT(reloadPlugin()));
-
-	l->addWidget(m_toggleUIButton, 0, 0);
-	l->addWidget(m_reloadPluginButton, 0, 1);
-
-	setAcceptDrops(true);
+	if(m_reloadPluginButton) {
+		connect(m_reloadPluginButton, SIGNAL(toggled(bool)),
+			this, SLOT(reloadPlugin()));
+	}
+	if(m_toggleUIButton) {
+		connect(m_toggleUIButton, SIGNAL(toggled(bool)),
+			this, SLOT(toggleUI()));
+	}
+	if(m_helpButton) {
+		connect(m_helpButton, SIGNAL(toggled(bool)),
+			this, SLOT(toggleHelp(bool)));
+	}
 }
+
+
+
 
 Lv2InsView::~Lv2InsView()
 {
 	Lv2Instrument *model = castModel<Lv2Instrument>();
-	if (model && /* DISABLES CODE */ (false) /* TODO: check if plugin has UI extension */ && model->hasGui())
+	if (model && /* DISABLES CODE */ (false)
+		/* TODO: check if plugin has UI extension */ && model->hasGui())
 	{
 		qDebug() << "shutting down UI...";
 		// TODO: tell plugin to hide the UI
 	}
 }
+
+
+
 
 void Lv2InsView::dragEnterEvent(QDragEnterEvent *_dee)
 {
@@ -298,6 +381,9 @@ void Lv2InsView::dragEnterEvent(QDragEnterEvent *_dee)
 	(_dee->*reaction)();
 }
 
+
+
+
 void Lv2InsView::dropEvent(QDropEvent *_de)
 {
 	const QString type = StringPairDrag::decodeKey(_de);
@@ -311,20 +397,23 @@ void Lv2InsView::dropEvent(QDropEvent *_de)
 	_de->ignore();
 }
 
-void Lv2InsView::modelChanged()
+
+
+
+void Lv2InsView::reloadPlugin()
 {
-	Lv2Instrument *m = castModel<Lv2Instrument>();
-
-	/*	// set models for controller knobs
-		m_portamento->setModel( &m->m_portamentoModel ); */
-
-	m_toggleUIButton->setChecked(m->hasGui());
+	Lv2Instrument *model = castModel<Lv2Instrument>();
+	model->reloadPlugin();
 }
+
+
+
 
 void Lv2InsView::toggleUI()
 {
 	Lv2Instrument *model = castModel<Lv2Instrument>();
-	if (/* DISABLES CODE */ (false) /* TODO: check if plugin has the UI extension */ &&
+	if (/* DISABLES CODE */ (false)
+		/* TODO: check if plugin has the UI extension */ &&
 		model->hasGui() != m_toggleUIButton->isChecked())
 	{
 		model->setHasGui(m_toggleUIButton->isChecked());
@@ -333,10 +422,20 @@ void Lv2InsView::toggleUI()
 	}
 }
 
-void Lv2InsView::reloadPlugin()
+
+
+
+void Lv2InsView::toggleHelp(bool visible)
 {
-	Lv2Instrument *model = castModel<Lv2Instrument>();
-	model->reloadPlugin();
+	Lv2ViewBase::toggleHelp(visible);
+}
+
+
+
+
+void Lv2InsView::modelChanged()
+{
+	Lv2ViewBase::modelChanged(castModel<Lv2Instrument>());
 }
 
 
@@ -349,8 +448,12 @@ extern "C"
 PLUGIN_EXPORT Plugin *lmms_plugin_main(Model *_parent, void *_data)
 {
 	using KeyType = Plugin::Descriptor::SubPluginFeatures::Key;
-	return new Lv2Instrument(static_cast<InstrumentTrack*>(_parent),
-		static_cast<KeyType*>(_data ));
+	Lv2Instrument* ins = new Lv2Instrument(
+							static_cast<InstrumentTrack*>(_parent),
+							static_cast<KeyType*>(_data ));
+	if(!ins->isValid())
+		ins = nullptr;
+	return ins;
 }
 
 }

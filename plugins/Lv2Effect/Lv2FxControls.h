@@ -28,35 +28,39 @@
 #include "EffectControls.h"
 #include "Lv2ControlBase.h"
 
+class Lv2Effect;
+
+
 class Lv2FxControls : public EffectControls, public Lv2ControlBase
 {
 	Q_OBJECT
-
-	DataFile::Types settingsType() override;
-	void setNameFromFile(const QString &name) override;
-
 public:
-	Lv2FxControls(class Lv2Effect *effect, const QString &uri);
+	Lv2FxControls(Lv2Effect *effect, const QString &uri);
 	~Lv2FxControls() override {}
 
-	void saveSettings(QDomDocument &_doc, QDomElement &_parent) override; // XXX
-	void loadSettings(const QDomElement &that) override; // XXX
+	void saveSettings(QDomDocument &_doc, QDomElement &_parent) override;
+	void loadSettings(const QDomElement &that) override;
 	inline QString nodeName() const override
 	{
 		return Lv2ControlBase::nodeName();
 	}
 
 	int controlCount() override;
-
 	EffectControlDialog *createView() override;
 
 private slots:
 	void changeControl();
-
 	void reloadPlugin() { Lv2ControlBase::reloadPlugin(); }
+	void updateLinkStatesFromGlobal() {
+		Lv2ControlBase::updateLinkStatesFromGlobal(); }
+	void linkPort(int id, bool state) { Lv2ControlBase::linkPort(id, state); }
+
 
 private:
-	class Lv2Effect *m_effect;
+	DataFile::Types settingsType() override;
+	void setNameFromFile(const QString &name) override;
+
+	Lv2Effect *m_effect;
 	friend class Lv2FxControlDialog;
 	friend class Lv2Effect;
 };

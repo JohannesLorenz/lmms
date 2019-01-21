@@ -1,7 +1,5 @@
 /*
- * Lv2SubPluginFeatures.h - derivation from
- *                          Plugin::Descriptor::SubPluginFeatures for
- *                          hosting LV2 plugins
+ * Lv2Basics.h - basic Lv2 utils
  *
  * Copyright (c) 2018-2019 Johannes Lorenz <j.git$$$lorenz-ho.me, $$$=@>
  *
@@ -24,8 +22,10 @@
  *
  */
 
-#ifndef LV2_SUBPLUGIN_FEATURES_H
-#define LV2_SUBPLUGIN_FEATURES_H
+
+#ifndef LV2BASICS_H
+#define LV2BASICS_H
+
 
 #include "lmmsconfig.h"
 
@@ -33,28 +33,21 @@
 
 #include <lilv/lilv.h>
 
-#include "Plugin.h"
 
-class Lv2SubPluginFeatures : public Plugin::Descriptor::SubPluginFeatures
+//! a simple RAII class for lilv nodes that shall be freed
+struct AutoLilvNode
 {
-private:
-	static const LilvPlugin *getPlugin(const Key &k);
-
-public:
-	Lv2SubPluginFeatures(Plugin::PluginTypes _type);
-
-	virtual void fillDescriptionWidget(
-		QWidget *_parent, const Key *k) const override;
-
-	QString additionalFileExtensions(const Key &k) const override;
-	QString displayName(const Key &k) const override;
-	QString description(const Key &k) const override;
-	const PixmapLoader *logo(const Key &k) const override;
-
-	void listSubPluginKeys(
-		const Plugin::Descriptor *_desc, KeyList &_kl) const override;
+	LilvNode* n;
+	AutoLilvNode(LilvNode* n) : n(n) {}
+	AutoLilvNode(const AutoLilvNode& other) = delete;
+	AutoLilvNode(AutoLilvNode&& other) {
+		n = other.n;
+		other.n = nullptr;
+	}
+	~AutoLilvNode() { if(n) lilv_node_free(n); }
+	const LilvNode* get() const { return n; }
 };
 
-#endif // LMMS_HAVE_LV2
 
-#endif
+#endif // LMMS_HAVE_LV2
+#endif // LV2BASICS_H

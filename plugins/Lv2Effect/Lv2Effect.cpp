@@ -33,6 +33,9 @@
 #include "embed.h"
 #include "plugin_export.h"
 
+
+
+
 Plugin::Descriptor PLUGIN_EXPORT lv2effect_plugin_descriptor =
 {
 	STRINGIFY(PLUGIN_NAME),
@@ -47,16 +50,24 @@ Plugin::Descriptor PLUGIN_EXPORT lv2effect_plugin_descriptor =
 	new Lv2SubPluginFeatures(Plugin::Effect)
 };
 
+
+
+
 Lv2Effect::Lv2Effect(Model* parent, const Descriptor::SubPluginFeatures::Key *key) :
 	Effect(&lv2effect_plugin_descriptor, parent, key),
 	m_controls(this, key->attributes["uri"])
 {
-	qDebug() << "Constructing LV2 effect";
 }
+
+
+
 
 Lv2Effect::~Lv2Effect()
 {
 }
+
+
+
 
 bool Lv2Effect::processAudioBuffer(sampleFrame *buf, const fpp_t frames)
 {
@@ -67,8 +78,7 @@ bool Lv2Effect::processAudioBuffer(sampleFrame *buf, const fpp_t frames)
 
 	Lv2FxControls& ctrl = m_controls;
 
-	ctrl.inPorts().left->copyBuffersFromLmms(buf, 0, frames);
-	ctrl.inPorts().right->copyBuffersFromLmms(buf, 1, frames);
+	ctrl.copyBuffersFromLmms(buf, frames);
 
 	m_controls.copyModelsFromLmms();
 
@@ -76,8 +86,7 @@ bool Lv2Effect::processAudioBuffer(sampleFrame *buf, const fpp_t frames)
 	ctrl.run(static_cast<unsigned>(frames));
 //	m_pluginMutex.unlock();
 
-	ctrl.outPorts().left->copyBuffersToLmms(buf, 0, frames);
-	ctrl.outPorts().right->copyBuffersToLmms(buf, 1, frames);
+	ctrl.copyBuffersToLmms(buf, frames);
 
 	return isRunning();
 }
@@ -92,7 +101,10 @@ extern "C"
 PLUGIN_EXPORT Plugin *lmms_plugin_main(Model *_parent, void *_data)
 {
 	using KeyType = Plugin::Descriptor::SubPluginFeatures::Key;
-	return new Lv2Effect(_parent, static_cast<const KeyType*>(_data));
+	Lv2Effect* eff = new Lv2Effect(_parent, static_cast<const KeyType*>(_data));
+	if(!eff->isValid())
+		eff = nullptr;
+	return eff;
 }
 
 }

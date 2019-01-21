@@ -19,6 +19,7 @@ SET(LMMS_SRCS
 	gui/LfoControllerDialog.cpp
 	gui/LmmsPalette.cpp
 	gui/LmmsStyle.cpp
+	gui/Lv2ViewBase.cpp
 	gui/MainApplication.cpp
 	gui/MainWindow.cpp
 	gui/MidiSetupWidget.cpp
@@ -49,6 +50,7 @@ SET(LMMS_SRCS
 	gui/widgets/ComboBox.cpp
 	gui/widgets/ControllerRackView.cpp
 	gui/widgets/ControllerView.cpp
+	gui/widgets/Controls.cpp
 	gui/widgets/CPULoadWidget.cpp
 	gui/widgets/EffectRackView.cpp
 	gui/widgets/EffectView.cpp
@@ -67,6 +69,7 @@ SET(LMMS_SRCS
 	gui/widgets/LcdSpinBox.cpp
 	gui/widgets/LcdWidget.cpp
 	gui/widgets/LedCheckbox.cpp
+	gui/widgets/LinkedModelGroupViews.cpp
 	gui/widgets/MeterDialog.cpp
 	gui/widgets/MidiPortMenu.cpp
 	gui/widgets/NStateButton.cpp

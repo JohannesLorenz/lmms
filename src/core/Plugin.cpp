@@ -236,6 +236,8 @@ Plugin * Plugin::instantiate(const QString& pluginName, Model * parent,
 	if ((instantiationHook = ( InstantiationHook ) pi.library->resolve( "lmms_plugin_main" )))
 	{
 		inst = instantiationHook(parent, data);
+		if(!inst)
+			inst = new DummyPlugin();
 	}
 	else
 	{
@@ -246,9 +248,8 @@ Plugin * Plugin::instantiate(const QString& pluginName, Model * parent,
 				tr( "Failed to load plugin \"%1\"!").arg( pluginName ),
 				QMessageBox::Ok | QMessageBox::Default );
 		}
-		return new DummyPlugin();
+		inst = new DummyPlugin();
 	}
-
 
 	return inst;
 }

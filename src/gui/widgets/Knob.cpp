@@ -368,11 +368,10 @@ QLineF Knob::calculateLine( const QPointF & _mid, float _radius, float _innerRad
 }
 
 
-#include <QDebug>
+
 bool Knob::updateAngle()
 {
 	int angle = 0;
-	qDebug() << "MDL:" << model();
 	if( model() && model()->maxValue() != model()->minValue() )
 	{
 		angle = angleFromValue( model()->inverseScaledValue( model()->value() ), model()->minValue(), model()->maxValue(), m_totalAngle );
