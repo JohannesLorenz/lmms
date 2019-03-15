@@ -1352,7 +1352,7 @@ InstrumentTrackWindow::InstrumentTrackWindow( InstrumentTrackView * _itv ) :
 	nameAndChangeTrackLayout->addWidget(m_leftRightNav);
 
 
-	generalSettingsLayout->addWidget( nameAndChangeTrackWidget);
+	generalSettingsLayout->addWidget( nameAndChangeTrackWidget );
 
 
 
@@ -1451,7 +1451,7 @@ InstrumentTrackWindow::InstrumentTrackWindow( InstrumentTrackView * _itv ) :
 	generalSettingsLayout->addLayout( basicControlsLayout );
 
 
-	m_tabWidget = new TabWidget( "", this, true );
+	m_tabWidget = new TabWidget( "", this, true, true );
 	m_tabWidget->setMinimumHeight( INSTRUMENT_HEIGHT + GRAPHIC_TAB_HEIGHT - 4 );
 
 
@@ -1493,18 +1493,24 @@ InstrumentTrackWindow::InstrumentTrackWindow( InstrumentTrackView * _itv ) :
 	vlayout->addWidget( generalSettingsWidget );
 	vlayout->addWidget( m_tabWidget, 1 );
 	vlayout->addWidget( m_pianoView );
-
-
 	setModel( _itv->model() );
 
 	updateInstrumentView();
 
-	setMinimumWidth( INSTRUMENT_WIDTH );
 	resize( sizeHint() );
 
 	QMdiSubWindow * subWin = gui->mainWindow()->addWindowedWidget( this );
 	Qt::WindowFlags flags = subWin->windowFlags();
+	flags |= Qt::MSWindowsFixedSizeDialogHint;
+	flags &= ~Qt::WindowMaximizeButtonHint;
 	subWin->setWindowFlags( flags );
+
+	// Hide the Size and Maximize options from the system menu
+	// since the dialog size is fixed.
+	QMenu * systemMenu = subWin->systemMenu();
+	systemMenu->actions().at( 2 )->setVisible( false ); // Size
+	systemMenu->actions().at( 4 )->setVisible( false ); // Maximize
+
 	subWin->setWindowIcon( embed::getIconPixmap( "instrument_track" ) );
 	subWin->setMinimumSize( subWin->size() );
 	subWin->hide();
@@ -1655,6 +1661,8 @@ void InstrumentTrackWindow::updateInstrumentView()
 
 		modelChanged(); 		// Get the instrument window to refresh
 		m_track->dataChanged(); // Get the text on the trackButton to change
+
+		m_pianoView->setVisible(m_track->m_instrument->hasNoteInput());
 	}
 }
 
@@ -1709,7 +1717,9 @@ void InstrumentTrackWindow::closeEvent( QCloseEvent* event )
 
 void InstrumentTrackWindow::focusInEvent( QFocusEvent* )
 {
-	m_pianoView->setFocus();
+	if(m_pianoView->isVisible()) {
+		m_pianoView->setFocus();
+	}
 }
 
 
@@ -1843,6 +1853,9 @@ void InstrumentTrackWindow::viewInstrumentInDirection(int d)
 
 		// scroll the SongEditor/BB-editor to make sure the new trackview label is visible
 		bringToFront->trackContainerView()->scrollToTrackView(bringToFront);
+
+		// get the instrument window to refresh
+		modelChanged();
 	}
 	bringToFront->getInstrumentTrackWindow()->setFocus();
 }

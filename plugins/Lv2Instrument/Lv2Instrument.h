@@ -65,6 +65,7 @@ public:
 	/*
 		realtime funcs
 	*/
+	bool hasNoteInput() const override { return false; /* not supported yet */ }
 #ifdef LV2_INSTRUMENT_USE_MIDI
 	bool handleMidiEvent(const MidiEvent &event,
 		const MidiTime &time = MidiTime(), f_cnt_t offset = 0) override;
@@ -90,6 +91,7 @@ private slots:
 	void updatePitchRange();
 	void reloadPlugin();
 	void updateLinkStatesFromGlobal();
+	void linkPort(int id, bool state) { Lv2ControlBase::linkPort(id, state); }
 
 private:
 	QString nodeName() const override;
