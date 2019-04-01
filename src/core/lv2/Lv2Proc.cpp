@@ -287,9 +287,18 @@ void Lv2Proc::shutdownPlugin()
 
 
 
+void Lv2Proc::loadFile(const QString &fname)
+{
+	loadFileInternal(fname);
+}
+
+
+
+
 void Lv2Proc::loadFileInternal(const QString &file)
 {
-	(void)file;
+	LV2_URID_Map map;
+	lilv_state_new_from_file(nullptr /*TODO*/, &map, nullptr, file.toUtf8().data());
 }
 
 

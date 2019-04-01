@@ -25,6 +25,7 @@
 #include "LinkedModelGroups.h"
 
 #include "AutomatableModel.h"
+#include "ComboBoxModel.h"
 
 
 
@@ -167,6 +168,71 @@ void LinkedModelGroups::updateLinkStatesFromGlobal()
 	// if global channel link state has changed, always ignore link
 	// status of individual ports in the future
 	m_noLink = false;
+}
+
+
+
+
+struct CompareModels : public ConstModelVisitor
+{
+	const AutomatableModel* m_other; // in
+	bool m_equal; // out
+
+	void visit(const FloatModel& m) override {
+		// most knobs are probably not more exact than 0.001
+		m_equal =
+			m.value() - m_other->dcast<FloatModel>(m_other)->value()
+			< .001f;
+	}
+	void visit(const IntModel& m) override {
+		cmp(m, *m_other->dcast<IntModel>(m_other));
+	}
+	void visit(const BoolModel& m) override {
+		cmp(m, *m_other->dcast<BoolModel>(m_other));
+	}
+	void visit(const ComboBoxModel& m) override {
+		cmp(m, *m_other->dcast<ComboBoxModel>(m_other));
+	}
+private:
+	template<class T>
+	void cmp(const TypedAutomatableModel<T>& a1,
+		const TypedAutomatableModel<T>& a2) {
+		m_equal = a1.value() == a2.value();
+	}
+};
+
+
+
+
+bool LinkedModelGroups::allModelsEqual() const
+{
+	bool allEqual = true;
+	const LinkedModelGroup* lmg0 = getGroup(0);
+	for(std::size_t mdl = 0; mdl < lmg0->models().size() && allEqual; ++mdl)
+	{
+		if(lmg0->linkEnabledModel(mdl)->value())
+		{
+			// if they are linked, we know they're equal => no check
+		}
+		else
+		{
+			for(std::size_t grp = 1; grp; ++grp)
+			{
+				const LinkedModelGroup* lmg = getGroup(grp);
+				if(lmg)
+				{
+					CompareModels cmp;
+					cmp.m_other = lmg->models()[mdl];
+					lmg0->models()[mdl]->accept(cmp);
+					allEqual = cmp.m_equal;
+				}
+				else {
+					grp = 0;
+				}
+			}
+		}
+	}
+	return allEqual;
 }
 
 

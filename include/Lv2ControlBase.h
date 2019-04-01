@@ -94,6 +94,7 @@ protected:
 		overrides
 	*/
 	LinkedModelGroup* getGroup(std::size_t idx) override;
+	const LinkedModelGroup* getGroup(std::size_t idx) const override;
 
 	/*
 		utils for the run thread

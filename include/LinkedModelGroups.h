@@ -79,7 +79,11 @@ public:
 	*/
 	class BoolModel* linkEnabledModel(std::size_t id) {
 		return m_linkEnabled[id]; }
-	std::vector<class AutomatableModel*> models() { return m_models; }
+	const class BoolModel* linkEnabledModel(std::size_t id) const {
+		return m_linkEnabled[id]; }
+	std::vector<class AutomatableModel*>& models() { return m_models; }
+	const std::vector<class AutomatableModel*>& models() const
+	{ return m_models; }
 
 protected:
 	//! Register a further model
@@ -142,6 +146,11 @@ public:
 	//! Derived classes must return the group with index @p idx,
 	//! or nullptr if @p is out of range
 	virtual LinkedModelGroup* getGroup(std::size_t idx) = 0;
+	virtual const LinkedModelGroup* getGroup(std::size_t idx) const = 0;
+
+	//! Check whether for each model type, the models from all groups have
+	//! the same values
+	bool allModelsEqual() const;
 
 private:
 	//! Model for the "global" linking

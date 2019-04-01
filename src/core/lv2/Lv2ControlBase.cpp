@@ -27,6 +27,7 @@
 #ifdef LMMS_HAVE_LV2
 
 #include <QtGlobal>
+#include <QDir>
 
 #include "AutomatableModel.h"
 #include "Engine.h"
@@ -111,6 +112,14 @@ LinkedModelGroup *Lv2ControlBase::getGroup(std::size_t idx)
 
 
 
+const LinkedModelGroup *Lv2ControlBase::getGroup(std::size_t idx) const
+{
+	return (m_procs.size() > idx) ? m_procs[idx] : nullptr;
+}
+
+
+
+
 void Lv2ControlBase::copyModelsFromLmms() {
 	for(Lv2Proc* c : m_procs) { c->copyModelsFromCore(); }
 }
@@ -167,6 +176,32 @@ void Lv2ControlBase::loadSettings(const QDomElement &that)
 
 void Lv2ControlBase::loadFile(const QString &file)
 {
+	/*
+		1 processor => obvious
+		>1 processor => look for chan1, chan2
+			=> if they exist, check size and load separately
+			=> if there's only one, load one for all
+	*/
+	if(controls().size() == 1)
+	{
+		// TODO
+		//controls()[0]->
+	}
+	else
+	{
+		QDir fileAsDir(file); // TODO: dirs? files?
+		if(fileAsDir.exists())
+		{
+			QString channel = "chanX";
+			for(std::size_t i = 0; ; ++i)
+			{
+				channel[4] = static_cast<char>('0' + i);
+				//QDir full
+				// TODO :dirs? files?
+			}
+
+		}
+	}
 	(void)file;
 }
 

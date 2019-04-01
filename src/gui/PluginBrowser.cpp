@@ -70,7 +70,7 @@ PluginBrowser::PluginBrowser( QWidget * _parent ) :
 }
 
 
-
+#include <QDebug>
 
 PluginDescList::PluginDescList(QWidget *parent) :
 	QWidget(parent)
@@ -109,6 +109,7 @@ PluginDescList::PluginDescList(QWidget *parent) :
 
 	for (const PluginKey& key : pluginKeys)
 	{
+		qDebug() << "DESC: " << key.desc->name;
 		PluginDescWidget* p = new PluginDescWidget( key, this );
 		p->show();
 		layout->addWidget(p);

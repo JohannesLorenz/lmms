@@ -121,6 +121,9 @@ protected:
 	//! Deactivate instance
 	void shutdownPlugin();
 
+
+	void loadFile(const QString& fname);
+
 private:
 	bool m_valid = true;
 
