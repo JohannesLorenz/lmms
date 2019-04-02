@@ -33,6 +33,7 @@
 #include <lilv/lilv.h>
 
 #include "Lv2Basics.h"
+#include "Lv2UridMap.h"
 #include "Plugin.h"
 
 
@@ -150,6 +151,7 @@ public:
 
 private:
 	std::map<std::string, Lv2Info> m_lv2InfoMap;
+	UridMap m_uridMap;
 	bool isSubclassOf(const LilvPluginClass *clvss, const char *uriStr);
 };
 
