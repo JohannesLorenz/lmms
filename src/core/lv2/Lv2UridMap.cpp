@@ -1,4 +1,6 @@
 
+
+
 #include "Lv2UridMap.h"
 
 #ifdef LMMS_HAVE_LV2
@@ -29,20 +31,30 @@ LV2_URID UridMap::map(const char *uri)
 	LV2_URID result = 0;
 	if (itr == m_map.end())
 	{
-		result = itr->second;
-	}
-	else {
 		try {
 			// 1 is the first free URID
-			auto pr = m_map.emplace(uri, 1 + m_unMap.size());
-			m_unMap.push_back(pr.first->first.c_str());
-			// TODO: handle cases like where m_map could be
-			// inserted, but not m_unMap
-			result = pr.first->second;
+			std::string uriStr = uri;
+
+			m_MapMutex.lock();
+			{
+				// avoid allocations here
+				result = static_cast<LV2_URID>(1u + m_unMap.size());
+				auto pr = m_map.emplace(std::move(uriStr), result);
+				m_unMap.emplace_back(pr.first->first.c_str());
+				// TODO: handle cases like where m_map could be
+				// inserted, but not m_unMap
+			}
+			m_MapMutex.unlock();
+
 		} catch(...) {
 			result = 0;
 		}
 	}
+	else
+	{
+		result = itr->second;
+	}
+
 	return result;
 }
 

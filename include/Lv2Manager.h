@@ -149,6 +149,8 @@ public:
 	Iterator begin() { return Iterator(m_lv2InfoMap.begin()); }
 	Iterator end() { return Iterator(m_lv2InfoMap.end()); }
 
+	UridMap& uridMap() { return m_uridMap; }
+
 private:
 	std::map<std::string, Lv2Info> m_lv2InfoMap;
 	UridMap m_uridMap;

@@ -7,6 +7,7 @@
 
 #include <lv2/urid/urid.h>
 #include <unordered_map>
+#include <mutex> // TODO: use semaphore, even though this is not time critical
 #include <vector>
 
 class UridMap
@@ -19,6 +20,7 @@ class UridMap
 
 	LV2_URID m_lastUrid = 0;
 
+	std::mutex m_MapMutex;
 public:
 	UridMap();
 

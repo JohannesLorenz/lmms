@@ -126,6 +126,7 @@ private:
 
 	const LilvPlugin* m_plugin;
 	LilvInstance* m_instance;
+	std::vector<LV2_Feature*> m_features;
 
 	std::vector<Lv2Ports::PortBase*> m_ports;
 	StereoPortRef m_inPorts, m_outPorts;
