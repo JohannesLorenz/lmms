@@ -34,6 +34,20 @@
 
 class QTextStream;
 
+/**
+	File or directory that can be stored as XML data
+
+	This class contains file or directory data. The contents are stored in XML
+	format. The class represents data like embedded into XML files, but it can
+	also de/serialize the data from/into external resources, like files or
+	directories.
+
+	The contents of external resources and of embedded XML are usually the same,
+	though this is not true, e.g., for compressed files or directories.
+
+	The file contains meta info about its use inside LMMS and creator version.
+	This allows upgrading older files when loaded.
+ */
 class LMMS_EXPORT DataFile : public QDomDocument
 {
 	MM_OPERATORS
@@ -52,8 +66,11 @@ public:
 	} ;
 	typedef Types Type;
 
+	//! Load data file from file or directory
 	DataFile( const QString& fileName );
+	//! Load data from raw XML
 	DataFile( const QByteArray& data );
+	//! Create an empty data file
 	DataFile( Type type );
 
 	virtual ~DataFile();
@@ -66,23 +83,14 @@ public:
 
 	QString nameWithExtension( const QString& fn ) const;
 
+	//! write file as raw XML
 	void write( QTextStream& strm );
+	//! write file into file or directory
 	bool writeFile( const QString& fn );
 
-	QDomElement& content()
-	{
-		return m_content;
-	}
-
-	QDomElement& head()
-	{
-		return m_head;
-	}
-
-	Type type() const
-	{
-		return m_type;
-	}
+	QDomElement& content() { return m_content; }
+	QDomElement& head() { return m_head; }
+	Type type() const { return m_type; }
 
 private:
 	static Type type( const QString& typeName );
