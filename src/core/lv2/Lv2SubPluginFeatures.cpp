@@ -185,7 +185,38 @@ void Lv2SubPluginFeatures::listSubPluginKeys(
 			//qDebug() << "Found LV2 sub plugin key of type" <<
 			//	m_type << ":" << pr.first.c_str();
 		}
+		}
+}
+
+bool Lv2SubPluginFeatures::subPluginKeyForPath(
+	const Plugin::Descriptor *desc,
+	Key &key,
+	const QString &path) const
+{
+	key = Key();
+	const char* uri;
+	LilvState* state;
+
+	{
+		Lv2Manager* mgr = Engine::getLv2Manager();
+		state = lilv_state_new_from_file(mgr->world(),
+			mgr->uridMap().mapFeature(), nullptr, path.toUtf8().data());
+		uri = lilv_node_as_uri(lilv_state_get_plugin_uri(state));
 	}
+
+	KeyList allKeys;
+	listSubPluginKeys(desc, allKeys);
+	for(const Key& keySearch : allKeys)
+	{
+		if(!strcmp(keySearch.attributes["uri"].toUtf8().data(), uri))
+		{
+			key = keySearch;
+			break;
+		}
+	}
+
+	lilv_state_free(state);
+	return key.attributes.size();
 }
 
 #endif // LMMS_HAVE_LV2

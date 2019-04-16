@@ -62,9 +62,18 @@ public:
 		ClipboardData,
 		JournalData,
 		EffectSettings,
+		Lv2PresetDir,
+		SongProjectDir,
 		TypeCount
 	} ;
 	typedef Types Type;
+
+/*	enum DirType
+	{
+		NotADir,
+		Lv2PresetDir,
+		SongProjectDir
+	};*/
 
 	//! Load data file from file or directory
 	DataFile( const QString& fileName );
@@ -86,11 +95,13 @@ public:
 	//! write file as raw XML
 	void write( QTextStream& strm );
 	//! write file into file or directory
+	//! the file extension for fn will be chosen automatically
 	bool writeFile( const QString& fn );
 
 	QDomElement& content() { return m_content; }
 	QDomElement& head() { return m_head; }
 	Type type() const { return m_type; }
+//	DirType dirType() const { return m_dirType; }
 
 private:
 	static Type type( const QString& typeName );
@@ -120,7 +131,7 @@ private:
 
 	void upgrade();
 
-	void loadData( const QByteArray & _data, const QString & _sourceFile );
+	void loadData(const QByteArray & _data, const QString & _sourceFile );
 
 
 	struct LMMS_EXPORT typeDescStruct
@@ -133,6 +144,7 @@ private:
 	QDomElement m_content;
 	QDomElement m_head;
 	Type m_type;
+//	DirType m_dirType;
 
 } ;
 

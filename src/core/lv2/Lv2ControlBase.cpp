@@ -185,7 +185,7 @@ void Lv2ControlBase::loadFile(const QString &file)
 	if(controls().size() == 1)
 	{
 		// TODO
-		//controls()[0]->
+		controls()[0]->loadFile(file);
 	}
 	else
 	{
@@ -193,14 +193,23 @@ void Lv2ControlBase::loadFile(const QString &file)
 		if(fileAsDir.exists())
 		{
 			QString channel = "chanX";
-			for(std::size_t i = 0; ; ++i)
+			std::size_t nChans;
+			bool finish = false;
+			for(std::size_t nChans = 0; nChans < controls().size() && !finish;
+				++nChans)
 			{
-				channel[4] = static_cast<char>('0' + i);
+				channel[4] = static_cast<char>('0' + nChans);
+				finish = !QDir(channel).exists();
 				//QDir full
 				// TODO :dirs? files?
 			}
+			Q_ASSERT(nChans>0);
+			--nChans;
+
 
 		}
+		// only one channel, provided, so load that one into all processors
+		for(Lv2Proc* proc : controls()) { proc->loadFile(file); }
 	}
 	(void)file;
 }

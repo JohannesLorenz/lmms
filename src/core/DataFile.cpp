@@ -29,6 +29,8 @@
 #include <math.h>
 
 #include <QDebug>
+#include <QDir>
+#include <QDirIterator>
 #include <QFile>
 #include <QFileInfo>
 #include <QMessageBox>
@@ -61,7 +63,9 @@ DataFile::typeDescStruct
 	{ DataFile::DragNDropData, "dnddata" },
 	{ DataFile::ClipboardData, "clipboard-data" },
 	{ DataFile::JournalData, "journaldata" },
-	{ DataFile::EffectSettings, "effectsettings" }
+	{ DataFile::EffectSettings, "effectsettings" },
+	{ DataFile::Lv2PresetDir, "lv2-presets-dir" },
+	{ DataFile::SongProjectDir, "song-project-dir" }
 } ;
 
 
@@ -97,24 +101,117 @@ DataFile::DataFile( const QString & _fileName ) :
 	m_content(),
 	m_head()
 {
-	QFile inFile( _fileName );
-	if( !inFile.open( QIODevice::ReadOnly ) )
+	QDir inDir( _fileName );
+	if( inDir.exists() )
 	{
-		if( gui )
+		qDebug() << "DNN" << _fileName;
+
+		m_type = UnknownType;
+		if( _fileName.endsWith(".lv2") )
 		{
-			QMessageBox::critical( NULL,
-				SongEditor::tr( "Could not open file" ),
-				SongEditor::tr( "Could not open file %1. You probably "
-						"have no permissions to read this "
-						"file.\n Please make sure to have at "
-						"least read permissions to the file "
-						"and try again." ).arg( _fileName ) );
+			// hopefully this isn't a plugin :-X
+			m_type = Lv2PresetDir;
+		}
+		else if(_fileName.endsWith(".mmpd"))
+		{
+			// mmp directory
+			m_type = SongProjectDir;
 		}
 
-		return;
-	}
+		if(m_type != UnknownType)
+		{
+			m_content = createElement("folders");
 
-	loadData( inFile.readAll(), _fileName );
+			QDomElement root = documentElement();
+			m_type = type( root.attribute( "type" ) );
+			m_head = root.elementsByTagName( "head" ).item( 0 ).toElement();
+
+			QDirIterator it(inDir.absolutePath(),
+				QDir::Files, QDirIterator::Subdirectories);
+			while (it.hasNext())
+			{
+				// these files must not be of XML type, and even if, they
+				// may not be compatible with Qt, so read all as cdata
+
+				const QString subName = it.fileName();
+				if(subName.isEmpty())
+				{
+					// WTF???? I hate qt
+					it.next();
+					continue;
+				}
+
+				QVector<QString> utf8Extensions;
+				auto add = [&utf8Extensions](const char* ext) {
+					utf8Extensions.push_back(QString::fromUtf8(ext));
+				};
+				add(".txt"); add(".ttl"); add(".md"); add(".mmp");
+				// don't add xml/html yet, they might contain conflicting elements
+				// TODO: check for cdata end
+				bool readAsUtf8 = false;
+				for(const QString& ext : utf8Extensions)
+				{
+					if(subName.endsWith(ext) ) { readAsUtf8 = true; break; }
+				}
+				bool isSaveFile = subName.endsWith(".mmp") ||
+					subName.endsWith(".mmpz");
+				QFile inFile(it.filePath());
+
+				qDebug() << "FNN" << _fileName << subName << inFile.fileName();
+				if( inFile.open( QIODevice::ReadOnly ) )
+				{
+					const QByteArray content = inFile.readAll();
+					QDomElement fileRoot = createElement("file");
+					const char* type = isSaveFile ? "mmp" :
+						readAsUtf8 ? "utf-8" : "binary";
+					fileRoot.setAttribute("path", subName);
+					fileRoot.setAttribute("type", QString::fromUtf8(type));
+					m_content.appendChild(fileRoot);
+					if(isSaveFile)
+					{
+						// TODO: validate?
+						fileRoot.appendChild(DataFile(subName));
+					}
+					else
+					{
+						QDomCDATASection cdata = createCDATASection(
+							QString::fromUtf8(readAsUtf8 ? content : content.toHex()));
+						fileRoot.appendChild(cdata);
+					}
+				}
+				else
+				{
+					QMessageBox::critical( nullptr,
+						SongEditor::tr( "Could not open file" ),
+						SongEditor::tr( "Could not open file \"%1\" of directory \"%2\"\n"
+							"Consequently, cannot open the directory." )
+							.arg(subName).arg(_fileName) );
+				}
+				it.next(); // TODO: for loop?
+			}
+		}
+	}
+	else
+	{
+		QFile inFile( _fileName );
+		if( !inFile.open( QIODevice::ReadOnly ) )
+		{
+			if( gui )
+			{
+				QMessageBox::critical( NULL,
+					SongEditor::tr( "Could not open file" ),
+					SongEditor::tr( "Could not open file %1. You probably "
+							"have no permissions to read this "
+							"file.\n Please make sure to have at "
+							"least read permissions to the file "
+							"and try again." ).arg( _fileName ) );
+			}
+
+			return;
+		}
+
+		loadData( inFile.readAll(), _fileName );
+	}
 }
 
 
@@ -179,6 +276,12 @@ bool DataFile::validate( QString extension )
 			return true;
 		}
 		break;
+	case Type::SongProjectDir:
+		if(  extension == "mmpd") { return true; }
+		break;
+	case Type::Lv2PresetDir:
+		if(  extension == "lv2") { return true; }
+		break;
 	default:
 		return false;
 	}
@@ -227,6 +330,7 @@ QString DataFile::nameWithExtension( const QString & _fn ) const
 
 void DataFile::write( QTextStream & _strm )
 {
+	Q_ASSERT( type() != SongProjectDir && type() != Lv2PresetDir );
 	if( type() == SongProject || type() == SongProjectTemplate
 					|| type() == InstrumentTrackSettings )
 	{
@@ -241,6 +345,88 @@ void DataFile::write( QTextStream & _strm )
 
 bool DataFile::writeFile( const QString& filename )
 {
+	if(m_type == SongProjectDir || m_type == Lv2PresetDir)
+	{
+		auto deviceErr = [&](const char* caption, const char* err,
+			const QString& file) {
+				QMessageBox::critical( nullptr,
+				SongEditor::tr(caption),
+				SongEditor::tr(err).arg(filename));
+			};
+		QDir dir(filename);
+		if(dir.exists())
+		{
+			deviceErr("Not overwriting dir",
+				"Will not overwrite %1 for writing", filename);
+			return false;
+		}
+		else
+		{
+			QDomNodeList children = childNodes();
+
+			for(int i = 0; i < children.count(); ++i)
+			{
+				QDomNode nod = children.at(i);
+				QDomElement dom = nod.toElement();
+				if(dom.isNull())
+				{
+					deviceErr("Parse error",
+						"File %1 contains a non-element dom node", filename);
+					return false;
+				}
+				else
+				{
+					QString subName = dom.attribute("path");
+					QString fullName = filename + QString::fromUtf8("+") + subName;
+					QFileInfo info(dir, subName);
+
+					// mkdir will run recursively and return true if there's nothing
+					bool ok = dir.mkdir(info.absolutePath());
+					if(ok)
+					{
+						QString type = dom.attribute("type");
+						if(type == "mmp")
+						{
+							DataFile df(QByteArray("TODO"));
+							df.writeFile(fullName);
+						}
+						else {
+							// TODO: binary
+							QDomNode cdataNode = dom.childNodes().at(0);
+							QDomCDATASection cdata = cdataNode.toCDATASection();
+							if(cdata.isNull())
+							{
+								deviceErr("Invalid XML",
+									"file %1 misses a cdata child", subName);
+							}
+							else
+							{
+								QFile outfile(fullName);
+								if(outfile.open(QIODevice::WriteOnly | QIODevice::Truncate ))
+								{
+									outfile.write(cdata.data().toUtf8());
+									outfile.close();
+								}
+								else
+								{
+									deviceErr("Could not write file",
+										"File %1 could not be opened for writing",
+										fullName);
+								}
+							}
+						}
+					}
+					else
+					{
+						deviceErr("Directory error",
+							"Could not create directory %1", fullName);
+						return false;
+					}
+				}
+			}
+		}
+	}
+
 	const QString fullName = nameWithExtension( filename );
 	const QString fullNameTemp = fullName + ".new";
 	const QString fullNameBak = fullName + ".bak";

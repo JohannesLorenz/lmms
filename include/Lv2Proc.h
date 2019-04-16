@@ -107,6 +107,11 @@ public:
 	void run(unsigned frames);
 
 	/*
+		load/save
+	*/
+	void loadFile(const QString& fname);
+
+	/*
 		misc
 	 */
 	class AutomatableModel *modelAtPort(const QString &uri); // unused currently
@@ -120,9 +125,6 @@ protected:
 	void initPlugin();
 	//! Deactivate instance
 	void shutdownPlugin();
-
-
-	void loadFile(const QString& fname);
 
 private:
 	bool m_valid = true;

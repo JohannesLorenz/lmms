@@ -194,6 +194,14 @@ public:
 			{
 			}
 
+			//! Like listSubPluginKeys, but this returns a key matching @p path
+			virtual bool subPluginKeyForPath(
+				const Plugin::Descriptor *desc, Key &key, const QString& path)
+				const
+			{
+				return false;
+			}
+
 
 		private:
 			// You can add stuff values mapped by "Key" below

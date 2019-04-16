@@ -27,6 +27,7 @@
 #ifdef LMMS_HAVE_LV2
 
 #include <cmath>
+#include <QDir>
 
 #include "AutomatableModel.h"
 #include "ComboBoxModel.h"
@@ -297,8 +298,14 @@ void Lv2Proc::loadFile(const QString &fname)
 
 void Lv2Proc::loadFileInternal(const QString &file)
 {
-	LV2_URID_Map map;
-	lilv_state_new_from_file(nullptr /*TODO*/, &map, nullptr, file.toUtf8().data());
+	Lv2Manager* man = Engine::getLv2Manager();
+	LV2_URID_Map* map = man->uridMap().mapFeature();
+
+	QString fileToLoad = file;
+	if(QDir(file).exists())
+		fileToLoad += "/state.ttl";
+	lilv_state_new_from_file(man->world(), map, nullptr,
+		fileToLoad.toUtf8().data());
 }
 
 

@@ -149,11 +149,15 @@ public:
 	Iterator begin() { return Iterator(m_lv2InfoMap.begin()); }
 	Iterator end() { return Iterator(m_lv2InfoMap.end()); }
 
+	LilvWorld* world() { return m_world; }
 	UridMap& uridMap() { return m_uridMap; }
 
 private:
+	//! Lv2 info by URI
 	std::map<std::string, Lv2Info> m_lv2InfoMap;
+	//! host-global urid map
 	UridMap m_uridMap;
+
 	bool isSubclassOf(const LilvPluginClass *clvss, const char *uriStr);
 };
 

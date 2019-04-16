@@ -213,10 +213,13 @@ void FileBrowser::giveFocusToFilter()
 	}
 }
 
-
+#include <QDebug>
 
 void FileBrowser::addItems(const QString & path )
 {
+	// Note: If you are desperately trying to find a recursion function which
+	//       adds all the files... Look for `Directory::addItems`
+
 	if( m_dirsAsItems )
 	{
 		m_fileBrowserTreeWidget->addTopLevelItem( new Directory( path, QString(), m_filter ) );
@@ -229,7 +232,10 @@ void FileBrowser::addItems(const QString & path )
 						it != files.constEnd(); ++it )
 	{
 		QString cur_file = *it;
-		if( cur_file[0] != '.' )
+		QString ext = QFileInfo(cur_file).suffix();
+		qDebug() << "EXT" << cur_file << ext;
+		if( cur_file[0] != '.' &&
+			strcmp( QFileInfo(cur_file).suffix().toUtf8().data(), "lv2") )
 		{
 			bool orphan = true;
 			for( int i = 0; i < m_fileBrowserTreeWidget->topLevelItemCount(); ++i )
@@ -263,12 +269,16 @@ void FileBrowser::addItems(const QString & path )
 		}
 	}
 
-	files = cdir.entryList( QDir::Files, QDir::Name );
+	files = cdir.entryList( QDir::Files | QDir::Dirs, QDir::Name );
 	for( QStringList::const_iterator it = files.constBegin();
 						it != files.constEnd(); ++it )
 	{
 		QString cur_file = *it;
-		if( cur_file[0] != '.' )
+		QFileInfo info(cur_file);
+		// all files and lv2 dirs
+		if( info.isFile() ||
+			( info.isDir() && cur_file[0] != '.' &&
+				!strcmp( QFileInfo(cur_file).suffix().toUtf8().data(), "lv2")) )
 		{
 			// TODO: don't insert instead of removing, order changed
 			// remove existing file-items
@@ -418,7 +428,7 @@ void FileBrowserTreeWidget::mousePressEvent(QMouseEvent * me )
 				( f->handling() == FileItem::LoadAsPreset ||
 				f->handling() == FileItem::LoadByPlugin ) )
 		{
-			DataFile dataFile( f->fullName() );
+			DataFile dataFile( f->fullName() ); // xxx
 			if( !dataFile.validate( f->extension() ) )
 			{
 				QMessageBox::warning( 0, tr ( "Error" ),
@@ -555,7 +565,18 @@ void FileBrowserTreeWidget::handleFile(FileItem * f, InstrumentTrack * it )
 			{
 				PluginFactory::PluginInfoAndKey piakn =
 					pluginFactory->pluginSupportingExtension(e);
-				i = it->loadInstrument(piakn.info.name(), &piakn.key);
+				if(!piakn.isNull())
+				{
+					using KeyT = Plugin::Descriptor::SubPluginFeatures::Key;
+					KeyT key = piakn.key;
+					if(!key.isValid())
+					{
+						piakn.info.descriptor->subPluginFeatures->
+							subPluginKeyForPath(piakn.info.descriptor,
+							key, f->fullName());
+					}
+					i = it->loadInstrument(piakn.info.name(), &piakn.key);
+				}
 			}
 			i->loadFile( f->fullName() );
 			break;
@@ -821,13 +842,20 @@ bool Directory::addItems(const QString & path )
 	}
 
 	QList<QTreeWidgetItem*> items;
-	files = thisDir.entryList( QDir::Files, QDir::Name );
-	for( QStringList::const_iterator it = files.constBegin();
-						it != files.constEnd(); ++it )
+	QFileInfoList entries;
+	entries = thisDir.entryInfoList( QDir::Files | QDir::Dirs, QDir::Name );
+	for( QFileInfoList::const_iterator it = entries.constBegin();
+						it != entries.constEnd(); ++it )
 	{
-		QString cur_file = *it;
-		if( cur_file[0] != '.' &&
-				thisDir.match( m_filter, cur_file.toLower() ) )
+		QString cur_file = it->fileName();
+		QFileInfo info = *it;
+		//if( cur_file[0] != '.' &&
+		//		thisDir.match( m_filter, cur_file.toLower() ) )
+		if( thisDir.match( m_filter, cur_file.toLower() ) &&
+			( info.isFile() ||
+			( info.isDir() && cur_file[0] != '.' &&
+				!strcmp( QFileInfo(cur_file).suffix().toUtf8().data(), "lv2")))
+			)
 		{
 			items << new FileItem( cur_file, path );
 			added_something = true;
@@ -991,7 +1019,7 @@ void FileItem::determineFileType( void )
 	else if( ext == "lv2" )
 	{
 		m_type = PresetFile;
-		m_handling = LoadByPlugin;
+		m_handling = LoadAsPreset;
 	}
 	else
 	{

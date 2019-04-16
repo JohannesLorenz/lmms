@@ -40,7 +40,7 @@
 class vstSubWin;
 
 
-class VSTBASE_EXPORT VstPlugin : public RemotePlugin, public JournallingObject
+class  VstPlugin : public RemotePlugin, public JournallingObject
 {
 	Q_OBJECT
 public:

@@ -113,7 +113,7 @@ private:
 PreviewTrackContainer * PresetPreviewPlayHandle::s_previewTC;
 
 
-
+#include <QDebug>
 PresetPreviewPlayHandle::PresetPreviewPlayHandle( const QString & _preset_file, bool _load_by_plugin, DataFile *dataFile ) :
 	PlayHandle( TypePresetPreviewHandle ),
 	m_previewNote(nullptr)
@@ -160,6 +160,7 @@ PresetPreviewPlayHandle::PresetPreviewPlayHandle( const QString & _preset_file, 
 		// without an instrument in preview track, it will segfault
 		if(dataFile->content().elementsByTagName( "vestige" ).length() == 0 )
 		{
+			qDebug() << "contenxt" << dataFile->toString();
 			s_previewTC->previewInstrumentTrack()->
 					loadTrackSpecificSettings(
 						dataFile->content().firstChild().toElement() );

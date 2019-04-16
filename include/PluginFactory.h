@@ -77,6 +77,8 @@ public:
 	/// Returns a list of all found plugins' PluginFactory::PluginInfo objects.
 	const PluginInfoList& pluginInfos() const;
 	/// Returns a plugin that support the given file extension
+	/// or a PluginInfoAndKey which `isNull()` if none found
+	/// The result has an invalid key if there are no sub plugin features
 	const PluginInfoAndKey pluginSupportingExtension(const QString& ext);
 
 	/// Returns the PluginInfo object of the plugin with the given name.

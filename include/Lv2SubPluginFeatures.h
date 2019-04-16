@@ -53,6 +53,9 @@ public:
 
 	void listSubPluginKeys(
 		const Plugin::Descriptor *_desc, KeyList &_kl) const override;
+	bool subPluginKeyForPath(
+		const Plugin::Descriptor *desc, Key &key, const QString& path)
+		const override;
 };
 
 #endif // LMMS_HAVE_LV2
