@@ -53,21 +53,28 @@
 #include "embed.h"
 #include "gui_templates.h"
 
-SpaControlBase::SpaControlBase(const QString& uniqueName) :
+SpaControlBase::SpaControlBase(Model* that, const QString& uniqueName) :
 	m_spaDescriptor(Engine::getSPAManager()->getDescriptor(uniqueName)),
-	m_ports(Engine::mixer()->framesPerPeriod()), m_hasGUI(false)
+	m_that(that)
 {
 	if(!m_spaDescriptor)
 	{
 		qDebug() << ":-( ! No descriptor found for" << uniqueName;
 	}
+	// TODO: error handling
+}
 
+SpaProc::SpaProc(Model *parent, const spa::descriptor* desc, int curProc, int nProc) :
+	LinkedModelGroup(parent, curProc, nProc),
+	m_spaDescriptor(desc),
+	m_ports(Engine::mixer()->framesPerPeriod())
+{
 	initPlugin();
 }
 
-SpaControlBase::~SpaControlBase() { shutdownPlugin(); }
+SpaProc::~SpaProc() { shutdownPlugin(); }
 
-void SpaControlBase::saveSettings(QDomDocument &doc, QDomElement &that)
+void SpaProc::saveSettings(QDomDocument &doc, QDomElement &that)
 {
 	// save internal data?
 	if (m_spaDescriptor->save_has())
@@ -108,7 +115,7 @@ void SpaControlBase::saveSettings(QDomDocument &doc, QDomElement &that)
 	}
 }
 
-void SpaControlBase::loadSettings(const QDomElement &that)
+void SpaProc::loadSettings(const QDomElement &that)
 {
 	if (!that.hasChildNodes())
 	{
@@ -163,13 +170,19 @@ void SpaControlBase::loadSettings(const QDomElement &that)
 					if (name == "automatablemodel") {
 						name = portnode.attribute(
 							"nodename");
-}
+					}
 					do_load(name, elem);
 				}
 			}
 		}
 	}
 }
+
+void SpaProc::loadFile(const QByteArray& filedata)
+{
+
+}
+
 
 void SpaControlBase::loadFileInternal(const QString &file)
 {
@@ -178,7 +191,7 @@ void SpaControlBase::loadFileInternal(const QString &file)
 	m_plugin->load(fn.data(), ++m_saveTicket);
 	while (!m_plugin->load_check(fn.data(), m_saveTicket)) {
 		QThread::msleep(1);
-}
+	}
 	m_pluginMutex.unlock();
 }
 
@@ -189,7 +202,7 @@ void SpaControlBase::loadFile(const QString &file)
 		QRegExp("^[0-9]{4}-"), QString()));
 }
 
-void SpaControlBase::reloadPlugin()
+void SpaProc::reloadPlugin()
 {
 	// refresh ports that are only read on restore
 	m_ports.samplerate = Engine::mixer()->processingSampleRate();
@@ -206,7 +219,7 @@ void SpaControlBase::reloadPlugin()
 
 		while (!m_plugin->restore_check(m_restoreTicket)) {
 			QThread::msleep(1);
-}
+		}
 	}
 	else
 	{
@@ -224,7 +237,7 @@ void SpaControlBase::reloadPlugin()
 	}
 }
 
-void SpaControlBase::copyModelsToPorts()
+void SpaProc::copyModelsToPorts()
 {
 	for (LmmsPorts::TypedPorts &tp : m_ports.m_userPorts)
 	{
@@ -246,7 +259,7 @@ void SpaControlBase::copyModelsToPorts()
 	}
 }
 
-void SpaControlBase::shutdownPlugin()
+void SpaProc::shutdownPlugin()
 {
 	m_plugin->deactivate();
 
@@ -256,7 +269,7 @@ void SpaControlBase::shutdownPlugin()
 
 struct LmmsVisitor final : public virtual spa::audio::visitor
 {
-	SpaControlBase::LmmsPorts *m_ports;
+	SpaProc::LmmsPorts *m_ports;
 	QMap<QString, AutomatableModel *> *m_connectedModels;
 	const char *m_curName;
 	using spa::audio::visitor::visit; // not sure if this is right, it fixes
@@ -325,7 +338,7 @@ struct LmmsVisitor final : public virtual spa::audio::visitor
 	{
 		qDebug() << "other control port (float)";
 		m_ports->m_userPorts.emplace_back('f');
-		SpaControlBase::LmmsPorts::TypedPorts &bck =
+		SpaProc::LmmsPorts::TypedPorts &bck =
 			m_ports->m_userPorts.back();
 		setupPort(p, bck.m_val.m_f, bck.m_connectedModel.m_floatModel,
 			p.min, p.max, p.step);
@@ -342,7 +355,7 @@ struct LmmsVisitor final : public virtual spa::audio::visitor
 	{
 		qDebug() << "other control port (int)";
 		m_ports->m_userPorts.emplace_back('i');
-		SpaControlBase::LmmsPorts::TypedPorts &bck =
+		SpaProc::LmmsPorts::TypedPorts &bck =
 			m_ports->m_userPorts.back();
 		setupPort(p, bck.m_val.m_i, bck.m_connectedModel.m_intModel,
 			p.min, p.max);
@@ -351,7 +364,7 @@ struct LmmsVisitor final : public virtual spa::audio::visitor
 	{
 		qDebug() << "other control port (bool)";
 		m_ports->m_userPorts.emplace_back('b');
-		SpaControlBase::LmmsPorts::TypedPorts &bck =
+		SpaProc::LmmsPorts::TypedPorts &bck =
 			m_ports->m_userPorts.back();
 		setupPort(p, bck.m_val.m_b, bck.m_connectedModel.m_boolModel);
 	}
@@ -375,7 +388,7 @@ struct LmmsVisitor final : public virtual spa::audio::visitor
 	}
 };
 
-bool SpaControlBase::initPlugin()
+bool SpaProc::initPlugin()
 {
 	m_pluginMutex.lock();
 	if (!m_spaDescriptor)
@@ -455,13 +468,13 @@ bool SpaControlBase::initPlugin()
 	return true;
 }
 
-void SpaControlBase::writeOsc(
+void SpaProc::writeOsc(
 	const char *dest, const char *args, va_list va)
 {
 	m_ports.rb->write(dest, args, va);
 }
 
-void SpaControlBase::writeOsc(const char *dest, const char *args, ...)
+void SpaProc::writeOsc(const char *dest, const char *args, ...)
 {
 	va_list va;
 	va_start(va, args);
@@ -471,7 +484,7 @@ void SpaControlBase::writeOsc(const char *dest, const char *args, ...)
 
 struct SpaOscModelFactory : public spa::audio::visitor
 {
-	SpaControlBase *m_plugRef;
+	SpaProc *m_plugRef;
 	const QString m_dest;
 
 public:
@@ -505,13 +518,13 @@ public:
 		make<BoolOscModel>(in.def);
 	}
 
-	SpaOscModelFactory(SpaControlBase *ctrlBase, const QString &dest) :
+	SpaOscModelFactory(SpaProc *ctrlBase, const QString &dest) :
 		m_plugRef(ctrlBase), m_dest(dest)
 	{
 	}
 };
 
-AutomatableModel *SpaControlBase::modelAtPort(const QString &dest)
+AutomatableModel *SpaProc::modelAtPort(const QString &dest)
 {
 	QUrl url(dest);
 
@@ -548,12 +561,18 @@ AutomatableModel *SpaControlBase::modelAtPort(const QString &dest)
 	return mod;
 }
 
+LinkedModelGroup *SpaControlBase::getGroup(std::size_t idx)
+{
+	Q_ASSERT(idx < m_procs.size());
+	return m_procs[idx];
+}
+
 template <class UnsignedType> UnsignedType castToUnsigned(int val)
 {
 	return val >= 0 ? static_cast<unsigned>(val) : 0u;
 }
 
-SpaControlBase::LmmsPorts::LmmsPorts(int bufferSize) :
+SpaProc::LmmsPorts::LmmsPorts(int bufferSize) :
 	buffersize(castToUnsigned<unsigned>(bufferSize)),
 	m_lUnprocessed(castToUnsigned<std::size_t>(bufferSize)),
 	m_rUnprocessed(castToUnsigned<std::size_t>(bufferSize)),

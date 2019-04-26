@@ -39,6 +39,7 @@
 #include "SpaControlBase.h"
 
 SpaViewBase::SpaViewBase(QWidget* meAsWidget, SpaControlBase *ctrlBase)
+	: LinkedModelGroupsViewBase (ctrlBase)
 {
 	m_grid = new QGridLayout(meAsWidget);
 
@@ -116,6 +117,8 @@ SpaViewBase::SpaViewBase(QWidget* meAsWidget, SpaControlBase *ctrlBase)
 	}
 }
 
+SpaViewBase::~SpaViewBase() {}
+
 void SpaViewBase::modelChanged(SpaControlBase *ctrlBase)
 {
 	// reconnect models
@@ -143,5 +146,12 @@ void SpaViewBase::modelChanged(SpaControlBase *ctrlBase)
 		m_toggleUIButton->setChecked(ctrlBase->m_hasGUI);
 }
 
+SpaViewProc::SpaViewProc(QWidget* parent, LinkedModelGroup* model, int colNum)
+	: LinkedModelGroupViewBase(parent, model, colNum)
+{
+
+}
+
 #endif // LMMS_HAVE_SPA
+
 

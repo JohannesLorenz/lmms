@@ -30,9 +30,16 @@
 
 #ifdef LMMS_HAVE_SPA
 
+#include "LinkedModelGroupViews.h"
+
 class SpaControlBase;
 
-class SpaViewBase
+class SpaViewProc : public LinkedModelGroupViewBase
+{
+	SpaViewProc(QWidget *parent, LinkedModelGroup *model, int colNum);
+};
+
+class SpaViewBase : LinkedModelGroupsViewBase
 {
 	class QGridLayout *m_grid;
 	const int m_firstModelRow = 1; // row 0 is for buttons
@@ -47,6 +54,7 @@ protected:
 	void modelChanged(SpaControlBase* ctrlBase);
 	void connectSlots(const char* toggleUiSlot);
 	SpaViewBase(class QWidget *meAsWidget, SpaControlBase* ctrlBase);
+	virtual ~SpaViewBase();
 };
 
 #if 0

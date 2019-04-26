@@ -37,18 +37,20 @@
 
 // general LMMS includes
 #include "DataFile.h"
+#include "LinkedModelGroups.h"
 #include "Plugin.h"
 
 // includes from the spa library
 #include <spa/audio_fwd.h>
 #include <spa/spa_fwd.h>
 
-class SpaControlBase
+class SpaProc : public LinkedModelGroup
 {
 	friend class SpaViewBase;
 public:
-	SpaControlBase(const QString &uniqueName);
-	virtual ~SpaControlBase();
+	SpaProc(Model *parent,
+		const spa::descriptor* desc, int curProc, int nProc);
+	~SpaProc() override;
 
 	void saveSettings(QDomDocument &doc, QDomElement &that);
 	void loadSettings(const QDomElement &that);
@@ -68,10 +70,6 @@ protected:
 	void reloadPlugin();
 
 	class AutomatableModel *modelAtPort(const QString &dest);
-
-private:
-	virtual DataFile::Types settingsType() = 0;
-	virtual void setNameFromFile(const QString &fname) = 0;
 
 public:
 	struct LmmsPorts
@@ -121,14 +119,49 @@ protected:
 
 	bool initPlugin();
 	void shutdownPlugin();
+};
 
-	bool m_hasGUI;
+class SpaControlBase : public LinkedModelGroups
+{
+	friend class SpaViewBase;
+public:
+	SpaControlBase(Model *that, const QString &uniqueName);
+	~SpaControlBase() override;
+
+	void saveSettings(QDomDocument &doc, QDomElement &that) {}
+	void loadSettings(const QDomElement &that) {}
+
+	void writeOsc(const char *dest, const char *args, va_list va) {}
+	void writeOsc(const char *dest, const char *args, ...) {}
+
+	void loadFile(const QString &file);
+
+	const spa::descriptor *m_spaDescriptor = nullptr;
+protected:
+	void reloadPlugin() { /* TODO */ }
+
+
+private:
+	virtual DataFile::Types settingsType() = 0;
+	virtual void setNameFromFile(const QString &fname) = 0;
+
+	LinkedModelGroup* getGroup(std::size_t idx) override;
+
+	Model* m_that;
+
+protected:
+	bool initPlugin() {}
+	void shutdownPlugin() {}
+
+	bool m_hasGUI = false;
 	bool m_loaded;
 
 	QString nodeName() const { return "spacontrols"; }
 
+	std::vector<SpaProc*> m_procs;
+
 private:
-	//! load a file in the plugin, but don't do anything in LMMS
+	//! load a file into the plugin, but don't do anything in LMMS
 	void loadFileInternal(const QString &file);
 };
 

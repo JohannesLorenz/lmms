@@ -39,6 +39,13 @@ SpaFxControls::SpaFxControls(class SpaEffect *effect, const QString& uniqueName)
 	{
 		connect(Engine::mixer(), SIGNAL(sampleRateChanged()), this,
 			SLOT(reloadPlugin()));
+
+		if(multiChannelLinkModel()) {
+			connect(multiChannelLinkModel(), SIGNAL(dataChanged()),
+				this, SLOT(updateLinkStatesFromGlobal()));
+			connect(getGroup(0), SIGNAL(linkStateChanged(int, bool)),
+					this, SLOT(linkPort(int, bool)));
+		}
 	}
 }
 
