@@ -51,6 +51,7 @@ public:
 	SpaProc(Model *parent,
 		const spa::descriptor* desc, int curProc, int nProc);
 	~SpaProc() override;
+	bool isValid() {  }
 
 	void saveSettings(QDomDocument &doc, QDomElement &that);
 	void loadSettings(const QDomElement &that);
@@ -117,7 +118,8 @@ private:
 protected:
 	QMutex m_pluginMutex;
 
-	bool initPlugin();
+	bool m_valid = true;
+	void initPlugin();
 	void shutdownPlugin();
 };
 
@@ -142,6 +144,8 @@ protected:
 
 
 private:
+	bool m_valid = true;
+
 	virtual DataFile::Types settingsType() = 0;
 	virtual void setNameFromFile(const QString &fname) = 0;
 

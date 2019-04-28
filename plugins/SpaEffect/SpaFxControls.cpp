@@ -32,7 +32,7 @@
 
 SpaFxControls::SpaFxControls(class SpaEffect *effect, const QString& uniqueName) :
 	EffectControls(effect),
-	SpaControlBase(uniqueName),
+	SpaControlBase(static_cast<EffectControls*>(this), uniqueName),
 	m_effect(effect)
 {
 	if (m_plugin)

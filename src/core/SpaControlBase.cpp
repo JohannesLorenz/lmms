@@ -57,9 +57,48 @@ SpaControlBase::SpaControlBase(Model* that, const QString& uniqueName) :
 	m_spaDescriptor(Engine::getSPAManager()->getDescriptor(uniqueName)),
 	m_that(that)
 {
-	if(!m_spaDescriptor)
+	if (m_spaDescriptor)
 	{
-		qDebug() << ":-( ! No descriptor found for" << uniqueName;
+			int procId = 0;
+			int channelsLeft = DEFAULT_CHANNELS; // LMMS plugins are stereo
+			while (channelsLeft > 0)
+			{
+					std::unique_ptr<SpaProc> newOne(
+							new SpaProc(m_spaDescriptor, that, procId++));
+					if (newOne->isValid())
+					{
+							channelsLeft -= std::max(
+									1 + static_cast<bool>(newOne->inPorts().m_right),
+									1 + static_cast<bool>(newOne->outPorts().m_right));
+							Q_ASSERT(channelsLeft >= 0);
+							m_procs.push_back(std::move(newOne));
+					}
+					else
+					{
+							qCritical() << "Failed instantiating LV2 processor";
+							m_valid = false;
+							channelsLeft = 0;
+					}
+			}
+			if (m_valid)
+			{
+					m_channelsPerProc = DEFAULT_CHANNELS / m_procs.size();
+					if (m_procs.size() > 1)
+					{
+							m_procs[0]->makeLinkingProc();
+							createMultiChannelLinkModel();
+					}
+
+					// initially link all controls
+					for (int i = 0; i < static_cast<int>(m_procs[0]->controlCount());
+							++i) {
+							linkPort(i, true);
+					}
+			}
+	}
+	else {
+			qCritical() << "No SPA descriptor found for URI" << uniqueName;
+			m_valid = false;
 	}
 	// TODO: error handling
 }
@@ -388,13 +427,13 @@ struct LmmsVisitor final : public virtual spa::audio::visitor
 	}
 };
 
-bool SpaProc::initPlugin()
+void SpaProc::initPlugin()
 {
 	m_pluginMutex.lock();
 	if (!m_spaDescriptor)
 	{
 		m_pluginMutex.unlock();
-		return false;
+		m_valid = false;
 	}
 	else
 	{
@@ -418,7 +457,7 @@ bool SpaProc::initPlugin()
 				<< mismatch.least_version.major() << "."
 				<< mismatch.least_version.minor() << "."
 				<< mismatch.least_version.patch();
-			m_spaDescriptor = nullptr;
+			m_valid = false;
 		}
 		m_pluginMutex.unlock();
 	}
@@ -450,22 +489,23 @@ bool SpaProc::initPlugin()
 				qWarning() << "plugin specifies invalid port, "
 					      "but does not provide it";
 			}
-			m_plugin = nullptr; // TODO: free plugin, handle etc...
-			return false;
+			m_valid = false; // TODO: free plugin, handle etc...
+			break;
 		}
 	}
 
-	// all initial ports are already set, we can do
-	// initialization of buffers etc.
-	m_plugin->init();
+	if(m_valid)
+	{
+		// all initial ports are already set, we can do
+		// initialization of buffers etc.
+		m_plugin->init();
 
-	m_plugin->activate();
+		m_plugin->activate();
 
-	// checks not yet implemented:
-	//	spa::host_utils::check_ports(descriptor, plugin);
-	//	plugin->test_more();
-
-	return true;
+		// checks not yet implemented:
+		//	spa::host_utils::check_ports(descriptor, plugin);
+		//	plugin->test_more();
+	}
 }
 
 void SpaProc::writeOsc(
