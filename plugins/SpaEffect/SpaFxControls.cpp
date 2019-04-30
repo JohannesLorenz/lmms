@@ -35,7 +35,7 @@ SpaFxControls::SpaFxControls(class SpaEffect *effect, const QString& uniqueName)
 	SpaControlBase(static_cast<EffectControls*>(this), uniqueName),
 	m_effect(effect)
 {
-	if (m_plugin)
+	if (isValid())
 	{
 		connect(Engine::mixer(), SIGNAL(sampleRateChanged()), this,
 			SLOT(reloadPlugin()));

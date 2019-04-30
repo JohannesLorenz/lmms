@@ -68,7 +68,7 @@ SpaControlBase::SpaControlBase(Model* that, const QString& uniqueName) :
 					if (newOne->isValid())
 					{
 							channelsLeft -= std::max(
-									1 + static_cast<bool>(newOne->inPorts().m_right),
+									1 + static_cast<bool>(newOne->m_ ->inPorts().m_right),
 									1 + static_cast<bool>(newOne->outPorts().m_right));
 							Q_ASSERT(channelsLeft >= 0);
 							m_procs.push_back(std::move(newOne));

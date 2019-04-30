@@ -45,7 +45,12 @@ class SpaViewBase : LinkedModelGroupsViewBase
 	const int m_firstModelRow = 1; // row 0 is for buttons
 	const int m_rowNum = 6; // just some guess for what might look good
 
-	QVector<class AutomatableModelView*> m_modelViews;
+	//QVector<class AutomatableModelView*> m_modelViews;
+
+	QVector<SpaViewProc*> m_procViews;
+
+	LinkedModelGroupViewBase *getGroupView(std::size_t idx) override;
+
 protected:
 	class QPushButton *m_toggleUIButton = nullptr;
 	class QPushButton *m_reloadPluginButton;
@@ -55,6 +60,10 @@ protected:
 	void connectSlots(const char* toggleUiSlot);
 	SpaViewBase(class QWidget *meAsWidget, SpaControlBase* ctrlBase);
 	virtual ~SpaViewBase();
+
+private:
+	//! Numbers of controls per row; must be multiple of 2 for mono effects
+	const int m_colNum = 6;
 };
 
 #if 0
