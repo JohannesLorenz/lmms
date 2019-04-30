@@ -131,6 +131,8 @@ public:
 	SpaControlBase(Model *that, const QString &uniqueName);
 	~SpaControlBase() override;
 
+	std::vector<std::unique_ptr<SpaProc>>& controls() { return m_procs; }
+
 	void saveSettings(QDomDocument &doc, QDomElement &that) {}
 	void loadSettings(const QDomElement &that) {}
 
@@ -142,7 +144,7 @@ public:
 	const spa::descriptor *m_spaDescriptor = nullptr;
 protected:
 	void reloadPlugin() { /* TODO */ }
-
+	bool isValid() { return m_valid; }
 
 private:
 	bool m_valid = true;
@@ -150,11 +152,12 @@ private:
 	virtual DataFile::Types settingsType() = 0;
 	virtual void setNameFromFile(const QString &fname) = 0;
 
-	LinkedModelGroup* getGroup(std::size_t idx) override;
-
 	Model* m_that;
 
 protected:
+
+	LinkedModelGroup* getGroup(std::size_t idx) override;
+
 	bool initPlugin() {}
 	void shutdownPlugin() {}
 

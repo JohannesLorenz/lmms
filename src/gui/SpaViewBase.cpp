@@ -64,6 +64,57 @@ SpaViewBase::SpaViewBase(QWidget* meAsWidget, SpaControlBase *ctrlBase)
 
 	meAsWidget->setAcceptDrops(true);
 
+	int nProcs = static_cast<int>(ctrlBase->controls().size());
+	Q_ASSERT(m_colNum % nProcs == 0);
+	int colsEach = m_colNum / nProcs;
+	for (int i = 0; i < nProcs; ++i)
+	{
+			Lv2ViewProc* vpr = new Lv2ViewProc(meAsWidget,
+					ctrlBase->controls()[static_cast<std::size_t>(i)].get(),
+					colsEach, nProcs);
+			grid->addWidget(vpr, Rows::ProcRow, i);
+			m_procViews.push_back(vpr);
+	}
+
+	LedCheckBox* led = globalLinkLed();
+	if (led)
+	{
+			grid->addWidget(led, Rows::LinkChannelsRow, 0, 1, m_colNum);
+	}
+}
+
+SpaViewBase::~SpaViewBase() {}
+
+void SpaViewBase::modelChanged(SpaControlBase *ctrlBase)
+{
+	// reconnect models
+	QVector<AutomatableModelView*>::Iterator itr = m_modelViews.begin();
+	for (SpaControlBase::LmmsPorts::TypedPorts &ports :
+		ctrlBase->m_ports.m_userPorts)
+	{
+		switch (ports.m_type)
+		{
+			case 'f':
+				(*itr)->setModel(ports.m_connectedModel.m_floatModel);
+				break;
+			case 'i':
+				(*itr)->setModel(ports.m_connectedModel.m_intModel);
+				break;
+			case 'b':
+				(*itr)->setModel(ports.m_connectedModel.m_boolModel);
+				break;
+		}
+		++itr;
+	}
+
+	// move non-model values to widgets
+	if(m_toggleUIButton)
+		m_toggleUIButton->setChecked(ctrlBase->m_hasGUI);
+}
+
+SpaViewProc::SpaViewProc(QWidget* parent, LinkedModelGroup* model, int colNum)
+	: LinkedModelGroupViewBase(parent, model, colNum)
+{
 	int wdgNum = 0;
 	for (SpaControlBase::LmmsPorts::TypedPorts &ports :
 		ctrlBase->m_ports.m_userPorts)
@@ -117,39 +168,9 @@ SpaViewBase::SpaViewBase(QWidget* meAsWidget, SpaControlBase *ctrlBase)
 	}
 }
 
-SpaViewBase::~SpaViewBase() {}
-
-void SpaViewBase::modelChanged(SpaControlBase *ctrlBase)
+LinkedModelGroupViewBase *SpaViewBase::getGroupView(std::size_t idx)
 {
-	// reconnect models
-	QVector<AutomatableModelView*>::Iterator itr = m_modelViews.begin();
-	for (SpaControlBase::LmmsPorts::TypedPorts &ports :
-		ctrlBase->m_ports.m_userPorts)
-	{
-		switch (ports.m_type)
-		{
-			case 'f':
-				(*itr)->setModel(ports.m_connectedModel.m_floatModel);
-				break;
-			case 'i':
-				(*itr)->setModel(ports.m_connectedModel.m_intModel);
-				break;
-			case 'b':
-				(*itr)->setModel(ports.m_connectedModel.m_boolModel);
-				break;
-		}
-		++itr;
-	}
-
-	// move non-model values to widgets
-	if(m_toggleUIButton)
-		m_toggleUIButton->setChecked(ctrlBase->m_hasGUI);
-}
-
-SpaViewProc::SpaViewProc(QWidget* parent, LinkedModelGroup* model, int colNum)
-	: LinkedModelGroupViewBase(parent, model, colNum)
-{
-
+	return
 }
 
 #endif // LMMS_HAVE_SPA
