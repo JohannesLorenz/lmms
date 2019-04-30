@@ -48,10 +48,9 @@ class SpaProc : public LinkedModelGroup
 {
 	friend class SpaViewBase;
 public:
-	SpaProc(Model *parent,
-		const spa::descriptor* desc, int curProc, int nProc);
+	SpaProc(Model *parent, const spa::descriptor* desc, int curProc);
 	~SpaProc() override;
-	bool isValid() {  }
+	bool isValid() { return m_valid; }
 
 	void saveSettings(QDomDocument &doc, QDomElement &that);
 	void loadSettings(const QDomElement &that);
@@ -73,6 +72,8 @@ protected:
 	class AutomatableModel *modelAtPort(const QString &dest);
 
 public:
+	int m_audioInCount = 0, m_audioOutCount = 0;
+
 	struct LmmsPorts
 	{
 		unsigned samplecount;
@@ -90,7 +91,7 @@ public:
 				int m_i;
 				bool m_b;
 			} m_val;
-			union
+			union // TODO: use AutomatableModel?
 			{
 				class FloatModel *m_floatModel;
 				class IntModel *m_intModel;
@@ -114,11 +115,11 @@ protected:
 private:
 	friend struct LmmsVisitor;
 	friend struct TypeChecker;
+	bool m_valid = true;
 
 protected:
 	QMutex m_pluginMutex;
 
-	bool m_valid = true;
 	void initPlugin();
 	void shutdownPlugin();
 };
@@ -162,11 +163,12 @@ protected:
 
 	QString nodeName() const { return "spacontrols"; }
 
-	std::vector<SpaProc*> m_procs;
+	std::vector<std::unique_ptr<SpaProc>> m_procs;
 
 private:
 	//! load a file into the plugin, but don't do anything in LMMS
 	void loadFileInternal(const QString &file);
+	unsigned m_channelsPerProc;
 };
 
 #endif // LMMS_HAVE_SPA

@@ -64,18 +64,18 @@ SpaControlBase::SpaControlBase(Model* that, const QString& uniqueName) :
 			while (channelsLeft > 0)
 			{
 					std::unique_ptr<SpaProc> newOne(
-							new SpaProc(m_spaDescriptor, that, procId++));
+							new SpaProc(that, m_spaDescriptor, procId++));
 					if (newOne->isValid())
 					{
 							channelsLeft -= std::max(
-									1 + static_cast<bool>(newOne->inPorts().m_right),
-									1 + static_cast<bool>(newOne->outPorts().m_right));
+									1 + static_cast<bool>(newOne->m_audioInCount),
+									1 + static_cast<bool>(newOne->m_audioOutCount));
 							Q_ASSERT(channelsLeft >= 0);
 							m_procs.push_back(std::move(newOne));
 					}
 					else
 					{
-							qCritical() << "Failed instantiating LV2 processor";
+							qCritical() << "Failed instantiating Spa processor";
 							m_valid = false;
 							channelsLeft = 0;
 					}
@@ -90,8 +90,10 @@ SpaControlBase::SpaControlBase(Model* that, const QString& uniqueName) :
 					}
 
 					// initially link all controls
-					for (int i = 0; i < static_cast<int>(m_procs[0]->controlCount());
-							++i) {
+					for (int i = 0;
+						i < static_cast<int>(m_procs[0]->models().size());
+						++i)
+					{
 							linkPort(i, true);
 					}
 			}
@@ -103,8 +105,8 @@ SpaControlBase::SpaControlBase(Model* that, const QString& uniqueName) :
 	// TODO: error handling
 }
 
-SpaProc::SpaProc(Model *parent, const spa::descriptor* desc, int curProc, int nProc) :
-	LinkedModelGroup(parent, curProc, nProc),
+SpaProc::SpaProc(Model *parent, const spa::descriptor* desc, int curProc) :
+	LinkedModelGroup(parent, curProc),
 	m_spaDescriptor(desc),
 	m_ports(Engine::mixer()->framesPerPeriod())
 {
@@ -311,12 +313,15 @@ struct LmmsVisitor final : public virtual spa::audio::visitor
 	SpaProc::LmmsPorts *m_ports;
 	QMap<QString, AutomatableModel *> *m_connectedModels;
 	const char *m_curName;
+	int m_audioInputs = 0; // out
+	int m_audioOutputs = 0; // out
 	using spa::audio::visitor::visit; // not sure if this is right, it fixes
 					  // the -Woverloaded-virtual issues
 
 	void visit(spa::audio::in &p) override
 	{
 		qDebug() << "in, c: " << +p.channel;
+		++m_audioInputs;
 		p.set_ref((p.channel == spa::audio::stereo::left)
 				? m_ports->m_lUnprocessed.data()
 				: m_ports->m_rUnprocessed.data());
@@ -324,6 +329,7 @@ struct LmmsVisitor final : public virtual spa::audio::visitor
 	void visit(spa::audio::out &p) override
 	{
 		qDebug() << "out, c: %d\n" << +p.channel;
+		++m_audioOutputs;
 		p.set_ref((p.channel == spa::audio::stereo::left)
 				? m_ports->m_lProcessed.data()
 				: m_ports->m_rProcessed.data());
@@ -331,12 +337,14 @@ struct LmmsVisitor final : public virtual spa::audio::visitor
 	void visit(spa::audio::stereo::in &p) override
 	{
 		qDebug() << "in, stereo";
+		++++m_audioInputs;
 		p.left = m_ports->m_lUnprocessed.data();
 		p.right = m_ports->m_rUnprocessed.data();
 	}
 	void visit(spa::audio::stereo::out &p) override
 	{
 		qDebug() << "out, stereo";
+		++++m_audioOutputs;
 		p.left = m_ports->m_lProcessed.data();
 		p.right = m_ports->m_rProcessed.data();
 	}
@@ -470,14 +478,15 @@ void SpaProc::initPlugin()
 		try
 		{
 			// qDebug() << "portname: " << portname.data();
-			spa::port_ref_base &port_ref =
-				m_plugin->port(portname.data());
+			spa::port_ref_base &port_ref = m_plugin->port(portname.data());
 
 			LmmsVisitor v;
 			v.m_ports = &m_ports;
 			v.m_connectedModels = &m_connectedModels;
 			v.m_curName = portname.data();
 			port_ref.accept(v);
+			m_audioInCount += v.m_audioInputs;
+			m_audioOutCount += v.m_audioOutputs;
 		}
 		catch (spa::port_not_found &e)
 		{
@@ -604,7 +613,7 @@ AutomatableModel *SpaProc::modelAtPort(const QString &dest)
 LinkedModelGroup *SpaControlBase::getGroup(std::size_t idx)
 {
 	Q_ASSERT(idx < m_procs.size());
-	return m_procs[idx];
+	return m_procs[idx].get();
 }
 
 template <class UnsignedType> UnsignedType castToUnsigned(int val)
