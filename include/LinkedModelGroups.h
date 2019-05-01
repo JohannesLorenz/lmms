@@ -55,7 +55,10 @@ public:
 		Initialization
 	*/
 	//! @param parent model of the LinkedModelGroups class
-	LinkedModelGroup(Model* parent) : Model(parent) {}
+	//! @param curProc number of this processor, counted from 0
+	//! @param nProc total number of processors
+	LinkedModelGroup(Model* parent, int curProc) :
+		Model(parent), m_curProc(curProc) {}
 	//! After all models have been added, make this processor the one which
 	//! will contain link models associated with its controls
 	void makeLinkingProc();
@@ -79,7 +82,16 @@ public:
 	*/
 	class BoolModel* linkEnabledModel(std::size_t id) {
 		return m_linkEnabled[id]; }
-	std::vector<class AutomatableModel*> models() { return m_models; }
+	const class BoolModel* linkEnabledModel(std::size_t id) const {
+		return m_linkEnabled[id]; }
+	std::vector<class AutomatableModel*>& models() { return m_models; }
+	const std::vector<class AutomatableModel*>& models() const {
+		return m_models; }
+
+	/*
+		General
+	 */
+	int curProc() const { return m_curProc; }
 
 protected:
 	//! Register a further model
@@ -94,6 +106,8 @@ private:
 	std::vector<class BoolModel*> m_linkEnabled;
 	//! models for the controls; the vector defines indices for the controls
 	std::vector<class AutomatableModel*> m_models;
+
+	int m_curProc, m_nProc;
 };
 
 
@@ -110,13 +124,16 @@ private:
 	class:
 
 	\code
-		if(multiChannelLinkModel()) {
+		if (multiChannelLinkModel()) {
 			connect(multiChannelLinkModel(), SIGNAL(dataChanged()),
 				this, SLOT(updateLinkStatesFromGlobal()));
 			connect(getGroup(0), SIGNAL(linkStateChanged(int, bool)),
 					this, SLOT(linkPort(int, bool)));
 		}
 	\endcode
+
+	@note Though called "container", this class does not contain, but only
+	know the single groups. The inheriting classes are responsible for storage.
 */
 class LinkedModelGroups
 {
@@ -142,6 +159,8 @@ public:
 	//! Derived classes must return the group with index @p idx,
 	//! or nullptr if @p is out of range
 	virtual LinkedModelGroup* getGroup(std::size_t idx) = 0;
+	//! @see getGroup
+	virtual const LinkedModelGroup* getGroup(std::size_t idx) const = 0;
 
 private:
 	//! Model for the "global" linking

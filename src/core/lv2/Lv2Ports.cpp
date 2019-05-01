@@ -85,19 +85,17 @@ std::vector<PluginIssue> Meta::get(const LilvPlugin *plugin,
 										unsigned int portNum)
 {
 	std::vector<PluginIssue> portIssues;
-	auto issue = [&portIssues](PluginIssueType i, const char* msg = "") {
-		portIssues.emplace_back(i, msg); };
+	auto issue = [&portIssues](PluginIssueType i, std::string msg = "") {
+		portIssues.emplace_back(i, std::move(msg)); };
 
 	Lv2Manager* man = Engine::getLv2Manager();
-	AutoLilvNode connectionOptional = man->uri(LV2_CORE__connectionOptional);
 
 	const LilvPort* lilvPort = lilv_plugin_get_port_by_index(plugin, portNum);
 
 	auto portFunc = [&plugin, &lilvPort, &man](
 		bool (*fptr)(const LilvPlugin*, const LilvPort*, const LilvNode*),
 		const char* str) {
-		bool res = fptr(plugin, lilvPort, man->uri(str).get());
-		return res;
+		return fptr(plugin, lilvPort, man->uri(str).get());
 	};
 
 	auto hasProperty = [&portFunc](const char* str) {
@@ -105,11 +103,13 @@ std::vector<PluginIssue> Meta::get(const LilvPlugin *plugin,
 	auto isA = [&portFunc](const char* str) {
 		return portFunc(lilv_port_is_a, str); };
 
+	std::string portName;
+	{
+		AutoLilvNode nameNode(lilv_port_get_name(plugin, lilvPort));
+		portName = lilv_node_as_string(nameNode.get());
+	}
 
-	const char* portName = lilv_node_as_string(lilv_port_get_name(plugin, lilvPort));
-
-	m_optional = lilv_port_has_property(plugin, lilvPort,
-										connectionOptional.get());
+	m_optional = hasProperty(LV2_CORE__connectionOptional);
 
 	m_vis = hasProperty(LV2_CORE__integer)
 		? Vis::Integer // WARNING: this may still be changed below
@@ -119,22 +119,20 @@ std::vector<PluginIssue> Meta::get(const LilvPlugin *plugin,
 		? Vis::Toggled
 		: Vis::None;
 
-	if (isA(LV2_CORE__InputPort)) {
-		m_flow = Flow::Input;
-	}
-	else if (isA(LV2_CORE__OutputPort)) {
-		m_flow = Flow::Output;
-	} else {
+	if (isA(LV2_CORE__InputPort)) { m_flow = Flow::Input; }
+	else if (isA(LV2_CORE__OutputPort)) { m_flow = Flow::Output; }
+	else {
 		m_flow = Flow::Unknown;
 		issue(unknownPortFlow, portName);
 	}
 
 	m_def = .0f; m_min = .0f; m_max = .0f;
 
-	if (isA(LV2_CORE__ControlPort)) {
+	if (isA(LV2_CORE__ControlPort))
+	{
 		m_type = Type::Control;
 
-		if(m_flow == Flow::Input)
+		if (m_flow == Flow::Input)
 		{
 			bool isToggle = m_vis == Vis::Toggled;
 
@@ -144,23 +142,20 @@ std::vector<PluginIssue> Meta::get(const LilvPlugin *plugin,
 					isToggle ? nullptr : &maxN);
 
 			auto takeRangeValue = [&](LilvNode* node,
-				float& storeHere, PluginIssueType it) {
-				if(node) {
-					storeHere = lilv_node_as_float(node);
-				}
-				else {
-					issue(it, portName);
-				}
+				float& storeHere, PluginIssueType it)
+			{
+				if (node) { storeHere = lilv_node_as_float(node); }
+				else { issue(it, portName); }
 				lilv_node_free(node);
 			};
 
 			takeRangeValue(defN, m_def, portHasNoDef);
-			if(!isToggle)
+			if (!isToggle)
 			{
 				takeRangeValue(minN, m_min, portHasNoMin);
 				takeRangeValue(maxN, m_max, portHasNoMax);
 
-				if(m_max - m_min > 15.0f)
+				if (m_max - m_min > 15.0f)
 				{
 					// range too large for spinbox visualisation, use knobs
 					// e.g. 0...15 would be OK
@@ -169,15 +164,12 @@ std::vector<PluginIssue> Meta::get(const LilvPlugin *plugin,
 			}
 		}
 	}
-	else if (isA(LV2_CORE__AudioPort)) {
-		m_type = Type::Audio;
-	} else if (isA(LV2_CORE__CVPort)) {
+	else if (isA(LV2_CORE__AudioPort)) { m_type = Type::Audio; }
+	else if (isA(LV2_CORE__CVPort)) {
 		issue(badPortType, "cvPort");
 		m_type = Type::Cv;
 	} else {
-		if (m_optional) {
-			m_used = false;
-		}
+		if (m_optional) { m_used = false; }
 		else {
 			issue(PluginIssueType::unknownPortType, portName);
 			m_type = Type::Unknown;
@@ -192,7 +184,7 @@ std::vector<PluginIssue> Meta::get(const LilvPlugin *plugin,
 
 QString PortBase::name() const
 {
-	AutoLilvNode node = lilv_port_get_name(m_plugin, m_port);
+	AutoLilvNode node(lilv_port_get_name(m_plugin, m_port));
 	QString res = lilv_node_as_string(node.get());
 	return res;
 }

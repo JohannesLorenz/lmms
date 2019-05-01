@@ -1,5 +1,5 @@
 /*
- * ModelVisitor.cpp - visitors for automatable models
+ * Lv2Basics.cpp - basic Lv2 functions
  *
  * Copyright (c) 2019-2019 Johannes Lorenz <j.git$$$lorenz-ho.me, $$$=@>
  *
@@ -22,23 +22,24 @@
  *
  */
 
-#include "ModelVisitor.h"
+#include "Lv2ControlBase.h"
 
-#include "AutomatableModel.h"
-#include "ComboBoxModel.h"
-#include "TempoSyncKnobModel.h"
+#ifdef LMMS_HAVE_LV2
 
-void ModelVisitor::visit(BoolModel &m) { up(m); }
-void ModelVisitor::visit(IntModel &m) { up(m); }
-void ModelVisitor::visit(FloatModel &m) { up(m); }
-void ModelVisitor::visit(ComboBoxModel &m) { up<IntModel>(m); }
-void ModelVisitor::visit(TempoSyncKnobModel &m) { up<FloatModel>(m); }
+#include "Lv2Basics.h"
 
-void ConstModelVisitor::visit(const BoolModel &m) { up(m); }
-void ConstModelVisitor::visit(const IntModel &m) { up(m); }
-void ConstModelVisitor::visit(const FloatModel &m) { up(m); }
-void ConstModelVisitor::visit(const ComboBoxModel &m) { up<IntModel>(m); }
-void ConstModelVisitor::visit(const TempoSyncKnobModel &m) { up<FloatModel>(m); }
+QString qStringFromPluginNode(const LilvPlugin* plug,
+	LilvNode* (*getFunc)(const LilvPlugin*))
+{
+	auto conv = lilv_node_as_string;
+	return QString::fromUtf8(conv(AutoLilvNode((*getFunc)(plug)).get()));
+}
 
-ModelVisitor::~ModelVisitor() {}
-ConstModelVisitor::~ConstModelVisitor() {}
+QString qStringFromPortName(const LilvPlugin* plug, const LilvPort* port)
+{
+	return QString::fromUtf8(
+		lilv_node_as_string(AutoLilvNode(lilv_port_get_name(plug, port)).get()));
+}
+
+#endif // LMMS_HAVE_LV2
+
