@@ -50,46 +50,45 @@
 
 
 Lv2ViewProc::Lv2ViewProc(QWidget* parent, Lv2Proc* ctrlBase,
-	int colNum, int curProc, int nProc, const QString& name) :
-	LinkedModelGroupViewBase (parent, ctrlBase->isLinking(), colNum,
-								curProc, nProc, name)
+	int colNum, int nProc, const QString& name) :
+	LinkedModelGroupViewBase (parent, ctrlBase, colNum, nProc, name)
 {
 	class SetupWidget : public Lv2Ports::Visitor
 	{
-		AutoLilvNode commentUri = uri(LILV_NS_RDFS "comment");
 	public:
-		QWidget* par; // input
-		ControlBase* control = nullptr; // output
+		QWidget* m_par; // input
+		const AutoLilvNode* m_commentUri; // input
+		ControlBase* m_control = nullptr; // output
 		void visit(Lv2Ports::Control& port) override
 		{
-			if(port.m_flow == Lv2Ports::Flow::Input)
+			if (port.m_flow == Lv2Ports::Flow::Input)
 			{
 				using PortVis = Lv2Ports::Vis;
 
 				switch (port.m_vis)
 				{
 					case PortVis::None:
-						control = new KnobControl(par);
+						m_control = new KnobControl(m_par);
 						break;
 					case PortVis::Integer:
-						control = new LcdControl((port.m_max <= 9.0f) ? 1 : 2,
-													par);
+						m_control = new LcdControl((port.m_max <= 9.0f) ? 1 : 2,
+													m_par);
 						break;
 					case PortVis::Enumeration:
-						control = new ComboControl(par);
+						m_control = new ComboControl(m_par);
 						break;
 					case PortVis::Toggled:
-						control = new CheckControl(par);
+						m_control = new CheckControl(m_par);
 						break;
 				}
-				control->setText(port.name());
+				m_control->setText(port.name());
 
 				LilvNodes* props = lilv_port_get_value(
-					port.m_plugin, port.m_port, commentUri.get());
+					port.m_plugin, port.m_port, m_commentUri->get());
 				LILV_FOREACH(nodes, itr, props)
 				{
 					const LilvNode* nod = lilv_nodes_get(props, itr);
-					control->topWidget()->setToolTip(lilv_node_as_string(nod));
+					m_control->topWidget()->setToolTip(lilv_node_as_string(nod));
 					break;
 				}
 				lilv_nodes_free(props);
@@ -97,16 +96,15 @@ Lv2ViewProc::Lv2ViewProc(QWidget* parent, Lv2Proc* ctrlBase,
 		}
 	};
 
-	for (Lv2Ports::PortBase* port : ctrlBase->getPorts())
+	AutoLilvNode commentUri = uri(LILV_NS_RDFS "comment");
+	for (std::unique_ptr<Lv2Ports::PortBase>& port : ctrlBase->getPorts())
 	{
 		SetupWidget setup;
-		setup.par = this;
+		setup.m_par = this;
+		setup.m_commentUri = &commentUri;
 		port->accept(setup);
 
-		if(setup.control)
-		{
-			addControl(setup.control);
-		}
+		if (setup.m_control) { addControl(setup.m_control); }
 	}
 }
 
@@ -133,7 +131,8 @@ Lv2ViewBase::Lv2ViewBase(QWidget* meAsWidget, Lv2ControlBase *ctrlBase)
 
 	QHBoxLayout* btnBox = new QHBoxLayout();
 	grid->addLayout(btnBox, Rows::ButtonRow, 0, 1, m_colNum);
-	if(/* DISABLES CODE */ (false)) {
+	if (/* DISABLES CODE */ (false))
+	{
 		m_reloadPluginButton = new QPushButton(QObject::tr("Reload Plugin"),
 			meAsWidget);
 		btnBox->addWidget(m_reloadPluginButton, 0);
@@ -176,6 +175,7 @@ Lv2ViewBase::Lv2ViewBase(QWidget* meAsWidget, Lv2ControlBase *ctrlBase)
 		m_helpWindow = gui->mainWindow()->addWindowedWidget(infoLabel);
 		m_helpWindow->setSizePolicy(QSizePolicy::Minimum,
 									QSizePolicy::Expanding);
+		m_helpWindow->setAttribute(Qt::WA_DeleteOnClose, false);
 		m_helpWindow->hide();
 
 		break;
@@ -188,14 +188,14 @@ Lv2ViewBase::Lv2ViewBase(QWidget* meAsWidget, Lv2ControlBase *ctrlBase)
 	for (int i = 0; i < nProcs; ++i)
 	{
 		Lv2ViewProc* vpr = new Lv2ViewProc(meAsWidget,
-			ctrlBase->controls()[static_cast<std::size_t>(i)],
-			colsEach, i, nProcs);
+			ctrlBase->controls()[static_cast<std::size_t>(i)].get(),
+			colsEach, nProcs);
 		grid->addWidget(vpr, Rows::ProcRow, i);
 		m_procViews.push_back(vpr);
 	}
 
 	LedCheckBox* led = globalLinkLed();
-	if(led)
+	if (led)
 		grid->addWidget(led, Rows::LinkChannelsRow, 0, 1, m_colNum);
 }
 
@@ -211,17 +211,10 @@ Lv2ViewBase::~Lv2ViewBase() {
 
 void Lv2ViewBase::toggleHelp(bool visible)
 {
-	if( m_helpWindow )
+	if ( m_helpWindow )
 	{
-		if( visible )
-		{
-			m_helpWindow->show();
-			m_helpWindow->raise();
-		}
-		else
-		{
-			m_helpWindow->hide();
-		}
+		if ( visible ) { m_helpWindow->show(); m_helpWindow->raise(); }
+		else { m_helpWindow->hide(); }
 	}
 }
 
@@ -231,7 +224,7 @@ void Lv2ViewBase::toggleHelp(bool visible)
 void Lv2ViewBase::modelChanged(Lv2ControlBase *ctrlBase)
 {
 	// reconnect models
-	if(m_toggleUIButton)
+	if (m_toggleUIButton)
 	{
 		m_toggleUIButton->setChecked(ctrlBase->hasGui());
 	}

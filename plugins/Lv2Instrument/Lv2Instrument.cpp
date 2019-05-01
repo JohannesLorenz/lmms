@@ -73,22 +73,20 @@ Lv2Instrument::Lv2Instrument(InstrumentTrack *instrumentTrackArg,
 	Instrument(instrumentTrackArg, &lv2instrument_plugin_descriptor, key),
 	Lv2ControlBase(this, key->attributes["uri"])
 {
-	if(Lv2ControlBase::isValid())
+	if (Lv2ControlBase::isValid())
 	{
 #ifdef LV2_INSTRUMENT_USE_MIDI
-		for (int i = 0; i < NumKeys; ++i) {
-			m_runningNotes[i] = 0;
-		}
+		for (int i = 0; i < NumKeys; ++i) { m_runningNotes[i] = 0; }
 #endif
 		connect(instrumentTrack()->pitchRangeModel(), SIGNAL(dataChanged()),
-			this, SLOT(updatePitchRange()));
+			this, SLOT(updatePitchRange()), Qt::DirectConnection);
 		connect(Engine::mixer(), SIGNAL(sampleRateChanged()),
 			this, SLOT(reloadPlugin()));
-		if(multiChannelLinkModel()) {
+		if (multiChannelLinkModel()) {
 			connect(multiChannelLinkModel(), SIGNAL(dataChanged()),
-				this, SLOT(updateLinkStatesFromGlobal()));
+				this, SLOT(updateLinkStatesFromGlobal()), Qt::DirectConnection);
 			connect(getGroup(0), SIGNAL(linkStateChanged(int, bool)),
-					this, SLOT(linkPort(int, bool)));
+					this, SLOT(linkPort(int, bool)), Qt::DirectConnection);
 		}
 
 		// now we need a play-handle which cares for calling play()
@@ -176,8 +174,7 @@ void Lv2Instrument::play(sampleFrame *buf)
 
 	copyBuffersToLmms(buf, fpp);
 
-	instrumentTrack()->processAudioBuffer(
-		buf, Engine::mixer()->framesPerPeriod(), nullptr);
+	instrumentTrack()->processAudioBuffer(buf, fpp, nullptr);
 }
 
 
@@ -247,15 +244,15 @@ Lv2InsView::Lv2InsView(Lv2Instrument *_instrument, QWidget *_parent) :
 	Lv2ViewBase(this, _instrument)
 {
 	setAutoFillBackground(true);
-	if(m_reloadPluginButton) {
+	if (m_reloadPluginButton) {
 		connect(m_reloadPluginButton, SIGNAL(toggled(bool)),
 			this, SLOT(reloadPlugin()));
 	}
-	if(m_toggleUIButton) {
+	if (m_toggleUIButton) {
 		connect(m_toggleUIButton, SIGNAL(toggled(bool)),
 			this, SLOT(toggleUI()));
 	}
-	if(m_helpButton) {
+	if (m_helpButton) {
 		connect(m_helpButton, SIGNAL(toggled(bool)),
 			this, SLOT(toggleHelp(bool)));
 	}
@@ -346,8 +343,7 @@ PLUGIN_EXPORT Plugin *lmms_plugin_main(Model *_parent, void *_data)
 	Lv2Instrument* ins = new Lv2Instrument(
 							static_cast<InstrumentTrack*>(_parent),
 							static_cast<KeyType*>(_data ));
-	if(!ins->isValid())
-		ins = nullptr;
+	if (!ins->isValid()) { delete ins; ins = nullptr; }
 	return ins;
 }
 

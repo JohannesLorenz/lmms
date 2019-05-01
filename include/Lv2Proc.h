@@ -62,7 +62,7 @@ public:
 	/*
 		ctor/dtor
 	*/
-	Lv2Proc(const LilvPlugin* plugin, Model *parent);
+	Lv2Proc(const LilvPlugin* plugin, Model *parent, int curProc);
 	virtual ~Lv2Proc();
 	//! Must be checked after ctor or reload
 	bool isValid() const { return m_valid; }
@@ -82,8 +82,8 @@ public:
 	const StereoPortRef& inPorts() const { return m_inPorts; }
 	StereoPortRef& outPorts() { return m_outPorts; }
 	const StereoPortRef& outPorts() const { return m_outPorts; }
-	std::vector<Lv2Ports::PortBase*>& getPorts() { return m_ports; }
-	const std::vector<Lv2Ports::PortBase*>& getPorts() const { return m_ports; }
+	std::vector<std::unique_ptr<Lv2Ports::PortBase>>& getPorts() { return m_ports; }
+	const std::vector<std::unique_ptr<Lv2Ports::PortBase>>& getPorts() const { return m_ports; }
 
 	//! Debug function to print ports to stdout
 	void dumpPorts();
@@ -115,7 +115,7 @@ public:
 		misc
 	 */
 	class AutomatableModel *modelAtPort(const QString &uri); // unused currently
-	std::size_t controlCount() const { return m_controlCount; }
+	std::size_t controlCount() const { return LinkedModelGroup::models().size(); }
 
 protected:
 	/*
@@ -133,9 +133,8 @@ private:
 	LilvInstance* m_instance;
 	std::vector<LV2_Feature*> m_features;
 
-	std::vector<Lv2Ports::PortBase*> m_ports;
+	std::vector<std::unique_ptr<Lv2Ports::PortBase>> m_ports;
 	StereoPortRef m_inPorts, m_outPorts;
-	std::size_t m_controlCount = 0;
 
 	//! models for the controls, sorted by port symbols
 	std::map<std::string, AutomatableModel *> m_connectedModels;
@@ -148,8 +147,6 @@ private:
 	void createPort(unsigned portNum);
 	//! connect m_ports[portNum] with Lv2
 	void connectPort(unsigned num);
-	//! clean up all ports
-	void destroyPorts();
 
 	void dumpPort(std::size_t num);
 
