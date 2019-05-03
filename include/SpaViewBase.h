@@ -32,11 +32,13 @@
 
 #include "LinkedModelGroupViews.h"
 
+class SpaProc;
 class SpaControlBase;
 
 class SpaViewProc : public LinkedModelGroupViewBase
 {
-	SpaViewProc(QWidget *parent, LinkedModelGroup *model, int colNum);
+public:
+	SpaViewProc(QWidget *parent, SpaProc *proc, int colNum, int nProcs);
 };
 
 class SpaViewBase : LinkedModelGroupsViewBase
@@ -64,6 +66,13 @@ protected:
 private:
 	//! Numbers of controls per row; must be multiple of 2 for mono effects
 	const int m_colNum = 6;
+
+	enum Rows
+	{
+		ButtonRow,
+		ProcRow,
+		LinkChannelsRow
+	};
 };
 
 #if 0

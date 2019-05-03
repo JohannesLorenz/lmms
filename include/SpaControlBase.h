@@ -48,7 +48,8 @@ class SpaProc : public LinkedModelGroup
 {
 	friend class SpaViewBase;
 public:
-	SpaProc(Model *parent, const spa::descriptor* desc, int curProc);
+	SpaProc(Model *parent, const spa::descriptor* desc, int curProc,
+			DataFile::Types settingsType);
 	~SpaProc() override;
 	bool isValid() { return m_valid; }
 
@@ -116,6 +117,10 @@ private:
 	friend struct LmmsVisitor;
 	friend struct TypeChecker;
 	bool m_valid = true;
+	const DataFile::Types m_settingsType;
+
+	//! load a file into the plugin, but don't do anything in LMMS
+	void loadFileInternal(const QString &file);
 
 protected:
 	QMutex m_pluginMutex;
@@ -128,7 +133,8 @@ class SpaControlBase : public LinkedModelGroups
 {
 	friend class SpaViewBase;
 public:
-	SpaControlBase(Model *that, const QString &uniqueName);
+	SpaControlBase(Model *that, const QString &uniqueName,
+				DataFile::Types settingsType);
 	~SpaControlBase() override;
 
 	std::vector<std::unique_ptr<SpaProc>>& controls() { return m_procs; }
@@ -149,7 +155,6 @@ protected:
 private:
 	bool m_valid = true;
 
-	virtual DataFile::Types settingsType() = 0;
 	virtual void setNameFromFile(const QString &fname) = 0;
 
 	Model* m_that;
@@ -169,8 +174,6 @@ protected:
 	std::vector<std::unique_ptr<SpaProc>> m_procs;
 
 private:
-	//! load a file into the plugin, but don't do anything in LMMS
-	void loadFileInternal(const QString &file);
 	unsigned m_channelsPerProc;
 };
 

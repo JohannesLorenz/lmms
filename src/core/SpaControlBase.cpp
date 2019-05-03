@@ -53,7 +53,8 @@
 #include "embed.h"
 #include "gui_templates.h"
 
-SpaControlBase::SpaControlBase(Model* that, const QString& uniqueName) :
+SpaControlBase::SpaControlBase(Model* that, const QString& uniqueName,
+								DataFile::Types settingsType) :
 	m_spaDescriptor(Engine::getSPAManager()->getDescriptor(uniqueName)),
 	m_that(that)
 {
@@ -64,7 +65,8 @@ SpaControlBase::SpaControlBase(Model* that, const QString& uniqueName) :
 			while (channelsLeft > 0)
 			{
 					std::unique_ptr<SpaProc> newOne(
-							new SpaProc(that, m_spaDescriptor, procId++));
+							new SpaProc(that, m_spaDescriptor, procId++,
+										settingsType));
 					if (newOne->isValid())
 					{
 							channelsLeft -= std::max(
@@ -105,10 +107,11 @@ SpaControlBase::SpaControlBase(Model* that, const QString& uniqueName) :
 	// TODO: error handling
 }
 
-SpaProc::SpaProc(Model *parent, const spa::descriptor* desc, int curProc) :
+SpaProc::SpaProc(Model *parent, const spa::descriptor* desc, int curProc, DataFile::Types settingsType) :
 	LinkedModelGroup(parent, curProc),
 	m_spaDescriptor(desc),
-	m_ports(Engine::mixer()->framesPerPeriod())
+	m_ports(Engine::mixer()->framesPerPeriod()),
+	m_settingsType(settingsType)
 {
 	initPlugin();
 }
@@ -225,7 +228,7 @@ void SpaProc::loadFile(const QByteArray& filedata)
 }
 
 
-void SpaControlBase::loadFileInternal(const QString &file)
+void SpaProc::loadFileInternal(const QString &file)
 {
 	const QByteArray fn = file.toUtf8();
 	m_pluginMutex.lock();
@@ -238,6 +241,7 @@ void SpaControlBase::loadFileInternal(const QString &file)
 
 void SpaControlBase::loadFile(const QString &file)
 {
+	// for now, only support loading one proc into all proc (duplicating)
 	loadFileInternal(file);
 	setNameFromFile(QFileInfo(file).baseName().replace(
 		QRegExp("^[0-9]{4}-"), QString()));
@@ -265,7 +269,7 @@ void SpaProc::reloadPlugin()
 	else
 	{
 		// save state of current plugin instance
-		DataFile m(settingsType());
+		DataFile m(m_settingsType);
 
 		saveSettings(m, m.content());
 
