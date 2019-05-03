@@ -119,14 +119,6 @@ const LinkedModelGroup *Lv2ControlBase::getGroup(std::size_t idx) const
 
 
 
-const LinkedModelGroup *Lv2ControlBase::getGroup(std::size_t idx) const
-{
-	return (m_procs.size() > idx) ? m_procs[idx] : nullptr;
-}
-
-
-
-
 void Lv2ControlBase::copyModelsFromLmms() {
 	for (std::unique_ptr<Lv2Proc>& c : m_procs) { c->copyModelsFromCore(); }
 }
@@ -184,6 +176,13 @@ void Lv2ControlBase::loadSettings(const QDomElement &that)
 void Lv2ControlBase::loadFile(const QString &file)
 {
 	/*
+		file can be:
+		* A state.ttl file
+		* A directory containing state.ttl
+		* A directory containing chan0, chan1,... each containing state.ttl
+	*/
+
+	/*
 		1 processor => obvious
 		>1 processor => look for chan1, chan2
 			=> if they exist, check size and load separately
@@ -191,32 +190,46 @@ void Lv2ControlBase::loadFile(const QString &file)
 	*/
 	if(controls().size() == 1)
 	{
-		// TODO
+		// 1 processor, so file must be one preset
+		// (if it has multiple presets, the following will abort)
 		controls()[0]->loadFile(file);
 	}
 	else
 	{
-		QDir fileAsDir(file); // TODO: dirs? files?
+		QDir fileAsDir(file);
 		if(fileAsDir.exists())
 		{
-			QString channel = "chanX";
-			std::size_t nChans;
-			bool finish = false;
-			for(std::size_t nChans = 0; nChans < controls().size() && !finish;
-				++nChans)
+			if(QDir(file + "state.ttl").exists())
 			{
-				channel[4] = static_cast<char>('0' + nChans);
-				finish = !QDir(channel).exists();
-				//QDir full
-				// TODO :dirs? files?
+				// only one channel, provided, so load that one into all processors
+				for(std::unique_ptr<Lv2Proc>& proc : controls()) { proc->loadFile(file); }
 			}
-			Q_ASSERT(nChans>0);
-			--nChans;
-
-
+			else
+			{
+				// Check if we have multiple channels
+				QString channel = "chanX";
+				std::size_t nChans;
+				bool finish = false;
+				for(nChans = 0; nChans < controls().size() && !finish; ++nChans)
+				{
+					channel[4] = static_cast<char>('0' + nChans);
+					finish = !QDir(channel).exists();
+					if(!finish) {
+						controls()[nChans]->loadFile(channel);
+					}
+				}
+				Q_ASSERT(nChans>0); // of nChanes == 0, the preset had no channels
+			}
 		}
-		// only one channel, provided, so load that one into all processors
-		for(Lv2Proc* proc : controls()) { proc->loadFile(file); }
+		else if(QFile::exists(file))
+		{
+			// only one channel, provided, so load that one into all processors
+			for(std::unique_ptr<Lv2Proc>& proc : controls()) { proc->loadFile(file); }
+		}
+		else {
+			// neither directory, nor file?
+			Q_ASSERT(false);
+		}
 	}
 	(void)file;
 }

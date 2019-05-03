@@ -181,17 +181,17 @@ struct CompareModels : public ConstModelVisitor
 	void visit(const FloatModel& m) override {
 		// most knobs are probably not more exact than 0.001
 		m_equal =
-			m.value() - m_other->dcast<FloatModel>(m_other)->value()
+			m.value() - m_other->dynamicCast<FloatModel>(m_other)->value()
 			< .001f;
 	}
 	void visit(const IntModel& m) override {
-		cmp(m, *m_other->dcast<IntModel>(m_other));
+		cmp(m, *m_other->dynamicCast<IntModel>(m_other));
 	}
 	void visit(const BoolModel& m) override {
-		cmp(m, *m_other->dcast<BoolModel>(m_other));
+		cmp(m, *m_other->dynamicCast<BoolModel>(m_other));
 	}
 	void visit(const ComboBoxModel& m) override {
-		cmp(m, *m_other->dcast<ComboBoxModel>(m_other));
+		cmp(m, *m_other->dynamicCast<ComboBoxModel>(m_other));
 	}
 private:
 	template<class T>

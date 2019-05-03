@@ -146,6 +146,7 @@ private:
 	Type m_type;
 //	DirType m_dirType;
 
+	void initEmpty();
 } ;
 
 

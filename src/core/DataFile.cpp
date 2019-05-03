@@ -77,10 +77,18 @@ DataFile::DataFile( Type type ) :
 	m_head(),
 	m_type( type )
 {
+	initEmpty();
+}
+
+
+
+
+void DataFile::initEmpty()
+{
 	appendChild( createProcessingInstruction("xml", "version=\"1.0\""));
 	QDomElement root = createElement( "lmms-project" );
 	root.setAttribute( "version", LDF_VERSION_STRING );
-	root.setAttribute( "type", typeName( type ) );
+	root.setAttribute( "type", typeName( m_type ) );
 	root.setAttribute( "creator", "LMMS" );
 	root.setAttribute( "creatorversion", LMMS_VERSION );
 	appendChild( root );
@@ -88,16 +96,15 @@ DataFile::DataFile( Type type ) :
 	m_head = createElement( "head" );
 	root.appendChild( m_head );
 
-	m_content = createElement( typeName( type ) );
+	m_content = createElement( typeName( m_type ) );
 	root.appendChild( m_content );
-
 }
 
 
 
 
 DataFile::DataFile( const QString & _fileName ) :
-	QDomDocument(),
+	QDomDocument("lmms-project"),
 	m_content(),
 	m_head()
 {
@@ -120,11 +127,23 @@ DataFile::DataFile( const QString & _fileName ) :
 
 		if(m_type != UnknownType)
 		{
-			m_content = createElement("folders");
+			m_type = InstrumentTrackSettings;
 
-			QDomElement root = documentElement();
-			m_type = type( root.attribute( "type" ) );
-			m_head = root.elementsByTagName( "head" ).item( 0 ).toElement();
+			initEmpty();
+
+
+			//QDomElement root = documentElement();
+
+			//m_head = root.elementsByTagName( "head" ).item( 0 ).toElement();
+
+			//root.appendChild(m_head);
+			//QDomElement instrumentTrackSettings = createElement("instrumenttracksettings");
+			QDomElement instrumentTrack = createElement("instrumenttrack");
+			QDomElement instrument = createElement("instrument");
+
+			instrumentTrack.appendChild(instrument);
+			//instrumentTrackSettings.appendChild(instrumentTrack);
+			m_content.appendChild(instrumentTrack);
 
 			QDirIterator it(inDir.absolutePath(),
 				QDir::Files, QDirIterator::Subdirectories);
@@ -136,7 +155,6 @@ DataFile::DataFile( const QString & _fileName ) :
 				const QString subName = it.fileName();
 				if(subName.isEmpty())
 				{
-					// WTF???? I hate qt
 					it.next();
 					continue;
 				}
@@ -166,7 +184,7 @@ DataFile::DataFile( const QString & _fileName ) :
 						readAsUtf8 ? "utf-8" : "binary";
 					fileRoot.setAttribute("path", subName);
 					fileRoot.setAttribute("type", QString::fromUtf8(type));
-					m_content.appendChild(fileRoot);
+					instrument.appendChild(fileRoot);
 					if(isSaveFile)
 					{
 						// TODO: validate?
@@ -189,6 +207,7 @@ DataFile::DataFile( const QString & _fileName ) :
 				}
 				it.next(); // TODO: for loop?
 			}
+			qDebug() << "context at leaving:" << toString();
 		}
 	}
 	else
@@ -218,7 +237,7 @@ DataFile::DataFile( const QString & _fileName ) :
 
 
 DataFile::DataFile( const QByteArray & _data ) :
-	QDomDocument(),
+	QDomDocument("lmms-project"),
 	m_content(),
 	m_head()
 {
@@ -252,7 +271,7 @@ bool DataFile::validate( QString extension )
 		}
 		break;
 	case Type::InstrumentTrackSettings:
-		if ( extension == "xpf" || extension == "xml" )
+		if ( extension == "xpf" || extension == "xml" || extension == "lv2" )
 		{
 			return true;
 		}
@@ -263,9 +282,6 @@ bool DataFile::validate( QString extension )
 				( extension == "xiz" && ! pluginFactory->pluginSupportingExtension(extension).isNull()) ||
 				extension == "sf2" || extension == "sf3" || extension == "pat" || extension == "mid" ||
 				extension == "dll"
-#ifdef LMMS_HAVE_LV2
-				|| extension == "lv2"
-#endif
 				) )
 		{
 			return true;
@@ -330,7 +346,7 @@ QString DataFile::nameWithExtension( const QString & _fn ) const
 
 void DataFile::write( QTextStream & _strm )
 {
-	Q_ASSERT( type() != SongProjectDir && type() != Lv2PresetDir );
+	Q_ASSERT( type() != SongProjectDir && type() != Lv2PresetDir ); // unsupported yet
 	if( type() == SongProject || type() == SongProjectTemplate
 					|| type() == InstrumentTrackSettings )
 	{
@@ -347,8 +363,7 @@ bool DataFile::writeFile( const QString& filename )
 {
 	if(m_type == SongProjectDir || m_type == Lv2PresetDir)
 	{
-		auto deviceErr = [&](const char* caption, const char* err,
-			const QString& file) {
+		auto deviceErr = [&filename](const char* caption, const char* err) {
 				QMessageBox::critical( nullptr,
 				SongEditor::tr(caption),
 				SongEditor::tr(err).arg(filename));
@@ -357,7 +372,7 @@ bool DataFile::writeFile( const QString& filename )
 		if(dir.exists())
 		{
 			deviceErr("Not overwriting dir",
-				"Will not overwrite %1 for writing", filename);
+				"Will not overwrite %1 for writing");
 			return false;
 		}
 		else
@@ -371,7 +386,7 @@ bool DataFile::writeFile( const QString& filename )
 				if(dom.isNull())
 				{
 					deviceErr("Parse error",
-						"File %1 contains a non-element dom node", filename);
+						"File %1 contains a non-element dom node");
 					return false;
 				}
 				else
@@ -397,7 +412,7 @@ bool DataFile::writeFile( const QString& filename )
 							if(cdata.isNull())
 							{
 								deviceErr("Invalid XML",
-									"file %1 misses a cdata child", subName);
+									"file %1 misses a cdata child");
 							}
 							else
 							{
@@ -410,8 +425,7 @@ bool DataFile::writeFile( const QString& filename )
 								else
 								{
 									deviceErr("Could not write file",
-										"File %1 could not be opened for writing",
-										fullName);
+										"File %1 could not be opened for writing");
 								}
 							}
 						}
@@ -419,7 +433,7 @@ bool DataFile::writeFile( const QString& filename )
 					else
 					{
 						deviceErr("Directory error",
-							"Could not create directory %1", fullName);
+							"Could not create directory %1");
 						return false;
 					}
 				}

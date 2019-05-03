@@ -428,7 +428,7 @@ void FileBrowserTreeWidget::mousePressEvent(QMouseEvent * me )
 				( f->handling() == FileItem::LoadAsPreset ||
 				f->handling() == FileItem::LoadByPlugin ) )
 		{
-			DataFile dataFile( f->fullName() ); // xxx
+			DataFile dataFile( f->fullName() );
 			if( !dataFile.validate( f->extension() ) )
 			{
 				QMessageBox::warning( 0, tr ( "Error" ),
