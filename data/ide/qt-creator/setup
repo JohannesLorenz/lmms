@@ -1,0 +1,40 @@
+#!/bin/bash
+
+die()
+{
+	echo "$@"
+	exit 1
+}
+
+main()
+{
+	[ "${BASH_SOURCE[0]}" ] || die "Variable BASH_SOURCE missing"
+	command -v dirname >/dev/null || die "Function 'dirname' missing"
+	command -v qmake >/dev/null || die "Mising command or alias 'qmake'"
+	local cwd
+	cwd="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+	[ "$cwd" ] || die "Could not find current working dir"
+	cd "$cwd/../../../" || die "Could not change directory"
+	
+	
+	local builddir=$1
+	[ -d "$builddir" ] || die "Please specify a build directory for 1st arg"
+	
+	local settings=()
+	settings+=('QT += core gui widgets xml')
+	settings+=('INCLUDEPATH += include')
+	settings+=("INCLUDEPATH += $builddir $builddir/src")
+	settings+=("DEFINES += LMMS_EXPORT=")
+	
+	[ -d /usr/include/lilv-0 ] && settings+=('INCLUDEPATH += /usr/include/lilv-0')
+	
+	local basename=$(basename $PWD)
+	[ "$basename" ] || die "Can't get basename of $PWD"
+	local profile=$(basename $PWD).pro
+	qmake -project "${settings[@]}" -o $(basename $PWD).pro || die "qmake failure"
+	
+	echo "Created $profile"
+	echo "If you have not already, import code style "
+}
+
+main "$@"
