@@ -47,6 +47,40 @@ Plugin::PluginTypes Lv2ControlBase::check(const LilvPlugin *plugin,
 
 
 
+QString Lv2ControlBase::getPresetUri(QString presetPath)
+{
+	// TODO: move into mgr?
+	QFileInfo info(presetPath);
+	if(info.isFile())
+	{
+		// ok...
+	}
+	else if(info.isDir()) // TODO: change all QDir()... to QFileInfo
+	{
+		if(!presetPath.endsWith('/')) { presetPath += "/"; }
+		presetPath += "testsignal_lv2.ttl"; // TODO
+	}
+	else
+	{
+		// no file or directory? Can't get URI
+		return QString();
+	}
+
+	Lv2Manager* mgr = Engine::getLv2Manager();
+	qDebug() << "PATH:" << presetPath;
+	LilvState* state = lilv_state_new_from_file(mgr->world(),
+						mgr->uridMap().mapFeature(), nullptr,
+						presetPath.toUtf8().data());
+	QString res = state
+			? lilv_node_as_uri(lilv_state_get_plugin_uri(state))
+			: QString();
+	lilv_state_free(state);
+	return res;
+}
+
+
+
+
 Lv2ControlBase::Lv2ControlBase(Model* that, const QString &uri) :
 	m_plugin(Engine::getLv2Manager()->getPlugin(uri))
 {
@@ -157,9 +191,8 @@ void Lv2ControlBase::run(unsigned frames) {
 
 void Lv2ControlBase::saveSettings(QDomDocument &doc, QDomElement &that)
 {
-	// TODO
-	(void)doc;
-	(void)that;
+	LinkedModelGroups::saveSettings(doc, that);
+	// TODO: save state
 }
 
 
@@ -167,7 +200,8 @@ void Lv2ControlBase::saveSettings(QDomDocument &doc, QDomElement &that)
 
 void Lv2ControlBase::loadSettings(const QDomElement &that)
 {
-	(void)that;
+	LinkedModelGroups::loadSettings(that);
+	// TODO: save state
 }
 
 

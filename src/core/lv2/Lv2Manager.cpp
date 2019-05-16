@@ -83,6 +83,24 @@ const LilvPlugin *Lv2Manager::getPlugin(const QString uri)
 
 
 
+const Lv2Manager::Lv2Info *Lv2Manager::getPluginInfo(const std::string &uri)
+{
+	auto itr = m_lv2InfoMap.find(uri);
+	return itr == m_lv2InfoMap.end() ? nullptr : &itr->second;
+}
+
+
+
+
+const Lv2Manager::Lv2Info *Lv2Manager::getPluginInfo(const QString uri)
+{
+	auto itr = m_lv2InfoMap.find(uri.toUtf8().data());
+	return itr == m_lv2InfoMap.end() ? nullptr : &itr->second;
+}
+
+
+
+
 void Lv2Manager::initPlugins()
 {
 	const LilvPlugins* plugins = lilv_world_get_all_plugins(m_world);

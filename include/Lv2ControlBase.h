@@ -73,6 +73,10 @@ public:
 	static Plugin::PluginTypes check(const LilvPlugin* m_plugin,
 		std::vector<PluginIssue> &issues, bool printIssues = false);
 
+	//! @param presetPath lv2 preset directory (ends on ".lv2") or
+	//!   manifest.ttl file
+	static QString getPresetUri(QString presetPath);
+
 	const LilvPlugin* getPlugin() const { return m_plugin; }
 
 	bool hasGui() const { return m_hasGUI; }

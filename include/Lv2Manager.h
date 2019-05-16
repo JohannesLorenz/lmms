@@ -102,6 +102,16 @@ public:
 		Plugin::PluginTypes type() const { return m_type; }
 		bool isValid() const { return m_valid; }
 
+		static const char* pluginForPluginType(const Plugin::PluginTypes& pt)
+		{
+			switch(pt)
+			{
+				case Plugin::PluginTypes::Effect: return "lv2effect";
+				case Plugin::PluginTypes::Instrument: return "lv2instrument";
+				default: return nullptr;
+			}
+		}
+
 	private:
 		const LilvPlugin* m_plugin;
 		Plugin::PluginTypes m_type;
@@ -112,6 +122,11 @@ public:
 	const LilvPlugin *getPlugin(const std::string &uri);
 	//! Return descriptor with URI @p uri or nullptr if none exists
 	const LilvPlugin *getPlugin(const QString uri);
+
+	//! Return plugin info for URI @p uri or nullptr if none exists
+	const Lv2Info* getPluginInfo(const std::string &uri);
+	//! Return plugin info for URI @p uri or nullptr if none exists
+	const Lv2Info* getPluginInfo(const QString uri);
 
 	using Iterator = std::map<std::string, Lv2Info>::iterator;
 	Iterator begin() { return Iterator(m_lv2InfoMap.begin()); }

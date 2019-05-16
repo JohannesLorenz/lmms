@@ -233,7 +233,6 @@ void FileBrowser::addItems(const QString & path )
 	{
 		QString cur_file = *it;
 		QString ext = QFileInfo(cur_file).suffix();
-		qDebug() << "EXT" << cur_file << ext;
 		if( cur_file[0] != '.' &&
 			strcmp( QFileInfo(cur_file).suffix().toUtf8().data(), "lv2") )
 		{

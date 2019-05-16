@@ -40,6 +40,8 @@
 #include "Effect.h"
 #include "embed.h"
 #include "GuiApplication.h"
+#include "Lv2ControlBase.h" // TODO: remove?
+#include "Lv2Manager.h"
 #include "LocaleHelper.h"
 #include "PluginFactory.h"
 #include "ProjectVersion.h"
@@ -64,8 +66,8 @@ DataFile::typeDescStruct
 	{ DataFile::ClipboardData, "clipboard-data" },
 	{ DataFile::JournalData, "journaldata" },
 	{ DataFile::EffectSettings, "effectsettings" },
-	{ DataFile::Lv2PresetDir, "lv2-presets-dir" },
-	{ DataFile::SongProjectDir, "song-project-dir" }
+	{ DataFile::Lv2PresetDir, "lv2-presets-dir" }, // TODO: remove?
+	{ DataFile::SongProjectDir, "song-project-dir" } // TODO: remove?
 } ;
 
 
@@ -111,40 +113,74 @@ DataFile::DataFile( const QString & _fileName ) :
 	QDir inDir( _fileName );
 	if( inDir.exists() )
 	{
-		qDebug() << "DNN" << _fileName;
+		enum class DirTypes
+		{
+			Mmp,
+			Lv2,
+			Unknown
+		} dirType = DirTypes::Unknown;
+		// TODO: remove unknown dir types from header
 
-		m_type = UnknownType;
 		if( _fileName.endsWith(".lv2") )
 		{
 			// hopefully this isn't a plugin :-X
-			m_type = Lv2PresetDir;
+			dirType = DirTypes::Lv2;
 		}
 		else if(_fileName.endsWith(".mmpd"))
 		{
 			// mmp directory
-			m_type = SongProjectDir;
+			dirType = DirTypes::Unknown;
 		}
 
-		if(m_type != UnknownType)
+		// LMMS should have hidden this in the file browser, so assert now
+		Q_ASSERT(dirType != DirTypes::Unknown);
+
 		{
 			m_type = InstrumentTrackSettings;
 
 			initEmpty();
 
+			// the node where the directory's files will be appended, bit by bit
+			QDomElement baseNode;
+			if(dirType == DirTypes::Lv2)
+			{
+				const QString uri =
+					Lv2ControlBase::getPresetUri(inDir.absolutePath());
+				if(uri.isNull())
+				{
+					Q_ASSERT(false); /* TODO: messagebox, abort? */
+				}
+				qDebug() << "preset URI: " << uri;
+				const Lv2Manager::Lv2Info* info = Engine::getLv2Manager()->getPluginInfo(uri);
+				Q_ASSERT(info);
+				const Plugin::PluginTypes type = info->type();
+				const char* pluginLibName = Lv2Manager::Lv2Info::pluginForPluginType(type);
+				Q_ASSERT(pluginLibName);
 
-			//QDomElement root = documentElement();
+				// TODO: move all this down
+				// TODO: get these strings from elsewhere (classes)
+				QDomElement instrumentTrack = createElement("instrumenttrack");
+				QDomElement instrument = createElement("instrument");
+				instrument.setAttribute("name", QString::fromUtf8(pluginLibName));
+				QDomElement key = createElement("key");
+				QDomElement attribute = createElement("attribute");
+				attribute.setAttribute("name", "uri");
+				attribute.setAttribute("value", uri);
 
-			//m_head = root.elementsByTagName( "head" ).item( 0 ).toElement();
+				key.appendChild(attribute);
+				instrument.appendChild(key);
+				instrumentTrack.appendChild(instrument);
+				m_content.appendChild(instrumentTrack);
 
-			//root.appendChild(m_head);
-			//QDomElement instrumentTrackSettings = createElement("instrumenttracksettings");
-			QDomElement instrumentTrack = createElement("instrumenttrack");
-			QDomElement instrument = createElement("instrument");
+				baseNode = instrument;
+			}
+			else
+			{
+				baseNode = createElement("song"); // TODO: again: "song"
+				m_content.appendChild(baseNode);
+			}
 
-			instrumentTrack.appendChild(instrument);
-			//instrumentTrackSettings.appendChild(instrumentTrack);
-			m_content.appendChild(instrumentTrack);
-
+			// append all files of dir into XML
 			QDirIterator it(inDir.absolutePath(),
 				QDir::Files, QDirIterator::Subdirectories);
 			while (it.hasNext())
@@ -152,30 +188,35 @@ DataFile::DataFile( const QString & _fileName ) :
 				// these files must not be of XML type, and even if, they
 				// may not be compatible with Qt, so read all as cdata
 
+				// TODO: but accept LMMS files, they are safe
+
 				const QString subName = it.fileName();
 				if(subName.isEmpty())
 				{
 					it.next();
 					continue;
+				} // TODO: make if-else and the next into separate function?
+
+				bool readAsUtf8 = false;
+				{
+					QVector<QString> utf8Extensions;
+					auto add = [&utf8Extensions](const char* ext) {
+						utf8Extensions.push_back(QString::fromUtf8(ext));
+					};
+					add(".txt"); add(".ttl"); add(".md"); add(".mmp");
+					// don't add xml/html yet, they might contain conflicting elements
+					// TODO: check that the file does not contain the CDATA end tag
+
+					for(const QString& ext : utf8Extensions)
+					{
+						if(subName.endsWith(ext) ) { readAsUtf8 = true; break; }
+					}
 				}
 
-				QVector<QString> utf8Extensions;
-				auto add = [&utf8Extensions](const char* ext) {
-					utf8Extensions.push_back(QString::fromUtf8(ext));
-				};
-				add(".txt"); add(".ttl"); add(".md"); add(".mmp");
-				// don't add xml/html yet, they might contain conflicting elements
-				// TODO: check for cdata end
-				bool readAsUtf8 = false;
-				for(const QString& ext : utf8Extensions)
-				{
-					if(subName.endsWith(ext) ) { readAsUtf8 = true; break; }
-				}
 				bool isSaveFile = subName.endsWith(".mmp") ||
 					subName.endsWith(".mmpz");
 				QFile inFile(it.filePath());
 
-				qDebug() << "FNN" << _fileName << subName << inFile.fileName();
 				if( inFile.open( QIODevice::ReadOnly ) )
 				{
 					const QByteArray content = inFile.readAll();
@@ -184,7 +225,7 @@ DataFile::DataFile( const QString & _fileName ) :
 						readAsUtf8 ? "utf-8" : "binary";
 					fileRoot.setAttribute("path", subName);
 					fileRoot.setAttribute("type", QString::fromUtf8(type));
-					instrument.appendChild(fileRoot);
+					baseNode.appendChild(fileRoot);
 					if(isSaveFile)
 					{
 						// TODO: validate?
@@ -207,7 +248,6 @@ DataFile::DataFile( const QString & _fileName ) :
 				}
 				it.next(); // TODO: for loop?
 			}
-			qDebug() << "context at leaving:" << toString();
 		}
 	}
 	else
