@@ -110,6 +110,8 @@ public:
 		load/save
 	*/
 	void loadFile(const QString& fname);
+	void saveState(QDomDocument& doc, QDomElement& that);
+	void loadState(const QDomElement& that);
 
 	/*
 		misc

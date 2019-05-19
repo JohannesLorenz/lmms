@@ -192,7 +192,10 @@ void Lv2ControlBase::run(unsigned frames) {
 void Lv2ControlBase::saveSettings(QDomDocument &doc, QDomElement &that)
 {
 	LinkedModelGroups::saveSettings(doc, that);
-	// TODO: save state
+	for(const std::unique_ptr<Lv2Proc>& proc : m_procs)
+	{
+		proc->saveState(doc, that);
+	}
 }
 
 
@@ -201,7 +204,10 @@ void Lv2ControlBase::saveSettings(QDomDocument &doc, QDomElement &that)
 void Lv2ControlBase::loadSettings(const QDomElement &that)
 {
 	LinkedModelGroups::loadSettings(that);
-	// TODO: save state
+	for(std::unique_ptr<Lv2Proc>& proc : m_procs)
+	{
+		proc->loadState(that);
+	}
 }
 
 
