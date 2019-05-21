@@ -300,36 +300,30 @@ void Lv2Proc::loadFile(const QString &fname)
 void Lv2Proc::saveState(QDomDocument &doc, QDomElement &that)
 {
 	Lv2Manager* man = Engine::getLv2Manager();
+	LV2_URID_Map* map = man->uridMap().mapFeature();
+	LilvState* state = lilv_state_new_from_instance(m_plugin, m_instance, map,
+		nullptr /* we don't support makePath yet */,
+		nullptr /* we don't support makePath yet */,
+		nullptr /* we don't link files (currently), but put them into XML */,
+		nullptr /* we don't save to file, but to string */,
+		nullptr /* we save input control ports separately */, nullptr,
+		0 /* not sure, really */,
+		nullptr /* No further features supported, currently */);
 
-	if(lilv_plugin_has_extension_data(m_plugin,
-		AutoLilvNode(lilv_new_uri(man->world(), LV2_STATE__interface)).get()))
-	{
-		Lv2Manager* man = Engine::getLv2Manager();
-		LV2_URID_Map* map = man->uridMap().mapFeature();
-		LilvState* state = lilv_state_new_from_instance(m_plugin, m_instance, map,
-			nullptr /* we don't support makePath yet */,
-			nullptr /* we don't support makePath yet */,
-			nullptr /* we don't link files (currently), but put them into XML */,
-			nullptr /* we don't save to file, but to string */,
-			nullptr /* we save input control ports separately */, nullptr,
-			0 /* not sure, really */,
-			nullptr /* No further features supported, currently */);
+	char* str =
+		lilv_state_to_string(man->world(), map, man->uridMap().unmapFeature(), state,
+		"urn:lmms:nonexistent", nullptr);
 
-		char* str =
-			lilv_state_to_string(man->world(), map, man->uridMap().unmapFeature(), state,
-			"urn:lmms:nonexistent", nullptr);
+	QDomCDATASection cdata = doc.createCDATASection(QString::fromUtf8(str));
 
-		QDomCDATASection cdata = doc.createCDATASection(QString::fromUtf8(str));
+	free(str);
+	lilv_state_free(state);
 
-		free(str);
-		lilv_state_free(state);
-
-		char stateElName[] = "state0";
-		stateElName[5] += static_cast<char>(curProc());
-		QDomElement stateEl = doc.createElement(stateElName);
-		that.appendChild(stateEl);
-		stateEl.appendChild(cdata);
-	}
+	char stateElName[] = "state0";
+	stateElName[5] += static_cast<char>(curProc());
+	QDomElement stateEl = doc.createElement(stateElName);
+	that.appendChild(stateEl);
+	stateEl.appendChild(cdata);
 }
 
 
@@ -337,37 +331,31 @@ void Lv2Proc::saveState(QDomDocument &doc, QDomElement &that)
 
 void Lv2Proc::loadState(const QDomElement &that)
 {
-	Lv2Manager* man = Engine::getLv2Manager();
+	char stateElName[] = "state0";
+	stateElName[5] += static_cast<char>(curProc());
+	QDomElement stateEl = that.firstChildElement(stateElName);
 
-	if(lilv_plugin_has_extension_data(m_plugin,
-		AutoLilvNode(lilv_new_uri(man->world(), LV2_STATE__interface)).get()))
+	if(!stateEl.isNull())
 	{
-		char stateElName[] = "state0";
-		stateElName[5] += static_cast<char>(curProc());
-		QDomElement stateEl = that.firstChildElement(stateElName);
-
-		if(!stateEl.isNull())
+		for(QDomNode node = stateEl.firstChild(); !node.isNull();
+			node = node.nextSibling())
 		{
-			for(QDomNode node = stateEl.firstChild(); !node.isNull();
-				node = node.nextSibling())
+			QDomCDATASection cdata = node.toCDATASection();
+			if(!cdata.isNull())
 			{
-				QDomCDATASection cdata = node.toCDATASection();
-				if(!cdata.isNull())
-				{
-					Lv2Manager* man = Engine::getLv2Manager();
-					LilvState* state = lilv_state_new_from_string(man->world(),
-						man->uridMap().mapFeature(),
-						cdata.data().toUtf8().data());
+				Lv2Manager* man = Engine::getLv2Manager();
+				LilvState* state = lilv_state_new_from_string(man->world(),
+					man->uridMap().mapFeature(),
+					cdata.data().toUtf8().data());
 
-					lilv_state_restore(state, m_instance,
-						nullptr /* ports are stored in XML, not in state */, nullptr,
-						LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE /* we don't store any pointers/paths/etc */,
-						nullptr /* currently no features */);
+				lilv_state_restore(state, m_instance,
+					nullptr /* ports are stored in XML, not in state */, nullptr,
+					LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE /* we don't store any pointers/paths/etc */,
+					nullptr /* currently no features */);
 
-					lilv_state_free(state);
+				lilv_state_free(state);
 
-					break;
-				}
+				break;
 			}
 		}
 	}

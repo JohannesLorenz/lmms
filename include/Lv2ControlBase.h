@@ -134,6 +134,8 @@ private:
 	//! Inform the plugin about a file name change
 	virtual void setNameFromFile(const QString &fname) = 0;
 
+	bool hasStateExtension() const;
+
 	//! Independent processors
 	//! If this is a mono effect, the vector will have size 2 in order to
 	//! fulfill LMMS' requirement of having stereo input and output

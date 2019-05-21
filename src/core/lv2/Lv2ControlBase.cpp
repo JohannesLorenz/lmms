@@ -28,6 +28,7 @@
 
 #include <QtGlobal>
 #include <QDir>
+#include <lv2/state/state.h>
 
 #include "AutomatableModel.h"
 #include "Engine.h"
@@ -192,9 +193,15 @@ void Lv2ControlBase::run(unsigned frames) {
 void Lv2ControlBase::saveSettings(QDomDocument &doc, QDomElement &that)
 {
 	LinkedModelGroups::saveSettings(doc, that);
-	for(const std::unique_ptr<Lv2Proc>& proc : m_procs)
+
+	if(hasStateExtension())
 	{
-		proc->saveState(doc, that);
+		QDomElement states = doc.createElement("states");
+		that.appendChild(states);
+		for(const std::unique_ptr<Lv2Proc>& proc : m_procs)
+		{
+			proc->saveState(doc, states);
+		}
 	}
 }
 
@@ -204,9 +211,16 @@ void Lv2ControlBase::saveSettings(QDomDocument &doc, QDomElement &that)
 void Lv2ControlBase::loadSettings(const QDomElement &that)
 {
 	LinkedModelGroups::loadSettings(that);
-	for(std::unique_ptr<Lv2Proc>& proc : m_procs)
+	if(hasStateExtension())
 	{
-		proc->loadState(that);
+		QDomElement states = that.firstChildElement("states");
+		if(!states.isNull())
+		{
+			for(std::unique_ptr<Lv2Proc>& proc : m_procs)
+			{
+				proc->loadState(states);
+			}
+		}
 	}
 }
 
@@ -292,6 +306,14 @@ std::size_t Lv2ControlBase::controlCount() const {
 }
 
 
+
+
+bool Lv2ControlBase::hasStateExtension() const
+{
+	return lilv_plugin_has_extension_data(m_plugin,
+		AutoLilvNode(lilv_new_uri(Engine::getLv2Manager()->world(),
+					LV2_STATE__interface)).get());
+}
 
 
 #endif // LMMS_HAVE_LV2
