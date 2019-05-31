@@ -51,14 +51,14 @@
 
 Lv2ViewProc::Lv2ViewProc(QWidget* parent, Lv2Proc* ctrlBase,
 	int colNum, int nProc, const QString& name) :
-	LinkedModelGroupViewBase (parent, ctrlBase, colNum, nProc, name)
+	LinkedModelGroupView (parent, ctrlBase, colNum, nProc, name)
 {
 	class SetupWidget : public Lv2Ports::Visitor
 	{
 	public:
 		QWidget* m_par; // input
 		const AutoLilvNode* m_commentUri; // input
-		ControlBase* m_control = nullptr; // output
+		Control* m_control = nullptr; // output
 		void visit(Lv2Ports::Control& port) override
 		{
 			if (port.m_flow == Lv2Ports::Flow::Input)
@@ -125,12 +125,11 @@ AutoLilvNode Lv2ViewProc::uri(const char *uriStr)
 
 
 Lv2ViewBase::Lv2ViewBase(QWidget* meAsWidget, Lv2ControlBase *ctrlBase)
-	: LinkedModelGroupsViewBase (ctrlBase)
+	: LinkedModelGroupsView (ctrlBase)
 {
 	QGridLayout* grid = new QGridLayout(meAsWidget);
 
 	QHBoxLayout* btnBox = new QHBoxLayout();
-	grid->addLayout(btnBox, Rows::ButtonRow, 0, 1, m_colNum);
 	if (/* DISABLES CODE */ (false))
 	{
 		m_reloadPluginButton = new QPushButton(QObject::tr("Reload Plugin"),
@@ -182,6 +181,11 @@ Lv2ViewBase::Lv2ViewBase(QWidget* meAsWidget, Lv2ControlBase *ctrlBase)
 	}
 	lilv_nodes_free(props);
 
+	if(m_reloadPluginButton || m_toggleUIButton || m_helpButton)
+	{
+		grid->addLayout(btnBox, Rows::ButtonRow, 0, 1, m_colNum);
+	}
+
 	int nProcs = static_cast<int>(ctrlBase->controls().size());
 	Q_ASSERT(m_colNum % nProcs == 0);
 	int colsEach = m_colNum / nProcs;
@@ -196,7 +200,9 @@ Lv2ViewBase::Lv2ViewBase(QWidget* meAsWidget, Lv2ControlBase *ctrlBase)
 
 	LedCheckBox* led = globalLinkLed();
 	if (led)
+	{
 		grid->addWidget(led, Rows::LinkChannelsRow, 0, 1, m_colNum);
+	}
 }
 
 
@@ -229,7 +235,7 @@ void Lv2ViewBase::modelChanged(Lv2ControlBase *ctrlBase)
 		m_toggleUIButton->setChecked(ctrlBase->hasGui());
 	}
 
-	LinkedModelGroupsViewBase::modelChanged(ctrlBase);
+	LinkedModelGroupsView::modelChanged(ctrlBase);
 }
 
 

@@ -24,6 +24,9 @@
 
 #include "LinkedModelGroups.h"
 
+#include <QDomDocument>
+#include <QDomElement>
+
 #include "AutomatableModel.h"
 
 
@@ -61,7 +64,8 @@ void LinkedModelGroup::linkControls(LinkedModelGroup *other, int id)
 {
 	Q_ASSERT(id >= 0);
 	std::size_t id2 = static_cast<std::size_t>(id);
-	AutomatableModel::linkModels(m_models[id2], other->m_models[id2]);
+	AutomatableModel::linkModels(
+		m_models[id2].m_model, other->m_models[id2].m_model);
 }
 
 
@@ -72,7 +76,103 @@ void LinkedModelGroup::unlinkControls(LinkedModelGroup *other, int id)
 	Q_ASSERT(id >= 0);
 	std::size_t id2 = static_cast<std::size_t>(id);
 	AutomatableModel::unlinkModels(
-		m_models[id2], other->m_models[id2]);
+		m_models[id2].m_model, other->m_models[id2].m_model);
+}
+
+
+
+
+void LinkedModelGroup::saveValues(QDomDocument &doc, QDomElement &that,
+	const LinkedModelGroup *lmg0)
+{
+	Q_ASSERT(lmg0->isLinking());
+	for (const ModelInfo& minf : m_models)
+	{
+		std::size_t idx = 0;
+		if (this == lmg0) { idx = lmg0->models().size(); } // force saving
+		else
+		{
+			for (; idx < lmg0->models().size(); ++idx)
+			{
+				if (lmg0->models()[idx].m_name == minf.m_name)
+				{
+					break;
+				}
+			}
+		}
+		if (idx < lmg0->models().size() &&
+			lmg0->linkEnabledModel(idx)->value())
+		{
+			// link is enabled => nothing to save
+		}
+		else
+		{
+			minf.m_model->saveSettings(doc, that, minf.m_name);
+		}
+	}
+}
+
+
+
+
+void LinkedModelGroup::saveLinksEnabled(QDomDocument &doc, QDomElement &that)
+{
+	if (m_linkEnabled.size())
+	{
+		std::size_t count = 0;
+		for (BoolModel* bmo : m_linkEnabled)
+		{
+			bmo->saveSettings(doc, that, m_models[count++].m_name);
+		}
+	}
+}
+
+
+
+
+void LinkedModelGroup::loadValues(const QDomElement &that,
+	const LinkedModelGroup* lmg0)
+{
+	for (ModelInfo& minf : m_models)
+	{
+		std::size_t idx = 0;
+		if (this == lmg0) { idx = lmg0->models().size(); } // force loading
+		else
+		{
+			for (; idx < lmg0->models().size(); ++idx)
+			{
+				if (lmg0->models()[idx].m_name == minf.m_name)
+				{
+					break;
+				}
+			}
+		}
+		if (idx < lmg0->models().size() &&
+			lmg0->linkEnabledModel(idx)->value())
+		{
+			// link is enabled => it will load automatically
+		}
+		else
+		{
+			// try to load, if it fails, this will load a sane initial value
+			minf.m_model->loadSettings(that, minf.m_name);
+		}
+	}
+}
+
+
+
+
+void LinkedModelGroup::loadLinksEnabled(const QDomElement &that)
+{
+	if (m_linkEnabled.size())
+	{
+		std::size_t count = 0;
+		for (BoolModel* bmo : m_linkEnabled)
+		{
+			bmo->loadSettings(that, m_models[count++].m_name);
+		}
+	}
 }
 
 
@@ -97,8 +197,10 @@ void LinkedModelGroup::linkStateChangedSlot()
 
 
 
-void LinkedModelGroup::addModel(AutomatableModel *model) {
-	m_models.push_back(model); }
+void LinkedModelGroup::addModel(AutomatableModel *model, const QString &name)
+{
+	m_models.emplace_back(name, model);
+}
 
 
 
@@ -115,7 +217,8 @@ LinkedModelGroups::~LinkedModelGroups() {}
 
 
 
-void LinkedModelGroups::createMultiChannelLinkModel() {
+void LinkedModelGroups::createMultiChannelLinkModel()
+{
 	m_multiChannelLinkModel.reset(new BoolModel(true, nullptr));
 }
 
@@ -164,11 +267,93 @@ void LinkedModelGroups::updateLinkStatesFromGlobal()
 		first->linkAllModels(false);
 	}
 
-	// if global channel link state has changed, always ignore link
-	// status of individual ports in the future
 	m_noLink = false;
 }
 
 
+
+
+void LinkedModelGroups::saveSettings(QDomDocument& doc, QDomElement& that)
+{
+	if (getGroup(0))
+	{
+		bool allLinked = false;
+		if (m_multiChannelLinkModel)
+		{
+			m_multiChannelLinkModel->saveSettings(doc, that, "link");
+			allLinked = m_multiChannelLinkModel->value();
+		}
+
+		if(!allLinked && getGroup(1))
+		{
+			QDomElement links = doc.createElement("links");
+			getGroup(0)->saveLinksEnabled(doc, links);
+			that.appendChild(links);
+		}
+
+		QDomElement models = doc.createElement("models");
+		that.appendChild(models);
+
+		char chanName[] = "chan0";
+		for (char* chanPtr = chanName + 4; *chanPtr >= '0'; ++*chanPtr)
+		{
+			LinkedModelGroup* lmg = getGroup(static_cast<std::size_t>(
+												*chanPtr - '0'));
+			if (lmg)
+			{
+				QDomElement channel = doc.createElement(
+										QString::fromUtf8(chanName));
+				models.appendChild(channel);
+				lmg->saveValues(doc, channel, getGroup(0));
+			}
+			else { *chanPtr = 0; } // end reached
+
+			// if all models are linked, stop after first group
+			if (allLinked) { *chanPtr = 0; }
+		}
+	}
+	else { /* don't even add a "models" node */ }
+}
+
+
+
+
+void LinkedModelGroups::loadSettings(const QDomElement& that)
+{
+	QDomElement models = that.firstChildElement("models");
+	if (!models.isNull() && getGroup(0))
+	{
+		bool allLinked = false;
+		if (m_multiChannelLinkModel)
+		{
+			m_multiChannelLinkModel->loadSettings(that, "link");
+			allLinked = m_multiChannelLinkModel->value();
+		}
+
+		if (!allLinked && getGroup(1))
+		{
+			QDomElement links = that.firstChildElement("links");
+			if(!links.isNull()) { getGroup(0)->loadLinksEnabled(links); }
+		}
+
+		QDomElement lastChan;
+		char chanName[] = "chan0";
+		for (char* chanPtr = chanName + 4; *chanPtr >= '0'; ++*chanPtr)
+		{
+			LinkedModelGroup* lmg = getGroup(static_cast<std::size_t>(
+												*chanPtr - '0'));
+			if (lmg)
+			{
+				QDomElement chan = models.firstChildElement(chanName);
+				if (!chan.isNull()) { lastChan = chan; }
+				lmg->loadValues(lastChan, getGroup(0));
+			}
+			else { *chanPtr = 0; } // end reached
+
+			// if all models are linked, stop after first group
+			if (allLinked) { *chanPtr = 0; }
+		}
+	}
+}
 
 
