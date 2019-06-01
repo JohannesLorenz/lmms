@@ -27,6 +27,8 @@
 #ifdef LMMS_HAVE_LV2
 
 #include <cmath>
+#include <lv2/midi/midi.h>
+#include <lv2/atom/atom.h>
 
 #include "AutomatableModel.h"
 #include "ComboBoxModel.h"
@@ -371,6 +373,20 @@ void Lv2Proc::createPort(unsigned portNum)
 					portIsSideChain(m_plugin, lilvPort)
 				);
 		port = audio;
+	} else if (meta.m_type == Lv2Ports::Type::AtomSeq) {
+
+		AutoLilvNode uriAtomSupports(Engine::getLv2Manager()->uri(LV2_ATOM__supports));
+		AutoLilvNodes atomSupports(lilv_port_get_value(m_plugin, lilvPort, uriAtomSupports.get()));
+		AutoLilvNode uriMidiEvent(Engine::getLv2Manager()->uri(LV2_MIDI__MidiEvent));
+
+		if(lilv_nodes_contains(atomSupports.get(), uriMidiEvent.get()))
+		{
+
+		}
+
+		Lv2Ports::AtomSeq* atomSeq =
+			new Lv2Ports::AtomSeq;
+		port = atomSeq;
 	} else {
 		port = new Lv2Ports::Unknown;
 	}

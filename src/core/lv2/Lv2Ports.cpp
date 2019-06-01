@@ -27,6 +27,8 @@
 
 #ifdef LMMS_HAVE_LV2
 
+#include <lv2/atom/atom.h>
+
 #include "Engine.h"
 #include "Lv2Basics.h"
 #include "Lv2Manager.h"
@@ -59,6 +61,7 @@ const char *toStr(Type pt)
 		case Type::Audio: return "audio";
 		case Type::Event: return "event";
 		case Type::Cv: return "cv";
+		case Type::AtomSeq: return "atom-sequence";
 	}
 	return "";
 }
@@ -168,6 +171,20 @@ std::vector<PluginIssue> Meta::get(const LilvPlugin *plugin,
 	else if (isA(LV2_CORE__CVPort)) {
 		issue(badPortType, "cvPort");
 		m_type = Type::Cv;
+	} else if (isA(LV2_ATOM__AtomPort)) {
+		AutoLilvNode uriAtomSequence(Engine::getLv2Manager()->uri(LV2_ATOM__Sequence));
+		AutoLilvNode uriAtomBufferType(Engine::getLv2Manager()->uri(LV2_ATOM__bufferType));
+		AutoLilvNodes bufferTypes(lilv_port_get_value(plugin, lilvPort, uriAtomBufferType.get()));
+
+		if (lilv_nodes_contains(bufferTypes.get(), uriAtomSequence.get()))
+		{
+			m_type = Type::AtomSeq;
+		}
+		else
+		{
+			// for atom ports, we only support "Sequence"
+			m_type = Type::Unknown;
+		}
 	} else {
 		if (m_optional) { m_used = false; }
 		else {

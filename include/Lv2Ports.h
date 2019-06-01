@@ -54,7 +54,8 @@ enum class Type {
 	Control,
 	Audio,
 	Event, //!< TODO: unused, describe
-	Cv //!< TODO: unused, describe
+	Cv, //!< TODO: unused, describe
+	AtomSeq
 };
 
 //! Port visualization
@@ -74,6 +75,7 @@ struct ControlPortBase;
 struct Control;
 struct Audio;
 struct Cv;
+struct AtomSeq;
 struct Unknown;
 
 struct ConstVisitor
@@ -85,6 +87,7 @@ virtual void visit(const Lv2Ports::clss& ) {}
 	CAN_VISIT(Control)
 	CAN_VISIT(Audio)
 	CAN_VISIT(Cv)
+	CAN_VISIT(AtomSeq)
 	CAN_VISIT(Unknown)
 	virtual ~ConstVisitor();
 #undef CAN_VISIT
@@ -99,6 +102,7 @@ virtual void visit(Lv2Ports::clss& ) {}
 	CAN_VISIT(Control)
 	CAN_VISIT(Audio)
 	CAN_VISIT(Cv)
+	CAN_VISIT(AtomSeq)
 	CAN_VISIT(Unknown)
 	virtual ~Visitor();
 #undef CAN_VISIT
@@ -194,6 +198,18 @@ private:
 
 	// the only case when data of m_buffer may be referenced:
 	friend struct ::ConnectPorts;
+};
+
+struct AtomSeq : public PortBase
+{
+};
+
+struct AtomSeqMidiEvent : public AtomSeq
+{
+};
+
+struct AtomSeqTimePosition : public AtomSeq
+{
 };
 
 struct Unknown : public PortBase
