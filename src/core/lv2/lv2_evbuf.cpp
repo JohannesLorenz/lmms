@@ -14,9 +14,9 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include <assert.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cassert>
+#include <cstring>
+#include <cstdlib>
 
 #include "lv2/lv2plug.in/ns/ext/atom/atom.h"
 #include "lv2/lv2plug.in/ns/ext/event/event.h"
@@ -28,6 +28,8 @@ struct LV2_Evbuf_Impl {
 	uint32_t       atom_Chunk;
 	uint32_t       atom_Sequence;
 	LV2_Atom_Sequence atom;
+	// TODO: rewrite to class, add members for atom sequence and
+	// vector of size "capacity bytes" (see malloc below)
 };
 
 static inline uint32_t
@@ -38,8 +40,8 @@ lv2_evbuf_pad_size(uint32_t size)
 
 LV2_Evbuf*
 lv2_evbuf_new(uint32_t       capacity,
-              uint32_t       atom_Chunk,
-              uint32_t       atom_Sequence)
+	      uint32_t       atom_Chunk,
+	      uint32_t       atom_Sequence)
 {
 	// FIXME: memory must be 64-bit aligned
 	LV2_Evbuf* evbuf = (LV2_Evbuf*)malloc(

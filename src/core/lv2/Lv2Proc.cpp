@@ -29,12 +29,15 @@
 #include <cmath>
 #include <lv2/midi/midi.h>
 #include <lv2/atom/atom.h>
+#include <lv2/resize-port/resize-port.h>
+#include <lv2/time/time.h>
 
 #include "AutomatableModel.h"
 #include "ComboBoxModel.h"
 #include "Engine.h"
 #include "Lv2Manager.h"
 #include "Lv2Ports.h"
+#include "lv2_evbuf.h"
 #include "Mixer.h"
 
 
@@ -153,6 +156,8 @@ void Lv2Proc::copyModelsFromCore()
 
 	struct Copy : public Lv2Ports::Visitor
 	{
+		Lv2Proc* proc;
+		
 		void visit(Lv2Ports::Control& ctrl) override
 		{
 			if (ctrl.m_flow == Lv2Ports::Flow::Input)
@@ -174,7 +179,42 @@ void Lv2Proc::copyModelsFromCore()
 				std::fill(cv.m_buffer.begin(), cv.m_buffer.end(), ffm.m_res);
 			}
 		}
+		void visit(Lv2Ports::AtomSeqTime& time) override
+		{
+			LV2_Evbuf* buf = time.buf.get();
+
+			const UridMap::CachedUrids& urids = Engine::getLv2Manager()->uridMap().cache();
+
+			uint8_t pos_buf[256];
+			lv2_atom_forge_set_buffer(&proc->m_forge, pos_buf, sizeof(pos_buf));
+			LV2_Atom_Forge_Frame frame;
+			lv2_atom_forge_object(&proc->m_forge, &frame, 1, urids.m_timePosition);
+			lv2_atom_forge_property_head(&proc->m_forge, urids.m_timeFrame, 0);
+			lv2_atom_forge_long(&proc->m_forge, position);
+			lv2_atom_forge_property_head(&proc->m_forge, urids.m_timeSpeed, 0);
+			lv2_atom_forge_float(&proc->m_forge, speed);
+			lv2_atom_forge_property_head(&proc->m_forge, urids.m_timeBarBeat, 0);
+			lv2_atom_forge_float(&proc->m_forge, bbt.beats - 1 +
+								 (bbt.ticks / Timecode::BBT_Time::ticks_per_beat));
+			lv2_atom_forge_property_head(&proc->m_forge, urids.m_timeBar, 0);
+			lv2_atom_forge_long(&proc->m_forge, bbt.bars - 1);
+			lv2_atom_forge_property_head(&proc->m_forge, urids.m_timeBeatUnit, 0);
+			lv2_atom_forge_int(&proc->m_forge, t.meter().note_divisor());
+			lv2_atom_forge_property_head(&proc->m_forge, urids.m_timeBeatsPerBar, 0);
+			lv2_atom_forge_float(&proc->m_forge, t.meter().divisions_per_bar());
+			lv2_atom_forge_property_head(&proc->m_forge, urids.m_timeBeatsPerMinute, 0);
+			lv2_atom_forge_float(&proc->m_forge, bpm);
+			lv2_atom_forge_pop(&proc->m_forge, &frame);
+
+			LV2_Evbuf_Iterator    end  = lv2_evbuf_end(buf);
+			const LV2_Atom* const atom = reinterpret_cast<const LV2_Atom*>(pos_buf);
+			return lv2_evbuf_write(&end, 0, 0, atom->type, atom->size,
+								   (const uint8_t*)(atom + 1));
+			
+		}
 	} copy;
+	
+	copy.proc = this;
 
 	for (const std::unique_ptr<Lv2Ports::PortBase>& port : m_ports) {
 		port->accept(copy); }
@@ -250,6 +290,9 @@ void Lv2Proc::initPlugin()
 	m_features.push_back(new LV2_Feature { LV2_URID__map, man->uridMap().mapFeature() });
 	m_features.push_back(new LV2_Feature { LV2_URID__unmap, man->uridMap().unmapFeature() });
 	m_features.push_back(nullptr);
+
+	lv2_atom_forge_init(&proc->m_forge, man->uridMap().mapFeature());
+
 	createPorts();
 
 	m_instance = lilv_plugin_instantiate(m_plugin,
@@ -304,91 +347,120 @@ void Lv2Proc::createPort(unsigned portNum)
 	const LilvPort* lilvPort = lilv_plugin_get_port_by_index(m_plugin,
 								portNum);
 	Lv2Ports::PortBase* port;
-	if (meta.m_type == Lv2Ports::Type::Control)
+
+	switch(meta.m_type)
 	{
-		Lv2Ports::Control* ctrl = new Lv2Ports::Control;
-		if (meta.m_flow == Lv2Ports::Flow::Input)
+		case Lv2Ports::Type::Control:
 		{
-			AutoLilvNode node(lilv_port_get_name(m_plugin, lilvPort));
-			QString dispName = lilv_node_as_string(node.get());
-			switch (meta.m_vis)
+			Lv2Ports::Control* ctrl = new Lv2Ports::Control;
+			if (meta.m_flow == Lv2Ports::Flow::Input)
 			{
-				case Lv2Ports::Vis::None:
+				AutoLilvNode node(lilv_port_get_name(m_plugin, lilvPort));
+				QString dispName = lilv_node_as_string(node.get());
+				switch (meta.m_vis)
 				{
-					// allow ~1000 steps
-					float stepSize = (meta.m_max - meta.m_min) / 1000.0f;
-
-					// make multiples of 0.01 (or 0.1 for larger values)
-					float minStep = (stepSize >= 1.0f) ? 0.1f : 0.01f;
-					stepSize -= fmodf(stepSize, minStep);
-					stepSize = std::max(stepSize, minStep);
-
-					ctrl->m_connectedModel.reset(
-						new FloatModel(meta.m_def, meta.m_min, meta.m_max,
-										stepSize, nullptr, dispName));
-					break;
-				}
-				case Lv2Ports::Vis::Integer:
-					ctrl->m_connectedModel.reset(
-						new IntModel(static_cast<int>(meta.m_def),
-										static_cast<int>(meta.m_min),
-										static_cast<int>(meta.m_max),
-										nullptr, dispName));
-					break;
-				case Lv2Ports::Vis::Enumeration:
-				{
-					ComboBoxModel* comboModel
-						= new ComboBoxModel(
-							nullptr, dispName);
-					LilvScalePoints* sps =
-						lilv_port_get_scale_points(m_plugin, lilvPort);
-					LILV_FOREACH(scale_points, i, sps)
+					case Lv2Ports::Vis::None:
 					{
-						const LilvScalePoint* sp = lilv_scale_points_get(sps, i);
-						ctrl->m_scalePointMap.push_back(lilv_node_as_float(
-										lilv_scale_point_get_value(sp)));
-						comboModel->addItem(
-							lilv_node_as_string(
-								lilv_scale_point_get_label(sp)));
+						// allow ~1000 steps
+						float stepSize = (meta.m_max - meta.m_min) / 1000.0f;
+
+						// make multiples of 0.01 (or 0.1 for larger values)
+						float minStep = (stepSize >= 1.0f) ? 0.1f : 0.01f;
+						stepSize -= fmodf(stepSize, minStep);
+						stepSize = std::max(stepSize, minStep);
+
+						ctrl->m_connectedModel.reset(
+							new FloatModel(meta.m_def, meta.m_min, meta.m_max,
+											stepSize, nullptr, dispName));
+						break;
 					}
-					lilv_scale_points_free(sps);
-					ctrl->m_connectedModel.reset(comboModel);
-					break;
+					case Lv2Ports::Vis::Integer:
+						ctrl->m_connectedModel.reset(
+							new IntModel(static_cast<int>(meta.m_def),
+											static_cast<int>(meta.m_min),
+											static_cast<int>(meta.m_max),
+											nullptr, dispName));
+						break;
+					case Lv2Ports::Vis::Enumeration:
+					{
+						ComboBoxModel* comboModel
+							= new ComboBoxModel(
+								nullptr, dispName);
+						LilvScalePoints* sps =
+							lilv_port_get_scale_points(m_plugin, lilvPort);
+						LILV_FOREACH(scale_points, i, sps)
+						{
+							const LilvScalePoint* sp = lilv_scale_points_get(sps, i);
+							ctrl->m_scalePointMap.push_back(lilv_node_as_float(
+											lilv_scale_point_get_value(sp)));
+							comboModel->addItem(
+								lilv_node_as_string(
+									lilv_scale_point_get_label(sp)));
+						}
+						lilv_scale_points_free(sps);
+						ctrl->m_connectedModel.reset(comboModel);
+						break;
+					}
+					case Lv2Ports::Vis::Toggled:
+						ctrl->m_connectedModel.reset(
+							new BoolModel(static_cast<bool>(meta.m_def),
+											nullptr, dispName));
+						break;
 				}
-				case Lv2Ports::Vis::Toggled:
-					ctrl->m_connectedModel.reset(
-						new BoolModel(static_cast<bool>(meta.m_def),
-										nullptr, dispName));
-					break;
 			}
+			port = ctrl;
+			break;
 		}
-		port = ctrl;
-	}
-	else if (meta.m_type == Lv2Ports::Type::Audio)
-	{
-		Lv2Ports::Audio* audio =
-			new Lv2Ports::Audio(
-					static_cast<std::size_t>(
-						Engine::mixer()->framesPerPeriod()),
-					portIsSideChain(m_plugin, lilvPort)
-				);
-		port = audio;
-	} else if (meta.m_type == Lv2Ports::Type::AtomSeq) {
-
-		AutoLilvNode uriAtomSupports(Engine::getLv2Manager()->uri(LV2_ATOM__supports));
-		AutoLilvNodes atomSupports(lilv_port_get_value(m_plugin, lilvPort, uriAtomSupports.get()));
-		AutoLilvNode uriMidiEvent(Engine::getLv2Manager()->uri(LV2_MIDI__MidiEvent));
-
-		if(lilv_nodes_contains(atomSupports.get(), uriMidiEvent.get()))
+		case Lv2Ports::Type::Audio:
 		{
-
+			Lv2Ports::Audio* audio =
+				new Lv2Ports::Audio(
+						static_cast<std::size_t>(
+							Engine::mixer()->framesPerPeriod()),
+						portIsSideChain(m_plugin, lilvPort)
+					);
+			port = audio;
+			break;
 		}
+		case Lv2Ports::Type::AtomSeqMidi:
+		case Lv2Ports::Type::AtomSeqTime:
+		{
+			Lv2Ports::AtomSeq* atomPort;
+			switch (meta.m_type)
+			{
+				case Lv2Ports::Type::AtomSeqMidi:
+					atomPort = new Lv2Ports::AtomSeqMidi;
+					break;
+				case Lv2Ports::Type::AtomSeqTime:
+					atomPort = new Lv2Ports::AtomSeqTime;
+					break;
+				default: Q_ASSERT(false);
+			}
 
-		Lv2Ports::AtomSeq* atomSeq =
-			new Lv2Ports::AtomSeq;
-		port = atomSeq;
-	} else {
-		port = new Lv2Ports::Unknown;
+			int minimumSize = 1 << 15; // ardour uses this...
+
+			Lv2Manager* mgr = Engine::getLv2Manager();
+
+			// get alternative minimum size
+			{
+				AutoLilvNode rszMinimumSize = mgr->uri(LV2_RESIZE_PORT__minimumSize);
+				AutoLilvNodes minSizeV(lilv_port_get_value(m_plugin, lilvPort, rszMinimumSize.get()));
+				AutoLilvNode minSize(minSizeV ? lilv_nodes_get_first(minSizeV.get()) : nullptr);
+				if (minSize && lilv_node_is_int(minSize.get())) {
+					minimumSize = std::max(minimumSize, lilv_node_as_int(minSize.get()));
+				}
+			}
+
+			atomPort->buf.reset(
+				lv2_evbuf_new(static_cast<uint32_t>(minimumSize),
+								mgr->uridMap().map(LV2_ATOM__Chunk),
+								mgr->uridMap().map(LV2_ATOM__Sequence)));
+
+			port = atomPort;
+			break;
+		}
+		default:
+			port = new Lv2Ports::Unknown;
 	}
 
 	// `meta` is of class `Lv2Ports::Meta` and `port` is of a child class
@@ -477,6 +549,7 @@ struct ConnectPorts : public Lv2Ports::Visitor
 	void con(void* location) {
 		lilv_instance_connect_port(m_instance, m_num, location);
 	}
+	void visit(Lv2Ports::AtomSeq& atomSeq) override { con(&atomSeq.buf); }
 	void visit(Lv2Ports::Control& ctrl) override { con(&ctrl.m_val); }
 	void visit(Lv2Ports::Audio& audio) override {
 		con(audio.isSideChain() ? nullptr : audio.m_buffer.data()); }
@@ -486,6 +559,8 @@ struct ConnectPorts : public Lv2Ports::Visitor
 
 ConnectPorts::~ConnectPorts() {}
 
+// !This function must be realtime safe!
+// use createPort to create any port before connecting
 void Lv2Proc::connectPort(unsigned num)
 {
 	ConnectPorts connect;

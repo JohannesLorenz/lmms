@@ -41,7 +41,7 @@
 /**
 	Base class for a group of linkable models
 
-	See the LinkedModelGroup class for explenations
+	See the LinkedModelGroup class for explanations
 */
 class LinkedModelGroup : public Model
 {
@@ -56,7 +56,6 @@ public:
 	*/
 	//! @param parent model of the LinkedModelGroups class
 	//! @param curProc number of this processor, counted from 0
-	//! @param nProc total number of processors
 	LinkedModelGroup(Model* parent, int curProc) :
 		Model(parent), m_curProc(curProc) {}
 	//! After all models have been added, make this processor the one which
@@ -75,7 +74,7 @@ public:
 	//! @see linkControls
 	void unlinkControls(LinkedModelGroup *other, int id);
 	//! Return whether this is the first of more than one processors
-	bool isLinking() const { return m_linkEnabled.size(); }
+	bool isLinking() const { return m_linkEnabled.size() > 0; }
 
 	/*
 		Models

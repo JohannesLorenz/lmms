@@ -17,13 +17,8 @@
 #ifndef LV2_EVBUF_H
 #define LV2_EVBUF_H
 
-#include <stdint.h>
-
-#ifdef __cplusplus
-extern "C" {
-#else
-#include <stdbool.h>
-#endif
+#include <memory>
+#include <cstdint>
 
 /**
    An abstract/opaque LV2 event buffer.
@@ -44,8 +39,8 @@ typedef struct {
 */
 LV2_Evbuf*
 lv2_evbuf_new(uint32_t       capacity,
-	      uint32_t       atom_Chunk,
-	      uint32_t       atom_Sequence);
+		  uint32_t       atom_Chunk,
+		  uint32_t       atom_Sequence);
 
 /**
    Free an event buffer allocated with lv2_evbuf_new.
@@ -148,9 +143,5 @@ lv2_evbuf_write(LV2_Evbuf_Iterator* iter,
                 uint32_t            type,
                 uint32_t            size,
                 const uint8_t*      data);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* LV2_EVBUF_H */

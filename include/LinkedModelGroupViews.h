@@ -96,7 +96,7 @@ protected:
 	LedCheckBox* globalLinkLed() { return m_multiChannelLink.get(); }
 
 private:
-	//! The base class must return the adressed group view, or nullptr if index
+	//! The base class must return the addressed group view, or nullptr if index
 	//! is out of range
 	virtual LinkedModelGroupView* getGroupView(std::size_t idx) = 0;
 

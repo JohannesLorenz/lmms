@@ -28,10 +28,13 @@
 #ifdef LMMS_HAVE_LV2
 
 #include <lv2/atom/atom.h>
+#include <lv2/midi/midi.h>
+#include <lv2/time/time.h>
 
 #include "Engine.h"
 #include "Lv2Basics.h"
 #include "Lv2Manager.h"
+#include "lv2_evbuf.h"
 
 namespace Lv2Ports {
 
@@ -61,7 +64,8 @@ const char *toStr(Type pt)
 		case Type::Audio: return "audio";
 		case Type::Event: return "event";
 		case Type::Cv: return "cv";
-		case Type::AtomSeq: return "atom-sequence";
+		case Type::AtomSeqTime: return "atom-sequence-time";
+		case Type::AtomSeqMidi: return "atom-sequence-midi";
 	}
 	return "";
 }
@@ -178,7 +182,23 @@ std::vector<PluginIssue> Meta::get(const LilvPlugin *plugin,
 
 		if (lilv_nodes_contains(bufferTypes.get(), uriAtomSequence.get()))
 		{
-			m_type = Type::AtomSeq;
+			AutoLilvNode uriAtomSupports(Engine::getLv2Manager()->uri(LV2_ATOM__supports));
+			AutoLilvNodes atomSupports(lilv_port_get_value(plugin, lilvPort, uriAtomSupports.get()));
+			AutoLilvNode uriMidiEvent(Engine::getLv2Manager()->uri(LV2_MIDI__MidiEvent));
+			AutoLilvNode uriTimePosition(Engine::getLv2Manager()->uri(LV2_TIME__position));
+
+			if(lilv_nodes_contains(atomSupports.get(), uriMidiEvent.get()))
+			{
+				m_type = Type::AtomSeqMidi;
+			}
+			else if(lilv_nodes_contains(atomSupports.get(), uriTimePosition.get()))
+			{
+				m_type = Type::AtomSeqTime;
+			}
+			else
+			{
+				m_type = Type::Unknown;
+			}
 		}
 		else
 		{
@@ -257,6 +277,11 @@ void Audio::copyBuffersToCore(sampleFrame *lmmsBuf,
 		lmmsBuf[f][channel] = m_buffer[f];
 	}
 }
+
+
+
+
+void AtomSeq::Lv2EvbufDeleter::operator()(LV2_Evbuf *n) { lv2_evbuf_free(n); }
 
 
 

@@ -37,6 +37,7 @@
 #include "PluginIssue.h"
 
 struct ConnectPorts;
+typedef struct LV2_Evbuf_Impl LV2_Evbuf;
 
 namespace Lv2Ports {
 
@@ -55,7 +56,8 @@ enum class Type {
 	Audio,
 	Event, //!< TODO: unused, describe
 	Cv, //!< TODO: unused, describe
-	AtomSeq
+	AtomSeqMidi,
+	AtomSeqTime
 };
 
 //! Port visualization
@@ -76,6 +78,8 @@ struct Control;
 struct Audio;
 struct Cv;
 struct AtomSeq;
+struct AtomSeqMidi;
+struct AtomSeqTime;
 struct Unknown;
 
 struct ConstVisitor
@@ -88,6 +92,8 @@ virtual void visit(const Lv2Ports::clss& ) {}
 	CAN_VISIT(Audio)
 	CAN_VISIT(Cv)
 	CAN_VISIT(AtomSeq)
+	CAN_VISIT(AtomSeqMidi)
+	CAN_VISIT(AtomSeqTime)
 	CAN_VISIT(Unknown)
 	virtual ~ConstVisitor();
 #undef CAN_VISIT
@@ -103,6 +109,8 @@ virtual void visit(Lv2Ports::clss& ) {}
 	CAN_VISIT(Audio)
 	CAN_VISIT(Cv)
 	CAN_VISIT(AtomSeq)
+	CAN_VISIT(AtomSeqMidi)
+	CAN_VISIT(AtomSeqTime)
 	CAN_VISIT(Unknown)
 	virtual ~Visitor();
 #undef CAN_VISIT
@@ -202,14 +210,25 @@ private:
 
 struct AtomSeq : public PortBase
 {
+	IS_PORT_TYPE
+	
+	struct Lv2EvbufDeleter
+	{
+		void operator()(LV2_Evbuf* n);
+	};
+
+	using AutoLv2Evbuf = std::unique_ptr<LV2_Evbuf, Lv2EvbufDeleter>;
+	AutoLv2Evbuf buf;
 };
 
-struct AtomSeqMidiEvent : public AtomSeq
+struct AtomSeqMidi : public AtomSeq
 {
+	IS_PORT_TYPE
 };
 
-struct AtomSeqTimePosition : public AtomSeq
+struct AtomSeqTime : public AtomSeq
 {
+	IS_PORT_TYPE
 };
 
 struct Unknown : public PortBase

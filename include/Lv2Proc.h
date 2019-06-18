@@ -30,6 +30,7 @@
 #ifdef LMMS_HAVE_LV2
 
 #include <lilv/lilv.h>
+#include <lv2/atom/forge.h>
 #include <memory>
 #include <QObject>
 
@@ -130,6 +131,9 @@ private:
 
 	std::vector<std::unique_ptr<Lv2Ports::PortBase>> m_ports;
 	StereoPortRef m_inPorts, m_outPorts;
+
+	//! forge for writing atoms
+	LV2_Atom_Forge m_forge;
 
 	//! models for the controls, sorted by port symbols
 	std::map<std::string, AutomatableModel *> m_connectedModels;
