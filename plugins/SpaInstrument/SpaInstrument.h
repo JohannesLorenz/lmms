@@ -45,7 +45,6 @@ class SpaInstrument : public Instrument, public SpaControlBase
 {
 	Q_OBJECT
 
-	DataFile::Types settingsType() override;
 	void setNameFromFile(const QString &name) override;
 
 public:

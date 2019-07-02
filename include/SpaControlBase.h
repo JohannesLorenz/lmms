@@ -75,6 +75,10 @@ protected:
 public:
 	int m_audioInCount = 0, m_audioOutCount = 0;
 
+	std::size_t controlCount() const {
+		return LinkedModelGroup::models().size();
+	}
+
 	struct LmmsPorts
 	{
 		unsigned samplecount;
