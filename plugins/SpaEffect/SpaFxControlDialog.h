@@ -39,9 +39,6 @@ public:
 	SpaFxControlDialog(class SpaFxControls *controls);
 	virtual ~SpaFxControlDialog() override {}
 
-private:
-	virtual LinkedModelGroupViewBase* getGroupView(std::size_t idx);
-
 private slots:
 	void toggleUI();
 	void reloadPlugin();

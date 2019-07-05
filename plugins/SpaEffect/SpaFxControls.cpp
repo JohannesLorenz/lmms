@@ -32,7 +32,8 @@
 
 SpaFxControls::SpaFxControls(class SpaEffect *effect, const QString& uniqueName) :
 	EffectControls(effect),
-	SpaControlBase(static_cast<EffectControls*>(this), uniqueName),
+	SpaControlBase(static_cast<EffectControls*>(this), uniqueName,
+		DataFile::Type::EffectSettings),
 	m_effect(effect)
 {
 	if (isValid())
@@ -47,11 +48,6 @@ SpaFxControls::SpaFxControls(class SpaEffect *effect, const QString& uniqueName)
 					this, SLOT(linkPort(int, bool)));
 		}
 	}
-}
-
-DataFile::Types SpaFxControls::settingsType()
-{
-	return DataFile::EffectSettings;
 }
 
 void SpaFxControls::setNameFromFile(const QString &name)
@@ -76,7 +72,9 @@ void SpaFxControls::loadSettings(const QDomElement &that)
 
 int SpaFxControls::controlCount()
 {
-	return static_cast<int>(SpaControlBase::m_ports.m_userPorts.size());
+	std::size_t res = 0;
+	for (const std::unique_ptr<SpaProc>& c : m_procs) { res += c->controlCount(); }
+	return static_cast<int>(res);
 }
 
 EffectControlDialog *SpaFxControls::createView()
