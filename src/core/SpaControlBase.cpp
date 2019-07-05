@@ -60,7 +60,7 @@ SpaControlBase::SpaControlBase(Model* that, const QString& uniqueName,
 {
 	if (m_spaDescriptor)
 	{
-			int procId = 0;
+			std::size_t procId = 0;
 			int channelsLeft = DEFAULT_CHANNELS; // LMMS plugins are stereo
 			while (channelsLeft > 0)
 			{
@@ -69,11 +69,15 @@ SpaControlBase::SpaControlBase(Model* that, const QString& uniqueName,
 										settingsType));
 					if (newOne->isValid())
 					{
-							channelsLeft -= std::max(
-									1 + static_cast<bool>(newOne->m_audioInCount),
-									1 + static_cast<bool>(newOne->m_audioOutCount));
-							Q_ASSERT(channelsLeft >= 0);
-							m_procs.push_back(std::move(newOne));
+						channelsLeft -= std::max(
+								1 + static_cast<bool>(newOne->m_audioInCount),
+								1 + static_cast<bool>(newOne->m_audioOutCount));
+						Q_ASSERT(channelsLeft >= 0);
+						if(newOne->netPort())
+						{
+							m_procsByPort.emplace(newOne->netPort(), newOne.get());
+						}
+						m_procs.push_back(std::move(newOne));
 					}
 					else
 					{
@@ -92,11 +96,11 @@ SpaControlBase::SpaControlBase(Model* that, const QString& uniqueName,
 					}
 
 					// initially link all controls
-					for (int i = 0;
-						i < static_cast<int>(m_procs[0]->models().size());
+					for (std::size_t i = 0;
+						i < m_procs[0]->models().size();
 						++i)
 					{
-							linkPort(i, true);
+							linkModel(i, true);
 					}
 			}
 	}
@@ -107,7 +111,19 @@ SpaControlBase::SpaControlBase(Model* that, const QString& uniqueName,
 	// TODO: error handling
 }
 
-SpaProc::SpaProc(Model *parent, const spa::descriptor* desc, int curProc, DataFile::Types settingsType) :
+void SpaControlBase::saveSettings(QDomDocument &doc, QDomElement &that)
+{
+	LinkedModelGroups::saveSettings(doc, that);
+}
+
+void SpaControlBase::loadSettings(const QDomElement &that)
+{
+	LinkedModelGroups::loadSettings(that);
+}
+
+SpaControlBase::~SpaControlBase() {}
+
+SpaProc::SpaProc(Model *parent, const spa::descriptor* desc, std::size_t curProc, DataFile::Types settingsType) :
 	LinkedModelGroup(parent, curProc),
 	m_spaDescriptor(desc),
 	m_ports(Engine::mixer()->framesPerPeriod()),
@@ -180,15 +196,13 @@ void SpaProc::loadSettings(const QDomElement &that)
 			{
 				tf.write(cdata.data().toUtf8());
 				tf.flush();
-				loadFileInternal(tf.fileName());
+				loadFile(tf.fileName());
 			}
 		}
 		// load connected models?
 		else if (node.nodeName() == "connected-models" &&
 			!(elem = node.toElement()).isNull())
 		{
-			QDomNamedNodeMap attrs = elem.attributes();
-
 			auto do_load = [&](const QString &name,
 					       QDomElement elem) {
 				AutomatableModel *m = modelAtPort(name);
@@ -198,19 +212,24 @@ void SpaProc::loadSettings(const QDomElement &that)
 				m_connectedModels[name] = m;
 			};
 
+			// connected models can be given both as attributes...
+			QDomNamedNodeMap attrs = elem.attributes();
 			for (int i = 0; i < attrs.count(); ++i)
 			{
 				QDomAttr attribute = attrs.item(i).toAttr();
 				do_load(attribute.name(), elem);
 			}
 
+			// ... or as child nodes
 			for (QDomElement portnode = elem.firstChildElement();
 				!portnode.isNull();
 				portnode = portnode.nextSiblingElement())
 			{
+				// connection nodes are not loaded that way
 				if (portnode.nodeName() != "connection")
 				{
 					QString name = portnode.nodeName();
+					// the name is given as attribute?
 					if (name == "automatablemodel") {
 						name = portnode.attribute(
 							"nodename");
@@ -222,13 +241,8 @@ void SpaProc::loadSettings(const QDomElement &that)
 	}
 }
 
-void SpaProc::loadFile(const QByteArray& filedata)
-{
 
-}
-
-
-void SpaProc::loadFileInternal(const QString &file)
+void SpaProc::loadFile(const QString &file)
 {
 	const QByteArray fn = file.toUtf8();
 	m_pluginMutex.lock();
@@ -242,9 +256,23 @@ void SpaProc::loadFileInternal(const QString &file)
 void SpaControlBase::loadFile(const QString &file)
 {
 	// for now, only support loading one proc into all proc (duplicating)
-	loadFileInternal(file);
+	for(std::unique_ptr<SpaProc>& proc : m_procs)
+		proc->loadFile(file);
 	setNameFromFile(QFileInfo(file).baseName().replace(
 		QRegExp("^[0-9]{4}-"), QString()));
+}
+
+bool SpaControlBase::hasUi() const
+{
+	// do not support external UI for mono effects yet
+	// (how would that look??)
+	return m_procs.size() == 1 && m_spaDescriptor->ui_ext();
+}
+
+void SpaControlBase::uiExtShow(bool doShow)
+{
+	if(m_procs.size() == 1)
+		m_procs[0]->uiExtShow(doShow);
 }
 
 void SpaProc::reloadPlugin()
@@ -314,6 +342,7 @@ void SpaProc::shutdownPlugin()
 
 struct LmmsVisitor final : public virtual spa::audio::visitor
 {
+	SpaProc* proc;
 	SpaProc::LmmsPorts *m_ports;
 	QMap<QString, AutomatableModel *> *m_connectedModels;
 	const char *m_curName;
@@ -381,6 +410,7 @@ struct LmmsVisitor final : public virtual spa::audio::visitor
 			QString::fromUtf8(m_curName));
 		m_connectedModels->insert(
 			QString::fromUtf8(m_curName), connectedModel);
+		proc->addModel(connectedModel, m_curName);
 	}
 
 	// TODO: port_ref does not work yet (clang warnings), so we use
@@ -393,14 +423,6 @@ struct LmmsVisitor final : public virtual spa::audio::visitor
 			m_ports->m_userPorts.back();
 		setupPort(p, bck.m_val.m_f, bck.m_connectedModel.m_floatModel,
 			p.min, p.max, p.step);
-
-		bck.m_val.m_f = p.def;
-		p.set_ref(&bck.m_val.m_f);
-		bck.m_connectedModel.m_floatModel =
-			new FloatModel(static_cast<float>(p), p.min, p.max,
-				p.step, nullptr, QString::fromUtf8(m_curName));
-		m_connectedModels->insert(QString::fromUtf8(m_curName),
-			bck.m_connectedModel.m_floatModel);
 	}
 	void visit(spa::audio::control_in<int> &p) override
 	{
@@ -485,6 +507,7 @@ void SpaProc::initPlugin()
 			spa::port_ref_base &port_ref = m_plugin->port(portname.data());
 
 			LmmsVisitor v;
+			v.proc = this;
 			v.m_ports = &m_ports;
 			v.m_connectedModels = &m_connectedModels;
 			v.m_curName = portname.data();
@@ -534,6 +557,113 @@ void SpaProc::writeOsc(const char *dest, const char *args, ...)
 	writeOsc(dest, args, va);
 	va_end(va);
 }
+
+void SpaControlBase::writeOscToAll(
+	const char *dest, const char *args, va_list va)
+{
+	for(std::unique_ptr<SpaProc>& proc : m_procs)
+		proc->writeOsc(dest, args, va);
+}
+
+void SpaControlBase::writeOscToAll(const char *dest, const char *args, ...)
+{
+	va_list va;
+	va_start(va, args);
+	writeOscToAll(dest, args, va);
+	va_end(va);
+}
+
+void SpaProc::run(unsigned frames)
+{
+	m_ports.samplecount = static_cast<unsigned>(frames);
+	m_plugin->run();
+}
+
+unsigned SpaProc::netPort() const { return m_plugin->net_port(); }
+
+
+namespace detail {
+
+void copyBuffersFromCore(std::vector<float>& portBuf,
+	const sampleFrame *lmmsBuf,
+	unsigned channel, fpp_t frames)
+{
+	for (std::size_t f = 0; f < static_cast<unsigned>(frames); ++f)
+	{
+		portBuf[f] = lmmsBuf[f][channel];
+	}
+}
+
+
+
+
+void addBuffersFromCore(std::vector<float>& portBuf, const sampleFrame *lmmsBuf,
+	unsigned channel, fpp_t frames)
+{
+	for (std::size_t f = 0; f < static_cast<unsigned>(frames); ++f)
+	{
+		portBuf[f] = (portBuf[f] + lmmsBuf[f][channel]) / 2.0f;
+	}
+}
+
+
+
+
+void copyBuffersToCore(const std::vector<float>& portBuf, sampleFrame *lmmsBuf,
+	unsigned channel, fpp_t frames)
+{
+	for (std::size_t f = 0; f < static_cast<unsigned>(frames); ++f)
+	{
+		lmmsBuf[f][channel] = portBuf[f];
+	}
+}
+
+} // namespace detail
+
+void SpaProc::copyBuffersFromCore(const sampleFrame *buf,
+									unsigned offset, unsigned num,
+									fpp_t frames)
+{
+	detail::copyBuffersFromCore(m_ports.m_lUnprocessed, buf, offset, frames);
+	if (num > 1)
+	{
+		// if the caller requests to take input from two channels, but we only
+		// have one input channel... take medium of left and right for
+		// mono input
+		// (this happens if we have two outputs and only one input)
+		if (m_ports.m_rUnprocessed.size())
+			detail::copyBuffersFromCore(m_ports.m_rUnprocessed, buf, offset + 1, frames);
+		else
+			detail::addBuffersFromCore(m_ports.m_lUnprocessed, buf, offset + 1, frames);
+	}
+}
+
+
+
+
+void SpaProc::copyBuffersToCore(sampleFrame* buf,
+								unsigned offset, unsigned num,
+								fpp_t frames) const
+{
+	detail::copyBuffersToCore(m_ports.m_lProcessed, buf, offset + 0, frames);
+	if (num > 1)
+	{
+		// if the caller requests to copy into two channels, but we only have
+		// one output channel, duplicate our output
+		// (this happens if we have two inputs and only one output)
+		const std::vector<float>& portBuf = m_ports.m_rProcessed.size()
+				? m_ports.m_rProcessed : m_ports.m_lProcessed;
+		detail::copyBuffersToCore(portBuf, buf, offset + 1, frames);
+	}
+}
+
+
+
+
+void SpaProc::uiExtShow(bool doShow) { m_plugin->ui_ext_show(doShow); }
+
+
+
 
 struct SpaOscModelFactory : public spa::audio::visitor
 {
@@ -616,8 +746,12 @@ AutomatableModel *SpaProc::modelAtPort(const QString &dest)
 
 LinkedModelGroup *SpaControlBase::getGroup(std::size_t idx)
 {
-	Q_ASSERT(idx < m_procs.size());
-	return m_procs[idx].get();
+	return (idx < m_procs.size()) ? m_procs[idx].get() : nullptr;
+}
+
+const LinkedModelGroup *SpaControlBase::getGroup(std::size_t idx) const
+{
+	return (idx < m_procs.size()) ? m_procs[idx].get() : nullptr;
 }
 
 template <class UnsignedType> UnsignedType castToUnsigned(int val)
@@ -633,5 +767,46 @@ SpaProc::LmmsPorts::LmmsPorts(int bufferSize) :
 	m_rProcessed(castToUnsigned<std::size_t>(bufferSize))
 {
 }
+
+void SpaControlBase::copyModelsFromLmms() {
+	for (std::unique_ptr<SpaProc>& c : m_procs) { c->copyModelsToPorts(); }
+}
+
+
+
+
+void SpaControlBase::copyBuffersFromLmms(const sampleFrame *buf, fpp_t frames) {
+	unsigned offset = 0;
+	for (std::unique_ptr<SpaProc>& c : m_procs) {
+		c->copyBuffersFromCore(buf, offset, m_channelsPerProc, frames);
+		offset += m_channelsPerProc;
+	}
+}
+
+
+
+
+void SpaControlBase::copyBuffersToLmms(sampleFrame *buf, fpp_t frames) const {
+	unsigned offset = 0;
+	for (const std::unique_ptr<SpaProc>& c : m_procs) {
+		c->copyBuffersToCore(buf, offset, m_channelsPerProc, frames);
+		offset += m_channelsPerProc;
+	}
+}
+
+
+
+
+void SpaControlBase::run(unsigned frames) {
+	for (std::unique_ptr<SpaProc>& c : m_procs) { c->run(frames); }
+}
+
+AutomatableModel *SpaControlBase::modelAtPort(const QString &dest)
+{
+	QUrl url(dest);
+	return m_procsByPort[static_cast<unsigned>(url.port())]->
+		modelAtPort(dest);
+}
+
 
 #endif // LMMS_HAVE_SPA

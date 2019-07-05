@@ -35,13 +35,14 @@
 class SpaProc;
 class SpaControlBase;
 
-class SpaViewProc : public LinkedModelGroupViewBase
+class SpaViewProc : public LinkedModelGroupView
 {
 public:
-	SpaViewProc(QWidget *parent, SpaProc *proc, int colNum, int nProcs);
+	SpaViewProc(QWidget *parent, SpaProc *proc,
+		std::size_t colNum, std::size_t nProcs);
 };
 
-class SpaViewBase : LinkedModelGroupsViewBase
+class SpaViewBase : LinkedModelGroupsView
 {
 	class QGridLayout *m_grid;
 	const int m_firstModelRow = 1; // row 0 is for buttons
@@ -49,9 +50,9 @@ class SpaViewBase : LinkedModelGroupsViewBase
 
 	//QVector<class AutomatableModelView*> m_modelViews;
 
-	QVector<SpaViewProc*> m_procViews;
+	QVector<SpaViewProc*> m_procViews; // TODO: unique_ptr
 
-	LinkedModelGroupViewBase *getGroupView(std::size_t idx) override;
+	LinkedModelGroupView *getGroupView(std::size_t idx) override;
 
 protected:
 	class QPushButton *m_toggleUIButton = nullptr;
@@ -65,7 +66,7 @@ protected:
 
 private:
 	//! Numbers of controls per row; must be multiple of 2 for mono effects
-	const int m_colNum = 6;
+	const std::size_t m_colNum = 6;
 
 	enum Rows
 	{

@@ -31,17 +31,14 @@
 #include <QPushButton>
 #include <spa/spa.h>
 
-//#include "Knob.h"
 #include "Controls.h"
 #include "embed.h"
 #include "gui_templates.h"
-//#include "LcdSpinBox.h"
-//#include "LedCheckbox.h"
 #include "SpaControlBase.h"
 #include "LedCheckbox.h"
 
 SpaViewBase::SpaViewBase(QWidget* meAsWidget, SpaControlBase *ctrlBase)
-	: LinkedModelGroupsViewBase (ctrlBase)
+	: LinkedModelGroupsView (ctrlBase)
 {
 	m_grid = new QGridLayout(meAsWidget);
 
@@ -66,22 +63,23 @@ SpaViewBase::SpaViewBase(QWidget* meAsWidget, SpaControlBase *ctrlBase)
 
 	meAsWidget->setAcceptDrops(true);
 
-	int nProcs = static_cast<int>(ctrlBase->controls().size());
+	std::size_t nProcs = ctrlBase->controls().size();
 	Q_ASSERT(m_colNum % nProcs == 0);
-	int colsEach = m_colNum / nProcs;
-	for (int i = 0; i < nProcs; ++i)
+	std::size_t colsEach = m_colNum / nProcs;
+	for (std::size_t i = 0; i < nProcs; ++i)
 	{
 			SpaViewProc* vpr = new SpaViewProc(meAsWidget,
-					ctrlBase->controls()[static_cast<std::size_t>(i)].get(),
+					ctrlBase->controls()[i].get(),
 					colsEach, nProcs);
-			m_grid->addWidget(vpr, Rows::ProcRow, i);
+			m_grid->addWidget(vpr, Rows::ProcRow, static_cast<int>(i));
 			m_procViews.push_back(vpr);
 	}
 
 	LedCheckBox* led = globalLinkLed();
 	if (led)
 	{
-			m_grid->addWidget(led, Rows::LinkChannelsRow, 0, 1, m_colNum);
+			m_grid->addWidget(led, Rows::LinkChannelsRow, 0,
+				1, static_cast<int>(m_colNum));
 	}
 }
 
@@ -94,11 +92,12 @@ void SpaViewBase::modelChanged(SpaControlBase *ctrlBase)
 	{
 		m_toggleUIButton->setChecked(ctrlBase->m_hasGUI);
 	}
-	LinkedModelGroupsViewBase::modelChanged(ctrlBase);
+	LinkedModelGroupsView::modelChanged(ctrlBase);
 }
 
-SpaViewProc::SpaViewProc(QWidget* parent, SpaProc *proc, int colNum, int nProcs)
-	: LinkedModelGroupViewBase(parent, proc, colNum, nProcs)
+SpaViewProc::SpaViewProc(QWidget* parent, SpaProc *proc,
+	std::size_t colNum, std::size_t nProcs)
+	: LinkedModelGroupView(parent, proc, colNum, nProcs)
 {
 #if 0
 	class SetupWidget : public Lv2Ports::Visitor
@@ -155,7 +154,7 @@ SpaViewProc::SpaViewProc(QWidget* parent, SpaProc *proc, int colNum, int nProcs)
 		if (setup.m_control) { addControl(setup.m_control); }
 	}
 #endif
-	ControlBase* control = nullptr;
+	Control* control = nullptr;
 	for (SpaProc::LmmsPorts::TypedPorts &ports :
 		proc->m_ports.m_userPorts)
 	{
@@ -166,6 +165,7 @@ SpaViewProc::SpaViewProc(QWidget* parent, SpaProc *proc, int colNum, int nProcs)
 			case 'f':
 			{
 				control = new KnobControl(this);
+				control->setText(ports.m_connectedModel.m_floatModel->displayName());
 			//	wdg = k;
 				//modelView = k;
 				break;
@@ -174,6 +174,7 @@ SpaViewProc::SpaViewProc(QWidget* parent, SpaProc *proc, int colNum, int nProcs)
 			{
 				// TODO: check max
 				control = new LcdControl(2, this);
+				control->setText(ports.m_connectedModel.m_intModel->displayName());
 			//	wdg = l;
 			//	modelView = l;
 				break;
@@ -181,6 +182,7 @@ SpaViewProc::SpaViewProc(QWidget* parent, SpaProc *proc, int colNum, int nProcs)
 			case 'b':
 			{
 				control = new CheckControl(this);
+				control->setText(ports.m_connectedModel.m_boolModel->displayName());
 	//			wdg = l;
 		//		modelView = l;
 				break;
@@ -210,7 +212,7 @@ SpaViewProc::SpaViewProc(QWidget* parent, SpaProc *proc, int colNum, int nProcs)
 	}
 }
 
-LinkedModelGroupViewBase *SpaViewBase::getGroupView(std::size_t idx)
+LinkedModelGroupView *SpaViewBase::getGroupView(std::size_t idx)
 {
 	return m_procViews[static_cast<int>(idx)];
 }
