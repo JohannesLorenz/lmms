@@ -149,6 +149,12 @@ void LinkedModelGroup::addModel(AutomatableModel *model, const QString &name)
 	m_models.emplace_back(name, model);
 }
 
+void LinkedModelGroup::clearModels()
+{
+	m_models.clear();
+	m_linkEnabled.clear();
+}
+
 
 
 
