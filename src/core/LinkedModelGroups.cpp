@@ -201,7 +201,8 @@ LinkedModelGroups::~LinkedModelGroups() {}
 
 void LinkedModelGroups::createMultiChannelLinkModel()
 {
-	m_multiChannelLinkModel = make_unique<BoolModel>(true, nullptr);
+	m_multiChannelLinkModel =
+		make_unique<BoolModel, BoolModelDeleter>(true, nullptr);
 }
 
 
@@ -336,3 +337,9 @@ void LinkedModelGroups::loadSettings(const QDomElement& that)
 }
 
 
+
+
+void LinkedModelGroups::BoolModelDeleter::operator()(BoolModel *l)
+{
+	delete l;
+}
