@@ -83,10 +83,12 @@ public:
 	*/
 	struct ModelInfo
 	{
-		QString m_name;
+		bool m_hidden; //! whether the UI should display this model
+		QString m_name; //! unique name, used, e.g., for saving
 		class AutomatableModel* m_model;
-		ModelInfo(const QString& name, AutomatableModel* model)
-			: m_name(name), m_model(model) {}
+		ModelInfo(const QString& name, AutomatableModel* model,
+			bool hidden = false)
+			: m_hidden(hidden), m_name(name), m_model(model) {}
 	};
 
 	class BoolModel* linkEnabledModel(std::size_t id)
@@ -97,8 +99,19 @@ public:
 	{
 		return d.m_linkEnabled[id];
 	}
-	std::vector<ModelInfo>& models() { return d.m_models; }
-	const std::vector<ModelInfo>& models() const { return d.m_models; }
+
+	AutomatableModel* model(std::size_t i) { return d.m_models[i].m_model; }
+	const AutomatableModel* model(std::size_t i) const
+	{
+		return d.m_models[i].m_model;
+	}
+	AutomatableModel* modelWithName(const QString& name) const;
+	bool modelIsHidden(std::size_t idx) const
+	{
+		return d.m_models[idx].m_hidden;
+	}
+	std::size_t modelNum() const { return models().size(); }
+	std::size_t visibleModelNum() const;
 
 	/*
 		Load/Save
@@ -118,11 +131,16 @@ public:
 
 protected:
 	//! Register a further model
-	void addModel(class AutomatableModel* model, const QString& name);
+	void addModel(class AutomatableModel* model,
+		const QString& name, bool hidden);
 	//! Remove all models and all link-enabled models
 	void clearModels();
 
 private:
+	// TODO: remove
+	std::vector<ModelInfo>& models() { return d.m_models; }
+	const std::vector<ModelInfo>& models() const { return d.m_models; }
+
 	struct
 	{
 		//! models for the per-control link-enabled models

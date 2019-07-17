@@ -44,7 +44,7 @@ LinkedModelGroupView::LinkedModelGroupView(QWidget* parent,
 	m_isLinking(model->isLinking()),
 	m_grid(new QGridLayout(this))
 {
-	if (model->models().size())
+	if (model->visibleModelNum())
 	{
 		std::size_t curProc = model->curProc();
 		QString chanName;
@@ -81,18 +81,22 @@ LinkedModelGroupView::~LinkedModelGroupView() {}
 void LinkedModelGroupView::modelChanged(LinkedModelGroup *group)
 {
 	// reconnect models
-	using ModelInfo = LinkedModelGroup::ModelInfo;
-	std::vector<ModelInfo> models = group->models();
-	Q_ASSERT(m_controls.size() == models.size());
+	Q_ASSERT(m_controls.size() == group->visibleModelNum());
 
-	for (std::size_t i = 0; i < models.size(); ++i)
+	for (std::size_t i = 0, j = 0; i < group->modelNum(); ++i)
 	{
-		m_controls[i]->setModel(models[i].m_model);
+		if(!group->modelIsHidden(i))
+		{
+			m_controls[j++]->setModel(group->model(i));
+		}
 	}
 
-	for (std::size_t i = 0; i < m_leds.size(); ++i)
+	for (std::size_t i = 0, j = 0; i < m_leds.size(); ++i)
 	{
-		m_leds[i]->setModel(group->linkEnabledModel(i));
+		if(!group->modelIsHidden(i))
+		{
+			m_leds[j++]->setModel(group->linkEnabledModel(i));
+		}
 	}
 }
 

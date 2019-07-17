@@ -74,7 +74,31 @@ void LinkedModelGroup::linkControls(LinkedModelGroup *other, std::size_t id)
 void LinkedModelGroup::unlinkControls(LinkedModelGroup *other, std::size_t id)
 {
 	AutomatableModel::unlinkModels(
-		models()[id].m_model, other->models()[id].m_model);
+				models()[id].m_model, other->models()[id].m_model);
+}
+
+
+
+
+AutomatableModel *LinkedModelGroup::modelWithName(const QString &name) const
+{
+	auto itr = std::find_if(models().begin(), models().end(),
+		[&name](const ModelInfo& mi) -> bool
+	{ return mi.m_name == name; });
+	return itr == models().end() ? nullptr : itr->m_model;
+}
+
+
+
+
+std::size_t LinkedModelGroup::visibleModelNum() const
+{
+	std::size_t res = 0;
+	for (const ModelInfo& mi : d.m_models)
+	{
+		res += mi.m_hidden ? 0 : 1;
+	}
+	return res;
 }
 
 
@@ -144,9 +168,10 @@ void LinkedModelGroup::loadLinksEnabled(const QDomElement &that)
 
 
 
-void LinkedModelGroup::addModel(AutomatableModel *model, const QString &name)
+void LinkedModelGroup::addModel(AutomatableModel *model,
+	const QString &name, bool hidden)
 {
-	models().emplace_back(name, model);
+	models().emplace_back(name, model, hidden);
 }
 
 

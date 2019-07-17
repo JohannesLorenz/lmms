@@ -62,6 +62,8 @@ public:
 	//! Reconnect models if model changed
 	void modelChanged(class LinkedModelGroup *linkedModelGroup);
 
+
+
 protected:
 	//! Add a control to this widget
 	void addControl(class Control *ctrl);
