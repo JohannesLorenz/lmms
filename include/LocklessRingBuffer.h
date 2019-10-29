@@ -32,27 +32,26 @@
 
 //! A convenience layer for a realtime-safe and thread-safe multi-reader ring buffer library.
 template <class T>
-class LocklessRingBuffer
+class LocklessRingBuffer : public ringbuffer_t<T>
 {
 	template<class _T>
 	friend class LocklessRingBufferReader;
 public:
-	LocklessRingBuffer(std::size_t sz) : m_buffer(sz) {};
+	LocklessRingBuffer(std::size_t sz) : ringbuffer_t<T>(sz) {};
 	~LocklessRingBuffer() {};
 
 	std::size_t write(const sampleFrame *src, size_t cnt)
 	{
-		std::size_t written = m_buffer.write(src, cnt);
+		std::size_t written = write(src, cnt);
 		m_notifier.wakeAll();	// Let all waiting readers know new data are available.
 		return written;
 	}
 
-	std::size_t capacity() {return m_buffer.maximum_eventual_write_space();}
-	std::size_t free() {return m_buffer.write_space();}
+	std::size_t capacity() {return ringbuffer_t<T>::maximum_eventual_write_space();}
+	std::size_t free() {return ringbuffer_t<T>::write_space();}
 	void wakeAll() {m_notifier.wakeAll();}
 
 private:
-	ringbuffer_t<T> m_buffer;
 	QWaitCondition m_notifier;
 };
 
