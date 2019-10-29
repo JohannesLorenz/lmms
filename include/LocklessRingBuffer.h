@@ -28,7 +28,7 @@
 #include "../src/3rdparty/ringbuffer/include/ringbuffer/ringbuffer.h"
 #include "lmms_basics.h"
 #include <QWaitCondition>
-
+#include <QMutex>
 
 //! A convenience layer for a realtime-safe and thread-safe multi-reader ring buffer library.
 template <class T>
