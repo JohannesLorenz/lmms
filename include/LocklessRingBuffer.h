@@ -37,8 +37,8 @@ class LocklessRingBuffer : public ringbuffer_t<T>
 	template<class _T>
 	friend class LocklessRingBufferReader;
 public:
-	LocklessRingBuffer(std::size_t sz) : ringbuffer_t<T>(sz) {};
-	~LocklessRingBuffer() {};
+	LocklessRingBuffer(std::size_t sz) : ringbuffer_t<T>(sz) {}
+	~LocklessRingBuffer() {}
 
 	std::size_t write(const sampleFrame *src, size_t cnt)
 	{
@@ -81,8 +81,8 @@ class LocklessRingBuffer<sampleFrame>
 	template<class _T>
 	friend class LocklessRingBufferReader;
 public:
-	LocklessRingBuffer(std::size_t sz) : m_buffer(sz) {};
-	~LocklessRingBuffer() {};
+	LocklessRingBuffer(std::size_t sz) : m_buffer(sz) {}
+	~LocklessRingBuffer() {}
 
 	std::size_t write(const sampleFrame *src, size_t cnt)
 	{
@@ -110,7 +110,7 @@ class LocklessRingBufferReader : public ringbuffer_reader_t<T>
 public:
 	LocklessRingBufferReader(LocklessRingBuffer<T> &rb) :
 		ringbuffer_reader_t<T>(rb.m_buffer),
-		m_notifier(&rb.m_notifier) {};
+		m_notifier(&rb.m_notifier) {}
 
 	bool empty() {return !this->read_space();}
 
