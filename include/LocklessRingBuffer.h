@@ -87,8 +87,8 @@ public:
 
 	std::size_t write(const sampleFrame *src, size_t cnt)
 	{
-        sampleFrame_copier copier(src);
-        std::size_t written = m_buffer.write_func<sampleFrame_copier>(copier, cnt);
+		sampleFrame_copier copier(src);
+		std::size_t written = m_buffer.write_func<sampleFrame_copier>(copier, cnt);
 		// Let all waiting readers know new data are available.
 		m_notifier.wakeAll();
 		return written;
