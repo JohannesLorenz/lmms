@@ -623,7 +623,11 @@ void Knob::mouseMoveEvent( QMouseEvent * _me )
 		m_mouseOffset = _me->pos() - m_origMousePos;
 		setPosition( m_mouseOffset );
 		emit sliderMoved( model()->value() );
-		QCursor::setPos( mapToGlobal( m_origMousePos ) );
+		const QPoint orig = mapToGlobal( m_origMousePos );
+		QCursor::setPos( orig );
+		// on some systems, QCursor::setPos() has no effect
+		// => simulate that the cursor is moved back to the original position
+		if( QCursor::pos() != orig ) { m_origMousePos = _me->pos(); }
 	}
 	s_textFloat->setText( displayValue() );
 }
