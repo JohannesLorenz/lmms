@@ -151,6 +151,7 @@ protected:
 	// again every time
 	ValueBuffer m_valueBuffer;
 	// when we last updated the valuebuffer - so we know if we have to update it
+	// measured in periods
 	long m_bufferLastUpdated;
 
 	float m_currentValue;
@@ -162,6 +163,7 @@ protected:
 
 	static ControllerVector s_controllers;
 
+	//! number of mixer runs, period size is assumed constant
 	static long s_periods;
 
 

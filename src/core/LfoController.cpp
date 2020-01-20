@@ -42,7 +42,6 @@ LfoController::LfoController( Model * _parent ) :
 			this, tr( "Oscillator waveform" ) ),
 	m_multiplierModel( 0, 0, 2, this, tr( "Frequency Multiplier" ) ),
 	m_duration( 1000 ),
-	m_phaseOffset( 0 ),
 	m_currentPhase( 0 ),
 	m_sampleFunction( &Oscillator::sinSample ),
 	m_userDefSampleBuffer( new SampleBuffer )
@@ -83,8 +82,8 @@ LfoController::~LfoController()
 
 void LfoController::updateValueBuffer()
 {
-	m_phaseOffset = m_phaseModel.value() / 360.0;
-	float phase = m_currentPhase + m_phaseOffset;
+	float phaseOffset = m_phaseModel.value() / 360.0;
+	float phase = m_currentPhase + phaseOffset;
 
 	// roll phase up until we're in sync with period counter
 	m_bufferLastUpdated++;
@@ -112,7 +111,7 @@ void LfoController::updateValueBuffer()
 		amountPtr += amountInc;
 	}
 
-	m_currentPhase = absFraction( phase - m_phaseOffset );
+	m_currentPhase = absFraction( phase - phaseOffset );
 	m_bufferLastUpdated = s_periods;
 }
 

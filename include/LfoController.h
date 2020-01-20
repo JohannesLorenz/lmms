@@ -69,9 +69,8 @@ protected:
 	IntModel m_waveModel;
 	IntModel m_multiplierModel;
 
-	float m_duration;
-	float m_phaseOffset;
-	float m_currentPhase;
+	float m_duration; //!< duration of one oscillation, counted in frames (aka samples)
+	float m_currentPhase; //!< number of oscillations played since song start, comma part gives phase
 
 	sample_t (*m_sampleFunction)( const float );
 
