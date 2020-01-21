@@ -28,7 +28,6 @@
 #define CONTROLLER_H
 
 #include "lmms_export.h"
-#include "Engine.h"
 #include "Model.h"
 #include "JournallingObject.h"
 #include "ValueBuffer.h"
