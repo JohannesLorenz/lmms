@@ -589,7 +589,6 @@ void Knob::mousePressEvent( QMouseEvent * _me )
 
 		const QPoint & p = _me->pos();
 		m_origMousePos = p;
-		m_mouseOffset = QPoint(0, 0);
 		m_leftOver = 0.0f;
 
 		emit sliderPressed();
@@ -622,8 +621,7 @@ void Knob::mouseMoveEvent( QMouseEvent * _me )
 	if( m_buttonPressed && _me->pos() != m_origMousePos )
 	{
 		// knob position is changed depending on last mouse position
-		m_mouseOffset = _me->pos() - m_origMousePos;
-		setPosition( m_mouseOffset );
+		setPosition( _me->pos() - m_origMousePos );
 		emit sliderMoved( model()->value() );
 
 		// the rest of the code updates the cursor and/or m_origMousePos
