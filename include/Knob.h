@@ -174,7 +174,7 @@ private:
 	BoolModel m_volumeKnob;
 	FloatModel m_volumeRatio;
 
-	QPoint m_origMousePos; //!< mouse position in last mouseMoveEvent
+	QPoint m_lastMousePos; //!< mouse position in last mouseMoveEvent
 	float m_leftOver;
 	bool m_buttonPressed;
 

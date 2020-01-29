@@ -588,7 +588,7 @@ void Knob::mousePressEvent( QMouseEvent * _me )
 		}
 
 		const QPoint & p = _me->pos();
-		m_origMousePos = p;
+		m_lastMousePos = p;
 		m_leftOver = 0.0f;
 
 		emit sliderPressed();
@@ -618,10 +618,10 @@ void Knob::mousePressEvent( QMouseEvent * _me )
 
 void Knob::mouseMoveEvent( QMouseEvent * _me )
 {
-	if( m_buttonPressed && _me->pos() != m_origMousePos )
+	if( m_buttonPressed && _me->pos() != m_lastMousePos )
 	{
 		// knob position is changed depending on last mouse position
-		setPosition( _me->pos() - m_origMousePos );
+		setPosition( _me->pos() - m_lastMousePos );
 		emit sliderMoved( model()->value() );
 
 		// the rest of the code updates the cursor and/or m_origMousePos
@@ -648,14 +648,14 @@ void Knob::mouseMoveEvent( QMouseEvent * _me )
 		if(newPos == QCursor::pos() || !setCursor(newPos))
 		{
 			// original position for next time is current position
-			m_origMousePos = _me->pos();
+			m_lastMousePos = _me->pos();
 		}
 		else
 		{
 			// successful flip of cursor
 			// bash original position to current position
 			// to avoid the knob snapping back
-			m_origMousePos = mapFromGlobal(QCursor::pos());
+			m_lastMousePos = mapFromGlobal(QCursor::pos());
 		}
 	}
 	s_textFloat->setText( displayValue() );
