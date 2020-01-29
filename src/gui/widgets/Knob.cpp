@@ -28,6 +28,7 @@
 #include <QInputDialog>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QScreen>
 #include <QWhatsThis>
 
 #ifndef __USE_XOPEN
@@ -620,14 +621,44 @@ void Knob::mouseMoveEvent( QMouseEvent * _me )
 {
 	if( m_buttonPressed && _me->pos() != m_origMousePos )
 	{
+		// knob position is changed depending on last mouse position
 		m_mouseOffset = _me->pos() - m_origMousePos;
 		setPosition( m_mouseOffset );
 		emit sliderMoved( model()->value() );
-		const QPoint orig = mapToGlobal( m_origMousePos );
-		QCursor::setPos( orig );
-		// on some systems, QCursor::setPos() has no effect
-		// => simulate that the cursor is moved back to the original position
-		if( QCursor::pos() != orig ) { m_origMousePos = _me->pos(); }
+
+		// the rest of the code updates the cursor and/or m_origMousePos
+
+		// get screen min/max values where a flip is not required yet
+		const QRect& rec = QApplication::screenAt(QCursor::pos())->geometry();
+		int ymax = qMax(rec.height() - 2, 0), xmax = qMax(rec.width() - 2, 0);
+		int ymin = 1, xmin = 1;
+
+		// calculate new coordinates
+		int x = QCursor::pos().x(), y = QCursor::pos().y();
+		QPoint newPos(
+			(x<xmin) ? xmax : (x>xmax) ? xmin : x,
+			(y<ymin) ? ymax : (y>ymax) ? ymin : y);
+
+		auto setCursor = [&](const QPoint& p) -> bool
+		{
+			QCursor::setPos(newPos);
+			return QCursor::pos() == newPos;
+		};
+
+		// no flip, or calling QCursor::setPos() for flip has no effect?
+		// (the latter occurs on some systems without accessability)
+		if(newPos == QCursor::pos() || !setCursor(newPos))
+		{
+			// original position for next time is current position
+			m_origMousePos = _me->pos();
+		}
+		else
+		{
+			// successful flip of cursor
+			// bash original position to current position
+			// to avoid the knob snapping back
+			m_origMousePos = mapFromGlobal(QCursor::pos());
+		}
 	}
 	s_textFloat->setText( displayValue() );
 }
