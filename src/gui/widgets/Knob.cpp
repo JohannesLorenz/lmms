@@ -588,7 +588,7 @@ void Knob::mousePressEvent( QMouseEvent * _me )
 		}
 
 		const QPoint & p = _me->pos();
-		m_lastMousePos = p;
+		m_origMousePos = m_lastMousePos = p;
 		m_leftOver = 0.0f;
 
 		emit sliderPressed();
@@ -675,7 +675,11 @@ void Knob::mouseReleaseEvent( QMouseEvent* event )
 		}
 	}
 
-	m_buttonPressed = false;
+	if( m_buttonPressed )
+	{
+		m_buttonPressed = false;
+		QCursor::setPos( mapToGlobal( m_origMousePos ) );
+	}
 
 	emit sliderReleased();
 
