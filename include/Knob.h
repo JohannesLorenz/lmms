@@ -196,6 +196,13 @@ private:
 
 	knobTypes m_knobNum;
 
+	enum class SetPosStatusType
+	{
+		NotChecked,
+		Works,
+		NoEffect
+	};
+	static SetPosStatusType s_setPosStatus;
 } ;
 
 #endif

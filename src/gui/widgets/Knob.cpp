@@ -51,6 +51,7 @@
 #include "TextFloat.h"
 
 TextFloat * Knob::s_textFloat = NULL;
+Knob::SetPosStatusType Knob::s_setPosStatus = Knob::SetPosStatusType::NotChecked;
 
 
 
@@ -587,13 +588,29 @@ void Knob::mousePressEvent( QMouseEvent * _me )
 			thisModel->saveJournallingState( false );
 		}
 
+		if(s_setPosStatus == SetPosStatusType::NotChecked)
+		{
+			QPoint oldPos = QCursor::pos();
+			QCursor::setPos(oldPos - QPoint(1,1));
+			s_setPosStatus = (QCursor::pos() == oldPos)
+				? SetPosStatusType::NoEffect
+				: SetPosStatusType::Works;
+			QCursor::setPos(oldPos);
+		}
+
 		const QPoint & p = _me->pos();
 		m_origMousePos = m_lastMousePos = p;
 		m_leftOver = 0.0f;
 
 		emit sliderPressed();
 
-		QApplication::setOverrideCursor( Qt::BlankCursor );
+		if(s_setPosStatus == SetPosStatusType::Works)
+		{
+			// if overriding of cursor does not work, the user can
+			// be confused when a hidden cursor reappears somewhere
+			// outside of the knob
+			QApplication::setOverrideCursor( Qt::BlankCursor );
+		}
 		s_textFloat->setText( displayValue() );
 		s_textFloat->moveGlobal( this,
 				QPoint( width() + 2, 0 ) );
