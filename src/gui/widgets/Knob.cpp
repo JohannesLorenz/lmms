@@ -588,6 +588,13 @@ void Knob::mousePressEvent( QMouseEvent * _me )
 			thisModel->saveJournallingState( false );
 		}
 
+		// on apple, we know that setPos will not work in many cases
+		// (and that the below check won't work either)
+		// to not confuse the user, we won't hide the cursor on apple,
+		// and we won't call setPos on apple either
+#ifdef LMMS_BUILD_APPLE
+		(void)s_setPosStatus;
+#else
 		if(s_setPosStatus == SetPosStatusType::NotChecked)
 		{
 			QPoint oldPos = QCursor::pos();
@@ -597,6 +604,7 @@ void Knob::mousePressEvent( QMouseEvent * _me )
 				: SetPosStatusType::Works;
 			QCursor::setPos(oldPos);
 		}
+#endif
 
 		const QPoint & p = _me->pos();
 		m_origMousePos = m_lastMousePos = p;
@@ -604,6 +612,7 @@ void Knob::mousePressEvent( QMouseEvent * _me )
 
 		emit sliderPressed();
 
+#ifndef LMMS_BUILD_APPLE
 		if(s_setPosStatus == SetPosStatusType::Works)
 		{
 			// if overriding of cursor does not work, the user can
@@ -611,6 +620,7 @@ void Knob::mousePressEvent( QMouseEvent * _me )
 			// outside of the knob
 			QApplication::setOverrideCursor( Qt::BlankCursor );
 		}
+#endif
 		s_textFloat->setText( displayValue() );
 		s_textFloat->moveGlobal( this,
 				QPoint( width() + 2, 0 ) );
@@ -661,8 +671,13 @@ void Knob::mouseMoveEvent( QMouseEvent * _me )
 
 		auto setCursor = [&](const QPoint& p) -> bool
 		{
+#ifdef LMMS_BUILD_APPLE
+			(void)p;
+			return false;
+#else
 			QCursor::setPos(newPos);
 			return QCursor::pos() == newPos;
+#endif
 		};
 
 		// no flip, or calling QCursor::setPos() for flip has no effect?
@@ -700,7 +715,9 @@ void Knob::mouseReleaseEvent( QMouseEvent* event )
 	if( m_buttonPressed )
 	{
 		m_buttonPressed = false;
+#ifndef LMMS_BUILD_APPLE
 		QCursor::setPos( mapToGlobal( m_origMousePos ) );
+#endif
 	}
 
 	emit sliderReleased();
