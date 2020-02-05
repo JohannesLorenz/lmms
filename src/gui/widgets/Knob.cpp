@@ -627,7 +627,12 @@ void Knob::mouseMoveEvent( QMouseEvent * _me )
 		// the rest of the code updates the cursor and/or m_origMousePos
 
 		// get screen min/max values where a flip is not required yet
-		const QRect& rec = QApplication::screenAt(QCursor::pos())->geometry();
+		const QRect& rec =
+#if QT_VERSION >= 0x050000			
+			QApplication::screenAt(QCursor::pos())->geometry();
+#else
+			QApplication::desktop()->availableGeometry();
+#endif
 		int ymax = qMax(rec.height() - 2, 0), xmax = qMax(rec.width() - 2, 0);
 		int ymin = 1, xmin = 1;
 
