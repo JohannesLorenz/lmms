@@ -628,7 +628,7 @@ void Knob::mouseMoveEvent( QMouseEvent * _me )
 
 		// get screen min/max values where a flip is not required yet
 		const QRect& rec =
-#if QT_VERSION >= 0x050000			
+#if QT_VERSION >= 0x050A00
 			QApplication::screenAt(QCursor::pos())->geometry();
 #else
 			QApplication::desktop()->availableGeometry();
