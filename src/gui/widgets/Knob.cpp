@@ -612,7 +612,6 @@ void Knob::mousePressEvent( QMouseEvent * _me )
 
 		emit sliderPressed();
 
-#ifndef LMMS_BUILD_APPLE
 		if(s_setPosStatus == SetPosStatusType::Works)
 		{
 			// if overriding of cursor does not work, the user can
@@ -620,7 +619,7 @@ void Knob::mousePressEvent( QMouseEvent * _me )
 			// outside of the knob
 			QApplication::setOverrideCursor( Qt::BlankCursor );
 		}
-#endif
+
 		s_textFloat->setText( displayValue() );
 		s_textFloat->moveGlobal( this,
 				QPoint( width() + 2, 0 ) );
@@ -671,13 +670,16 @@ void Knob::mouseMoveEvent( QMouseEvent * _me )
 
 		auto setCursor = [&](const QPoint& p) -> bool
 		{
-#ifdef LMMS_BUILD_APPLE
-			(void)p;
-			return false;
-#else
-			QCursor::setPos(newPos);
-			return QCursor::pos() == newPos;
-#endif
+			if(s_setPosStatus == SetPosStatusType::Works)
+			{
+				QCursor::setPos(newPos);
+				return QCursor::pos() == newPos;
+			}
+			else
+			{
+				(void)p;
+				return false;
+			}
 		};
 
 		// no flip, or calling QCursor::setPos() for flip has no effect?
