@@ -81,7 +81,7 @@ class LocklessRingBuffer : public LocklessRingBufferBase<T>
 public:
 	LocklessRingBuffer(std::size_t sz) : LocklessRingBufferBase<T>(sz) {};
 
-	std::size_t write(const sampleFrame *src, std::size_t cnt, bool notify = false)
+	std::size_t write(const T *src, std::size_t cnt, bool notify = false)
 	{
 		std::size_t written = LocklessRingBufferBase<T>::m_buffer.write(src, cnt);
 		// Let all waiting readers know new data are available.

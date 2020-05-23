@@ -28,6 +28,7 @@
 #include <QObject>
 
 
+#include "Engine.h"
 #include "Song.h"
 #include "ControllerConnection.h"
 

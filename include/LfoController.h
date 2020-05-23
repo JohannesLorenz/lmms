@@ -46,13 +46,11 @@ class LfoController : public Controller
 	Q_OBJECT
 public:
 	LfoController( Model * _parent );
-
-	virtual ~LfoController();
+	~LfoController() override;
 
 	void saveSettings( QDomDocument & _doc, QDomElement & _this ) override;
 	void loadSettings( const QDomElement & _this ) override;
 	QString nodeName() const override;
-
 
 public slots:
 	ControllerDialog * createDialog( QWidget * _parent ) override;

@@ -29,6 +29,8 @@
 #include "lmmsconfig.h"
 
 #include "AudioPort.h"
+#include "Controller.h"
+#include "Engine.h"
 #include "FxMixer.h"
 #include "MixerWorkerThread.h"
 #include "Song.h"

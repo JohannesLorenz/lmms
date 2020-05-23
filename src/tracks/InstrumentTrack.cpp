@@ -46,6 +46,7 @@
 #include "EffectChain.h"
 #include "EffectRackView.h"
 #include "embed.h"
+#include "Engine.h"
 #include "FileBrowser.h"
 #include "FxLineLcdSpinBox.h"
 #include "FxMixer.h"

@@ -38,6 +38,7 @@
 #include "ConfigManager.h"
 #include "CPULoadWidget.h"
 #include "embed.h"
+#include "Engine.h"
 #include "GuiApplication.h"
 #include "LcdSpinBox.h"
 #include "MainWindow.h"

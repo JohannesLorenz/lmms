@@ -53,6 +53,7 @@
 #include "debug.h"
 #include "DetuningHelper.h"
 #include "embed.h"
+#include "Engine.h"
 #include "GuiApplication.h"
 #include "gui_templates.h"
 #include "InstrumentTrack.h"

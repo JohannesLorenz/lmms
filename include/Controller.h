@@ -49,6 +49,7 @@ public:
 		LfoController,
 		MidiController,
 		PeakController,
+		PianoController,
 		/*
 		XYController,
 		EquationController
@@ -86,12 +87,13 @@ public:
 	{
 		switch( m_type )
 		{
-			case LfoController: return( true );
-			case PeakController: return( true );
+			case LfoController: return true;
+			case PeakController: return true;
+			case PianoController: return true;
 			default:
 				break;
 		}
-		return( false );
+		return false;
 	}
 
 	virtual const QString & name() const

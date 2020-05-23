@@ -33,6 +33,7 @@
 
 #include "TrackContainer.h"
 #include "BBTrack.h"
+#include "Engine.h"
 #include "MainWindow.h"
 #include "Mixer.h"
 #include "FileBrowser.h"

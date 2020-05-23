@@ -25,6 +25,7 @@
 #include <QDebug>
 #include <QDir>
 
+#include "Engine.h"
 #include "RenderManager.h"
 #include "Song.h"
 #include "BBTrackContainer.h"

@@ -41,11 +41,13 @@
 #include "ControllerRackView.h"
 #include "ControllerConnection.h"
 #include "embed.h"
+#include "Engine.h"
 #include "EnvelopeAndLfoParameters.h"
 #include "FxMixer.h"
 #include "FxMixerView.h"
 #include "GuiApplication.h"
 #include "ExportFilter.h"
+#include "Mixer.h"
 #include "Pattern.h"
 #include "PianoRoll.h"
 #include "ProjectJournal.h"
@@ -123,10 +125,19 @@ Song::~Song()
 
 
 
+f_cnt_t Song::currentFrame() const
+{
+	return m_playPos[m_playMode].getTicks() * Engine::framesPerTick() +
+			m_playPos[m_playMode].currentFrame();
+}
+
+
+
+
 void Song::masterVolumeChanged()
 {
 	Engine::mixer()->setMasterGain( m_masterVolumeModel.value() /
-								100.0f );
+									100.0f );
 }
 
 
@@ -1237,6 +1248,12 @@ bool Song::saveProjectFile( const QString & filename )
 	m_savingProject = false;
 
 	return dataFile.writeFile( filename );
+}
+
+void Song::loadingCancelled()
+{
+	m_isCancelled = true;
+	Engine::mixer()->clearNewPlayHandles();
 }
 
 

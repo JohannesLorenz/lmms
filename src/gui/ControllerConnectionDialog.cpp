@@ -31,6 +31,7 @@
 
 #include "ControllerConnectionDialog.h"
 #include "ControllerConnection.h"
+#include "Engine.h"
 #include "MidiController.h"
 #include "MidiClient.h"
 #include "MidiPortMenu.h"

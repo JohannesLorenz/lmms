@@ -31,13 +31,12 @@
 #include <QtCore/QVector>
 
 #include "TrackContainer.h"
-#include "Controller.h"
 #include "MeterModel.h"
-#include "Mixer.h"
 #include "VstSyncController.h"
 
 
 class AutomationTrack;
+class Controller;
 class Pattern;
 class TimeLineWidget;
 
@@ -109,7 +108,7 @@ public:
 		TimeLineWidget * m_timeLine;
 
 	private:
-		float m_currentFrame;
+		float m_currentFrame; //!< probably (hopefully??) an integer
 		bool m_jumped;
 
 	} ;
@@ -289,11 +288,7 @@ public:
 		return m_loadingProject;
 	}
 
-	void loadingCancelled()
-	{
-		m_isCancelled = true;
-		Engine::mixer()->clearNewPlayHandles();
-	}
+	void loadingCancelled();
 
 	bool isCancelled()
 	{
@@ -319,7 +314,7 @@ public:
 	void removeController( Controller * c );
 
 
-	const ControllerVector & controllers() const
+	const QVector<Controller*> & controllers() const
 	{
 		return m_controllers;
 	}
@@ -392,11 +387,7 @@ private:
 		return m_playPos[m_playMode].getTicks();
 	}
 
-	inline f_cnt_t currentFrame() const
-	{
-		return m_playPos[m_playMode].getTicks() * Engine::framesPerTick() +
-			m_playPos[m_playMode].currentFrame();
-	}
+	inline f_cnt_t currentFrame() const;
 
 	void setPlayPos( tick_t ticks, PlayModes playMode );
 
@@ -419,7 +410,7 @@ private:
 	IntModel m_masterVolumeModel;
 	IntModel m_masterPitchModel;
 
-	ControllerVector m_controllers;
+	QVector<Controller*> m_controllers;
 
 	int m_nLoadingTrack;
 

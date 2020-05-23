@@ -27,6 +27,7 @@
 #include <QObject>
 
 
+#include "Engine.h"
 #include "Song.h"
 #include "Mixer.h"
 #include "LfoController.h"

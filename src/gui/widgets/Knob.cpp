@@ -39,6 +39,7 @@
 #include "ConfigManager.h"
 #include "ControllerConnection.h"
 #include "embed.h"
+#include "Engine.h"
 #include "gui_templates.h"
 #include "GuiApplication.h"
 #include "LocaleHelper.h"

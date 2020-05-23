@@ -24,6 +24,7 @@
 
 #include "Editor.h"
 
+#include "Engine.h"
 #include "Song.h"
 
 #include "MainWindow.h"

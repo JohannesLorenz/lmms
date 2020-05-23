@@ -27,6 +27,7 @@
 #include <QMessageBox>
 #include <QDebug>
 
+#include "Engine.h"
 #include "ExportProjectDialog.h"
 #include "Song.h"
 #include "GuiApplication.h"

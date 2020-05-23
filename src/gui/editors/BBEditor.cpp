@@ -31,6 +31,7 @@
 #include "ComboBox.h"
 #include "BBTrackContainer.h"
 #include "embed.h"
+#include "Engine.h"
 #include "MainWindow.h"
 #include "Song.h"
 #include "StringPairDrag.h"

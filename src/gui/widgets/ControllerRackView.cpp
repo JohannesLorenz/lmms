@@ -33,6 +33,7 @@
 
 #include "Song.h"
 #include "embed.h"
+#include "Engine.h"
 #include "GuiApplication.h"
 #include "MainWindow.h"
 #include "GroupBox.h"

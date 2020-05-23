@@ -28,6 +28,7 @@
 
 #include "AutomationPattern.h"
 #include "ControllerConnection.h"
+#include "Engine.h"
 #include "LocaleHelper.h"
 #include "Mixer.h"
 #include "ProjectJournal.h"

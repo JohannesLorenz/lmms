@@ -18,6 +18,7 @@
  *
  */
 
+#include "Engine.h"
 #include "StepRecorder.h"
 #include "StepRecorderWidget.h"
 #include "PianoRoll.h"

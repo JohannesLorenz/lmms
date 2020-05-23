@@ -25,6 +25,7 @@
 
 #include <QFile>
 
+#include "Engine.h"
 #include "ProjectRenderer.h"
 #include "Song.h"
 #include "PerfLog.h"

@@ -34,6 +34,7 @@
 #include "BBTrack.h"
 #include "BBTrackContainer.h"
 #include "embed.h"
+#include "Engine.h"
 #include "TrackContainer.h"
 #include "InstrumentTrack.h"
 #include "Song.h"
