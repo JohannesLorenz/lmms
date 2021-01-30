@@ -1,0 +1,17 @@
+name: test-clang-format
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: DoozyX/clang-format-lint-action@9ea72631b74e61ce337d0839a90e76180e997283 # v0.13
+      with:
+        source: '.'
+        extensions: 'h,cpp'
+        clangFormatVersion: 13
+        style: file
+        # exclude files are in .clang-format-ignore
