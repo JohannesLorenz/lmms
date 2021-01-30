@@ -1,0 +1,17 @@
+doc/wiki
+plugins/FreeBoy/game-music-emu
+plugins/LadspaEffect/calf/veal
+plugins/LadspaEffect/cmt/cmt
+plugins/LadspaEffect/swh/ladspa
+plugins/LadspaEffect/tap/tap-plugins
+plugins/OpulenZ/adplug
+plugins/Sid/resid
+plugins/Xpressive/exprtk
+plugins/carlabase/carla
+plugins/zynaddsubfx/zynaddsubfx
+src/3rdparty/jack2
+src/3rdparty/mingw-std-threads
+src/3rdparty/qt5-x11embed
+src/3rdparty/ringbuffer
+src/3rdparty/rpmalloc/rpmalloc
+src/3rdparty/weakjack/weakjack
