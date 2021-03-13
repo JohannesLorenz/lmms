@@ -71,7 +71,6 @@ SET(LMMS_PLUGIN_LIST
 	vibed
 	Xpressive
 	zynaddsubfx
-	LUMMAUS
 )
 
 IF("${PLUGIN_LIST}" STREQUAL "")

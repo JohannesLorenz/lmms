@@ -71,7 +71,6 @@ public:
 		VideoTrack,
 		AutomationTrack,
 		HiddenAutomationTrack,
-		VocalTrack,
 		NumTrackTypes
 	} ;
 

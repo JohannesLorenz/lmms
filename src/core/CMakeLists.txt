@@ -24,7 +24,6 @@ set(LMMS_SRCS
 	core/ImportFilter.cpp
 	core/InlineAutomation.cpp
 	core/Instrument.cpp
-	core/VocalInstrument.cpp
 	core/InstrumentFunctions.cpp
 	core/InstrumentPlayHandle.cpp
 	core/InstrumentSoundShaping.cpp
@@ -46,7 +45,6 @@ set(LMMS_SRCS
 	core/Model.cpp
 	core/ModelVisitor.cpp
 	core/Note.cpp
-	core/VocalNote.cpp
 	core/NotePlayHandle.cpp
 	core/Oscillator.cpp
 	core/PathUtil.cpp

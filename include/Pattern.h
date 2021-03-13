@@ -35,7 +35,6 @@
 
 #include "Note.h"
 #include "TrackContentObjectView.h"
-#include "SampleBuffer.h"
 
 
 class InstrumentTrack;
@@ -60,9 +59,7 @@ public:
 	void updateLength();
 
 	// note management
-	virtual Note * addNote( const Note & _new_note, const bool _quant_pos = true );
-
-	Note * addNote(Note * new_note, const bool _quant_pos = true);
+	Note * addNote( const Note & _new_note, const bool _quant_pos = true );
 
 	void removeNote( Note * _note_to_del );
 
@@ -106,11 +103,6 @@ public:
 		return m_instrumentTrack;
 	}
 
-	inline SampleBuffer &getBouncedBuffer()
-	{
-		return m_bouncedBuffer;
-	}
-
 	bool empty();
 
 
@@ -119,8 +111,20 @@ public:
 
 	using Model::dataChanged;
 
+
 protected:
 	void updateBBTrack();
+
+
+protected slots:
+	void addSteps();
+	void cloneSteps();
+	void removeSteps();
+	void clear();
+	void changeTimeSignature();
+
+
+private:
 	TimePos beatPatternLength() const;
 
 	void setType( PatternTypes _new_pattern_type );
@@ -135,25 +139,15 @@ protected:
 	// data-stuff
 	NoteVector m_notes;
 	int m_steps;
-	SampleBuffer m_bouncedBuffer;
+
 	Pattern * adjacentPatternByOffset(int offset) const;
 
-protected slots:
-	void addSteps();
-	void cloneSteps();
-	void removeSteps();
-	void clear();
-	void changeTimeSignature();
-
-
-private:
 	friend class PatternView;
 	friend class BBTrackContainerView;
 
 
 signals:
 	void destroyedPattern( Pattern* );
-	void movedNote();
 
 } ;
 
