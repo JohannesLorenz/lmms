@@ -26,10 +26,6 @@
 #define SACONTROLSDIALOG_H
 
 #include "EffectControlDialog.h"
-#include "SaControls.h"
-#include "SaSpectrumView.h"
-#include "SaProcessor.h"
-#include "SaWaterfallView.h"
 
 
 //! Top-level widget holding the configuration GUI and spectrum displays

@@ -31,7 +31,6 @@
 #ifdef LMMS_HAVE_SNDIO
 
 #include <QtCore/QThread>
-#include <QtCore/QFile>
 
 #include <sndio.h>
 

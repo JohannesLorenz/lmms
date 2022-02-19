@@ -24,7 +24,6 @@
  */
 
 
-#include <QDomElement>
 
 #include "waveshaper_controls.h"
 #include "waveshaper.h"

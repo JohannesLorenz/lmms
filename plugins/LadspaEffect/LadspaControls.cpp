@@ -22,7 +22,6 @@
  *
  */
 
-#include <QDomElement>
 
 #include "LadspaEffect.h"
 

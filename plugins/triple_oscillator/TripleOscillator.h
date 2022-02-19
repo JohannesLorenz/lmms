@@ -28,7 +28,6 @@
 
 #include "Instrument.h"
 #include "InstrumentView.h"
-#include "Oscillator.h"
 #include "AutomatableModel.h"
 
 

@@ -26,8 +26,6 @@
 
 #include "TrackLabelButton.h"
 
-#include <QApplication>
-#include <QMouseEvent>
 
 #include "ConfigManager.h"
 #include "embed.h"

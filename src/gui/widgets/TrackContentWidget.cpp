@@ -25,7 +25,6 @@
 #include "TrackContentWidget.h"
 
 #include <QApplication>
-#include <QContextMenuEvent>
 #include <QMenu>
 #include <QPainter>
 

@@ -27,11 +27,7 @@
 
 #include "Instrument.h"
 #include "InstrumentView.h"
-#include "opl.h"
 
-#include "LcdSpinBox.h"
-#include "Knob.h"
-#include "PixmapButton.h"
 
 // This one is a flag, MIDI notes take 7 low bits
 #define OPL2_VOICE_FREE 128

@@ -25,8 +25,6 @@
 
 
 
-#include <QLayout>
-#include <QLabel>
 
 #include "peak_controller_effect_control_dialog.h"
 #include "peak_controller_effect_controls.h"

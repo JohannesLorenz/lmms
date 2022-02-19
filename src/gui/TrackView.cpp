@@ -26,12 +26,8 @@
 #include "TrackView.h"
 
 #include <QApplication>
-#include <QHBoxLayout>
-#include <QMenu>
-#include <QMouseEvent>
 #include <QPainter>
 #include <QStyleOption>
-#include <QtGlobal>
 
 
 #include "AudioEngine.h"

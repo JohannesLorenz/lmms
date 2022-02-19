@@ -27,13 +27,10 @@
 #ifndef SASPECTRUMVIEW_H
 #define SASPECTRUMVIEW_H
 
-#include "SaControls.h"
 
 #include <string>
 #include <utility>
 #include <vector>
-#include <QPainterPath>
-#include <QWidget>
 
 class QMouseEvent;
 class QPainter;

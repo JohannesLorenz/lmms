@@ -32,13 +32,9 @@
 #ifndef LB302_H_
 #define LB302_H_
 
-#include "DspEffectLibrary.h"
 #include "Instrument.h"
 #include "InstrumentView.h"
-#include "LedCheckbox.h"
-#include "Knob.h"
 #include "NotePlayHandle.h"
-#include <QMutex>
 
 static const int NUM_FILTERS = 2;
 

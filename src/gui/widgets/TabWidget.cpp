@@ -25,11 +25,9 @@
 
 #include "TabWidget.h"
 
-#include <QMouseEvent>
 #include <QPainter>
 #include <QPixmap>
 #include <QToolTip>
-#include <QWheelEvent>
 
 #include "DeprecationHelper.h"
 #include "embed.h"

@@ -23,16 +23,8 @@
  *
  */
 
-#include <QLabel>
-#include <QPushButton>
-#include <QMdiArea>
-#include <QPainter>
 
-#include "CaptionMenu.h"
-#include "gui_templates.h"
 #include "embed.h"
-#include "LedCheckbox.h"
-#include "MainWindow.h"
 #include "ToolTip.h"
 
 

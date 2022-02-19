@@ -25,7 +25,6 @@
 #ifndef LV2_INSTRUMENT_H
 #define LV2_INSTRUMENT_H
 
-#include <QString>
 
 #include "Instrument.h"
 #include "InstrumentView.h"

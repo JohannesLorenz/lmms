@@ -24,13 +24,6 @@
 
 #include "lmmsconfig.h"
 
-#include <QDir>
-#include <QDomDocument>
-#include <QTemporaryFile>
-#include <QtGlobal>
-#include <QDropEvent>
-#include <QGridLayout>
-#include <QPushButton>
 
 #include "ZynAddSubFx.h"
 #include "ConfigManager.h"
@@ -46,7 +39,6 @@
 #include "RemoteZynAddSubFx.h"
 #include "LocalZynAddSubFx.h"
 #include "AudioEngine.h"
-#include "ControllerConnection.h"
 #include "Clipboard.h"
 
 #include "embed.h"

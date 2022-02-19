@@ -26,13 +26,8 @@
 #include "CompressorControlDialog.h"
 #include "CompressorControls.h"
 
-#include <QLabel>
-#include <QLayout>
-#include <QPainter>
 
-#include "embed.h"
 #include "GuiApplication.h"
-#include "gui_templates.h"
 #include "interpolation.h"
 #include "MainWindow.h"
 #include "ToolTip.h"

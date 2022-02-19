@@ -29,15 +29,6 @@
 
 #include "denormals.h"
 
-#include <QDebug>
-#include <QFileInfo>
-#include <QLocale>
-#include <QTimer>
-#include <QTranslator>
-#include <QApplication>
-#include <QMessageBox>
-#include <QPushButton>
-#include <QTextStream>
 
 #ifdef LMMS_BUILD_WIN32
 #include <windows.h>
@@ -71,7 +62,6 @@
 #include "ProjectRenderer.h"
 #include "RenderManager.h"
 #include "Song.h"
-#include "SetupDialog.h"
 
 #ifdef LMMS_DEBUG_FPE
 #include <fenv.h> // For feenableexcept

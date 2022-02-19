@@ -23,14 +23,12 @@
  */
 
 
-#include <QDomElement>
 
 #include "Monstro.h"
 #include "Engine.h"
 #include "InstrumentTrack.h"
 #include "gui_templates.h"
 #include "ToolTip.h"
-#include "Song.h"
 #include "lmms_math.h"
 #include "interpolation.h"
 

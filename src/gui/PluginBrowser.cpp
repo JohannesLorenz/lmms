@@ -27,14 +27,12 @@
 #include <QHeaderView>
 #include <QLabel>
 #include <QLineEdit>
-#include <QMouseEvent>
 #include <QPainter>
 #include <QStyleOption>
 #include <QTreeWidget>
 
 #include "embed.h"
 #include "Engine.h"
-#include "gui_templates.h"
 #include "StringPairDrag.h"
 #include "PluginFactory.h"
 

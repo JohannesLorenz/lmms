@@ -22,7 +22,6 @@
  *
  */
 
-#include <QMouseEvent>
 #include <QPainter>
 
 #ifndef __USE_XOPEN

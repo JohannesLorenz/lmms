@@ -25,8 +25,6 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
-#include <QImage>
-#include <QPainter>
 
 #include "ColorChooser.h"
 #include "GuiApplication.h"

@@ -30,8 +30,6 @@
 #include "ToneStack.h"
 #include "Descriptor.h"
 
-#include "dsp/tonestack/ks_tab.h"
-#include "dsp/tonestack/vs_tab.h"
 
 DSP::TSParameters 
 DSP::ToneStack::presets[] = {

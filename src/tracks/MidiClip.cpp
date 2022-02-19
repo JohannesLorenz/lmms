@@ -30,7 +30,6 @@
 #include "PatternStore.h"
 #include "PianoRoll.h"
 
-#include <limits>
 
 
 QPixmap * MidiClipView::s_stepBtnOn0 = nullptr;

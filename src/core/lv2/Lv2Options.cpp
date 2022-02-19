@@ -26,7 +26,6 @@
 
 #ifdef LMMS_HAVE_LV2
 
-#include <QtGlobal>
 
 
 std::set<LV2_URID> Lv2Options::s_supportedOptions;

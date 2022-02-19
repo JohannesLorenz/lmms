@@ -26,11 +26,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <QPainter>
-#include <QWidget>
 
-#include "SaControls.h"
-#include "SaProcessor.h"
 
 class QMouseEvent;
 

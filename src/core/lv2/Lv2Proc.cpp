@@ -31,7 +31,6 @@
 #include <lv2/lv2plug.in/ns/ext/atom/atom.h>
 #include <lv2/lv2plug.in/ns/ext/resize-port/resize-port.h>
 #include <QDebug>
-#include <QtGlobal>
 
 #include "AudioEngine.h"
 #include "AutomatableModel.h"
@@ -41,6 +40,7 @@
 #include "Lv2Manager.h"
 #include "Lv2Ports.h"
 #include "Lv2Evbuf.h"
+#include "MidiEvent.h"
 #include "MidiEventToByteSeq.h"
 
 

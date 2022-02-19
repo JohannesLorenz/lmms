@@ -24,12 +24,9 @@
  *
  */
  
-#include <QLayout>
-#include <QLabel>
 
 #include "CrossoverEQControlDialog.h"
 #include "CrossoverEQControls.h"
-#include "embed.h"
 #include "ToolTip.h"
 #include "LedCheckbox.h"
 #include "Knob.h"

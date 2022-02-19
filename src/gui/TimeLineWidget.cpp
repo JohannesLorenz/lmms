@@ -23,11 +23,7 @@
  */
 
 
-#include <QDomElement>
 #include <QTimer>
-#include <QApplication>
-#include <QLayout>
-#include <QMouseEvent>
 #include <QPainter>
 #include <QToolBar>
 
@@ -37,7 +33,6 @@
 #include "NStateButton.h"
 #include "GuiApplication.h"
 #include "TextFloat.h"
-#include "SongEditor.h"
 
 
 QPixmap * TimeLineWidget::s_posMarkerPixmap = nullptr;

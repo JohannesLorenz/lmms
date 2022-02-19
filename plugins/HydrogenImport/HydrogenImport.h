@@ -1,9 +1,6 @@
 #ifndef _HYDROGEN_IMPORT_H
 #define _HYDROGEN_IMPORT_H
 
-#include <QString>
-#include <QPair>
-#include <QVector>
 
 #include "ImportFilter.h"
 

@@ -23,7 +23,6 @@
  */
 
 #include <QLabel>
-#include <QLayout>
 
 #include "InstrumentFunctions.h"
 #include "InstrumentFunctionViews.h"

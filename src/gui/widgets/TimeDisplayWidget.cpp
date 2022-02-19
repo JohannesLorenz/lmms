@@ -22,7 +22,6 @@
  *
  */
 
-#include <QMouseEvent>
 
 #include "TimeDisplayWidget.h"
 #include "GuiApplication.h"

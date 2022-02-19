@@ -25,16 +25,12 @@
 #ifndef MICROTUNER_CONFIG_H
 #define MICROTUNER_CONFIG_H
 
-#include <QCloseEvent>
-#include <QLineEdit>
-#include <QMainWindow>
-#include <QPlainTextEdit>
 
 #include "AutomatableModel.h"
 #include "ComboBoxModel.h"
-#include "LcdFloatSpinBox.h"
-#include "LcdSpinBox.h"
 #include "SerializingObject.h"
+
+class QPlainTextEdit;
 
 class LMMS_EXPORT MicrotunerConfig : public QWidget, public SerializingObject
 {

@@ -28,8 +28,6 @@
 #include <QGridLayout>
 #include <QMdiSubWindow>
 #include <QScrollArea>
-#include <QVBoxLayout>
-#include <QWidget>
 
 #include "embed.h"
 #include "GroupBox.h"
@@ -37,7 +35,7 @@
 #include "InstrumentTrack.h"
 #include "Knob.h"
 #include "MainWindow.h"
-#include "Track.h"
+#include "SubWindow.h"
 
 
 MidiCCRackView::MidiCCRackView(InstrumentTrack * track) :

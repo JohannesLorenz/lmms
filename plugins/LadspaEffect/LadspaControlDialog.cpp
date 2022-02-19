@@ -26,10 +26,7 @@
 
 #include <cmath>
 
-#include <QGroupBox>
-#include <QLayout>
 
-#include "LadspaEffect.h"
 #include "LadspaControlDialog.h"
 #include "LadspaControlView.h"
 #include "LedCheckbox.h"

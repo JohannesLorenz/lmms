@@ -24,20 +24,15 @@
  */
 
 
-#include <QtCore/QVarLengthArray>
-#include <QMessageBox>
 
 #include "LadspaEffect.h"
 #include "DataFile.h"
 #include "AudioDevice.h"
 #include "AudioEngine.h"
-#include "ConfigManager.h"
 #include "Ladspa2LMMS.h"
 #include "LadspaControl.h"
 #include "LadspaSubPluginFeatures.h"
-#include "EffectChain.h"
 #include "AutomationClip.h"
-#include "ControllerConnection.h"
 #include "MemoryManager.h"
 #include "ValueBuffer.h"
 #include "Song.h"

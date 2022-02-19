@@ -29,7 +29,6 @@
 
 #include <QtCore/QMap>
 
-#include "PatternClipView.h"
 #include "Track.h"
 
 class TrackLabelButton;

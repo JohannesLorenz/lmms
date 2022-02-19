@@ -23,12 +23,6 @@
  */
 
 
-#include <QDomDocument>
-#include <QDir>
-#include <QApplication>
-#include <QFile>
-#include <QMessageBox>
-#include <QProgressDialog>
 
 #include <sstream>
 #include <unordered_map>
@@ -44,10 +38,8 @@
 #include "GuiApplication.h"
 #include "MainWindow.h"
 #include "TimePos.h"
-#include "debug.h"
 #include "Song.h"
 
-#include "embed.h"
 #include "plugin_export.h"
 
 #include "portsmf/allegro.h"

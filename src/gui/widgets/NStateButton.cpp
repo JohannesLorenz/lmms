@@ -23,7 +23,6 @@
  */
  
 
-#include <QMouseEvent>
 
 #include "NStateButton.h"
 #include "ToolTip.h"

@@ -29,7 +29,6 @@
 #define _CLICK_H_
 
 #include "dsp/OnePole.h"
-#include "dsp/util.h"
 
 class ClickStub
 : public Plugin

@@ -23,19 +23,13 @@
  *
  */
 
-#include <QDebug>
 
 #include "AudioEngine.h"
 #include "ConfigManager.h"
 #include "Engine.h"
 #include "VstSyncController.h"
-#include "RemotePlugin.h"
 
 #ifndef USE_QT_SHMEM
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #endif

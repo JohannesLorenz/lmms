@@ -23,8 +23,8 @@
  */
 #include "MainApplication.h"
 
-#include <QDebug>
 #include <QFileOpenEvent>
+#include <QDebug>
 
 #include "Engine.h"
 #include "GuiApplication.h"

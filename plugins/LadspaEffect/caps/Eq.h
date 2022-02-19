@@ -28,10 +28,7 @@
 #ifndef _EQ_H_
 #define _EQ_H_
 
-#include "dsp/util.h"
 #include "dsp/Eq.h"
-#include "dsp/BiQuad.h"
-#include "dsp/RBJ.h"
 
 class Eq
 : public Plugin

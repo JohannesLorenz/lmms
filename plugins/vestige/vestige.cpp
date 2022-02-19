@@ -22,7 +22,6 @@
  *
  */
 
-#include <QtCore/QtGlobal>
 
 #include "VstPlugin.h"
 
@@ -30,18 +29,9 @@
 
 #include <memory>
 
-#include <QDropEvent>
-#include <QMessageBox>
-#include <QPainter>
-#include <QPushButton>
-#include <QMdiArea>
-#include <QMenu>
-#include <QDomElement>
 
-#include <string>
 
 #include "AudioEngine.h"
-#include "BufferManager.h"
 #include "ConfigManager.h"
 #include "Engine.h"
 #include "FileDialog.h"
@@ -53,7 +43,6 @@
 #include "MainWindow.h"
 #include "PathUtil.h"
 #include "PixmapButton.h"
-#include "SampleBuffer.h"
 #include "Song.h"
 #include "StringPairDrag.h"
 #include "TextFloat.h"

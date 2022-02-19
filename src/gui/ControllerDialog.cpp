@@ -23,6 +23,7 @@
  *
  */
 
+
 #include <QCloseEvent>
 
 #include "ControllerDialog.h"

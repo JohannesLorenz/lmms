@@ -26,10 +26,8 @@
 #ifndef _LADSPA_EFFECT_H
 #define _LADSPA_EFFECT_H
 
-#include <QMutex>
 
 #include "Effect.h"
-#include "LadspaBase.h"
 #include "LadspaControls.h"
 
 

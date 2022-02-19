@@ -23,7 +23,6 @@
  */
 
 #include "Lfo.h"
-#include "lmms_math.h"
 
 
 

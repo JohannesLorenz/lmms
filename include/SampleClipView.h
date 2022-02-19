@@ -25,7 +25,6 @@
 #ifndef SAMPLE_CLIP_VIEW_H
 #define SAMPLE_CLIP_VIEW_H
 
-#include "SampleClip.h"
 #include "ClipView.h"
 
 class SampleClipView : public ClipView

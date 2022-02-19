@@ -26,11 +26,9 @@
 #include "SampleRecordHandle.h"
 #include "AudioEngine.h"
 #include "Engine.h"
-#include "InstrumentTrack.h"
 #include "PatternTrack.h"
 #include "SampleBuffer.h"
-#include "SampleTrack.h"
-#include "debug.h"
+#include "SampleClip.h"
 
 
 SampleRecordHandle::SampleRecordHandle( SampleClip* clip ) :

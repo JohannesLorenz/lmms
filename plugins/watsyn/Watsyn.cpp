@@ -22,7 +22,6 @@
  *
  */
 
-#include <QDomElement>
 
 #include "Watsyn.h"
 #include "base64.h"

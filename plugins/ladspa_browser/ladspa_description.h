@@ -27,7 +27,6 @@
 #define _LADSPA_DESCRIPTION_H
 
 
-#include <QWidget>
 
 #include "LadspaManager.h"
 

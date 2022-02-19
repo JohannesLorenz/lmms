@@ -36,11 +36,10 @@
 #endif
 
 #include <QtCore/QThread>
-#include <QMutex>
-#include <QtCore/QFile>
 
 #include "MidiClient.h"
-#include "AudioJack.h"
+
+class AudioJack;
 
 constexpr size_t JACK_MIDI_BUFFER_MAX = 64; /* events */
 

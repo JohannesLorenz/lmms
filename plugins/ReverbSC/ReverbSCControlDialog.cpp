@@ -22,11 +22,9 @@
  *
  */
 
-#include <QLayout>
 
 #include "ReverbSCControlDialog.h"
 #include "ReverbSCControls.h"
-#include "embed.h"
 
 ReverbSCControlDialog::ReverbSCControlDialog( ReverbSCControls* controls ) :
 	EffectControlDialog( controls )

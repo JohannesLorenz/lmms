@@ -24,14 +24,12 @@
  */
 
 
-#include <QDomElement>
 
 #include "BasicFilters.h"
 #include "DualFilterControls.h"
 #include "DualFilter.h"
 #include "embed.h"
 #include "Engine.h"
-#include "Song.h"
 
 DualFilterControls::DualFilterControls( DualFilterEffect* effect ) :
 	EffectControls( effect ),

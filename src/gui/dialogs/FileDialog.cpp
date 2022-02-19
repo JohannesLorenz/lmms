@@ -24,7 +24,6 @@
 
 #include <QList>
 #include <QUrl>
-#include <QDesktopServices>
 #include <QListView>
 
 #include "ConfigManager.h"

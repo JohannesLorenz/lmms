@@ -28,20 +28,15 @@
 #include <QPushButton>
 #include <QMdiArea>
 #include <QMdiSubWindow>
-#include <QPainter>
 #include <QInputDialog>
-#include <QLayout>
 
 #include "ControllerView.h"
 
 #include "CaptionMenu.h"
 #include "ControllerDialog.h"
-#include "gui_templates.h"
 #include "embed.h"
 #include "GuiApplication.h"
-#include "LedCheckbox.h"
 #include "MainWindow.h"
-#include "ToolTip.h"
 
 
 ControllerView::ControllerView( Controller * _model, QWidget * _parent ) :

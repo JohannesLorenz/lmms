@@ -26,9 +26,7 @@
 #ifndef PATTERN_TRACK_VIEW_H
 #define PATTERN_TRACK_VIEW_H
 
-#include <QtCore/QObject>
 
-#include "PatternTrack.h"
 #include "TrackView.h"
 
 

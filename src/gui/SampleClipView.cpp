@@ -28,7 +28,6 @@
 #include <QPainter>
 
 #include "embed.h"
-#include "gui_templates.h"
 #include "PathUtil.h"
 #include "Song.h"
 #include "StringPairDrag.h"

@@ -27,7 +27,6 @@
 #include "nine_button_selector.h"
 
 #include "CaptionMenu.h"
-#include "embed.h"
 
 
 nineButtonSelector::nineButtonSelector(	QPixmap _button0_on,

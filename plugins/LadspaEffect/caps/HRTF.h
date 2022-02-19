@@ -28,7 +28,6 @@
 #ifndef _HRTF_H_
 #define _HRTF_H_
 
-#include "dsp/util.h"
 
 class HRTF
 : public Plugin

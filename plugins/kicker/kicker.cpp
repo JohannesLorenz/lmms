@@ -24,8 +24,6 @@
  */
 
 
-#include <QDomDocument>
-#include <QPainter>
 
 #include "kicker.h"
 #include "AudioEngine.h"

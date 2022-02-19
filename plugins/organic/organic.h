@@ -26,11 +26,9 @@
 #ifndef ORGANIC_H
 #define ORGANIC_H
 
-#include <QString>
 
 #include "Instrument.h"
 #include "InstrumentView.h"
-#include "Oscillator.h"
 #include "AutomatableModel.h"
 
 class QPixmap;

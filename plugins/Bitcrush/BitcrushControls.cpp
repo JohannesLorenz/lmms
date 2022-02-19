@@ -24,11 +24,9 @@
  */
 
 
-#include <QDomElement>
 
 #include "BitcrushControls.h"
 #include "Bitcrush.h"
-#include "lmms_math.h"
 
 
 BitcrushControls::BitcrushControls( BitcrushEffect * eff ) :

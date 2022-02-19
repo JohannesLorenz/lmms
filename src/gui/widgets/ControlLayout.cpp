@@ -77,7 +77,6 @@
 #include <QLayoutItem>
 #include <QLineEdit>
 #include <QRect>
-#include <QString>
 #include <utility>
 
 constexpr const int ControlLayout::m_minWidth;

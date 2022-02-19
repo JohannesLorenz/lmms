@@ -22,8 +22,6 @@
  *
  */
 
-#include <QDomDocument>
-#include <QMap>
 
 #include "vibed.h"
 #include "AudioEngine.h"
@@ -33,7 +31,6 @@
 #include "ToolTip.h"
 #include "base64.h"
 #include "CaptionMenu.h"
-#include "Oscillator.h"
 #include "string_container.h"
 #include "volume.h"
 #include "Song.h"

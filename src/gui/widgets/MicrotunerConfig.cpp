@@ -37,7 +37,6 @@
 #include "Engine.h"
 #include "FileDialog.h"
 #include "GuiApplication.h"
-#include "Knob.h"
 #include "LcdSpinBox.h"
 #include "lmms_constants.h"
 #include "lmmsversion.h"

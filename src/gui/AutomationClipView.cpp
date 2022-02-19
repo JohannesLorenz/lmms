@@ -23,7 +23,7 @@
  */
 #include "AutomationClipView.h"
 
-#include <QMouseEvent>
+#include <QApplication>
 #include <QPainter>
 #include <QPainterPath>
 #include <QMenu>
@@ -31,12 +31,12 @@
 #include "AutomationEditor.h"
 #include "embed.h"
 #include "GuiApplication.h"
-#include "gui_templates.h"
 #include "ProjectJournal.h"
 #include "RenameDialog.h"
 #include "StringPairDrag.h"
 #include "TextFloat.h"
 #include "ToolTip.h"
+#include "Track.h"
 
 #include "Engine.h"
 

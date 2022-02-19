@@ -26,13 +26,9 @@
 #ifndef _SCAPE_H_
 #define _SCAPE_H_
 
-#include "dsp/Sine.h"
-#include "dsp/Roessler.h"
 #include "dsp/Lorenz.h"
 #include "dsp/Delay.h"
 #include "dsp/OnePole.h"
-#include "dsp/BiQuad.h"
-#include "dsp/RBJ.h"
 #include "dsp/SVF.h"
 
 typedef DSP::SVF<1> SVF;

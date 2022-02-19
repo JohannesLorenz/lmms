@@ -27,9 +27,6 @@
 
 #include "Effect.h"
 #include "DelayControls.h"
-#include "Lfo.h"
-#include "StereoDelay.h"
-#include "ValueBuffer.h"
 
 class DelayEffect : public Effect
 {

@@ -29,29 +29,9 @@
 	(2541 - 2580 donated to artemio@kdemail.net)
 */
 
-#include <sys/time.h>
 
 #include "basics.h"
 
-#include "Cabinet.h"
-#include "Chorus.h"
-#include "Phaser.h"
-#include "Sin.h"
-#include "Lorenz.h"
-#include "Roessler.h"
-#include "Reverb.h"
-#include "Compress.h"
-#include "Click.h"
-#include "Eq.h"
-#include "Clip.h"
-#include "White.h"
-#include "SweepVF.h"
-#include "VCO.h"
-#include "Amp.h"
-#include "HRTF.h"
-#include "Pan.h"
-#include "Scape.h"
-#include "ToneStack.h" 
 
 #include "Descriptor.h"
 

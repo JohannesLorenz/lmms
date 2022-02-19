@@ -30,8 +30,6 @@
 
 #include "dsp/util.h"
 #include "dsp/FIR.h"
-#include "dsp/sinc.h"
-#include "dsp/windows.h"
 
 class Clip
 : public Plugin

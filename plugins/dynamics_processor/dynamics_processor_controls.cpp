@@ -24,7 +24,6 @@
  */
 
 
-#include <QDomElement>
 
 #include "dynamics_processor_controls.h"
 #include "dynamics_processor.h"

@@ -26,7 +26,6 @@
 */
 
 #include "basics.h"
-#include <stdio.h>
 
 #include "Eq.h"
 #include "Descriptor.h"

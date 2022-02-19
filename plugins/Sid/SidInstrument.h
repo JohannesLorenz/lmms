@@ -27,10 +27,8 @@
 #ifndef _SID_H
 #define _SID_H
 
-#include <QObject>
 #include "Instrument.h"
 #include "InstrumentView.h"
-#include "Knob.h"
 
 
 class SidInstrumentView;

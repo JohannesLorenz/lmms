@@ -29,7 +29,6 @@
 #define _COMPRESS_H_
 
 #include "dsp/RMS.h"
-#include "dsp/util.h"
 
 class Compress
 : public Plugin

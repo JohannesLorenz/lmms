@@ -28,12 +28,10 @@
 #include <QLabel>
 #include <QLayout>
 #include <QLineEdit>
-#include <QMessageBox>
 #include <QScrollArea>
 
 #include "AudioDeviceSetupWidget.h"
 #include "AudioEngine.h"
-#include "debug.h"
 #include "embed.h"
 #include "Engine.h"
 #include "FileDialog.h"
@@ -57,17 +55,14 @@
 #include "AudioPulseAudio.h"
 #include "AudioSdl.h"
 #include "AudioSndio.h"
-#include "AudioSoundIo.h"
 
 // Platform-specific midi-interface classes.
 #include "MidiAlsaRaw.h"
 #include "MidiAlsaSeq.h"
-#include "MidiApple.h"
 #include "MidiDummy.h"
 #include "MidiJack.h"
 #include "MidiOss.h"
 #include "MidiSndio.h"
-#include "MidiWinMM.h"
 
 
 constexpr int BUFFERSIZE_RESOLUTION = 32;

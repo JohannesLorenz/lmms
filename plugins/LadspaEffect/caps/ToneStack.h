@@ -28,8 +28,6 @@
 #ifndef _TONESTACK_H_
 #define _TONESTACK_H_
 
-#include "dsp/util.h"
-#include "dsp/windows.h"
 #include "dsp/ToneStack.h"
 
 class ToneStack 

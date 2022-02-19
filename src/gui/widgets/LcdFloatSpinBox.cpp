@@ -28,15 +28,10 @@
 
 #include <cmath>
 
-#include <QApplication>
-#include <QHBoxLayout>
 #include <QInputDialog>
 #include <QLabel>
-#include <QMouseEvent>
 #include <QPainter>
 #include <QPixmap>
-#include <QStyleOptionFrameV2>
-#include <QVBoxLayout>
 
 #include "CaptionMenu.h"
 #include "embed.h"

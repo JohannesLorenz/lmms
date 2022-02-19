@@ -27,12 +27,8 @@
 #ifndef KICKER_H
 #define KICKER_H
 
-#include <QObject>
 #include "Instrument.h"
 #include "InstrumentView.h"
-#include "Knob.h"
-#include "LedCheckbox.h"
-#include "TempoSyncKnob.h"
 
 
 #define KICKER_PRESET_VERSION 1

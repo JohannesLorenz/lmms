@@ -25,6 +25,7 @@
 
 #include <QDomElement>
 
+#include "MidiEventProcessor.h"
 #include "MidiPort.h"
 #include "MidiClient.h"
 #include "MidiDummy.h"

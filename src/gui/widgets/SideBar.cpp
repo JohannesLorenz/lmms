@@ -22,7 +22,6 @@
  *
  */
 
-#include <QStyleOptionToolButton>
 #include <QStylePainter>
 #include <QToolButton>
 

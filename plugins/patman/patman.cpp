@@ -25,9 +25,6 @@
 
 #include "patman.h"
 
-#include <QDragEnterEvent>
-#include <QPainter>
-#include <QDomElement>
 
 #include "ConfigManager.h"
 #include "endian_handling.h"

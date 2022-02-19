@@ -23,7 +23,6 @@
  */
 
 #include "ComboBoxModel.h"
-#include "embed.h"
 
 using std::unique_ptr;
 using std::move;

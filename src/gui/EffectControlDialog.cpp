@@ -23,7 +23,7 @@
  *
  */
 
-#include <QMessageBox>
+
 #include <QCloseEvent>
 
 #include "EffectControlDialog.h"

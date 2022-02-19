@@ -23,9 +23,7 @@
  *
  */
 
-#include <QLabel>
 #include <QPushButton>
-#include <QMdiArea>
 #include <QMdiSubWindow>
 #include <QPainter>
 #include <QLayout>

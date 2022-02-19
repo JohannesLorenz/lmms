@@ -23,6 +23,7 @@
  */
 
 #include "Keymap.h"
+#include "Note.h"
 
 #include <QDomElement>
 

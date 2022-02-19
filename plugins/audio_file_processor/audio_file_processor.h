@@ -27,15 +27,11 @@
 #ifndef AUDIO_FILE_PROCESSOR_H
 #define AUDIO_FILE_PROCESSOR_H
 
-#include <QPixmap>
 
 #include "Instrument.h"
 #include "InstrumentView.h"
 #include "SampleBuffer.h"
 #include "Knob.h"
-#include "PixmapButton.h"
-#include "AutomatableButton.h"
-#include "ComboBox.h"
 
 
 class audioFileProcessor : public Instrument

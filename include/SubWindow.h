@@ -26,15 +26,12 @@
 #ifndef SUBWINDOW_H
 #define SUBWINDOW_H
 
-#include <QEvent>
-#include <QGraphicsDropShadowEffect>
 #include <QMdiSubWindow>
-#include <QLabel>
-#include <QPushButton>
 #include <QString>
 
 #include "lmms_export.h"
 
+class QGraphicsDropShadowEffect;
 class QMoveEvent;
 class QResizeEvent;
 class QWidget;

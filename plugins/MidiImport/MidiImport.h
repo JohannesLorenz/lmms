@@ -25,9 +25,6 @@
 #ifndef _MIDI_IMPORT_H
 #define _MIDI_IMPORT_H
 
-#include <QString>
-#include <QPair>
-#include <QVector>
 
 #include "MidiEvent.h"
 #include "ImportFilter.h"

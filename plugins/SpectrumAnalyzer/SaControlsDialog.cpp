@@ -24,16 +24,9 @@
 
 #include "SaControlsDialog.h"
 
-#include <QGridLayout>
-#include <QLabel>
-#include <QSizePolicy>
-#include <QSplitter>
-#include <QWidget>
 
 #include "ComboBox.h"
 #include "ComboBoxModel.h"
-#include "embed.h"
-#include "Engine.h"
 #include "Knob.h"
 #include "LedCheckbox.h"
 #include "PixmapButton.h"

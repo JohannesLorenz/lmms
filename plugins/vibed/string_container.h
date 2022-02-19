@@ -24,7 +24,6 @@
 #ifndef _STRING_CONTAINER_H
 #define _STRING_CONTAINER_H
 
-#include <QVector>
 
 #include "vibrating_string.h"
 #include "MemoryManager.h"

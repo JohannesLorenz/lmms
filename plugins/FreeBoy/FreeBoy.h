@@ -26,12 +26,9 @@
 #ifndef FREEBOY_H
 #define FREEBOY_H
 
-#include <QObject>
 #include "Instrument.h"
 #include "InstrumentView.h"
-#include "Knob.h"
 #include "Graph.h"
-#include "Gb_Apu.h"
 
 class FreeBoyInstrumentView;
 class NotePlayHandle;

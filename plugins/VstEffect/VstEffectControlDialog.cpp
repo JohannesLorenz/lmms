@@ -22,24 +22,15 @@
  *
  */
 
-#include <QLayout>
-#include <QMdiArea>
-#include <QMenu>
-#include <QPushButton>
 
 #include "VstEffectControlDialog.h"
 #include "VstEffect.h"
 
-#include "ConfigManager.h"
 #include "PixmapButton.h"
 #include "embed.h"
 #include "ToolTip.h"
 
-#include <QObject>
-#include <QPainter>
 #include "gui_templates.h"
-#include <QToolBar>
-#include <QLabel>
 
 VstEffectControlDialog::VstEffectControlDialog( VstEffectControls * _ctl ) :
 	EffectControlDialog( _ctl ),

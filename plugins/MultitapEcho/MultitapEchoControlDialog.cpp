@@ -23,13 +23,10 @@
  *
  */
 
-#include <QLayout>
 
 #include "MultitapEchoControlDialog.h"
 #include "MultitapEchoControls.h"
-#include "embed.h"
 #include "Graph.h"
-#include "PixmapButton.h"
 #include "ToolTip.h"
 #include "LedCheckbox.h"
 #include "Knob.h"

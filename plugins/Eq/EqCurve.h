@@ -25,11 +25,6 @@
 #ifndef EQCURVE_H
 #define EQCURVE_H
 
-#include <QGraphicsItem>
-#include <QPainter>
-#include <QGraphicsSceneWheelEvent>
-#include "lmms_math.h"
-#include "AutomatableModelView.h"
 
 
 enum{

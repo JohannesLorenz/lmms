@@ -24,8 +24,6 @@
  */
 
 #include <QDomElement>
-#include <QObject>
-
 
 #include "LfoController.h"
 #include "AudioEngine.h"

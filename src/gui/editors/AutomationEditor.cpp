@@ -30,10 +30,7 @@
 #include <cmath>
 
 #include <QApplication>
-#include <QKeyEvent>
 #include <QLabel>
-#include <QLayout>
-#include <QMdiArea>
 #include <QPainter>
 #include <QPainterPath>
 #include <QScrollBar>
@@ -47,7 +44,6 @@
 #include "ActionGroup.h"
 #include "AutomationNode.h"
 #include "ComboBox.h"
-#include "debug.h"
 #include "DeprecationHelper.h"
 #include "embed.h"
 #include "Engine.h"
@@ -57,7 +53,6 @@
 #include "PatternStore.h"
 #include "PianoRoll.h"
 #include "ProjectJournal.h"
-#include "SongEditor.h"
 #include "StringPairDrag.h"
 #include "TextFloat.h"
 #include "TimeLineWidget.h"

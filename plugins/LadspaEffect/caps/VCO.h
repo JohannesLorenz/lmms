@@ -29,12 +29,9 @@
 #ifndef _VCO_H_
 #define _VCO_H_
 
-#include "dsp/util.h"
 #include "dsp/VCO.h"
 
 #include "dsp/FIR.h"
-#include "dsp/sinc.h"
-#include "dsp/windows.h"
 
 class VCOs
 : public Plugin

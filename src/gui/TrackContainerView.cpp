@@ -24,13 +24,9 @@
 
 #include "TrackContainerView.h"
 
-#include <cmath>
 
-#include <QApplication>
 #include <QLayout>
-#include <QMdiArea>
 #include <QScrollBar>
-#include <QWheelEvent>
 
 #include "TrackContainer.h"
 #include "AudioEngine.h"

@@ -25,12 +25,11 @@
 #include "InstrumentTrackWindow.h"
 
 #include <QDir>
-#include <QDropEvent>
-#include <QHBoxLayout>
 #include <QLabel>
+#include <QLineEdit>
 #include <QMdiSubWindow>
 #include <QMenu>
-#include <QVBoxLayout>
+#include <QPushButton>
 
 #include "ComboBox.h"
 #include "ConfigManager.h"
@@ -41,7 +40,7 @@
 #include "FileBrowser.h"
 #include "FileDialog.h"
 #include "MixerLineLcdSpinBox.h"
-#include "Mixer.h"
+#include "GroupBox.h"
 #include "GuiApplication.h"
 #include "gui_templates.h"
 #include "Instrument.h"
@@ -52,6 +51,7 @@
 #include "InstrumentSoundShapingView.h"
 #include "InstrumentTrack.h"
 #include "InstrumentTrackView.h"
+#include "Knob.h"
 #include "LcdSpinBox.h"
 #include "LedCheckbox.h"
 #include "LeftRightNav.h"
@@ -61,6 +61,7 @@
 #include "PluginView.h"
 #include "Song.h"
 #include "StringPairDrag.h"
+#include "SubWindow.h"
 #include "TabWidget.h"
 #include "ToolTip.h"
 #include "TrackContainerView.h"

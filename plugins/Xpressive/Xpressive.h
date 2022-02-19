@@ -26,14 +26,10 @@
 #ifndef XPRESSIVE_H
 #define XPRESSIVE_H
 
-#include <QPlainTextEdit>
 
 #include "Graph.h"
 #include "Instrument.h"
 #include "InstrumentView.h"
-#include "Knob.h"
-#include "LedCheckbox.h"
-#include "PixmapButton.h"
 
 #include "ExprSynth.h"
 

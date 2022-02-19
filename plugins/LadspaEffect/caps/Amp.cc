@@ -28,7 +28,6 @@
 */
 
 #include "basics.h"
-#include <stdio.h>
 
 #include "Amp.h"
 #include "Descriptor.h"

@@ -26,10 +26,6 @@
 
 #include "Instrument.h"
 #include "InstrumentView.h"
-#include "Graph.h"
-#include "Knob.h"
-#include "PixmapButton.h"
-#include "LedCheckbox.h"
 #include "nine_button_selector.h"
 
 class vibedView;

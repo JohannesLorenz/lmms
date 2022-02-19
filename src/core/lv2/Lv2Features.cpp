@@ -26,7 +26,6 @@
 
 #ifdef LMMS_HAVE_LV2
 
-#include <QtGlobal>
 
 #include "Engine.h"
 #include "Lv2Manager.h"

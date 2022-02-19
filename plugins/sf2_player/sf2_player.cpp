@@ -25,22 +25,15 @@
 
 #include "sf2_player.h"
 
-#include <QDebug>
-#include <QLayout>
-#include <QLabel>
-#include <QDomDocument>
 
 #include "AudioEngine.h"
-#include "ConfigManager.h"
 #include "FileDialog.h"
-#include "ConfigManager.h"
 #include "Engine.h"
 #include "InstrumentTrack.h"
 #include "InstrumentPlayHandle.h"
 #include "Knob.h"
 #include "NotePlayHandle.h"
 #include "PathUtil.h"
-#include "SampleBuffer.h"
 #include "Song.h"
 
 #include "patches_dialog.h"

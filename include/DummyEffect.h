@@ -25,10 +25,13 @@
 #ifndef DUMMY_EFFECT_H
 #define DUMMY_EFFECT_H
 
+#include <QDomNodeList>
+
 #include "Effect.h"
 #include "EffectControls.h"
 #include "EffectControlDialog.h"
 
+class QDomElement;
 
 class DummyEffectControlDialog : public EffectControlDialog
 {

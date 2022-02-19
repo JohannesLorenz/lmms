@@ -26,7 +26,6 @@
 #define LADSPA_CONTROLS_H
 
 #include "EffectControls.h"
-#include "LadspaControl.h"
 #include "LadspaControlDialog.h"
 
 

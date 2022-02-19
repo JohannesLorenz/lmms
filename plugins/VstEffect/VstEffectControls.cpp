@@ -22,7 +22,6 @@
  *
  */
 
-#include <QDomElement>
 
 #include "VstEffectControls.h"
 #include "VstEffect.h"
@@ -30,8 +29,6 @@
 #include "LocaleHelper.h"
 #include "MainWindow.h"
 #include "GuiApplication.h"
-#include <QMdiArea>
-#include <QApplication>
 
 
 

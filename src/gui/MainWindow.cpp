@@ -25,21 +25,16 @@
 #include "MainWindow.h"
 
 #include <QApplication>
-#include <QCloseEvent>
 #include <QDesktopServices>
-#include <QDomElement>
 #include <QFileInfo>
 #include <QMdiArea>
 #include <QMenuBar>
 #include <QMessageBox>
-#include <QScrollBar>
 #include <QShortcut>
 #include <QLibrary>
 #include <QSplitter>
-#include <QUrl>
 
 #include "AboutDialog.h"
-#include "AudioDummy.h"
 #include "AutomationEditor.h"
 #include "ControllerRackView.h"
 #include "embed.h"
@@ -67,6 +62,7 @@
 #include "SetupDialog.h"
 #include "SideBar.h"
 #include "SongEditor.h"
+#include "SubWindow.h"
 #include "TemplatesMenu.h"
 #include "TextFloat.h"
 #include "TimeLineWidget.h"

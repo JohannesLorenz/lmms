@@ -28,9 +28,8 @@
 
 #ifdef LMMS_HAVE_LV2
 
-#include <QDebug>
-#include <QHBoxLayout>
 #include <QLabel>
+#include <QHBoxLayout>
 
 #include "Engine.h"
 #include "Lv2Basics.h"

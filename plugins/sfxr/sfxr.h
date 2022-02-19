@@ -30,10 +30,6 @@
 
 #include "Instrument.h"
 #include "InstrumentView.h"
-#include "Knob.h"
-#include "Graph.h"
-#include "PixmapButton.h"
-#include "LedCheckbox.h"
 #include "MemoryManager.h"
 
 

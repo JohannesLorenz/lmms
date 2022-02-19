@@ -27,6 +27,7 @@
 
 #include <QWidget>
 
+#include "InstrumentTrack.h"
 #include "ModelView.h"
 #include "SerializingObject.h"
 
@@ -38,7 +39,6 @@ class InstrumentFunctionNoteStackingView;
 class InstrumentMidiIOView;
 class InstrumentMiscView;
 class InstrumentSoundShapingView;
-class InstrumentTrack;
 class InstrumentTrackShapingView;
 class InstrumentTrackView;
 class Knob;

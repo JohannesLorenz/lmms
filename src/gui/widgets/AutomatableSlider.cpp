@@ -25,10 +25,8 @@
 
 #include "AutomatableSlider.h"
 
-#include <QMouseEvent>
 
 #include "CaptionMenu.h"
-#include "MainWindow.h"
 
 
 

@@ -32,7 +32,6 @@
 #ifndef _CABINET_H_
 #define _CABINET_H_
 
-#include "dsp/util.h"
 
 /* cabinet_float sets the data type used for the IIR history and thus the 
  * computing precision. doubles tend to make the sound more vivid and lively.

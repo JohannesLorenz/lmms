@@ -25,8 +25,6 @@
 #include "PatternEditor.h"
 
 #include <QAction>
-#include <QKeyEvent>
-#include <QLayout>
 
 #include "ComboBox.h"
 #include "DataFile.h"

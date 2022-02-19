@@ -23,7 +23,6 @@
  */
 
 
-#include <QKeyEvent>
 #include <QLineEdit>
 
 #include "RenameDialog.h"

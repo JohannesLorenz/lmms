@@ -23,8 +23,6 @@
  *
  */
 
-#include <QDomElement>
-#include <QVarLengthArray>
 
 #include "MultitapEchoControls.h"
 #include "MultitapEcho.h"

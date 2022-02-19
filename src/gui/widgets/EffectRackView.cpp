@@ -24,7 +24,6 @@
  */
 
 #include <QApplication>
-#include <QLayout>
 #include <QPushButton>
 #include <QScrollArea>
 

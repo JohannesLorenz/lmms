@@ -24,8 +24,6 @@
  *
  */
 
-#include <QDir>
-#include <QLabel>
 
 #include "VstSubPluginFeatures.h"
 #include "ConfigManager.h"

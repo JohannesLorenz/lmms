@@ -26,11 +26,8 @@
 #ifndef SAMPLE_TRACK_WINDOW_H
 #define SAMPLE_TRACK_WINDOW_H
 
-#include "MixerLineLcdSpinBox.h"
 
-#include <QLineEdit>
 
-#include "EffectRackView.h"
 #include "SampleTrack.h"
  
 

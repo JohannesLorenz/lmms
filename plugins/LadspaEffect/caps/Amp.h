@@ -28,17 +28,12 @@
 #ifndef _AMP_H_
 #define _AMP_H_
 
-#include "dsp/util.h"
 #include "dsp/OnePole.h"
 #include "dsp/BiQuad.h"
 #include "dsp/TwelveAX7.h"
-#include "dsp/Roessler.h"
 
 #include "dsp/FIR.h"
-#include "dsp/sinc.h"
-#include "dsp/windows.h"
 
-#include "dsp/RBJ.h"
 #include "dsp/Eq.h"
 
 #include "dsp/ToneStack.h"

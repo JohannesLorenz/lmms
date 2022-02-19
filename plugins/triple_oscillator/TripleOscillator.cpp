@@ -23,14 +23,10 @@
  */
  
 
-#include <QDomDocument>
-#include <QBitmap>
-#include <QPainter>
 
 #include "TripleOscillator.h"
 #include "AudioEngine.h"
 #include "AutomatableButton.h"
-#include "debug.h"
 #include "Engine.h"
 #include "InstrumentTrack.h"
 #include "Knob.h"

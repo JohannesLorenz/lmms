@@ -30,7 +30,6 @@
 
 #include "dsp/Sine.h"
 #include "dsp/Lorenz.h"
-#include "dsp/Delay.h"
 
 /* all-pass as used by the phaser. */
 class PhaserAP

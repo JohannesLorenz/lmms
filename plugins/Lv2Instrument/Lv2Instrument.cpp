@@ -24,9 +24,6 @@
 
 #include "Lv2Instrument.h"
 
-#include <QDebug>
-#include <QDragEnterEvent>
-#include <QPushButton>
 
 #include "AudioEngine.h"
 #include "Engine.h"

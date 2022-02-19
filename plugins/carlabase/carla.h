@@ -30,13 +30,6 @@
 #define CARLA_VERSION_HEX_3 0x30000
 
 // qt
-#include <QCloseEvent>
-#include <QCompleter>
-#include <QGridLayout>
-#include <QLineEdit>
-#include <QScrollArea>
-#include <QStringListModel>
-#include <QtCore/QMutex>
 
 // carla/source/includes
 #include "carlabase_export.h"
@@ -54,10 +47,8 @@
 #endif
 
 // lmms/include/
-#include "EffectControls.h"
 #include "Instrument.h"
 #include "InstrumentView.h"
-#include "Knob.h"
 #include "SubWindow.h"
 
 class QPushButton;

@@ -22,9 +22,7 @@
  *
  */
 
-#include <QApplication>
 #include <QMenu>
-#include <QMouseEvent>
 
 #include "AutomatableModelView.h"
 #include "AutomationClip.h"

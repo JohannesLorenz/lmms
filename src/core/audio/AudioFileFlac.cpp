@@ -22,7 +22,6 @@
  *
  */
 
-#include <QtGlobal>
 
 #include <cmath>
 #include <memory>

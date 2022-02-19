@@ -24,11 +24,6 @@
 
 #include "ladspa_description.h"
 
-#include <QGroupBox>
-#include <QLabel>
-#include <QListWidget>
-#include <QScrollArea>
-#include <QVBoxLayout>
 
 #include "AudioDevice.h"
 #include "AudioEngine.h"

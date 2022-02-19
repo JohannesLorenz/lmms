@@ -24,6 +24,7 @@
  */
 
 #include <cstdio>
+#include <QDomElement>
 
 #include "LadspaControl.h"
 #include "LadspaBase.h"

@@ -25,13 +25,7 @@
 
 #include "EqParameterWidget.h"
 
-#include <QGraphicsScene>
-#include <QGraphicsView>
-#include <QMouseEvent>
-#include <QWidget>
 
-#include "EqControls.h"
-#include "lmms_math.h"
 
 
 EqParameterWidget::EqParameterWidget( QWidget *parent, EqControls * controls ) :

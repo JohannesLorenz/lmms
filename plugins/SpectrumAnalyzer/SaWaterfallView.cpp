@@ -27,12 +27,6 @@
 	#include <chrono>
 #endif
 #include <cmath>
-#include <QImage>
-#include <QMouseEvent>
-#include <QMutexLocker>
-#include <QPainter>
-#include <QSplitter>
-#include <QString>
 
 #include "EffectControlDialog.h"
 #include "GuiApplication.h"

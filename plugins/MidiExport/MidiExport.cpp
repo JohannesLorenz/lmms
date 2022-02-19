@@ -24,15 +24,9 @@
  */
 
 
-#include <QDomDocument>
-#include <QDir>
-#include <QApplication>
-#include <QMessageBox>
-#include <QProgressDialog>
 
 #include "MidiExport.h"
 
-#include "lmms_math.h"
 #include "TrackContainer.h"
 #include "DataFile.h"
 #include "InstrumentTrack.h"

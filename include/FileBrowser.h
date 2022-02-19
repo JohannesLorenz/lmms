@@ -27,9 +27,11 @@
 #define FILE_BROWSER_H
 
 #include <QCheckBox>
+#include <QHBoxLayout>
 #include <QtCore/QDir>
 #include <QtCore/QMutex>
 #include <QTreeWidget>
+#include <QVBoxLayout>
 
 
 #include "SideBarWidget.h"

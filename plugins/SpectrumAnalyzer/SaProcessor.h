@@ -28,12 +28,8 @@
 #define SAPROCESSOR_H
 
 #include <atomic>
-#include <QColor>
-#include <QMutex>
 #include <vector>
 
-#include "fft_helpers.h"
-#include "SaControls.h"
 
 template<class T>
 class LocklessRingBuffer;

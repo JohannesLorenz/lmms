@@ -24,13 +24,11 @@
  */
 
 
-#include <QDomElement>
 
 #include "EffectChain.h"
 #include "Effect.h"
 #include "DummyEffect.h"
 #include "MixHelpers.h"
-#include "Song.h"
 
 
 EffectChain::EffectChain( Model * _parent ) :

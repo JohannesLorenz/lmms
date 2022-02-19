@@ -24,11 +24,9 @@
  */
  
 
-#include <QMouseEvent>
 #include <QPainter>
 
 #include "PixmapButton.h"
-#include "MainWindow.h"
 #include "embed.h"
 
 

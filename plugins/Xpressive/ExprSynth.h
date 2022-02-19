@@ -28,9 +28,7 @@
 #include <cmath>
 #include <cstddef>
 #include <limits>
-#include "AutomatableModel.h"
 #include "Graph.h"
-#include "Instrument.h"
 #include "MemoryManager.h"
 
 

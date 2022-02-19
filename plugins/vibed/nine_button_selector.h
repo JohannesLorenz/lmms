@@ -25,7 +25,6 @@
 #ifndef _NINE_BUTTON_SELECTOR_H
 #define _NINE_BUTTON_SELECTOR_H
 
-#include "PixmapButton.h"
 
 
 class nineButtonSelector: public QWidget , public IntModelView

@@ -26,7 +26,6 @@
 #include "InstrumentMiscView.h"
 
 #include <QLabel>
-#include <QLayout>
 
 #include "ComboBox.h"
 #include "GroupBox.h"

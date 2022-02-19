@@ -23,13 +23,9 @@
  */
 #include "PatternTrack.h"
 
-#include <QDomElement>
-#include <QMenu>
-#include <QPainter>
 
 #include "PatternStore.h"
 #include "PatternTrackView.h"
-#include "Song.h"
 
 
 

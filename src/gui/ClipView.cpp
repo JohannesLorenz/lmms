@@ -27,7 +27,6 @@
 #include <set>
 
 #include <QMenu>
-#include <QMouseEvent>
 #include <QPainter>
 
 #include "AutomationClip.h"
@@ -42,7 +41,6 @@
 #include "InstrumentTrackView.h"
 #include "MidiClip.h"
 #include "Note.h"
-#include "SampleTrack.h"
 #include "Song.h"
 #include "SongEditor.h"
 #include "StringPairDrag.h"

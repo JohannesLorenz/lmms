@@ -22,7 +22,6 @@
  *
  */
 
-#include <QtXml/QDomElement>
 
 #include "FlangerControls.h"
 #include "FlangerEffect.h"

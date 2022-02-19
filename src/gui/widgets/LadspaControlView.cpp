@@ -23,7 +23,6 @@
  *
  */
 
-#include <QLayout>
 
 #include "LadspaControl.h"
 #include "LadspaControlView.h"

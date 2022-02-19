@@ -25,8 +25,6 @@
 
 #include "ladspa_port_dialog.h"
 
-#include <QLayout>
-#include <QTableWidget>
 
 #include "AudioEngine.h"
 #include "embed.h"

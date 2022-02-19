@@ -23,7 +23,6 @@
  */
 
 
-#include <QDomElement>
 
 #include "stereoenhancer_controls.h"
 #include "stereo_enhancer.h"

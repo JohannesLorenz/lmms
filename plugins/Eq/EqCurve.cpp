@@ -23,9 +23,6 @@
  */
 #include "EqCurve.h"
 
-#include "Effect.h"
-#include "embed.h"
-#include "lmms_math.h"
 
 EqHandle::EqHandle( int num, int x, int y ):
 	m_numb( num ),

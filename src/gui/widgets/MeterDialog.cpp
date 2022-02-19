@@ -24,8 +24,6 @@
  */
 
 
-#include <QLayout>
-#include <QPushButton>
 #include <QLabel>
 
 #include "MeterDialog.h"

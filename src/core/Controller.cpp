@@ -24,12 +24,11 @@
  *
  */
 
-#include <QDomElement>
+#include <QDomDocument>
 #include <QObject>
 #include <QVector>
 
 
-#include "Song.h"
 #include "AudioEngine.h"
 #include "ControllerConnection.h"
 #include "ControllerDialog.h"

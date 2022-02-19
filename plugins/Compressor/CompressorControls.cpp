@@ -26,10 +26,7 @@
 #include "CompressorControls.h"
 #include "Compressor.h"
 
-#include <QDomElement>
 
-#include "Engine.h"
-#include "Song.h"
 
 
 CompressorControls::CompressorControls(CompressorEffect* effect) :

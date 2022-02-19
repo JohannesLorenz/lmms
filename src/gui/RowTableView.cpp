@@ -24,7 +24,6 @@
 
 #include "RowTableView.h"
 
-#include <QKeyEvent>
 #include <QPainter>
 #include <QStyledItemDelegate>
 

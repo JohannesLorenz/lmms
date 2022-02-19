@@ -24,7 +24,6 @@
  
 #include "SampleTrackWindow.h"
 
-#include <QCloseEvent>
 #include <QMenu>
 
 #include "embed.h"

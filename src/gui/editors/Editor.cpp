@@ -26,13 +26,10 @@
 
 #include "Song.h"
 
-#include "MainWindow.h"
 #include "embed.h"
 
 #include <QAction>
-#include <QMdiArea>
 #include <QShortcut>
-#include <QCloseEvent>
 
 
 void Editor::setPauseIcon(bool displayPauseIcon)

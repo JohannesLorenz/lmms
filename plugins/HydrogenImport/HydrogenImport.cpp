@@ -1,23 +1,13 @@
-#include <QDomDocument>
-#include <QDir>
-#include <QApplication>
-#include <QMessageBox>
-#include <QProgressDialog>
-#include <QTextStream>
-#include <stdlib.h>
 
 #include "LocalFileMng.h"
 #include "HydrogenImport.h"
 #include "Song.h"
 #include "Engine.h"
-#include "Instrument.h"
 #include "InstrumentTrack.h"
 #include "Note.h"
 #include "MidiClip.h"
 #include "PatternStore.h"
-#include "PatternTrack.h"
 #include "Track.h"
-#include "Instrument.h"
 
 #include "plugin_export.h"
 

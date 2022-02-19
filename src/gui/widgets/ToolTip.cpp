@@ -23,7 +23,6 @@
  */
 
 
-#include <QToolTip>
 
 #include "ToolTip.h"
 #include "ConfigManager.h"

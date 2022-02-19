@@ -26,9 +26,7 @@
 #define SIDE_BAR_WIDGET_H
 
 #include <QPixmap>
-#include <QVBoxLayout>
 #include <QWidget>
-#include <QPushButton>
 
 
 class SideBarWidget : public QWidget

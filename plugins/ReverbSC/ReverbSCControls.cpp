@@ -23,12 +23,10 @@
  */
 
 
-#include <QDomElement>
 
 #include "ReverbSCControls.h"
 #include "ReverbSC.h"
 #include "Engine.h"
-#include "Song.h"
 
 ReverbSCControls::ReverbSCControls( ReverbSCEffect* effect ) :
 	EffectControls( effect ),

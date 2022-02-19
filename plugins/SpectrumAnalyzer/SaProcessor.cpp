@@ -34,9 +34,7 @@
 	#include <iomanip>
 	#include <iostream>
 #endif
-#include <QMutexLocker>
 
-#include "lmms_math.h"
 #include "LocklessRingBuffer.h"
 
 

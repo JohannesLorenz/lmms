@@ -27,11 +27,7 @@
 #ifndef EQPARAMETERWIDGET_H
 #define EQPARAMETERWIDGET_H
 
-#include <QWidget>
 
-#include "EffectControls.h"
-#include "EqCurve.h"
-#include "TextFloat.h"
 
 class EqControls;
 

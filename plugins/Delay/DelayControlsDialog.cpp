@@ -24,11 +24,8 @@
 
 #include "DelayControlsDialog.h"
 #include "DelayControls.h"
-#include "embed.h"
 #include "TempoSyncKnob.h"
 #include "../Eq/EqFader.h"
-#include <QMouseEvent>
-#include <QPainter>
 
 
 

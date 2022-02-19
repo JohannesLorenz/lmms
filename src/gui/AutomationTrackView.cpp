@@ -23,15 +23,16 @@
  *
  */
  
- #include "AutomationTrackView.h"
+#include "AutomationTrackView.h"
  
- #include "AutomationClip.h"
- #include "embed.h"
- #include "Engine.h"
- #include "ProjectJournal.h"
- #include "StringPairDrag.h"
- #include "TrackContainerView.h"
- #include "TrackLabelButton.h"
+#include "AutomationClip.h"
+#include "AutomationTrack.h"
+#include "embed.h"
+#include "Engine.h"
+#include "ProjectJournal.h"
+#include "StringPairDrag.h"
+#include "TrackContainerView.h"
+#include "TrackLabelButton.h"
  
 
 AutomationTrackView::AutomationTrackView( AutomationTrack * _at, TrackContainerView* tcv ) :

@@ -22,7 +22,6 @@
  *
  */
 
-#include <QDomElement>
 
 #include "JournallingObject.h"
 #include "AutomatableModel.h"

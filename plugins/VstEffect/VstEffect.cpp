@@ -22,7 +22,6 @@
  *
  */
 
-#include <QMessageBox>
 
 #include "VstEffect.h"
 

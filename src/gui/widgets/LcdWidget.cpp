@@ -25,17 +25,12 @@
 
 
 
-#include <QApplication>
-#include <QLabel>
-#include <QMouseEvent>
 #include <QPainter>
-#include <QStyleOptionFrameV2>
 
 #include "LcdWidget.h"
 #include "DeprecationHelper.h"
 #include "embed.h"
 #include "gui_templates.h"
-#include "MainWindow.h"
 
 
 

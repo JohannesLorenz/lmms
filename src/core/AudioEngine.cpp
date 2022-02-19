@@ -44,7 +44,6 @@
 #include "AudioOss.h"
 #include "AudioSndio.h"
 #include "AudioPortAudio.h"
-#include "AudioSoundIo.h"
 #include "AudioPulseAudio.h"
 #include "AudioSdl.h"
 #include "AudioDummy.h"
@@ -55,8 +54,6 @@
 #include "MidiJack.h"
 #include "MidiOss.h"
 #include "MidiSndio.h"
-#include "MidiWinMM.h"
-#include "MidiApple.h"
 #include "MidiDummy.h"
 
 #include "BufferManager.h"

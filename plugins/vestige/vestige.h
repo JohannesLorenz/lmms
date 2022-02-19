@@ -27,15 +27,9 @@
 #define _VESTIGE_H
 
 
-#include <QMutex>
-#include <QLayout>
-#include <QScrollArea>
 
 #include "Instrument.h"
 #include "InstrumentView.h"
-#include "CustomTextKnob.h"
-#include "SubWindow.h"
-#include "AutomatableModel.h"
 
 
 class QPixmap;

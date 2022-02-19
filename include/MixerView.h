@@ -39,6 +39,8 @@
 #include "EffectRackView.h"
 
 class QButtonGroup;
+class QLineEdit;
+class LcdWidget;
 class MixerLine;
 
 class LMMS_EXPORT MixerView : public QWidget, public ModelView,

@@ -25,7 +25,6 @@
 #ifndef VECCONTROLS_H
 #define VECCONTROLS_H
 
-#include <QColor>
 
 #include "EffectControls.h"
 

@@ -36,7 +36,6 @@
 #include "dsp/SVF.h"
 
 #include "dsp/Lorenz.h"
-#include "dsp/Roessler.h"
 
 #include "dsp/RMS.h"
 #include "dsp/BiQuad.h"

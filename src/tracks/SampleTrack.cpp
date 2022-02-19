@@ -25,7 +25,6 @@
  
 #include "SampleTrack.h"
 
-#include <QDomElement>
 
 #include "PatternStore.h"
 #include "PatternTrack.h"

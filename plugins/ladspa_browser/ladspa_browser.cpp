@@ -28,8 +28,6 @@
 #include "ladspa_browser.h"
 
 
-#include <QHBoxLayout>
-#include <QLabel>
 
 
 #include "gui_templates.h"

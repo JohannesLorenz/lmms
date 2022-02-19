@@ -26,7 +26,6 @@
 #define DELAYCONTROLSDIALOG_H
 
 #include "EffectControlDialog.h"
-#include "AutomatableModel.h"
 
 class DelayControls;
 
