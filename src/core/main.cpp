@@ -48,6 +48,13 @@
 
 #include <signal.h>
 
+#include <QDebug>
+#include <QFileInfo>
+#include <QMessageBox>
+#include <QPushButton>
+#include <QTextStream>
+#include <QTranslator>
+
 #include "MainApplication.h"
 #include "ConfigManager.h"
 #include "DataFile.h"
