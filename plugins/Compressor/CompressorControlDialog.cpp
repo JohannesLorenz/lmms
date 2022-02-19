@@ -22,14 +22,19 @@
  *
  */
 
+#include <QLabel>
+
 #include "Compressor.h"
 #include "CompressorControlDialog.h"
 #include "CompressorControls.h"
 
 
+#include "EqFader.h"
 #include "GuiApplication.h"
 #include "interpolation.h"
+#include "Knob.h"
 #include "MainWindow.h"
+#include "PixmapButton.h"
 #include "ToolTip.h"
 
 CompressorControlDialog::CompressorControlDialog(CompressorControls* controls) :

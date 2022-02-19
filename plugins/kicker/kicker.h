@@ -27,15 +27,20 @@
 #ifndef KICKER_H
 #define KICKER_H
 
+#include "AutomatableModel.h"
 #include "Instrument.h"
 #include "InstrumentView.h"
+#include "TempoSyncKnobModel.h"
 
 
 #define KICKER_PRESET_VERSION 1
 
 
 class kickerInstrumentView;
+class Knob;
+class LedCheckBox;
 class NotePlayHandle;
+class TempoSyncModel;
 
 
 class kickerInstrument : public Instrument

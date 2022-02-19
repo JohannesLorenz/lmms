@@ -23,8 +23,13 @@
  */
 
 
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+
 #include "BassBoosterControlDialog.h"
 #include "BassBoosterControls.h"
+#include "embed.h"
+#include "Knob.h"
 
 
 

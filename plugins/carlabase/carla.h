@@ -30,6 +30,8 @@
 #define CARLA_VERSION_HEX_3 0x30000
 
 // qt
+#include <QCloseEvent>
+#include <QDomElement>
 
 // carla/source/includes
 #include "carlabase_export.h"
@@ -47,12 +49,21 @@
 #endif
 
 // lmms/include/
+#include "AutomatableModel.h"
 #include "Instrument.h"
 #include "InstrumentView.h"
 #include "SubWindow.h"
 
 class QPushButton;
 class QComboBox;
+class QCompleter;
+class QHBoxLayout;
+class QLineEdit;
+class QGridLayout;
+class QScrollArea;
+class QStringListModel;
+
+class Knob;
 
 class CarlaParamsView;
 

@@ -25,9 +25,12 @@
 #include "audio_file_processor.h"
 
 
+#include <QPainter>
 #include <samplerate.h>
 
 #include "AudioEngine.h"
+#include "AutomatableButton.h"
+#include "ComboBox.h"
 #include "ConfigManager.h"
 #include "DataFile.h"
 #include "Engine.h"
@@ -35,6 +38,7 @@
 #include "InstrumentTrack.h"
 #include "NotePlayHandle.h"
 #include "PathUtil.h"
+#include "PixmapButton.h"
 #include "Song.h"
 #include "StringPairDrag.h"
 #include "ToolTip.h"

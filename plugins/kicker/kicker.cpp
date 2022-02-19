@@ -25,13 +25,17 @@
 
 
 
+#include <QDomElement>
+
 #include "kicker.h"
 #include "AudioEngine.h"
 #include "Engine.h"
 #include "InstrumentTrack.h"
 #include "Knob.h"
+#include "LedCheckbox.h"
 #include "NotePlayHandle.h"
 #include "KickerOsc.h"
+#include "TempoSyncKnob.h"
 
 #include "embed.h"
 #include "plugin_export.h"

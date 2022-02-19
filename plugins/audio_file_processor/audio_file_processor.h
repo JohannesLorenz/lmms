@@ -28,10 +28,15 @@
 #define AUDIO_FILE_PROCESSOR_H
 
 
+#include "ComboBoxModel.h"
 #include "Instrument.h"
 #include "InstrumentView.h"
 #include "SampleBuffer.h"
 #include "Knob.h"
+
+class automatableButtonGroup;
+class ComboBox;
+class PixmapButton;
 
 
 class audioFileProcessor : public Instrument

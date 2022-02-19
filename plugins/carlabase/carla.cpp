@@ -24,13 +24,30 @@
 
 #include "carla.h"
 
+#include <QComboBox>
+#include <QCompleter>
+#include <QDir>
+#include <QFileDialog>
+#include <QGridLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QMdiArea>
+#include <QPushButton>
+#include <QScrollArea>
+#include <QSplitter>
+#include <QStringListModel>
+#include <QVBoxLayout>
+
 #include "AudioEngine.h"
 #include "Engine.h"
 #include "GuiApplication.h"
 #include "InstrumentPlayHandle.h"
 #include "InstrumentTrack.h"
+#include "Knob.h"
 #include "MidiEventToByteSeq.h"
 #include "MainWindow.h"
+#include "Song.h"
 #include "gui_templates.h"
 
 

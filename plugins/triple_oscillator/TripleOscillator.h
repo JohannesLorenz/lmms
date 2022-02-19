@@ -34,6 +34,7 @@
 class automatableButtonGroup;
 class Knob;
 class NotePlayHandle;
+class Oscillator;
 class PixmapButton;
 class SampleBuffer;
 

@@ -23,6 +23,7 @@
  */
 
 
+#include <QDomElement>
 
 #include "bit_invader.h"
 #include "AudioEngine.h"

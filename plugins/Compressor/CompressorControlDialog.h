@@ -25,9 +25,17 @@
 #ifndef COMPRESSOR_CONTROL_DIALOG_H
 #define COMPRESSOR_CONTROL_DIALOG_H
 
+#include <QBasicTimer>
+#include <QElapsedTimer>
+#include <QPainter>
 
 #include "EffectControlDialog.h"
 
+class automatableButtonGroup;
+class EqFader;
+class Knob;
+class PixmapButton;
+class QLabel;
 
 constexpr int COMP_MILLI_PER_PIXEL = 6;
 constexpr int MIN_COMP_SCREEN_X = 800;
