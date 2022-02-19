@@ -26,6 +26,7 @@
 
 
 #include <QPainter>
+#include <QStyleOptionFrame>
 
 #include "LcdWidget.h"
 #include "DeprecationHelper.h"

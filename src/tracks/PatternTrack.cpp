@@ -24,8 +24,15 @@
 #include "PatternTrack.h"
 
 
+#include <QDomElement>
+
+#include "AudioEngine.h"
+#include "Clip.h"
+#include "Engine.h"
+#include "PatternClip.h"
 #include "PatternStore.h"
 #include "PatternTrackView.h"
+#include "PlayHandle.h"
 
 
 

@@ -25,6 +25,8 @@
 
 #include <cmath>
 #include <QInputDialog>
+#include <QMouseEvent>
+#include <QWheelEvent>
 
 #include "LcdSpinBox.h"
 #include "CaptionMenu.h"

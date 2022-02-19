@@ -32,7 +32,9 @@
 #include "lmms_export.h"
 
 class QGraphicsDropShadowEffect;
+class QLabel;
 class QMoveEvent;
+class QPushButton;
 class QResizeEvent;
 class QWidget;
 

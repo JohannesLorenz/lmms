@@ -26,10 +26,13 @@
 #define MICROTUNER_CONFIG_H
 
 
+#include <QWidget>
+
 #include "AutomatableModel.h"
 #include "ComboBoxModel.h"
 #include "SerializingObject.h"
 
+class QLineEdit;
 class QPlainTextEdit;
 
 class LMMS_EXPORT MicrotunerConfig : public QWidget, public SerializingObject

@@ -28,6 +28,7 @@
 #include <QPushButton>
 #include <QMdiArea>
 #include <QMdiSubWindow>
+#include <QHBoxLayout>
 #include <QInputDialog>
 
 #include "ControllerView.h"
@@ -37,6 +38,7 @@
 #include "embed.h"
 #include "GuiApplication.h"
 #include "MainWindow.h"
+#include "SubWindow.h"
 
 
 ControllerView::ControllerView( Controller * _model, QWidget * _parent ) :

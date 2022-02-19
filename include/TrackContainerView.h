@@ -34,11 +34,13 @@
 #include "JournallingObject.h"
 #include "ModelView.h"
 #include "Rubberband.h"
+#include "TimePos.h"
 
 
 class QVBoxLayout;
 
 class InstrumentTrack;
+class Track;
 class TrackContainer;
 class TrackView;
 

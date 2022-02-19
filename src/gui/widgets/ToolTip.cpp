@@ -24,6 +24,8 @@
 
 
 
+#include <QWidget>
+
 #include "ToolTip.h"
 #include "ConfigManager.h"
 

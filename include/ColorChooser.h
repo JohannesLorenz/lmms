@@ -24,6 +24,7 @@
 #include <QApplication>
 #include <QColor>
 #include <QColorDialog>
+#include <QKeyEvent>
 #include <QVector>
 
 class ColorChooser: public QColorDialog

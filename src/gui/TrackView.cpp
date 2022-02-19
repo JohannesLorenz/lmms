@@ -26,6 +26,7 @@
 #include "TrackView.h"
 
 #include <QApplication>
+#include <QHBoxLayout>
 #include <QPainter>
 #include <QStyleOption>
 

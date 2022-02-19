@@ -24,6 +24,8 @@
  */
 
 
+#include <QHBoxLayout>
+
 #include "LadspaControl.h"
 #include "LadspaControlView.h"
 #include "LadspaBase.h"

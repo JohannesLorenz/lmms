@@ -28,6 +28,7 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QMessageBox>
+#include <QVBoxLayout>
 
 #include "Song.h"
 #include "embed.h"
@@ -36,6 +37,7 @@
 #include "ControllerRackView.h"
 #include "ControllerView.h"
 #include "LfoController.h"
+#include "SubWindow.h"
 
 
 ControllerRackView::ControllerRackView( ) :

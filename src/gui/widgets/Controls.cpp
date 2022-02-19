@@ -26,6 +26,7 @@
 
 #include <QLabel>
 #include <QString>
+#include <QVBoxLayout>
 
 #include "ComboBox.h"
 #include "LcdSpinBox.h"

@@ -22,6 +22,8 @@
  *
  */
 
+#include <QGridLayout>
+#include <QHBoxLayout>
 #include <QLabel>
 
 #include "InstrumentFunctions.h"

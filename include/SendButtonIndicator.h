@@ -6,6 +6,7 @@
 
 class MixerLine;
 class MixerView;
+class FloatModel;
 
 class SendButtonIndicator : public QLabel 
 {

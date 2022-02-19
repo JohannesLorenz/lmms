@@ -37,6 +37,7 @@
 #include "Knob.h"
 #include "LedCheckbox.h"
 #include "MainWindow.h"
+#include "SubWindow.h"
 #include "TempoSyncKnob.h"
 #include "ToolTip.h"
 

@@ -41,9 +41,11 @@
 #include <QCursor>
 #include <QPainter>
 #include <QPainterPath>
+#include <QVBoxLayout>
 
 #include "PianoView.h"
 #include "Piano.h"
+#include "AutomatableModelView.h"
 #include "CaptionMenu.h"
 #include "embed.h"
 #include "Engine.h"

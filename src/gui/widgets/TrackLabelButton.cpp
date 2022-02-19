@@ -27,6 +27,8 @@
 #include "TrackLabelButton.h"
 
 
+#include <QMouseEvent>
+
 #include "ConfigManager.h"
 #include "embed.h"
 #include "Engine.h"
@@ -35,6 +37,7 @@
 #include "RenameDialog.h"
 #include "Song.h"
 #include "TrackRenameLineEdit.h"
+#include "TrackView.h"
 
 
 

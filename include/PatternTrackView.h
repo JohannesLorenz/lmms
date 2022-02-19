@@ -29,6 +29,9 @@
 
 #include "TrackView.h"
 
+class PatternTrack;
+class TrackLabelButton;
+
 
 class PatternTrackView : public TrackView
 {

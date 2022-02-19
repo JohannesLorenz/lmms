@@ -26,6 +26,7 @@
 
 #include <QFontMetrics>
 #include <QPainter>
+#include <QPushButton>
 
 #include "embed.h"
 

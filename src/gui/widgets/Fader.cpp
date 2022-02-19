@@ -46,8 +46,12 @@
 
 #include "Fader.h"
 
+#include <QContextMenuEvent>
 #include <QInputDialog>
+#include <QMouseEvent>
 #include <QPainter>
+#include <QPaintEvent>
+#include <QWheelEvent>
 
 #include "lmms_math.h"
 #include "embed.h"

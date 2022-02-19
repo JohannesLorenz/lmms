@@ -27,9 +27,18 @@
 #define SAMPLE_TRACK_WINDOW_H
 
 
+#include <QWidget>
 
+#include "ModelView.h"
+#include "SerializingObject.h"
 #include "SampleTrack.h"
- 
+
+class EffectRackView;
+class Knob;
+class MixerLineLcdSpinBox;
+class SampleTrackView;
+class QLineEdit;
+
 
 class SampleTrackWindow : public QWidget, public ModelView, public SerializingObjectHook
 {

@@ -29,6 +29,7 @@
 #include "embed.h"
 
 #include <QAction>
+#include <QCloseEvent>
 #include <QShortcut>
 
 

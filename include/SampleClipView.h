@@ -27,6 +27,8 @@
 
 #include "ClipView.h"
 
+class SampleClip;
+
 class SampleClipView : public ClipView
 {
 	Q_OBJECT

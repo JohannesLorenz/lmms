@@ -30,6 +30,7 @@
 #include <cmath>
 
 #include <QApplication>
+#include <QInputDialog>
 #include <QLabel>
 #include <QPainter>
 #include <QPainterPath>
@@ -49,6 +50,7 @@
 #include "Engine.h"
 #include "GuiApplication.h"
 #include "gui_templates.h"
+#include "Knob.h"
 #include "MainWindow.h"
 #include "PatternStore.h"
 #include "PianoRoll.h"

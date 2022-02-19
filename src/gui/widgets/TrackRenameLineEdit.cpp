@@ -28,6 +28,8 @@
 
 #include "TrackRenameLineEdit.h"
 
+#include <QKeyEvent>
+
 
 
 

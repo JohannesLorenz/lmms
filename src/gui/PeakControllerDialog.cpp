@@ -24,8 +24,10 @@
  */
 
 
+#include <QIcon>
 #include <QLabel>
 #include <QPainter>
+#include <QPixmap>
 
 #include "embed.h"
 #include "ToolTip.h"

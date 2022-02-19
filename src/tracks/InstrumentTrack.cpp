@@ -23,19 +23,24 @@
  */
 #include "InstrumentTrack.h"
 
+#include <QDomElement>
+
 #include "AudioEngine.h"
 #include "AutomationClip.h"
 #include "ConfigManager.h"
 #include "ControllerConnection.h"
 #include "DataFile.h"
+#include "MidiClipView.h"
 #include "Mixer.h"
 #include "InstrumentTrackView.h"
 #include "Instrument.h"
+#include "Keymap.h"
 #include "MidiClient.h"
 #include "MidiClip.h"
 #include "MixHelpers.h"
 #include "PatternStore.h"
 #include "PatternTrack.h"
+#include "Pitch.h"
 #include "Song.h"
 
 

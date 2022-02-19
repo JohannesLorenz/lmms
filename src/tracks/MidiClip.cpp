@@ -25,8 +25,11 @@
 
 #include "MidiClip.h"
 
+#include <QDomElement>
+
 #include "GuiApplication.h"
 #include "InstrumentTrack.h"
+#include "MidiClipView.h"
 #include "PatternStore.h"
 #include "PianoRoll.h"
 

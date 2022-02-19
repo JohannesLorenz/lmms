@@ -27,13 +27,17 @@
 #include "PianoRoll.h"
 
 #include <QApplication>
+#include <QHBoxLayout>
+#include <QInputDialog>
 #include <QLabel>
 #include <QMargins>
 #include <QMessageBox>
 #include <QPainter>
 #include <QPointer>
+#include <QPushButton>
 #include <QScrollBar>
 #include <QStyleOption>
+#include <QtMath>
 #include <QToolButton>
 
 #ifndef __USE_XOPEN
@@ -58,6 +62,7 @@
 #include "MidiClip.h"
 #include "PatternStore.h"
 #include "PianoView.h"
+#include "PositionLine.h"
 #include "SongEditor.h"
 #include "StepRecorderWidget.h"
 #include "TextFloat.h"

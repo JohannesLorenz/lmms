@@ -27,8 +27,13 @@
 #include "ComboBox.h"
 
 #include <QApplication>
+#include <QContextMenuEvent>
 #include <QDesktopWidget>
+#include <QMouseEvent>
 #include <QPainter>
+#include <QStyle>
+#include <QStyleOptionFrame>
+#include <QWheelEvent>
 
 #include "CaptionMenu.h"
 #include "embed.h"

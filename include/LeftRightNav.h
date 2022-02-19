@@ -25,6 +25,8 @@
 #ifndef LEFT_RIGHT_NAV_H
 #define LEFT_RIGHT_NAV_H
 
+#include <QHBoxLayout>
+
 #include "PixmapButton.h"
 
 

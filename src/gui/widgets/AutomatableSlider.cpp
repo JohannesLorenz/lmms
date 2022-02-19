@@ -26,9 +26,9 @@
 #include "AutomatableSlider.h"
 
 
+#include <QMouseEvent>
+
 #include "CaptionMenu.h"
-
-
 
 
 AutomatableSlider::AutomatableSlider( QWidget * _parent,

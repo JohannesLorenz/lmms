@@ -23,6 +23,8 @@
  */
 
 
+#include <QDomElement>
+#include <QMouseEvent>
 #include <QTimer>
 #include <QPainter>
 #include <QToolBar>

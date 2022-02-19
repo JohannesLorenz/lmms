@@ -23,6 +23,7 @@
  */
 
 
+#include <QMouseEvent>
 #include <QPainter>
 
 #include "Oscilloscope.h"

@@ -28,8 +28,11 @@
 
 #include <QWidget>
 
+class Knob;
+class LcdWidget;
 class MixerView;
 class QGraphicsView;
+class QLineEdit;
 class SendButtonIndicator;
 
 class MixerLine : public QWidget

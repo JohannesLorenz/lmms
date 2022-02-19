@@ -74,6 +74,8 @@
 #define CONTROLLAYOUT_H
 
 #include <QLayout>
+#include <QMap>
+#include <QMultiMap>
 #include <QStyle>
 class QLayoutItem;
 class QRect;
