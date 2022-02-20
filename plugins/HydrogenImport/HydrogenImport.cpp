@@ -3,6 +3,7 @@
 #include "HydrogenImport.h"
 #include "Song.h"
 #include "Engine.h"
+#include "Instrument.h"
 #include "InstrumentTrack.h"
 #include "Note.h"
 #include "MidiClip.h"

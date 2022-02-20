@@ -1,5 +1,9 @@
 #include <ctype.h>
 
+#include <QFile>
+#include <QLocale>
+#include <QTextCodec>
+
 
 #include "LocalFileMng.h"
 

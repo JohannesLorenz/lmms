@@ -22,6 +22,7 @@
  *
  */
 
+#include "embed.h"
 #include "FlangerControlsDialog.h"
 #include "FlangerControls.h"
 #include "LedCheckbox.h"

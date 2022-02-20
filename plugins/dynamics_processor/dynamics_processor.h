@@ -30,6 +30,8 @@
 #include "Effect.h"
 #include "dynamics_processor_controls.h"
 
+class RmsHelper;
+
 
 class dynProcEffect : public Effect
 {

@@ -26,6 +26,8 @@
 #define EQCURVE_H
 
 
+#include <QGraphicsObject>
+
 
 enum{
 	highpass=1,

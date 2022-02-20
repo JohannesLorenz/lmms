@@ -28,6 +28,7 @@
 #include "EffectControlDialog.h"
 
 class DelayControls;
+class FloatModel;
 
 class DelayControlsDialog : public EffectControlDialog
 {

@@ -24,8 +24,14 @@
 #define EQSPECTRUMVIEW_H
 
 
+#include <QColor>
+#include <QPainterPath>
+#include <QWidget>
+
 #include "fft_helpers.h"
 #include "lmms_basics.h"
+
+class QPaintEvent;
 
 
 const int MAX_BANDS = 2048;

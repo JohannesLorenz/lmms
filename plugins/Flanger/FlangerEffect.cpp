@@ -22,8 +22,11 @@
  *
  */
 
-#include "FlangerEffect.h"
 #include "Engine.h"
+#include "FlangerEffect.h"
+#include "MonoDelay.h"
+#include "Noise.h"
+#include "QuadratureLfo.h"
 
 #include "embed.h"
 #include "plugin_export.h"

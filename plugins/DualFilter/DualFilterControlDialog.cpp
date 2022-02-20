@@ -26,6 +26,7 @@
 
 #include "DualFilterControlDialog.h"
 #include "DualFilterControls.h"
+#include "Knob.h"
 #include "LedCheckbox.h"
 #include "ComboBox.h"
 #include "ToolTip.h"

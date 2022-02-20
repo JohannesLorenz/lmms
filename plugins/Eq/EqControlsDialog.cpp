@@ -30,8 +30,10 @@
 #include "Knob.h"
 #include "LedCheckbox.h"
 #include "PixmapButton.h"
+#include "embed.h"
 
 #include "EqControls.h"
+#include "EqCurve.h"
 #include "EqFader.h"
 #include "EqParameterWidget.h"
 #include "EqSpectrumView.h"

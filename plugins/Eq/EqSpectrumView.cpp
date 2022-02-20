@@ -22,10 +22,15 @@
 
 #include "EqSpectrumView.h"
 
+#include <cmath>
+#include <QPainter>
+#include <QPen>
+
 #include "AudioEngine.h"
 #include "Engine.h"
 #include "EqCurve.h"
 #include "GuiApplication.h"
+#include "lmms_constants.h"
 #include "MainWindow.h"
 
 EqAnalyser::EqAnalyser() :

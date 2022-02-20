@@ -23,13 +23,14 @@
  */
 
 #include <QLabel>
+#include <QWheelEvent>
 
 #include "Compressor.h"
 #include "CompressorControlDialog.h"
 #include "CompressorControls.h"
 
-
-#include "EqFader.h"
+#include "embed.h"
+#include "../Eq/EqFader.h"
 #include "GuiApplication.h"
 #include "interpolation.h"
 #include "Knob.h"

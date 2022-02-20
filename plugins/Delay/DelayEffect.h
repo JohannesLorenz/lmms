@@ -28,6 +28,9 @@
 #include "Effect.h"
 #include "DelayControls.h"
 
+class Lfo;
+class StereoDelay;
+
 class DelayEffect : public Effect
 {
 public:

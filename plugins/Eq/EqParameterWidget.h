@@ -28,8 +28,16 @@
 #define EQPARAMETERWIDGET_H
 
 
+#include <QColor>
+#include <QString>
+#include <QWidget>
 
+class BoolModel;
 class EqControls;
+class EqCurve;
+class EqHandle;
+class FloatModel;
+
 
 class EqBand
 {

@@ -25,6 +25,12 @@
 
 #include "EqParameterWidget.h"
 
+#include <QGraphicsScene>
+#include <QGraphicsView>
+
+#include "AutomatableModel.h"
+#include "EqCurve.h"
+
 
 
 
