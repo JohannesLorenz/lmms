@@ -36,6 +36,7 @@
 
 #ifdef LMMS_BUILD_LINUX
 #include <QX11Info>
+
 #include "X11EmbedContainer.h"
 #endif
 
@@ -43,6 +44,7 @@
 
 #ifdef LMMS_BUILD_WIN32
 #include <windows.h>
+
 #include <QLayout>
 #endif
 
