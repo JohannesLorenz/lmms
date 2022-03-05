@@ -80,7 +80,8 @@ malletsInstrument::malletsInstrument(InstrumentTrack* _instrument_track)
 	, m_versionModel(MALLETS_PRESET_VERSION, 0, MALLETS_PRESET_VERSION, this, "")
 	, m_isOldVersionModel(false, this, "")
 	, m_filesMissing(!QDir(ConfigManager::inst()->stkDir()).exists()
-		  || !QFileInfo(ConfigManager::inst()->stkDir() + "/sinewave.raw").exists()) {
+		  || !QFileInfo(ConfigManager::inst()->stkDir() + "/sinewave.raw").exists())
+{
 	// ModalBar
 	m_presetsModel.addItem(tr("Marimba"));
 	m_scalers.append(4.0);
@@ -118,7 +119,8 @@ malletsInstrument::malletsInstrument(InstrumentTrack* _instrument_track)
 
 malletsInstrument::~malletsInstrument() {}
 
-void malletsInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void malletsInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	// ModalBar
 	m_hardnessModel.saveSettings(_doc, _this, "hardness");
 	m_positionModel.saveSettings(_doc, _this, "position");
@@ -146,7 +148,8 @@ void malletsInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 	m_isOldVersionModel.saveSettings(_doc, _this, "oldversion");
 }
 
-void malletsInstrument::loadSettings(const QDomElement& _this) {
+void malletsInstrument::loadSettings(const QDomElement& _this)
+{
 	m_versionModel.loadSettings(_this, "version");
 
 	// ModalBar
@@ -245,7 +248,8 @@ void malletsInstrument::loadSettings(const QDomElement& _this) {
 
 QString malletsInstrument::nodeName() const { return (malletsstk_plugin_descriptor.name); }
 
-void malletsInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer) {
+void malletsInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
+{
 	if (m_filesMissing) { return; }
 
 	int p = m_presetsModel.value();
@@ -296,14 +300,16 @@ void malletsInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffe
 	instrumentTrack()->processAudioBuffer(_working_buffer, frames + offset, _n);
 }
 
-void malletsInstrument::deleteNotePluginData(NotePlayHandle* _n) {
+void malletsInstrument::deleteNotePluginData(NotePlayHandle* _n)
+{
 	delete static_cast<malletsSynth*>(_n->m_pluginData);
 }
 
 PluginView* malletsInstrument::instantiateView(QWidget* _parent) { return (new malletsInstrumentView(this, _parent)); }
 
 malletsInstrumentView::malletsInstrumentView(malletsInstrument* _instrument, QWidget* _parent)
-	: InstrumentViewFixedSize(_instrument, _parent) {
+	: InstrumentViewFixedSize(_instrument, _parent)
+{
 	m_modalBarWidget = setupModalBarControls(this);
 	setWidgetBackground(m_modalBarWidget, "artwork");
 	m_modalBarWidget->move(0, 0);
@@ -341,14 +347,16 @@ malletsInstrumentView::malletsInstrumentView(malletsInstrument* _instrument, QWi
 
 malletsInstrumentView::~malletsInstrumentView() {}
 
-void malletsInstrumentView::setWidgetBackground(QWidget* _widget, const QString& _pic) {
+void malletsInstrumentView::setWidgetBackground(QWidget* _widget, const QString& _pic)
+{
 	_widget->setAutoFillBackground(true);
 	QPalette pal;
 	pal.setBrush(_widget->backgroundRole(), PLUGIN_NAME::getIconPixmap(_pic.toLatin1().constData()));
 	_widget->setPalette(pal);
 }
 
-QWidget* malletsInstrumentView::setupModalBarControls(QWidget* _parent) {
+QWidget* malletsInstrumentView::setupModalBarControls(QWidget* _parent)
+{
 	QWidget* widget = new QWidget(_parent);
 	widget->setFixedSize(250, 250);
 
@@ -380,7 +388,8 @@ QWidget* malletsInstrumentView::setupModalBarControls(QWidget* _parent) {
 	return (widget);
 }
 
-QWidget* malletsInstrumentView::setupTubeBellControls(QWidget* _parent) {
+QWidget* malletsInstrumentView::setupTubeBellControls(QWidget* _parent)
+{
 	QWidget* widget = new QWidget(_parent);
 	widget->setFixedSize(250, 250);
 
@@ -412,7 +421,8 @@ QWidget* malletsInstrumentView::setupTubeBellControls(QWidget* _parent) {
 	return (widget);
 }
 
-QWidget* malletsInstrumentView::setupBandedWGControls(QWidget* _parent) {
+QWidget* malletsInstrumentView::setupBandedWGControls(QWidget* _parent)
+{
 	// BandedWG
 	QWidget* widget = new QWidget(_parent);
 	widget->setFixedSize(250, 250);
@@ -443,7 +453,8 @@ QWidget* malletsInstrumentView::setupBandedWGControls(QWidget* _parent) {
 	return (widget);
 }
 
-void malletsInstrumentView::modelChanged() {
+void malletsInstrumentView::modelChanged()
+{
 	malletsInstrument* inst = castModel<malletsInstrument>();
 	m_hardnessKnob->setModel(&inst->m_hardnessModel);
 	m_positionKnob->setModel(&inst->m_positionModel);
@@ -464,7 +475,8 @@ void malletsInstrumentView::modelChanged() {
 	m_spreadKnob->setModel(&inst->m_spreadModel);
 }
 
-void malletsInstrumentView::changePreset() {
+void malletsInstrumentView::changePreset()
+{
 	malletsInstrument* inst = castModel<malletsInstrument>();
 	int _preset = inst->m_presetsModel.value();
 
@@ -487,7 +499,8 @@ void malletsInstrumentView::changePreset() {
 malletsSynth::malletsSynth(const StkFloat _pitch, const StkFloat _velocity, const StkFloat _control1,
 	const StkFloat _control2, const StkFloat _control4, const StkFloat _control8, const StkFloat _control11,
 	const int _control16, const uint8_t _delay, const sample_rate_t _sample_rate)
-	: m_presetIndex(0) {
+	: m_presetIndex(0)
+{
 	try {
 		Stk::setSampleRate(_sample_rate);
 		Stk::setRawwavePath(QDir(ConfigManager::inst()->stkDir()).absolutePath().toLocal8Bit().constData());
@@ -506,7 +519,9 @@ malletsSynth::malletsSynth(const StkFloat _pitch, const StkFloat _velocity, cons
 		m_voice->controlChange(128, 128.0f);
 
 		m_voice->noteOn(_pitch, _velocity);
-	} catch (...) { m_voice = nullptr; }
+	} catch (...) {
+		m_voice = nullptr;
+	}
 
 	m_delay = new StkFloat[256];
 	m_delayRead = 0;
@@ -520,7 +535,8 @@ malletsSynth::malletsSynth(const StkFloat _pitch, const StkFloat _velocity, cons
 malletsSynth::malletsSynth(const StkFloat _pitch, const StkFloat _velocity, const int _preset, const StkFloat _control1,
 	const StkFloat _control2, const StkFloat _control4, const StkFloat _control11, const StkFloat _control128,
 	const uint8_t _delay, const sample_rate_t _sample_rate)
-	: m_presetIndex(0) {
+	: m_presetIndex(0)
+{
 	try {
 		Stk::setSampleRate(_sample_rate);
 		Stk::setRawwavePath(QDir(ConfigManager::inst()->stkDir()).absolutePath().toLocal8Bit().constData());
@@ -537,7 +553,9 @@ malletsSynth::malletsSynth(const StkFloat _pitch, const StkFloat _velocity, cons
 		m_voice->controlChange(128, _control128);
 
 		m_voice->noteOn(_pitch, _velocity);
-	} catch (...) { m_voice = nullptr; }
+	} catch (...) {
+		m_voice = nullptr;
+	}
 
 	m_delay = new StkFloat[256];
 	m_delayRead = 0;
@@ -551,7 +569,8 @@ malletsSynth::malletsSynth(const StkFloat _pitch, const StkFloat _velocity, cons
 malletsSynth::malletsSynth(const StkFloat _pitch, const StkFloat _velocity, const StkFloat _control2,
 	const StkFloat _control4, const StkFloat _control11, const int _control16, const StkFloat _control64,
 	const StkFloat _control128, const uint8_t _delay, const sample_rate_t _sample_rate)
-	: m_presetIndex(0) {
+	: m_presetIndex(0)
+{
 	try {
 		Stk::setSampleRate(_sample_rate);
 		Stk::setRawwavePath(QDir(ConfigManager::inst()->stkDir()).absolutePath().toLocal8Bit().constData());
@@ -570,7 +589,9 @@ malletsSynth::malletsSynth(const StkFloat _pitch, const StkFloat _velocity, cons
 		m_voice->controlChange(128, _control128);
 
 		m_voice->noteOn(_pitch, _velocity);
-	} catch (...) { m_voice = nullptr; }
+	} catch (...) {
+		m_voice = nullptr;
+	}
 
 	m_delay = new StkFloat[256];
 	m_delayRead = 0;
@@ -583,7 +604,8 @@ malletsSynth::malletsSynth(const StkFloat _pitch, const StkFloat _velocity, cons
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* m, void*) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* m, void*)
+{
 	return new malletsInstrument(static_cast<InstrumentTrack*>(m));
 }
 }
