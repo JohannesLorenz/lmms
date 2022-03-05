@@ -1,0 +1,80 @@
+---
+# Language
+Language:        Cpp
+Standard:        Cpp11  # Cpp14 and Cpp17 are not supported by clang 11
+
+# Indentation
+TabWidth:        4
+UseTab:          Always
+IndentWidth:     4
+ColumnLimit:     120
+
+# Indentation detail
+AlignAfterOpenBracket: DontAlign
+ContinuationIndentWidth: 4
+BreakConstructorInitializers: BeforeComma
+ConstructorInitializerIndentWidth: 4
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+BinPackParameters: true
+BinPackArguments: true
+AlignOperands: false
+
+# Alignment
+AlignEscapedNewlines: DontAlign
+AccessModifierOffset: -4
+AllowShortBlocksOnASingleLine: Always
+AllowShortIfStatementsOnASingleLine: Always
+AllowShortCaseLabelsOnASingleLine: true
+BreakBeforeBinaryOperators: All
+
+# Includes
+IncludeBlocks:   Regroup
+IncludeCategories:
+  # windows.h must go before everything else
+  # otherwise, you will get errors
+  - Regex:           '^<windows.h>$'
+    Priority:        -99
+  # the "main header" implicitly gets priority 0
+  # system headers
+  - Regex:           '^<[^>]+>$'
+    Priority:        1
+  # non-system headers
+  - Regex:           '.*'
+    Priority:        2
+SortIncludes:    true
+
+# Spaces
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: ControlStatements
+SpacesInAngles:  false
+SpacesInCStyleCastParentheses: false
+SpacesInParentheses: false
+
+# Brace wrapping
+# Not directly mentioned in the coding conventions,
+# but required to avoid tons of auto reformatting
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: false
+  AfterControlStatement: Never
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: false
+  BeforeElse: false
+  IndentBraces: false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+  BeforeWhile: false
+  BeforeLambdaBody: false
+  
+# Pointers
+# Use pointer close to type: `const char* const* function()`
+PointerAlignment: Left
+
+...
+
