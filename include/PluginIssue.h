@@ -35,12 +35,14 @@ enum PluginIssueType
 	// port flow & type
 	unknownPortFlow,
 	unknownPortType,
+
 	// channel count
 	tooManyInputChannels,
 	tooManyOutputChannels,
 	tooManyMidiInputChannels,
 	tooManyMidiOutputChannels,
 	noOutputChannel,
+
 	// port metadata
 	portHasNoDef,
 	portHasNoMin,
@@ -50,9 +52,11 @@ enum PluginIssueType
 	logScaleMinMissing,
 	logScaleMaxMissing,
 	logScaleMinMaxDifferentSigns,
+
 	// features
 	featureNotSupported, //!< plugin requires functionality LMMS can't offer
-						 // misc
+
+	// misc
 	badPortType, //!< port type not supported
 	blacklisted,
 	noIssue
