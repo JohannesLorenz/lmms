@@ -4,6 +4,7 @@ plugins/LadspaEffect/calf/veal
 plugins/LadspaEffect/cmt/cmt
 plugins/LadspaEffect/swh/ladspa
 plugins/LadspaEffect/tap/tap-plugins
+plugins/MidiImport/portsmf
 plugins/OpulenZ/adplug
 plugins/Sid/resid
 plugins/Xpressive/exprtk
