@@ -4,7 +4,7 @@
  *
  * Copyright (c) 2006-2008 Danny McRae <khjklujn/at/users.sourceforge.net>
  * Copyright (c) 2009 Tobias Doerffel <tobydox/at/users.sourceforge.net>
- * 
+ *
  * This file is part of LMMS - https://lmms.io
  *
  * This program is free software; you can redistribute it and/or
@@ -29,28 +29,22 @@
 
 #include "EffectControlDialog.h"
 
-
 class QHBoxLayout;
 class LadspaControls;
 class LedCheckBox;
 
-
-class LadspaControlDialog : public EffectControlDialog
-{
+class LadspaControlDialog : public EffectControlDialog {
 	Q_OBJECT
 public:
-	LadspaControlDialog( LadspaControls * _ctl );
+	LadspaControlDialog(LadspaControls* _ctl);
 	~LadspaControlDialog();
 
-
 private slots:
-	void updateEffectView( LadspaControls * _ctl );
-
+	void updateEffectView(LadspaControls* _ctl);
 
 private:
-	QHBoxLayout * m_effectLayout;
-	LedCheckBox * m_stereoLink;
-
-} ;
+	QHBoxLayout* m_effectLayout;
+	LedCheckBox* m_stereoLink;
+};
 
 #endif

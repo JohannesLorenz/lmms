@@ -34,8 +34,8 @@
 
 #include "DataFile.h"
 #include "LinkedModelGroups.h"
-#include "lmms_export.h"
 #include "Plugin.h"
+#include "lmms_export.h"
 
 class Lv2Proc;
 class PluginIssue;
@@ -67,16 +67,14 @@ class PluginIssue;
 	* this class can not override virtuals of Instrument or EffectControls, so
 	  it will offer functions that must be called by virtuals in its child class
 */
-class LMMS_EXPORT Lv2ControlBase : public LinkedModelGroups
-{
+class LMMS_EXPORT Lv2ControlBase : public LinkedModelGroups {
 public:
-	static Plugin::PluginTypes check(const LilvPlugin* m_plugin,
-		std::vector<PluginIssue> &issues);
+	static Plugin::PluginTypes check(const LilvPlugin* m_plugin, std::vector<PluginIssue>& issues);
 
 	const LilvPlugin* getPlugin() const { return m_plugin; }
 
-	Lv2Proc *control(std::size_t idx) { return m_procs[idx].get(); }
-	const Lv2Proc *control(std::size_t idx) const { return m_procs[idx].get(); }
+	Lv2Proc* control(std::size_t idx) { return m_procs[idx].get(); }
+	const Lv2Proc* control(std::size_t idx) const { return m_procs[idx].get(); }
 
 	bool hasGui() const { return m_hasGUI; }
 	void setHasGui(bool val) { m_hasGUI = val; }
@@ -88,7 +86,7 @@ protected:
 	//! @param that the class inheriting this class and inheriting Model;
 	//!   this is the same pointer as this, but a different type
 	//! @param uri the Lv2 URI telling this class what plugin to construct
-	Lv2ControlBase(class Model *that, const QString& uri);
+	Lv2ControlBase(class Model* that, const QString& uri);
 	Lv2ControlBase(const Lv2ControlBase&) = delete;
 	~Lv2ControlBase() override;
 
@@ -113,18 +111,18 @@ protected:
 	void copyModelsToLmms() const;
 
 	//! Copy buffer passed by LMMS into our ports
-	void copyBuffersFromLmms(const sampleFrame *buf, fpp_t frames);
+	void copyBuffersFromLmms(const sampleFrame* buf, fpp_t frames);
 	//! Copy our ports into buffers passed by LMMS
-	void copyBuffersToLmms(sampleFrame *buf, fpp_t frames) const;
+	void copyBuffersToLmms(sampleFrame* buf, fpp_t frames) const;
 	//! Run the Lv2 plugin instance for @param frames frames
 	void run(fpp_t frames);
 
 	/*
 		load/save, must be called from virtuals
 	*/
-	void saveSettings(QDomDocument &doc, QDomElement &that);
-	void loadSettings(const QDomElement &that);
-	void loadFile(const QString &file);
+	void saveSettings(QDomDocument& doc, QDomElement& that);
+	void loadSettings(const QDomElement& that);
+	void loadFile(const QString& file);
 	//! TODO: not implemented
 	void reloadPlugin();
 
@@ -134,14 +132,13 @@ protected:
 	std::size_t controlCount() const;
 	QString nodeName() const { return "lv2controls"; }
 	bool hasNoteInput() const;
-	void handleMidiInputEvent(const class MidiEvent &event,
-		const class TimePos &time, f_cnt_t offset);
+	void handleMidiInputEvent(const class MidiEvent& event, const class TimePos& time, f_cnt_t offset);
 
 private:
 	//! Return the DataFile settings type
 	virtual DataFile::Types settingsType() = 0;
 	//! Inform the plugin about a file name change
-	virtual void setNameFromFile(const QString &fname) = 0;
+	virtual void setNameFromFile(const QString& fname) = 0;
 
 	//! Independent processors
 	//! If this is a mono effect, the vector will have size 2 in order to

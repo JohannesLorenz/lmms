@@ -2,7 +2,7 @@
  * stereoenhancer_control_dialog.cpp - control-dialog for stereoenhancer-effect
  *
  * Copyright (c) 2006-2007 Tobias Doerffel <tobydox/at/users.sourceforge.net>
- * 
+ *
  * This file is part of LMMS - https://lmms.io
  *
  * This program is free software; you can redistribute it and/or
@@ -22,9 +22,6 @@
  *
  */
 
-
-
-
 #include "stereoenhancer_control_dialog.h"
 
 #include <QHBoxLayout>
@@ -32,21 +29,16 @@
 #include "Knob.h"
 #include "stereoenhancer_controls.h"
 
+stereoEnhancerControlDialog::stereoEnhancerControlDialog(stereoEnhancerControls* _controls)
+	: EffectControlDialog(_controls) {
+	QHBoxLayout* l = new QHBoxLayout(this);
 
+	Knob* widthKnob = new Knob(knobBright_26, this);
+	widthKnob->setModel(&_controls->m_widthModel);
+	widthKnob->setLabel(tr("WIDTH"));
+	widthKnob->setHintText(tr("Width:"), " samples");
 
-stereoEnhancerControlDialog::stereoEnhancerControlDialog(
-	stereoEnhancerControls * _controls ) :
-	EffectControlDialog( _controls )
-{
-	QHBoxLayout * l = new QHBoxLayout( this );
-
-	Knob * widthKnob = new Knob( knobBright_26, this );
-	widthKnob->setModel( &_controls->m_widthModel );
-	widthKnob->setLabel( tr( "WIDTH" ) );
-	widthKnob->setHintText( tr( "Width:" ) , " samples" );
-
-	l->addWidget( widthKnob );
+	l->addWidget(widthKnob);
 
 	this->setLayout(l);
 }
-

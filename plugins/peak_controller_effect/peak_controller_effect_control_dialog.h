@@ -3,7 +3,7 @@
  *                                           peakControllerEffect
  *
  * Copyright (c) 2008 Paul Giblock <drfaygo/at/gmail/dot/com>
- * 
+ *
  * This file is part of LMMS - https://lmms.io
  *
  * This program is free software; you can redistribute it and/or
@@ -32,30 +32,22 @@ class PeakControllerEffectControls;
 class Knob;
 class LedCheckBox;
 
-
-class PeakControllerEffectControlDialog : public EffectControlDialog
-{
+class PeakControllerEffectControlDialog : public EffectControlDialog {
 	Q_OBJECT
 public:
-	PeakControllerEffectControlDialog(
-				PeakControllerEffectControls * _controls );
-	virtual ~PeakControllerEffectControlDialog()
-	{
-	}
-
+	PeakControllerEffectControlDialog(PeakControllerEffectControls* _controls);
+	virtual ~PeakControllerEffectControlDialog() {}
 
 protected:
-	Knob * m_baseKnob;
-	Knob * m_amountKnob;
-	Knob * m_attackKnob;
-	Knob * m_decayKnob;
-	Knob * m_tresholdKnob;
-	LedCheckBox * m_muteLed;
+	Knob* m_baseKnob;
+	Knob* m_amountKnob;
+	Knob* m_attackKnob;
+	Knob* m_decayKnob;
+	Knob* m_tresholdKnob;
+	LedCheckBox* m_muteLed;
 
-	LedCheckBox * m_absLed;
-	Knob * m_amountMultKnob;
-
-} ;
-
+	LedCheckBox* m_absLed;
+	Knob* m_amountMultKnob;
+};
 
 #endif

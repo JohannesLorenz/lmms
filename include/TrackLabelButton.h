@@ -22,7 +22,6 @@
  *
  */
 
-
 #ifndef TRACK_LABEL_BUTTON_H
 #define TRACK_LABEL_BUTTON_H
 
@@ -32,38 +31,32 @@ class TrackView;
 
 class TrackRenameLineEdit;
 
-
-class TrackLabelButton : public QToolButton
-{
+class TrackLabelButton : public QToolButton {
 	Q_OBJECT
 public:
-	TrackLabelButton( TrackView * _tv, QWidget * _parent );
+	TrackLabelButton(TrackView* _tv, QWidget* _parent);
 	virtual ~TrackLabelButton();
-
 
 public slots:
 	void rename();
 	void renameFinished();
 	void nameChanged();
 
-
 protected:
-	void dragEnterEvent( QDragEnterEvent * _dee ) override;
-	void dropEvent( QDropEvent * _de ) override;
-	void mousePressEvent( QMouseEvent * _me ) override;
-	void mouseDoubleClickEvent( QMouseEvent * _me ) override;
-	void mouseReleaseEvent( QMouseEvent * _me ) override;
-	void paintEvent( QPaintEvent * _pe ) override;
-	void resizeEvent( QResizeEvent * _re ) override;
-
+	void dragEnterEvent(QDragEnterEvent* _dee) override;
+	void dropEvent(QDropEvent* _de) override;
+	void mousePressEvent(QMouseEvent* _me) override;
+	void mouseDoubleClickEvent(QMouseEvent* _me) override;
+	void mouseReleaseEvent(QMouseEvent* _me) override;
+	void paintEvent(QPaintEvent* _pe) override;
+	void resizeEvent(QResizeEvent* _re) override;
 
 private:
-	TrackView * m_trackView;
+	TrackView* m_trackView;
 	QString m_iconName;
-	TrackRenameLineEdit * m_renameLineEdit;
+	TrackRenameLineEdit* m_renameLineEdit;
 	QRect m_buttonRect;
-	QString elideName( const QString &name );
-
-} ;
+	QString elideName(const QString& name);
+};
 
 #endif

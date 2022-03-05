@@ -22,10 +22,8 @@
  *
  */
 
-
 #ifndef PATTERN_TRACK_H
 #define PATTERN_TRACK_H
-
 
 #include <QMap>
 
@@ -34,61 +32,40 @@
 class TrackLabelButton;
 class TrackContainer;
 
-
 /*! Track type used in the Song (Editor) to reference a pattern in the PatternStore */
-class LMMS_EXPORT PatternTrack : public Track
-{
+class LMMS_EXPORT PatternTrack : public Track {
 	Q_OBJECT
 public:
 	PatternTrack(TrackContainer* tc);
 	virtual ~PatternTrack();
 
-	virtual bool play( const TimePos & _start, const fpp_t _frames,
-						const f_cnt_t _frame_base, int _clip_num = -1 ) override;
-	TrackView * createView( TrackContainerView* tcv ) override;
-	Clip* createClip(const TimePos & pos) override;
+	virtual bool play(
+		const TimePos& _start, const fpp_t _frames, const f_cnt_t _frame_base, int _clip_num = -1) override;
+	TrackView* createView(TrackContainerView* tcv) override;
+	Clip* createClip(const TimePos& pos) override;
 
-	virtual void saveTrackSpecificSettings( QDomDocument & _doc,
-							QDomElement & _parent ) override;
-	void loadTrackSpecificSettings( const QDomElement & _this ) override;
+	virtual void saveTrackSpecificSettings(QDomDocument& _doc, QDomElement& _parent) override;
+	void loadTrackSpecificSettings(const QDomElement& _this) override;
 
 	static PatternTrack* findPatternTrack(int pattern_num);
 	static void swapPatternTracks(Track* track1, Track* track2);
 
-	int patternIndex()
-	{
-		return s_infoMap[this];
-	}
+	int patternIndex() { return s_infoMap[this]; }
 
-	bool automationDisabled( Track * _track )
-	{
-		return( m_disabledTracks.contains( _track ) );
-	}
-	void disableAutomation( Track * _track )
-	{
-		m_disabledTracks.append( _track );
-	}
-	void enableAutomation( Track * _track )
-	{
-		m_disabledTracks.removeAll( _track );
-	}
+	bool automationDisabled(Track* _track) { return (m_disabledTracks.contains(_track)); }
+	void disableAutomation(Track* _track) { m_disabledTracks.append(_track); }
+	void enableAutomation(Track* _track) { m_disabledTracks.removeAll(_track); }
 
 protected:
-	inline QString nodeName() const override
-	{
-		return "patterntrack";
-	}
-
+	inline QString nodeName() const override { return "patterntrack"; }
 
 private:
-	QList<Track *> m_disabledTracks;
+	QList<Track*> m_disabledTracks;
 
 	typedef QMap<PatternTrack*, int> infoMap;
 	static infoMap s_infoMap;
 
 	friend class PatternTrackView;
-} ;
-
-
+};
 
 #endif

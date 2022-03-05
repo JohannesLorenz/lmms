@@ -28,13 +28,12 @@
 
 #include <QWidget>
 
-#include "Editor.h"
-
-#include "lmms_basics.h"
-#include "JournallingObject.h"
-#include "TimePos.h"
 #include "AutomationClip.h"
 #include "ComboBoxModel.h"
+#include "Editor.h"
+#include "JournallingObject.h"
+#include "TimePos.h"
+#include "lmms_basics.h"
 
 class QPainter;
 class QPixmap;
@@ -45,10 +44,7 @@ class Knob;
 class NotePlayHandle;
 class TimeLineWidget;
 
-
-
-class AutomationEditor : public QWidget, public JournallingObject
-{
+class AutomationEditor : public QWidget, public JournallingObject {
 	Q_OBJECT
 	Q_PROPERTY(QColor barLineColor MEMBER m_barLineColor)
 	Q_PROPERTY(QColor beatLineColor MEMBER m_beatLineColor)
@@ -60,66 +56,51 @@ class AutomationEditor : public QWidget, public JournallingObject
 	Q_PROPERTY(QColor crossColor MEMBER m_crossColor)
 	Q_PROPERTY(QColor backgroundShade MEMBER m_backgroundShade)
 public:
-	void setCurrentClip(AutomationClip * new_clip);
+	void setCurrentClip(AutomationClip* new_clip);
 
-	inline const AutomationClip * currentClip() const
-	{
-		return m_clip;
-	}
+	inline const AutomationClip* currentClip() const { return m_clip; }
 
-	inline bool validClip() const
-	{
-		return m_clip != nullptr;
-	}
+	inline bool validClip() const { return m_clip != nullptr; }
 
-	void saveSettings(QDomDocument & doc, QDomElement & parent) override;
-	void loadSettings(const QDomElement & parent) override;
-	QString nodeName() const override
-	{
-		return "automationeditor";
-	}
+	void saveSettings(QDomDocument& doc, QDomElement& parent) override;
+	void loadSettings(const QDomElement& parent) override;
+	QString nodeName() const override { return "automationeditor"; }
 
-	enum EditModes
-	{
-		DRAW,
-		ERASE,
-		DRAW_OUTVALUES
-	};
+	enum EditModes { DRAW, ERASE, DRAW_OUTVALUES };
 
 public slots:
 	void update();
 	void updateAfterClipChange();
 
-
 protected:
 	typedef AutomationClip::timeMap timeMap;
 
-	void keyPressEvent(QKeyEvent * ke) override;
-	void leaveEvent(QEvent * e) override;
-	void mousePressEvent(QMouseEvent * mouseEvent) override;
-	void mouseDoubleClickEvent(QMouseEvent * mouseEvent) override;
-	void mouseReleaseEvent(QMouseEvent * mouseEvent) override;
-	void mouseMoveEvent(QMouseEvent * mouseEvent) override;
-	void paintEvent(QPaintEvent * pe) override;
-	void resizeEvent(QResizeEvent * re) override;
-	void wheelEvent(QWheelEvent * we) override;
+	void keyPressEvent(QKeyEvent* ke) override;
+	void leaveEvent(QEvent* e) override;
+	void mousePressEvent(QMouseEvent* mouseEvent) override;
+	void mouseDoubleClickEvent(QMouseEvent* mouseEvent) override;
+	void mouseReleaseEvent(QMouseEvent* mouseEvent) override;
+	void mouseMoveEvent(QMouseEvent* mouseEvent) override;
+	void paintEvent(QPaintEvent* pe) override;
+	void resizeEvent(QResizeEvent* re) override;
+	void wheelEvent(QWheelEvent* we) override;
 
-	float getLevel( int y );
-	int xCoordOfTick( int tick );
-	float yCoordOfLevel( float level );
-	inline void drawLevelTick(QPainter & p, int tick, float value);
+	float getLevel(int y);
+	int xCoordOfTick(int tick);
+	float yCoordOfLevel(float level);
+	inline void drawLevelTick(QPainter& p, int tick, float value);
 
 	timeMap::iterator getNodeAt(int x, int y, bool outValue = false, int r = 5);
 
-	void drawLine( int x0, float y0, int x1, float y1 );
+	void drawLine(int x0, float y0, int x1, float y1);
 	bool fineTuneValue(timeMap::iterator node, bool editingOutValue);
 
 protected slots:
 	void play();
 	void stop();
 
-	void horScrolled( int new_pos );
-	void verScrolled( int new_pos );
+	void horScrolled(int new_pos);
+	void verScrolled(int new_pos);
 
 	void setEditMode(AutomationEditor::EditModes mode);
 	void setEditMode(int mode);
@@ -128,7 +109,7 @@ protected slots:
 	void setProgressionType(int type);
 	void setTension();
 
-	void updatePosition( const TimePos & t );
+	void updatePosition(const TimePos& t);
 
 	void zoomingXChanged();
 	void zoomingYChanged();
@@ -137,16 +118,7 @@ protected slots:
 	void setQuantization();
 
 private:
-
-	enum Actions
-	{
-		NONE,
-		MOVE_VALUE,
-		ERASE_VALUES,
-		MOVE_OUTVALUE,
-		RESET_OUTVALUES,
-		DRAW_LINE
-	} ;
+	enum Actions { NONE, MOVE_VALUE, ERASE_VALUES, MOVE_OUTVALUE, RESET_OUTVALUES, DRAW_LINE };
 
 	// some constants...
 	static const int SCROLLBAR_SIZE = 12;
@@ -159,15 +131,15 @@ private:
 	static const int VALUES_WIDTH = 64;
 
 	AutomationEditor();
-	AutomationEditor( const AutomationEditor & );
+	AutomationEditor(const AutomationEditor&);
 	virtual ~AutomationEditor();
 
-	static QPixmap * s_toolDraw;
-	static QPixmap * s_toolErase;
-	static QPixmap * s_toolDrawOut;
-	static QPixmap * s_toolMove;
-	static QPixmap * s_toolYFlip;
-	static QPixmap * s_toolXFlip;
+	static QPixmap* s_toolDraw;
+	static QPixmap* s_toolErase;
+	static QPixmap* s_toolDrawOut;
+	static QPixmap* s_toolMove;
+	static QPixmap* s_toolYFlip;
+	static QPixmap* s_toolXFlip;
 
 	ComboBoxModel m_zoomingXModel;
 	ComboBoxModel m_zoomingYModel;
@@ -175,9 +147,9 @@ private:
 
 	static const QVector<float> m_zoomXLevels;
 
-	FloatModel * m_tensionModel;
+	FloatModel* m_tensionModel;
 
-	AutomationClip * m_clip;
+	AutomationClip* m_clip;
 	float m_minLevel;
 	float m_maxLevel;
 	float m_step;
@@ -188,8 +160,8 @@ private:
 	void centerTopBottomScroll();
 	void updateTopBottomLevels();
 
-	QScrollBar * m_leftRightScroll;
-	QScrollBar * m_topBottomScroll;
+	QScrollBar* m_leftRightScroll;
+	QScrollBar* m_topBottomScroll;
 
 	TimePos m_currentPosition;
 
@@ -210,13 +182,13 @@ private:
 	EditModes m_editMode;
 
 	bool m_mouseDownLeft;
-	bool m_mouseDownRight; //true if right click is being held down
+	bool m_mouseDownRight; // true if right click is being held down
 
-	TimeLineWidget * m_timeLine;
+	TimeLineWidget* m_timeLine;
 	bool m_scrollBack;
 
-	void drawCross(QPainter & p );
-	void drawAutomationPoint( QPainter & p, timeMap::iterator it );
+	void drawCross(QPainter& p);
+	void drawAutomationPoint(QPainter& p, timeMap::iterator it);
 	bool inPatternEditor();
 
 	QColor m_barLineColor;
@@ -231,21 +203,17 @@ private:
 
 	friend class AutomationEditorWindow;
 
-
 signals:
 	void currentClipChanged();
-	void positionChanged( const TimePos & );
-} ;
+	void positionChanged(const TimePos&);
+};
 
-
-
-
-class AutomationEditorWindow : public Editor
-{
+class AutomationEditorWindow : public Editor {
 	Q_OBJECT
 
 	static const int INITIAL_WIDTH = 860;
 	static const int INITIAL_HEIGHT = 480;
+
 public:
 	AutomationEditorWindow();
 	~AutomationEditorWindow();
@@ -253,8 +221,8 @@ public:
 	void setCurrentClip(AutomationClip* clip);
 	const AutomationClip* currentClip();
 
-	void dropEvent( QDropEvent * _de ) override;
-	void dragEnterEvent( QDragEnterEvent * _dee ) override;
+	void dropEvent(QDropEvent* _de) override;
+	void dragEnterEvent(QDragEnterEvent* _dee) override;
 
 	void open(AutomationClip* clip);
 
@@ -269,7 +237,7 @@ signals:
 	void currentClipChanged();
 
 protected:
-	void focusInEvent(QFocusEvent * event) override;
+	void focusInEvent(QFocusEvent* event) override;
 
 protected slots:
 	void play() override;
@@ -286,12 +254,11 @@ private:
 	QAction* m_flipYAction;
 	QAction* m_flipXAction;
 
-	Knob * m_tensionKnob;
+	Knob* m_tensionKnob;
 
-	ComboBox * m_zoomingXComboBox;
-	ComboBox * m_zoomingYComboBox;
-	ComboBox * m_quantizeComboBox;
+	ComboBox* m_zoomingXComboBox;
+	ComboBox* m_zoomingYComboBox;
+	ComboBox* m_quantizeComboBox;
 };
-
 
 #endif

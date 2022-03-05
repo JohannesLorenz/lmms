@@ -5,7 +5,7 @@
  *
  * Copyright (c) 2004-2008 Tobias Doerffel <tobydox/at/users.sourceforge.net>
  * Copyright (c) 2017 Alexandre Almeida <http://m374lx.users.sourceforge.net/>
- * 
+ *
  * This file is part of LMMS - https://lmms.io
  *
  * This program is free software; you can redistribute it and/or
@@ -25,37 +25,23 @@
  *
  */
 
-
 #include "TrackRenameLineEdit.h"
 
 #include <QKeyEvent>
 
+TrackRenameLineEdit::TrackRenameLineEdit(QWidget* parent)
+	: QLineEdit(parent) {}
 
-
-TrackRenameLineEdit::TrackRenameLineEdit( QWidget * parent ) :
-	QLineEdit( parent )
-{
-}
-
-
-
-
-void TrackRenameLineEdit::show()
-{
+void TrackRenameLineEdit::show() {
 	m_oldName = text();
 	QLineEdit::show();
 }
 
-
-
-
-void TrackRenameLineEdit::keyPressEvent( QKeyEvent * ke )
-{
-	if( ke->key() == Qt::Key_Escape ) 
-	{
-		setText( m_oldName );
+void TrackRenameLineEdit::keyPressEvent(QKeyEvent* ke) {
+	if (ke->key() == Qt::Key_Escape) {
+		setText(m_oldName);
 		hide();
 	}
-	
-	QLineEdit::keyPressEvent( ke );
+
+	QLineEdit::keyPressEvent(ke);
 }

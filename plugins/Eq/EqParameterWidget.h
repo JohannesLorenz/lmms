@@ -2,7 +2,7 @@
  * eqparameterwidget.cpp - defination of EqParameterWidget class.
  *
  * Copyright (c) 2014 David French <dave/dot/french3/at/googlemail/dot/com>
-* Copyright (c) 2015 Steffen Baranowsky <BaraMGB/at/freenet/dot/de>
+ * Copyright (c) 2015 Steffen Baranowsky <BaraMGB/at/freenet/dot/de>
  *
  * This file is part of LMMS - https://lmms.io
  *
@@ -23,12 +23,10 @@
  *
  */
 
-
 #ifndef EQPARAMETERWIDGET_H
 #define EQPARAMETERWIDGET_H
 
 #include <QWidget>
-
 
 class BoolModel;
 class EqControls;
@@ -36,46 +34,38 @@ class EqCurve;
 class EqHandle;
 class FloatModel;
 
-class EqBand
-{
-public :
+class EqBand {
+public:
 	EqBand();
-	FloatModel *gain;
-	FloatModel *res;
-	FloatModel *freq;
-	BoolModel *active;
-	BoolModel *hp12;
-	BoolModel *hp24;
-	BoolModel *hp48;
-	BoolModel *lp12;
-	BoolModel *lp24;
-	BoolModel *lp48;
+	FloatModel* gain;
+	FloatModel* res;
+	FloatModel* freq;
+	BoolModel* active;
+	BoolModel* hp12;
+	BoolModel* hp24;
+	BoolModel* hp48;
+	BoolModel* lp12;
+	BoolModel* lp24;
+	BoolModel* lp48;
 	QColor color;
 	int x;
 	int y;
 	QString name;
-	float *peakL;
-	float *peakR;
+	float* peakL;
+	float* peakR;
 };
 
-
-
-
-class EqParameterWidget : public QWidget
-{
+class EqParameterWidget : public QWidget {
 	Q_OBJECT
 public:
-	explicit EqParameterWidget( QWidget *parent = 0, EqControls * controls = 0 );
+	explicit EqParameterWidget(QWidget* parent = 0, EqControls* controls = 0);
 	~EqParameterWidget();
-	QList<EqHandle*> *m_handleList;
+	QList<EqHandle*>* m_handleList;
 
-	const int bandCount()
-	{
-		return 8;
-	}
+	const int bandCount() { return 8; }
 
-	EqBand* getBandModels( int i );
-	void changeHandle( int i );
+	EqBand* getBandModels(int i);
+	void changeHandle(int i);
 
 private:
 	float m_pixelsPerUnitWidth;
@@ -83,11 +73,10 @@ private:
 	float m_pixelsPerOctave;
 	float m_scale;
 	int m_displayWidth, m_displayHeigth;
-	EqControls *m_controls;
-	EqBand *m_bands;
-	EqHandle *m_handle;
-	EqCurve *m_eqcurve;
-
+	EqControls* m_controls;
+	EqBand* m_bands;
+	EqHandle* m_handle;
+	EqCurve* m_eqcurve;
 
 private slots:
 	void updateModels();

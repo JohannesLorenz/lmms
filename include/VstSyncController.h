@@ -31,47 +31,33 @@
 
 #include "VstSyncData.h"
 
-
-class VstSyncController : public QObject
-{
+class VstSyncController : public QObject {
 	Q_OBJECT
 public:
 	VstSyncController();
 	~VstSyncController();
 
-	void setAbsolutePosition( double ticks );
+	void setAbsolutePosition(double ticks);
 
-	void setPlaybackState( bool enabled )
-	{
-		m_syncData->isPlaying = enabled;
-	}
+	void setPlaybackState(bool enabled) { m_syncData->isPlaying = enabled; }
 
-	void setTempo( int newTempo );
+	void setTempo(int newTempo);
 
-	void setTimeSignature( int num, int denom )
-	{
+	void setTimeSignature(int num, int denom) {
 		m_syncData->timeSigNumer = num;
 		m_syncData->timeSigDenom = denom;
 	}
 
-	void startCycle( int startTick, int endTick );
+	void startCycle(int startTick, int endTick);
 
-	void stopCycle()
-	{
-		m_syncData->isCycle = false;
-	}
+	void stopCycle() { m_syncData->isCycle = false; }
 
-	void setPlaybackJumped( bool jumped )
-	{
-		m_syncData->m_playbackJumped = jumped;
-	}
+	void setPlaybackJumped(bool jumped) { m_syncData->m_playbackJumped = jumped; }
 
 	void update();
 
-
 private slots:
 	void updateSampleRate();
-
 
 private:
 	VstSyncData* m_syncData;
@@ -79,7 +65,6 @@ private:
 	int m_shmID;
 
 	QSharedMemory m_shm;
-
 };
 
 #endif

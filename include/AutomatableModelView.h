@@ -26,70 +26,48 @@
 #ifndef AUTOMATABLE_MODEL_VIEW_H
 #define AUTOMATABLE_MODEL_VIEW_H
 
-#include "ModelView.h"
 #include "AutomatableModel.h"
+#include "ModelView.h"
 
 class QMenu;
 class QMouseEvent;
 
-class LMMS_EXPORT AutomatableModelView : public ModelView
-{
+class LMMS_EXPORT AutomatableModelView : public ModelView {
 public:
-	AutomatableModelView( Model* model, QWidget* _this );
+	AutomatableModelView(Model* model, QWidget* _this);
 	virtual ~AutomatableModelView() = default;
 
 	// some basic functions for convenience
-	AutomatableModel* modelUntyped()
-	{
-		return castModel<AutomatableModel>();
-	}
+	AutomatableModel* modelUntyped() { return castModel<AutomatableModel>(); }
 
-	const AutomatableModel* modelUntyped() const
-	{
-		return castModel<AutomatableModel>();
-	}
+	const AutomatableModel* modelUntyped() const { return castModel<AutomatableModel>(); }
 
-	void setModel( Model* model, bool isOldModelValid = true ) override;
+	void setModel(Model* model, bool isOldModelValid = true) override;
 	void unsetModel() override;
 
-	template<typename T>
-	inline T value() const
-	{
-		return modelUntyped() ? modelUntyped()->value<T>() : 0;
-	}
+	template <typename T> inline T value() const { return modelUntyped() ? modelUntyped()->value<T>() : 0; }
 
-	inline void setDescription( const QString& desc )
-	{
-		m_description = desc;
-	}
+	inline void setDescription(const QString& desc) { m_description = desc; }
 
-	inline void setUnit( const QString& unit )
-	{
-		m_unit = unit;
-	}
+	inline void setUnit(const QString& unit) { m_unit = unit; }
 
-	void addDefaultActions( QMenu* menu );
+	void addDefaultActions(QMenu* menu);
 
-	void setConversionFactor( float factor );
+	void setConversionFactor(float factor);
 	float getConversionFactor();
 
-
 protected:
-	virtual void mousePressEvent( QMouseEvent* event );
+	virtual void mousePressEvent(QMouseEvent* event);
 
 	QString m_description;
 	QString m_unit;
 	float m_conversionFactor; // Factor to be applied when the m_model->value is displayed
-} ;
+};
 
-
-
-
-class AutomatableModelViewSlots : public QObject
-{
+class AutomatableModelViewSlots : public QObject {
 	Q_OBJECT
 public:
-	AutomatableModelViewSlots( AutomatableModelView* amv, QObject* parent );
+	AutomatableModelViewSlots(AutomatableModelView* amv, QObject* parent);
 
 public slots:
 	void execConnectionDialog();
@@ -106,26 +84,15 @@ private slots:
 
 protected:
 	AutomatableModelView* m_amv;
+};
 
-} ;
-
-
-
-template <typename ModelType> class LMMS_EXPORT TypedModelView : public AutomatableModelView
-{
+template <typename ModelType> class LMMS_EXPORT TypedModelView : public AutomatableModelView {
 public:
-	TypedModelView( Model* model, QWidget* _this) :
-		AutomatableModelView( model, _this )
-	{}
+	TypedModelView(Model* model, QWidget* _this)
+		: AutomatableModelView(model, _this) {}
 
-	ModelType* model()
-	{
-		return castModel<ModelType>();
-	}
-	const ModelType* model() const
-	{
-		return castModel<ModelType>();
-	}
+	ModelType* model() { return castModel<ModelType>(); }
+	const ModelType* model() const { return castModel<ModelType>(); }
 };
 
 using FloatModelView = TypedModelView<FloatModel>;
@@ -133,4 +100,3 @@ using IntModelView = TypedModelView<IntModel>;
 using BoolModelView = TypedModelView<BoolModel>;
 
 #endif
-

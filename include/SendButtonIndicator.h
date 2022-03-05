@@ -3,28 +3,24 @@
 
 #include <QLabel>
 
-
 class FloatModel;
 class MixerLine;
 class MixerView;
 
-class SendButtonIndicator : public QLabel 
-{
+class SendButtonIndicator : public QLabel {
 public:
-	SendButtonIndicator( QWidget * _parent, MixerLine * _owner,
-						 MixerView * _mv);
+	SendButtonIndicator(QWidget* _parent, MixerLine* _owner, MixerView* _mv);
 
-	void mousePressEvent( QMouseEvent * e ) override;
+	void mousePressEvent(QMouseEvent* e) override;
 	void updateLightStatus();
 
 private:
+	MixerLine* m_parent;
+	MixerView* m_mv;
+	static QPixmap* s_qpmOn;
+	static QPixmap* s_qpmOff;
 
-	MixerLine * m_parent;
-	MixerView * m_mv;
-	static QPixmap * s_qpmOn;
-	static QPixmap * s_qpmOff;
-
-	FloatModel * getSendModel();
+	FloatModel* getSendModel();
 };
 
 #endif // SENDBUTTONINDICATOR_H

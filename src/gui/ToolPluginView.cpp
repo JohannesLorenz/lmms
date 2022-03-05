@@ -23,24 +23,20 @@
  *
  */
 
-#include "ToolPlugin.h"
 #include "ToolPluginView.h"
 
 #include <QIcon>
 
-#include "embed.h"
 #include "GuiApplication.h"
 #include "MainWindow.h"
+#include "ToolPlugin.h"
+#include "embed.h"
 
+ToolPluginView::ToolPluginView(ToolPlugin* _toolPlugin)
+	: PluginView(_toolPlugin, nullptr) {
+	getGUI()->mainWindow()->addWindowedWidget(this);
+	parentWidget()->setAttribute(Qt::WA_DeleteOnClose, false);
 
-ToolPluginView::ToolPluginView( ToolPlugin * _toolPlugin ) :
-	PluginView( _toolPlugin, nullptr )
-{
-	getGUI()->mainWindow()->addWindowedWidget( this );
-	parentWidget()->setAttribute( Qt::WA_DeleteOnClose, false );
-
-	setWindowTitle( _toolPlugin->displayName() );
-	setWindowIcon( _toolPlugin->descriptor()->logo->pixmap() );
+	setWindowTitle(_toolPlugin->displayName());
+	setWindowIcon(_toolPlugin->descriptor()->logo->pixmap());
 }
-
-

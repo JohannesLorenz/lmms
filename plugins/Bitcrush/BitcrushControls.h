@@ -26,55 +26,45 @@
 #ifndef BITCRUSH_CONTROLS_H
 #define BITCRUSH_CONTROLS_H
 
-#include "EffectControls.h"
 #include "BitcrushControlDialog.h"
+#include "EffectControls.h"
 
 class BitcrushEffect;
 
-class BitcrushControls : public EffectControls
-{
+class BitcrushControls : public EffectControls {
 	Q_OBJECT
 public:
-	BitcrushControls( BitcrushEffect * eff );
+	BitcrushControls(BitcrushEffect* eff);
 	virtual ~BitcrushControls();
 
-	virtual void saveSettings( QDomDocument & doc, QDomElement & elem );
-	virtual void loadSettings( const QDomElement & elem );
-	inline virtual QString nodeName() const
-	{
-		return( "bitcrushcontrols" );
-	}
+	virtual void saveSettings(QDomDocument& doc, QDomElement& elem);
+	virtual void loadSettings(const QDomElement& elem);
+	inline virtual QString nodeName() const { return ("bitcrushcontrols"); }
 
-	virtual int controlCount()
-	{
-		return( 9 );
-	}
+	virtual int controlCount() { return (9); }
 
-	virtual EffectControlDialog * createView()
-	{
-		return( new BitcrushControlDialog( this ) );
-	}
+	virtual EffectControlDialog* createView() { return (new BitcrushControlDialog(this)); }
 
 private slots:
 	void sampleRateChanged();
 
 private:
-	BitcrushEffect * m_effect;
-	
+	BitcrushEffect* m_effect;
+
 	FloatModel m_inGain;
 	FloatModel m_inNoise;
-	
+
 	FloatModel m_outGain;
 	FloatModel m_outClip;
-	
+
 	FloatModel m_rate;
 	FloatModel m_stereoDiff;
-	
+
 	FloatModel m_levels;
-	
+
 	BoolModel m_rateEnabled;
 	BoolModel m_depthEnabled;
-	
+
 	friend class BitcrushControlDialog;
 	friend class BitcrushEffect;
 };

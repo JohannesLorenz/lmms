@@ -25,9 +25,9 @@
 #ifndef AUDIO_PORT_H
 #define AUDIO_PORT_H
 
-#include <memory>
-#include <QString>
 #include <QMutex>
+#include <QString>
+#include <memory>
 
 #include "MemoryManager.h"
 #include "PlayHandle.h"
@@ -36,82 +36,49 @@ class EffectChain;
 class FloatModel;
 class BoolModel;
 
-class AudioPort : public ThreadableJob
-{
+class AudioPort : public ThreadableJob {
 	MM_OPERATORS
 public:
-	AudioPort( const QString & _name, bool _has_effect_chain = true,
-		FloatModel * volumeModel = nullptr, FloatModel * panningModel = nullptr,
-		BoolModel * mutedModel = nullptr );
+	AudioPort(const QString& _name, bool _has_effect_chain = true, FloatModel* volumeModel = nullptr,
+		FloatModel* panningModel = nullptr, BoolModel* mutedModel = nullptr);
 	virtual ~AudioPort();
 
-	inline sampleFrame * buffer()
-	{
-		return m_portBuffer;
-	}
+	inline sampleFrame* buffer() { return m_portBuffer; }
 
-	inline void lockBuffer()
-	{
-		m_portBufferLock.lock();
-	}
+	inline void lockBuffer() { m_portBufferLock.lock(); }
 
-	inline void unlockBuffer()
-	{
-		m_portBufferLock.unlock();
-	}
-
+	inline void unlockBuffer() { m_portBufferLock.unlock(); }
 
 	// indicate whether JACK & Co should provide output-buffer at ext. port
-	inline bool extOutputEnabled() const
-	{
-		return m_extOutputEnabled;
-	}
+	inline bool extOutputEnabled() const { return m_extOutputEnabled; }
 
-	void setExtOutputEnabled( bool _enabled );
-
+	void setExtOutputEnabled(bool _enabled);
 
 	// next mixer-channel after this audio-port
 	// (-1 = none  0 = master)
-	inline mix_ch_t nextMixerChannel() const
-	{
-		return m_nextMixerChannel;
-	}
+	inline mix_ch_t nextMixerChannel() const { return m_nextMixerChannel; }
 
-	inline EffectChain * effects()
-	{
-		return m_effects.get();
-	}
+	inline EffectChain* effects() { return m_effects.get(); }
 
-	void setNextMixerChannel( const mix_ch_t _chnl )
-	{
-		m_nextMixerChannel = _chnl;
-	}
+	void setNextMixerChannel(const mix_ch_t _chnl) { m_nextMixerChannel = _chnl; }
 
+	const QString& name() const { return m_name; }
 
-	const QString & name() const
-	{
-		return m_name;
-	}
-
-	void setName( const QString & _new_name );
-
+	void setName(const QString& _new_name);
 
 	bool processEffects();
 
 	// ThreadableJob stuff
 	void doProcessing() override;
-	bool requiresProcessing() const override
-	{
-		return true;
-	}
+	bool requiresProcessing() const override { return true; }
 
-	void addPlayHandle( PlayHandle * handle );
-	void removePlayHandle( PlayHandle * handle );
+	void addPlayHandle(PlayHandle* handle);
+	void removePlayHandle(PlayHandle* handle);
 
 private:
 	volatile bool m_bufferUsage;
 
-	sampleFrame * m_portBuffer;
+	sampleFrame* m_portBuffer;
 	QMutex m_portBufferLock;
 
 	bool m_extOutputEnabled;
@@ -124,14 +91,12 @@ private:
 	PlayHandleList m_playHandles;
 	QMutex m_playHandleLock;
 
-	FloatModel * m_volumeModel;
-	FloatModel * m_panningModel;
-	BoolModel * m_mutedModel;
+	FloatModel* m_volumeModel;
+	FloatModel* m_panningModel;
+	BoolModel* m_mutedModel;
 
 	friend class AudioEngine;
 	friend class AudioEngineWorkerThread;
-
-} ;
-
+};
 
 #endif

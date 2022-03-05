@@ -25,18 +25,16 @@
 #ifndef SONG_H
 #define SONG_H
 
-#include <memory>
-
 #include <QHash>
 #include <QString>
+#include <memory>
 
-#include "TrackContainer.h"
 #include "AudioEngine.h"
 #include "Controller.h"
-#include "lmms_constants.h"
 #include "MeterModel.h"
+#include "TrackContainer.h"
 #include "VstSyncController.h"
-
+#include "lmms_constants.h"
 
 class AutomationTrack;
 class Keymap;
@@ -44,29 +42,26 @@ class MidiClip;
 class Scale;
 class TimeLineWidget;
 
-
 const bpm_t MinTempo = 10;
 const bpm_t DefaultTempo = 140;
 const bpm_t MaxTempo = 999;
 const tick_t MaxSongLength = 9999 * DefaultTicksPerBar;
 
-
-class LMMS_EXPORT Song : public TrackContainer
-{
+class LMMS_EXPORT Song : public TrackContainer {
 	Q_OBJECT
-	mapPropertyFromModel( int,getTempo,setTempo,m_tempoModel );
-	mapPropertyFromModel( int,masterPitch,setMasterPitch,m_masterPitchModel );
-	mapPropertyFromModel( int,masterVolume,setMasterVolume, m_masterVolumeModel );
+	mapPropertyFromModel(int, getTempo, setTempo, m_tempoModel);
+	mapPropertyFromModel(int, masterPitch, setMasterPitch, m_masterPitchModel);
+	mapPropertyFromModel(int, masterVolume, setMasterVolume, m_masterVolumeModel);
+
 public:
-	enum PlayModes
-	{
+	enum PlayModes {
 		Mode_None,
 		Mode_PlaySong,
 		Mode_PlayPattern,
 		Mode_PlayMidiClip,
 		Mode_PlayAutomationClip,
 		Mode_Count
-	} ;
+	};
 
 	struct SaveOptions {
 		/**
@@ -85,269 +80,145 @@ public:
 	};
 
 	void clearErrors();
-	void collectError( const QString error );
+	void collectError(const QString error);
 	bool hasErrors();
 	QString errorSummary();
 
-	class PlayPos : public TimePos
-	{
+	class PlayPos : public TimePos {
 	public:
-		PlayPos( const int abs = 0 ) :
-			TimePos( abs ),
-			m_timeLine( nullptr ),
-			m_currentFrame( 0.0f )
-		{
-		}
-		inline void setCurrentFrame( const float f )
-		{
-			m_currentFrame = f;
-		}
-		inline float currentFrame() const
-		{
-			return m_currentFrame;
-		}
-		inline void setJumped( const bool jumped )
-		{
-			m_jumped = jumped;
-		}
-		inline bool jumped() const
-		{
-			return m_jumped;
-		}
-		TimeLineWidget * m_timeLine;
+		PlayPos(const int abs = 0)
+			: TimePos(abs)
+			, m_timeLine(nullptr)
+			, m_currentFrame(0.0f) {}
+		inline void setCurrentFrame(const float f) { m_currentFrame = f; }
+		inline float currentFrame() const { return m_currentFrame; }
+		inline void setJumped(const bool jumped) { m_jumped = jumped; }
+		inline bool jumped() const { return m_jumped; }
+		TimeLineWidget* m_timeLine;
 
 	private:
 		float m_currentFrame;
 		bool m_jumped;
-
-	} ;
+	};
 
 	void processNextBuffer();
 
-	inline int getLoadingTrackCount() const
-	{
-		return m_nLoadingTrack;
-	}
+	inline int getLoadingTrackCount() const { return m_nLoadingTrack; }
 
-	inline int getMilliseconds() const
-	{
-		return m_elapsedMilliSeconds[m_playMode];
-	}
+	inline int getMilliseconds() const { return m_elapsedMilliSeconds[m_playMode]; }
 
-	inline int getMilliseconds(PlayModes playMode) const
-	{
-		return m_elapsedMilliSeconds[playMode];
-	}
+	inline int getMilliseconds(PlayModes playMode) const { return m_elapsedMilliSeconds[playMode]; }
 
-	inline void setToTime(TimePos const & pos)
-	{
+	inline void setToTime(TimePos const& pos) {
 		m_elapsedMilliSeconds[m_playMode] = pos.getTimeInMilliseconds(getTempo());
 		m_playPos[m_playMode].setTicks(pos.getTicks());
 	}
 
-	inline void setToTime(TimePos const & pos, PlayModes playMode)
-	{
+	inline void setToTime(TimePos const& pos, PlayModes playMode) {
 		m_elapsedMilliSeconds[playMode] = pos.getTimeInMilliseconds(getTempo());
 		m_playPos[playMode].setTicks(pos.getTicks());
 	}
 
-	inline void setToTimeByTicks(tick_t ticks)
-	{
+	inline void setToTimeByTicks(tick_t ticks) {
 		m_elapsedMilliSeconds[m_playMode] = TimePos::ticksToMilliseconds(ticks, getTempo());
 		m_playPos[m_playMode].setTicks(ticks);
 	}
 
-	inline void setToTimeByTicks(tick_t ticks, PlayModes playMode)
-	{
+	inline void setToTimeByTicks(tick_t ticks, PlayModes playMode) {
 		m_elapsedMilliSeconds[playMode] = TimePos::ticksToMilliseconds(ticks, getTempo());
 		m_playPos[playMode].setTicks(ticks);
 	}
 
-	inline int getBars() const
-	{
-		return currentBar();
-	}
+	inline int getBars() const { return currentBar(); }
 
-	inline int ticksPerBar() const
-	{
-		return TimePos::ticksPerBar(m_timeSigModel);
-	}
+	inline int ticksPerBar() const { return TimePos::ticksPerBar(m_timeSigModel); }
 
 	// Returns the beat position inside the bar, 0-based
-	inline int getBeat() const
-	{
-		return getPlayPos().getBeatWithinBar(m_timeSigModel);
-	}
+	inline int getBeat() const { return getPlayPos().getBeatWithinBar(m_timeSigModel); }
 	// the remainder after bar and beat are removed
-	inline int getBeatTicks() const
-	{
-		return getPlayPos().getTickWithinBeat(m_timeSigModel);
-	}
-	inline int getTicks() const
-	{
-		return currentTick();
-	}
-	inline f_cnt_t getFrames() const
-	{
-		return currentFrame();
-	}
-	inline bool isPaused() const
-	{
-		return m_paused;
-	}
+	inline int getBeatTicks() const { return getPlayPos().getTickWithinBeat(m_timeSigModel); }
+	inline int getTicks() const { return currentTick(); }
+	inline f_cnt_t getFrames() const { return currentFrame(); }
+	inline bool isPaused() const { return m_paused; }
 
-	inline bool isPlaying() const
-	{
-		return m_playing == true && m_exporting == false;
-	}
+	inline bool isPlaying() const { return m_playing == true && m_exporting == false; }
 
-	inline bool isStopped() const
-	{
-		return m_playing == false && m_paused == false;
-	}
+	inline bool isStopped() const { return m_playing == false && m_paused == false; }
 
-	inline bool isExporting() const
-	{
-		return m_exporting;
-	}
+	inline bool isExporting() const { return m_exporting; }
 
-	inline void setExportLoop( bool exportLoop )
-	{
-		m_exportLoop = exportLoop;
-	}
+	inline void setExportLoop(bool exportLoop) { m_exportLoop = exportLoop; }
 
-	inline bool isRecording() const
-	{
-		return m_recording;
-	}
-	
-	inline void setLoopRenderCount(int count)
-	{
-		if (count < 1)
-			m_loopRenderCount = 1;
+	inline bool isRecording() const { return m_recording; }
+
+	inline void setLoopRenderCount(int count) {
+		if (count < 1) m_loopRenderCount = 1;
 		else
 			m_loopRenderCount = count;
 		m_loopRenderRemaining = m_loopRenderCount;
 	}
-    
-	inline int getLoopRenderCount() const
-	{
-		return m_loopRenderCount;
-	}
+
+	inline int getLoopRenderCount() const { return m_loopRenderCount; }
 
 	bool isExportDone() const;
 	int getExportProgress() const;
 
-	inline void setRenderBetweenMarkers( bool renderBetweenMarkers )
-	{
-		m_renderBetweenMarkers = renderBetweenMarkers;
-	}
+	inline void setRenderBetweenMarkers(bool renderBetweenMarkers) { m_renderBetweenMarkers = renderBetweenMarkers; }
 
-	inline PlayModes playMode() const
-	{
-		return m_playMode;
-	}
+	inline PlayModes playMode() const { return m_playMode; }
 
-	inline PlayPos & getPlayPos( PlayModes pm )
-	{
-		return m_playPos[pm];
-	}
-	inline const PlayPos & getPlayPos( PlayModes pm ) const
-	{
-		return m_playPos[pm];
-	}
-	inline PlayPos & getPlayPos()
-	{
-		return getPlayPos(m_playMode);
-	}
-	inline const PlayPos & getPlayPos() const
-	{
-		return getPlayPos(m_playMode);
-	}
+	inline PlayPos& getPlayPos(PlayModes pm) { return m_playPos[pm]; }
+	inline const PlayPos& getPlayPos(PlayModes pm) const { return m_playPos[pm]; }
+	inline PlayPos& getPlayPos() { return getPlayPos(m_playMode); }
+	inline const PlayPos& getPlayPos() const { return getPlayPos(m_playMode); }
 
 	void updateLength();
-	bar_t length() const
-	{
-		return m_length;
-	}
-
+	bar_t length() const { return m_length; }
 
 	bpm_t getTempo();
-	AutomationClip * tempoAutomationClip() override;
+	AutomationClip* tempoAutomationClip() override;
 
-	AutomationTrack * globalAutomationTrack()
-	{
-		return m_globalAutomationTrack;
-	}
+	AutomationTrack* globalAutomationTrack() { return m_globalAutomationTrack; }
 
-	//TODO: Add Q_DECL_OVERRIDE when Qt4 is dropped
+	// TODO: Add Q_DECL_OVERRIDE when Qt4 is dropped
 	AutomatedValueMap automatedValuesAt(TimePos time, int clipNum = -1) const override;
 
 	// file management
 	void createNewProject();
-	void createNewProjectFromTemplate( const QString & templ );
-	void loadProject( const QString & filename );
+	void createNewProjectFromTemplate(const QString& templ);
+	void loadProject(const QString& filename);
 	bool guiSaveProject();
-	bool guiSaveProjectAs(const QString & filename);
-	bool saveProjectFile(const QString & filename, bool withResources = false);
+	bool guiSaveProjectAs(const QString& filename);
+	bool saveProjectFile(const QString& filename, bool withResources = false);
 
-	const QString & projectFileName() const
-	{
-		return m_fileName;
-	}
+	const QString& projectFileName() const { return m_fileName; }
 
-	bool isLoadingProject() const
-	{
-		return m_loadingProject;
-	}
+	bool isLoadingProject() const { return m_loadingProject; }
 
-	void loadingCancelled()
-	{
+	void loadingCancelled() {
 		m_isCancelled = true;
 		Engine::audioEngine()->clearNewPlayHandles();
 	}
 
-	bool isCancelled()
-	{
-		return m_isCancelled;
-	}
+	bool isCancelled() { return m_isCancelled; }
 
-	bool isModified() const
-	{
-		return m_modified;
-	}
+	bool isModified() const { return m_modified; }
 
-	QString nodeName() const override
-	{
-		return "song";
-	}
+	QString nodeName() const override { return "song"; }
 
-	virtual bool fixedClips() const
-	{
-		return false;
-	}
+	virtual bool fixedClips() const { return false; }
 
-	void addController( Controller * c );
-	void removeController( Controller * c );
+	void addController(Controller* c);
+	void removeController(Controller* c);
 
+	const ControllerVector& controllers() const { return m_controllers; }
 
-	const ControllerVector & controllers() const
-	{
-		return m_controllers;
-	}
+	MeterModel& getTimeSigModel() { return m_timeSigModel; }
 
-
-	MeterModel & getTimeSigModel()
-	{
-		return m_timeSigModel;
-	}
-
-	void exportProjectMidi(QString const & exportFileName) const;
+	void exportProjectMidi(QString const& exportFileName) const;
 
 	inline void setLoadOnLaunch(bool value) { m_loadOnLaunch = value; }
-	SaveOptions &getSaveOptions() {
-		return m_saveOptions;
-	}
+	SaveOptions& getSaveOptions() { return m_saveOptions; }
 
 	bool isSavingProject() const;
 
@@ -361,20 +232,18 @@ public slots:
 	void record();
 	void playAndRecord();
 	void playPattern();
-	void playMidiClip( const MidiClip * midiClipToPlay, bool loop = true );
+	void playMidiClip(const MidiClip* midiClipToPlay, bool loop = true);
 	void togglePause();
 	void stop();
 
 	void startExport();
 	void stopExport();
 
-
 	void setModified();
 
 	void clearProject();
 
 	void addPatternTrack();
-
 
 private slots:
 	void insertBar();
@@ -391,50 +260,39 @@ private slots:
 
 	void updateFramesPerTick();
 
-
-
 private:
 	Song();
-	Song( const Song & );
+	Song(const Song&);
 	virtual ~Song();
 
+	inline bar_t currentBar() const { return m_playPos[m_playMode].getBar(); }
 
-	inline bar_t currentBar() const
-	{
-		return m_playPos[m_playMode].getBar();
+	inline tick_t currentTick() const { return m_playPos[m_playMode].getTicks(); }
+
+	inline f_cnt_t currentFrame() const {
+		return m_playPos[m_playMode].getTicks() * Engine::framesPerTick() + m_playPos[m_playMode].currentFrame();
 	}
 
-	inline tick_t currentTick() const
-	{
-		return m_playPos[m_playMode].getTicks();
-	}
+	void setPlayPos(tick_t ticks, PlayModes playMode);
 
-	inline f_cnt_t currentFrame() const
-	{
-		return m_playPos[m_playMode].getTicks() * Engine::framesPerTick() +
-			m_playPos[m_playMode].currentFrame();
-	}
-
-	void setPlayPos( tick_t ticks, PlayModes playMode );
-
-	void saveControllerStates( QDomDocument & doc, QDomElement & element );
-	void restoreControllerStates( const QDomElement & element );
+	void saveControllerStates(QDomDocument& doc, QDomElement& element);
+	void restoreControllerStates(const QDomElement& element);
 
 	void removeAllControllers();
 
-	void saveScaleStates(QDomDocument &doc, QDomElement &element);
-	void restoreScaleStates(const QDomElement &element);
+	void saveScaleStates(QDomDocument& doc, QDomElement& element);
+	void restoreScaleStates(const QDomElement& element);
 
-	void saveKeymapStates(QDomDocument &doc, QDomElement &element);
-	void restoreKeymapStates(const QDomElement &element);
+	void saveKeymapStates(QDomDocument& doc, QDomElement& element);
+	void restoreKeymapStates(const QDomElement& element);
 
 	void processAutomations(const TrackList& tracks, TimePos timeStart, fpp_t frames);
 
 	void setModified(bool value);
 
-	void setProjectFileName(QString const & projectFileName);
+	void setProjectFileName(QString const& projectFileName);
 
-	AutomationTrack * m_globalAutomationTrack;
+	AutomationTrack* m_globalAutomationTrack;
 
 	IntModel m_tempoModel;
 	MeterModel m_timeSigModel;
@@ -478,7 +336,7 @@ private:
 	bar_t m_elapsedBars;
 
 	VstSyncController m_vstSyncController;
-    
+
 	int m_loopRenderCount;
 	int m_loopRenderRemaining;
 	TimePos m_exportSongBegin;
@@ -501,18 +359,17 @@ signals:
 	void projectLoaded();
 	void playbackStateChanged();
 	void playbackPositionChanged();
-	void lengthChanged( int bars );
-	void tempoChanged( bpm_t newBPM );
-	void timeSignatureChanged( int oldTicksPerBar, int ticksPerBar );
-	void controllerAdded( Controller * );
-	void controllerRemoved( Controller * );
+	void lengthChanged(int bars);
+	void tempoChanged(bpm_t newBPM);
+	void timeSignatureChanged(int oldTicksPerBar, int ticksPerBar);
+	void controllerAdded(Controller*);
+	void controllerRemoved(Controller*);
 	void updateSampleTracks();
 	void stopped();
 	void modified();
 	void projectFileNameChanged();
 	void scaleListChanged(int index);
 	void keymapListChanged(int index);
-} ;
-
+};
 
 #endif

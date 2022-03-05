@@ -2,7 +2,7 @@
  * stereoenhancer_controls.cpp - control-dialog for stereoenhancer-effect
  *
  * Copyright (c) 2006-2008 Tobias Doerffel <tobydox/at/users.sourceforge.net>
- * 
+ *
  * This file is part of LMMS - https://lmms.io
  *
  * This program is free software; you can redistribute it and/or
@@ -22,48 +22,25 @@
  *
  */
 
+#include "stereoenhancer_controls.h"
 
 #include <QDomElement>
 
-#include "stereoenhancer_controls.h"
 #include "stereo_enhancer.h"
 
-
-stereoEnhancerControls::stereoEnhancerControls( stereoEnhancerEffect * _eff ) :
-		EffectControls( _eff ),
-		m_effect( _eff ),
-		m_widthModel(0.0f, 0.0f, 180.0f, 1.0f, this, tr( "Width" ) )
-{
-	connect( &m_widthModel, SIGNAL( dataChanged() ),
-			this, SLOT( changeWideCoeff() ) );
+stereoEnhancerControls::stereoEnhancerControls(stereoEnhancerEffect* _eff)
+	: EffectControls(_eff)
+	, m_effect(_eff)
+	, m_widthModel(0.0f, 0.0f, 180.0f, 1.0f, this, tr("Width")) {
+	connect(&m_widthModel, SIGNAL(dataChanged()), this, SLOT(changeWideCoeff()));
 
 	changeWideCoeff();
 }
 
+void stereoEnhancerControls::changeWideCoeff() { m_effect->m_seFX.setWideCoeff(m_widthModel.value()); }
 
+void stereoEnhancerControls::loadSettings(const QDomElement& _this) { m_widthModel.loadSettings(_this, "width"); }
 
-void stereoEnhancerControls::changeWideCoeff()
-{
-	m_effect->m_seFX.setWideCoeff( m_widthModel.value() );
+void stereoEnhancerControls::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+	m_widthModel.saveSettings(_doc, _this, "width");
 }
-
-
-
-void stereoEnhancerControls::loadSettings( const QDomElement & _this )
-{
-	m_widthModel.loadSettings( _this, "width" );
-}
-
-
-
-
-void stereoEnhancerControls::saveSettings( QDomDocument & _doc, 
-							QDomElement & _this )
-{
-	m_widthModel.saveSettings( _doc, _this, "width" );
-}
-
-
-
-
-

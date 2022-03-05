@@ -26,51 +26,31 @@
 #ifndef DUMMY_INSTRUMENT_H
 #define DUMMY_INSTRUMENT_H
 
-#include "Instrument.h"
-#include "InstrumentView.h"
-#include "Engine.h"
-
 #include <cstring>
 
 #include "AudioEngine.h"
+#include "Engine.h"
+#include "Instrument.h"
+#include "InstrumentView.h"
 
-
-class DummyInstrument : public Instrument
-{
+class DummyInstrument : public Instrument {
 public:
-	DummyInstrument( InstrumentTrack * _instrument_track ) :
-		Instrument( _instrument_track, nullptr )
-	{
+	DummyInstrument(InstrumentTrack* _instrument_track)
+		: Instrument(_instrument_track, nullptr) {}
+
+	virtual ~DummyInstrument() {}
+
+	void playNote(NotePlayHandle*, sampleFrame* buffer) override {
+		memset(buffer, 0, sizeof(sampleFrame) * Engine::audioEngine()->framesPerPeriod());
 	}
 
-	virtual ~DummyInstrument()
-	{
-	}
+	void saveSettings(QDomDocument&, QDomElement&) override {}
 
-	void playNote( NotePlayHandle *, sampleFrame * buffer ) override
-	{
-		memset( buffer, 0, sizeof( sampleFrame ) *
-			Engine::audioEngine()->framesPerPeriod() );
-	}
+	void loadSettings(const QDomElement&) override {}
 
-	void saveSettings( QDomDocument &, QDomElement & ) override
-	{
-	}
+	QString nodeName() const override { return "dummyinstrument"; }
 
-	void loadSettings( const QDomElement & ) override
-	{
-	}
-
-	QString nodeName() const override
-	{
-		return "dummyinstrument";
-	}
-
-	PluginView * instantiateView( QWidget * _parent ) override
-	{
-		return new InstrumentViewFixedSize( this, _parent );
-	}
-} ;
-
+	PluginView* instantiateView(QWidget* _parent) override { return new InstrumentViewFixedSize(this, _parent); }
+};
 
 #endif

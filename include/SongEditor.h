@@ -23,10 +23,8 @@
  *
  */
 
-
 #ifndef SONG_EDITOR_H
 #define SONG_EDITOR_H
-
 
 #include "Editor.h"
 #include "TrackContainerView.h"
@@ -45,62 +43,55 @@ class Song;
 class TextFloat;
 class TimeLineWidget;
 
-
-class SongEditor : public TrackContainerView
-{
+class SongEditor : public TrackContainerView {
 	Q_OBJECT
 public:
-	enum EditMode
-	{
-		DrawMode,
-		KnifeMode,
-		SelectMode
-	};
+	enum EditMode { DrawMode, KnifeMode, SelectMode };
 
-	SongEditor( Song * song );
+	SongEditor(Song* song);
 	~SongEditor();
 
-	void saveSettings( QDomDocument& doc, QDomElement& element ) override;
-	void loadSettings( const QDomElement& element ) override;
+	void saveSettings(QDomDocument& doc, QDomElement& element) override;
+	void loadSettings(const QDomElement& element) override;
 
-	ComboBoxModel *zoomingModel() const;
-	ComboBoxModel *snappingModel() const;
+	ComboBoxModel* zoomingModel() const;
+	ComboBoxModel* snappingModel() const;
 	float getSnapSize() const;
 	QString getSnapSizeString() const;
 
 public slots:
-	void scrolled( int new_pos );
+	void scrolled(int new_pos);
 	void selectRegionFromPixels(int xStart, int xEnd);
 	void stopSelectRegion();
 	void updateRubberband();
 
-	void setEditMode( EditMode mode );
+	void setEditMode(EditMode mode);
 	void setEditModeDraw();
 	void setEditModeKnife();
 	void setEditModeSelect();
 	void toggleProportionalSnap();
 
-	void updatePosition( const TimePos & t );
+	void updatePosition(const TimePos& t);
 	void updatePositionLine();
-	void selectAllClips( bool select );
+	void selectAllClips(bool select);
 
 protected:
-	void closeEvent( QCloseEvent * ce ) override;
-	void mousePressEvent(QMouseEvent * me) override;
-	void mouseMoveEvent(QMouseEvent * me) override;
-	void mouseReleaseEvent(QMouseEvent * me) override;
+	void closeEvent(QCloseEvent* ce) override;
+	void mousePressEvent(QMouseEvent* me) override;
+	void mouseMoveEvent(QMouseEvent* me) override;
+	void mouseReleaseEvent(QMouseEvent* me) override;
 
 private slots:
-	void setHighQuality( bool );
+	void setHighQuality(bool);
 
-	void setMasterVolume( int new_val );
+	void setMasterVolume(int new_val);
 	void showMasterVolumeFloat();
-	void updateMasterVolumeFloat( int new_val );
+	void updateMasterVolumeFloat(int new_val);
 	void hideMasterVolumeFloat();
 
-	void setMasterPitch( int new_val );
+	void setMasterPitch(int new_val);
 	void showMasterPitchFloat();
-	void updateMasterPitchFloat( int new_val );
+	void updateMasterPitchFloat(int new_val);
 	void hideMasterPitchFloat();
 
 	void updateScrollBar(int len);
@@ -108,8 +99,8 @@ private slots:
 	void zoomingChanged();
 
 private:
-	void keyPressEvent( QKeyEvent * ke ) override;
-	void wheelEvent( QWheelEvent * we ) override;
+	void keyPressEvent(QKeyEvent* ke) override;
+	void wheelEvent(QWheelEvent* we) override;
 
 	bool allowRubberband() const override;
 	bool knifeMode() const override;
@@ -117,23 +108,22 @@ private:
 	int trackIndexFromSelectionPoint(int yPos);
 	int indexOfTrackView(const TrackView* tv);
 
+	Song* m_song;
 
-	Song * m_song;
+	QScrollBar* m_leftRightScroll;
 
-	QScrollBar * m_leftRightScroll;
+	LcdSpinBox* m_tempoSpinBox;
 
-	LcdSpinBox * m_tempoSpinBox;
+	TimeLineWidget* m_timeLine;
 
-	TimeLineWidget * m_timeLine;
+	MeterDialog* m_timeSigDisplay;
+	AutomatableSlider* m_masterVolumeSlider;
+	AutomatableSlider* m_masterPitchSlider;
 
-	MeterDialog * m_timeSigDisplay;
-	AutomatableSlider * m_masterVolumeSlider;
-	AutomatableSlider * m_masterPitchSlider;
+	TextFloat* m_mvsStatus;
+	TextFloat* m_mpsStatus;
 
-	TextFloat * m_mvsStatus;
-	TextFloat * m_mpsStatus;
-
-	PositionLine * m_positionLine;
+	PositionLine* m_positionLine;
 
 	ComboBoxModel* m_zoomingModel;
 	ComboBoxModel* m_snappingModel;
@@ -159,17 +149,13 @@ private:
 	friend class SongEditorWindow;
 
 signals:
-	void zoomingValueChanged( float );
-} ;
+	void zoomingValueChanged(float);
+};
 
-
-
-
-class SongEditorWindow : public Editor
-{
+class SongEditorWindow : public Editor {
 	Q_OBJECT
 public:
-	SongEditorWindow( Song* song );
+	SongEditorWindow(Song* song);
 
 	QSize sizeHint() const override;
 
@@ -177,8 +163,8 @@ public:
 	void syncEditMode();
 
 protected:
-	void resizeEvent( QResizeEvent * event ) override;
-	void changeEvent( QEvent * ) override;
+	void resizeEvent(QResizeEvent* event) override;
+	void changeEvent(QEvent*) override;
 
 protected slots:
 	void play() override;
@@ -201,14 +187,14 @@ private:
 	QAction* m_addAutomationTrackAction;
 	QAction* m_setProportionalSnapAction;
 
-	ActionGroup * m_editModeGroup;
+	ActionGroup* m_editModeGroup;
 	QAction* m_drawModeAction;
 	QAction* m_knifeModeAction;
 	QAction* m_selectModeAction;
 	QAction* m_crtlAction;
 
-	ComboBox * m_zoomingComboBox;
-	ComboBox * m_snappingComboBox;
+	ComboBox* m_zoomingComboBox;
+	ComboBox* m_snappingComboBox;
 	QLabel* m_snapSizeLabel;
 
 	QAction* m_insertBarAction;

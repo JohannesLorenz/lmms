@@ -1,5 +1,5 @@
 /*
- * CrossoverEQControlDialog.h - A native 4-band Crossover Equalizer 
+ * CrossoverEQControlDialog.h - A native 4-band Crossover Equalizer
  * good for simulating tonestacks or simple peakless (flat-band) equalization
  *
  * Copyright (c) 2014 Vesa Kivimäki <contact/dot/diizy/at/nbl/dot/fi>
@@ -28,19 +28,17 @@
 #define CROSSOVEREQ_CONTROL_DIALOG_H
 
 #include <QPixmap>
+
 #include "EffectControlDialog.h"
 
 class CrossoverEQControls;
 
-class CrossoverEQControlDialog : public EffectControlDialog
-{
+class CrossoverEQControlDialog : public EffectControlDialog {
 	Q_OBJECT
 public:
-	CrossoverEQControlDialog( CrossoverEQControls * controls );
-	virtual ~CrossoverEQControlDialog()
-	{
-	}
-	
+	CrossoverEQControlDialog(CrossoverEQControls* controls);
+	virtual ~CrossoverEQControlDialog() {}
+
 private:
 	QPixmap m_fader_bg;
 	QPixmap m_fader_empty;

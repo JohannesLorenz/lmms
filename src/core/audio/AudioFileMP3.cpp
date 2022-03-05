@@ -27,17 +27,11 @@
 
 #ifdef LMMS_HAVE_MP3LAME
 
-
 #include <cassert>
 
-
-AudioFileMP3::AudioFileMP3(	OutputSettings const & outputSettings,
-				const ch_cnt_t channels,
-				bool & successful,
-				const QString & file,
-				AudioEngine* audioEngine ) :
-	AudioFileDevice( outputSettings, channels, file, audioEngine )
-{
+AudioFileMP3::AudioFileMP3(OutputSettings const& outputSettings, const ch_cnt_t channels, bool& successful,
+	const QString& file, AudioEngine* audioEngine)
+	: AudioFileDevice(outputSettings, channels, file, audioEngine) {
 	successful = true;
 	// For now only accept stereo sources
 	successful &= channels == 2;
@@ -45,66 +39,51 @@ AudioFileMP3::AudioFileMP3(	OutputSettings const & outputSettings,
 	successful &= outputFileOpened();
 }
 
-AudioFileMP3::~AudioFileMP3()
-{
+AudioFileMP3::~AudioFileMP3() {
 	flushRemainingBuffers();
 	tearDownEncoder();
 }
 
-void AudioFileMP3::writeBuffer( const surroundSampleFrame * _buf,
-					const fpp_t _frames,
-					const float _master_gain )
-{
-	if (_frames < 1)
-	{
-		return;
-	}
+void AudioFileMP3::writeBuffer(const surroundSampleFrame* _buf, const fpp_t _frames, const float _master_gain) {
+	if (_frames < 1) { return; }
 
 	// TODO Why isn't the gain applied by the driver but inside the device?
 	std::vector<float> interleavedDataBuffer(_frames * 2);
-	for (fpp_t i = 0; i < _frames; ++i)
-	{
-		interleavedDataBuffer[2*i] = _buf[i][0] * _master_gain;
-		interleavedDataBuffer[2*i + 1] = _buf[i][1] * _master_gain;
+	for (fpp_t i = 0; i < _frames; ++i) {
+		interleavedDataBuffer[2 * i] = _buf[i][0] * _master_gain;
+		interleavedDataBuffer[2 * i + 1] = _buf[i][1] * _master_gain;
 	}
 
 	size_t minimumBufferSize = 1.25 * _frames + 7200;
 	std::vector<unsigned char> encodingBuffer(minimumBufferSize);
 
-	int bytesWritten = lame_encode_buffer_interleaved_ieee_float(m_lame, &interleavedDataBuffer[0], _frames, &encodingBuffer[0], static_cast<int>(encodingBuffer.size()));
-	assert (bytesWritten >= 0);
+	int bytesWritten = lame_encode_buffer_interleaved_ieee_float(
+		m_lame, &interleavedDataBuffer[0], _frames, &encodingBuffer[0], static_cast<int>(encodingBuffer.size()));
+	assert(bytesWritten >= 0);
 
 	writeData(&encodingBuffer[0], bytesWritten);
 }
 
-void AudioFileMP3::flushRemainingBuffers()
-{
+void AudioFileMP3::flushRemainingBuffers() {
 	// The documentation states that flush should have at least 7200 bytes. So let's be generous.
 	std::vector<unsigned char> encodingBuffer(7200 * 4);
 
 	int bytesWritten = lame_encode_flush(m_lame, &encodingBuffer[0], static_cast<int>(encodingBuffer.size()));
-	assert (bytesWritten >= 0);
+	assert(bytesWritten >= 0);
 
 	writeData(&encodingBuffer[0], bytesWritten);
 }
 
-MPEG_mode mapToMPEG_mode(OutputSettings::StereoMode stereoMode)
-{
-	switch (stereoMode)
-	{
-	case OutputSettings::StereoMode_Stereo:
-		return STEREO;
-	case OutputSettings::StereoMode_JointStereo:
-		return JOINT_STEREO;
-	case OutputSettings::StereoMode_Mono:
-		return MONO;
-	default:
-		return NOT_SET;
+MPEG_mode mapToMPEG_mode(OutputSettings::StereoMode stereoMode) {
+	switch (stereoMode) {
+	case OutputSettings::StereoMode_Stereo: return STEREO;
+	case OutputSettings::StereoMode_JointStereo: return JOINT_STEREO;
+	case OutputSettings::StereoMode_Mono: return MONO;
+	default: return NOT_SET;
 	}
 }
 
-bool AudioFileMP3::initEncoder()
-{
+bool AudioFileMP3::initEncoder() {
 	m_lame = lame_init();
 
 	// Handle stereo/joint/mono settings
@@ -125,9 +104,6 @@ bool AudioFileMP3::initEncoder()
 	return lame_init_params(m_lame) != -1;
 }
 
-void AudioFileMP3::tearDownEncoder()
-{
-	lame_close(m_lame);
-}
+void AudioFileMP3::tearDownEncoder() { lame_close(m_lame); }
 
 #endif

@@ -28,31 +28,18 @@
 #include "EffectControls.h"
 #include "FlangerControlsDialog.h"
 
-
 class FlangerEffect;
 
-class FlangerControls : public EffectControls
-{
+class FlangerControls : public EffectControls {
 	Q_OBJECT
 public:
-	FlangerControls( FlangerEffect* effect );
-	virtual ~FlangerControls()
-	{
-	}
-	virtual void saveSettings ( QDomDocument& doc, QDomElement& parent );
-	virtual void loadSettings ( const QDomElement &_this );
-	inline virtual QString nodeName() const
-	{
-		return "Flanger";
-	}
-	virtual int controlCount()
-	{
-		return 7;
-	}
-	virtual EffectControlDialog* createView()
-	{
-		return new FlangerControlsDialog( this );
-	}
+	FlangerControls(FlangerEffect* effect);
+	virtual ~FlangerControls() {}
+	virtual void saveSettings(QDomDocument& doc, QDomElement& parent);
+	virtual void loadSettings(const QDomElement& _this);
+	inline virtual QString nodeName() const { return "Flanger"; }
+	virtual int controlCount() { return 7; }
+	virtual EffectControlDialog* createView() { return new FlangerControlsDialog(this); }
 
 private slots:
 	void changedSampleRate();
@@ -70,7 +57,6 @@ private:
 
 	friend class FlangerControlsDialog;
 	friend class FlangerEffect;
-
 };
 
 #endif // FLANGERCONTROLS_H

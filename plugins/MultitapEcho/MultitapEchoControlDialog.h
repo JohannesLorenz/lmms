@@ -23,7 +23,6 @@
  *
  */
 
-
 #ifndef MULTITAP_ECHO_CONTROL_DIALOG_H
 #define MULTITAP_ECHO_CONTROL_DIALOG_H
 
@@ -31,14 +30,11 @@
 
 class MultitapEchoControls;
 
-class MultitapEchoControlDialog : public EffectControlDialog
-{
+class MultitapEchoControlDialog : public EffectControlDialog {
 	Q_OBJECT
 public:
-	MultitapEchoControlDialog( MultitapEchoControls * controls );
-	virtual ~MultitapEchoControlDialog()
-	{
-	}
+	MultitapEchoControlDialog(MultitapEchoControls* controls);
+	virtual ~MultitapEchoControlDialog() {}
 };
 
 #endif

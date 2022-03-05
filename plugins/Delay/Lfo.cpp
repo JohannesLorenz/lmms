@@ -26,21 +26,13 @@
 
 #include <cmath>
 
-
-
-
-Lfo::Lfo( int samplerate )
-{
+Lfo::Lfo(int samplerate) {
 	m_samplerate = samplerate;
 	m_twoPiOverSr = F_2PI / samplerate;
 }
 
-
-
-
-float Lfo::tick()
-{
-	float output = sinf( m_phase );
+float Lfo::tick() {
+	float output = sinf(m_phase);
 	m_phase += m_increment;
 
 	return output;

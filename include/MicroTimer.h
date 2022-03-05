@@ -27,8 +27,7 @@
 
 #include <chrono>
 
-class MicroTimer
-{
+class MicroTimer {
 	using time_point = std::chrono::steady_clock::time_point;
 
 public:
@@ -40,7 +39,6 @@ public:
 
 private:
 	time_point begin;
-} ;
-
+};
 
 #endif

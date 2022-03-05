@@ -22,39 +22,32 @@
  *
  */
 
-
-#include "lmmsversion.h"
 #include "AboutDialog.h"
+
 #include "embed.h"
+#include "lmmsversion.h"
 #include "versioninfo.h"
 
+AboutDialog::AboutDialog(QWidget* parent)
+	: QDialog(parent)
+	, Ui::AboutDialog() {
+	setupUi(this);
 
+	iconLabel->setPixmap(embed::getIconPixmap("icon", 64, 64));
 
-AboutDialog::AboutDialog(QWidget* parent) :
-	QDialog(parent),
-	Ui::AboutDialog()
-{
-	setupUi( this );
+	versionLabel->setText(versionLabel->text()
+							  .arg(LMMS_VERSION)
+							  .arg(LMMS_BUILDCONF_PLATFORM)
+							  .arg(LMMS_BUILDCONF_MACHINE)
+							  .arg(QT_VERSION_STR)
+							  .arg(LMMS_BUILDCONF_COMPILER_VERSION));
+	versionLabel->setTextInteractionFlags(versionLabel->textInteractionFlags() | Qt::TextSelectableByMouse);
 
+	copyrightLabel->setText(copyrightLabel->text().arg(LMMS_PROJECT_COPYRIGHT));
 
-	iconLabel->setPixmap( embed::getIconPixmap( "icon", 64, 64 ) );
+	authorLabel->setPlainText(embed::getText("AUTHORS"));
 
-	versionLabel->setText( versionLabel->text().
-					arg( LMMS_VERSION ).
-					arg( LMMS_BUILDCONF_PLATFORM ).
-					arg( LMMS_BUILDCONF_MACHINE ).
-					arg( QT_VERSION_STR ).
-					arg( LMMS_BUILDCONF_COMPILER_VERSION ) );
-	versionLabel->setTextInteractionFlags(
-					versionLabel->textInteractionFlags() |
-					Qt::TextSelectableByMouse );
+	licenseLabel->setPlainText(embed::getText("LICENSE.txt"));
 
-	copyrightLabel->setText( copyrightLabel->text().
-					arg( LMMS_PROJECT_COPYRIGHT ) );
-
-	authorLabel->setPlainText( embed::getText( "AUTHORS" ) );
-
-	licenseLabel->setPlainText( embed::getText( "LICENSE.txt" ) );
-
-	involvedLabel->setPlainText( embed::getText( "CONTRIBUTORS" ) );
+	involvedLabel->setPlainText(embed::getText("CONTRIBUTORS"));
 }

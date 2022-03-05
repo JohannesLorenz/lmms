@@ -2,7 +2,7 @@
  * PatternEditor.h - basic main-window for editing patterns
  *
  * Copyright (c) 2004-2014 Tobias Doerffel <tobydox/at/users.sourceforge.net>
- * 
+ *
  * This file is part of LMMS - https://lmms.io
  *
  * This program is free software; you can redistribute it and/or
@@ -22,29 +22,21 @@
  *
  */
 
-
 #ifndef PATTERN_EDITOR_H
 #define PATTERN_EDITOR_H
-
 
 #include "Editor.h"
 #include "TrackContainerView.h"
 
-
 class PatternStore;
 class ComboBox;
 
-
-class PatternEditor : public TrackContainerView
-{
+class PatternEditor : public TrackContainerView {
 	Q_OBJECT
 public:
 	PatternEditor(PatternStore* ps);
 
-	bool fixedClips() const override
-	{
-		return true;
-	}
+	bool fixedClips() const override { return true; }
 
 	void removeViewsForPattern(int pattern);
 
@@ -60,19 +52,15 @@ public slots:
 	void cloneClip();
 
 protected slots:
-	void dropEvent(QDropEvent * de ) override;
+	void dropEvent(QDropEvent* de) override;
 	void updatePosition();
 
 private:
 	PatternStore* m_ps;
-	void makeSteps( bool clone );
+	void makeSteps(bool clone);
 };
 
-
-
-
-class PatternEditorWindow : public Editor
-{
+class PatternEditorWindow : public Editor {
 	Q_OBJECT
 public:
 	PatternEditorWindow(PatternStore* ps);

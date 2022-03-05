@@ -20,27 +20,22 @@
  *
  */
 
+#include "StepRecorderWidget.h"
+
 #include <QPainter>
 
-#include "StepRecorderWidget.h"
 #include "TextFloat.h"
 #include "embed.h"
 
-StepRecorderWidget::StepRecorderWidget(
-		QWidget * parent,
-		const int ppb,
-		const int marginTop,
-		const int marginBottom,
-		const int marginLeft,
-		const int marginRight) :
-	QWidget(parent),
-	m_marginTop(marginTop),
-	m_marginBottom(marginBottom),
-	m_marginLeft(marginLeft),
-	m_marginRight(marginRight)
-{
-	const QColor baseColor =  QColor(255, 0, 0);// QColor(204, 163, 0); // Orange
-	m_colorLineEnd   = baseColor.lighter(150);
+StepRecorderWidget::StepRecorderWidget(QWidget* parent, const int ppb, const int marginTop, const int marginBottom,
+	const int marginLeft, const int marginRight)
+	: QWidget(parent)
+	, m_marginTop(marginTop)
+	, m_marginBottom(marginBottom)
+	, m_marginLeft(marginLeft)
+	, m_marginRight(marginRight) {
+	const QColor baseColor = QColor(255, 0, 0); // QColor(204, 163, 0); // Orange
+	m_colorLineEnd = baseColor.lighter(150);
 	m_colorLineStart = baseColor.darker(120);
 
 	setAttribute(Qt::WA_NoSystemBackground, true);
@@ -50,71 +45,48 @@ StepRecorderWidget::StepRecorderWidget(
 	m_left = m_marginLeft;
 }
 
-void StepRecorderWidget::setPixelsPerBar(int ppb)
-{
-	m_ppb = ppb;
-}
+void StepRecorderWidget::setPixelsPerBar(int ppb) { m_ppb = ppb; }
 
-void StepRecorderWidget::setCurrentPosition(TimePos currentPosition)
-{
-	m_currentPosition = currentPosition;
-}
+void StepRecorderWidget::setCurrentPosition(TimePos currentPosition) { m_currentPosition = currentPosition; }
 
-void StepRecorderWidget::setMargins(const QMargins &qm)
-{
+void StepRecorderWidget::setMargins(const QMargins& qm) {
 	m_left = qm.left();
 	m_right = qm.right();
 	m_top = qm.top();
 	m_bottom = qm.bottom();
 }
 
-QMargins StepRecorderWidget::margins()
-{
-	return QMargins(m_left, m_top, m_right, m_bottom);
-}
+QMargins StepRecorderWidget::margins() { return QMargins(m_left, m_top, m_right, m_bottom); }
 
-void StepRecorderWidget::setBottomMargin(const int marginBottom)
-{
-	m_marginBottom = marginBottom;
-}
+void StepRecorderWidget::setBottomMargin(const int marginBottom) { m_marginBottom = marginBottom; }
 
-void StepRecorderWidget::setStartPosition(TimePos pos)
-{
-	m_curStepStartPos = pos;
-}
+void StepRecorderWidget::setStartPosition(TimePos pos) { m_curStepStartPos = pos; }
 
-void StepRecorderWidget::setEndPosition(TimePos pos)
-{
+void StepRecorderWidget::setEndPosition(TimePos pos) {
 	m_curStepEndPos = pos;
 	emit positionChanged(m_curStepEndPos);
 }
 
-void StepRecorderWidget::showHint()
-{
-	TextFloat::displayMessage(tr( "Hint" ), tr("Move recording curser using <Left/Right> arrows"),
-		embed::getIconPixmap("hint"));
+void StepRecorderWidget::showHint() {
+	TextFloat::displayMessage(
+		tr("Hint"), tr("Move recording curser using <Left/Right> arrows"), embed::getIconPixmap("hint"));
 }
 
-void StepRecorderWidget::setStepsLength(TimePos stepsLength)
-{
-	m_stepsLength = stepsLength;
-}
+void StepRecorderWidget::setStepsLength(TimePos stepsLength) { m_stepsLength = stepsLength; }
 
-void StepRecorderWidget::paintEvent(QPaintEvent * pe)
-{
+void StepRecorderWidget::paintEvent(QPaintEvent* pe) {
 	QPainter painter(this);
 
 	updateBoundaries();
 
 	move(0, 0);
 
-	//draw steps ruler
+	// draw steps ruler
 	painter.setPen(m_colorLineEnd);
 
 	TimePos curPos = m_curStepEndPos;
 	int x = xCoordOfTick(curPos);
-	while(x <= m_right)
-	{
+	while (x <= m_right) {
 		const int w = 2;
 		const int h = 4;
 		painter.drawRect(x - 1, m_top, w, h);
@@ -122,44 +94,36 @@ void StepRecorderWidget::paintEvent(QPaintEvent * pe)
 		x = xCoordOfTick(curPos);
 	}
 
-	//draw current step start/end position lines
-	if(m_curStepStartPos != m_curStepEndPos)
-	{
+	// draw current step start/end position lines
+	if (m_curStepStartPos != m_curStepEndPos) {
 		drawVerLine(&painter, m_curStepStartPos, m_colorLineStart, m_top, m_bottom);
 	}
 
 	drawVerLine(&painter, m_curStepEndPos, m_colorLineEnd, m_top, m_bottom);
 
-	//if the line is adjacent to the keyboard at the left - it cannot be seen.
-	//add another line to make it clearer
-	if(m_curStepEndPos == 0)
-	{
+	// if the line is adjacent to the keyboard at the left - it cannot be seen.
+	// add another line to make it clearer
+	if (m_curStepEndPos == 0) {
 		drawVerLine(&painter, xCoordOfTick(m_curStepEndPos) + 1, m_colorLineEnd, m_top, m_bottom);
 	}
 }
 
-int StepRecorderWidget::xCoordOfTick(int tick)
-{
+int StepRecorderWidget::xCoordOfTick(int tick) {
 	return m_marginLeft + ((tick - m_currentPosition) * m_ppb / TimePos::ticksPerBar());
 }
 
-
-void StepRecorderWidget::drawVerLine(QPainter* painter, int x, const QColor& color, int top, int bottom)
-{
-	if(x >= m_marginLeft && x <= (width() - m_marginRight))
-	{
+void StepRecorderWidget::drawVerLine(QPainter* painter, int x, const QColor& color, int top, int bottom) {
+	if (x >= m_marginLeft && x <= (width() - m_marginRight)) {
 		painter->setPen(color);
-		painter->drawLine( x, top, x, bottom );
+		painter->drawLine(x, top, x, bottom);
 	}
 }
 
-void StepRecorderWidget::drawVerLine(QPainter* painter, const TimePos& pos, const QColor& color, int top, int bottom)
-{
+void StepRecorderWidget::drawVerLine(QPainter* painter, const TimePos& pos, const QColor& color, int top, int bottom) {
 	drawVerLine(painter, xCoordOfTick(pos), color, top, bottom);
 }
 
-void StepRecorderWidget::updateBoundaries()
-{
+void StepRecorderWidget::updateBoundaries() {
 	setFixedSize(parentWidget()->size());
 
 	m_bottom = height() - m_marginBottom;
@@ -167,4 +131,3 @@ void StepRecorderWidget::updateBoundaries()
 
 	//(no need to change top and left as they are static)
 }
-

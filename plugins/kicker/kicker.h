@@ -23,7 +23,6 @@
  *
  */
 
-
 #ifndef KICKER_H
 #define KICKER_H
 
@@ -35,43 +34,30 @@
 class Knob;
 class LedCheckBox;
 
-
-
 #define KICKER_PRESET_VERSION 1
-
 
 class kickerInstrumentView;
 class NotePlayHandle;
 
-
-class kickerInstrument : public Instrument
-{
+class kickerInstrument : public Instrument {
 	Q_OBJECT
 public:
-	kickerInstrument( InstrumentTrack * _instrument_track );
+	kickerInstrument(InstrumentTrack* _instrument_track);
 	virtual ~kickerInstrument();
 
-	virtual void playNote( NotePlayHandle * _n,
-						sampleFrame * _working_buffer );
-	virtual void deleteNotePluginData( NotePlayHandle * _n );
+	virtual void playNote(NotePlayHandle* _n, sampleFrame* _working_buffer);
+	virtual void deleteNotePluginData(NotePlayHandle* _n);
 
-	virtual void saveSettings( QDomDocument & _doc, QDomElement & _parent );
-	virtual void loadSettings( const QDomElement & _this );
+	virtual void saveSettings(QDomDocument& _doc, QDomElement& _parent);
+	virtual void loadSettings(const QDomElement& _this);
 
 	virtual QString nodeName() const;
 
-	virtual Flags flags() const
-	{
-		return IsNotBendable;
-	}
+	virtual Flags flags() const { return IsNotBendable; }
 
-	virtual f_cnt_t desiredReleaseFrames() const
-	{
-		return( 512 );
-	}
+	virtual f_cnt_t desiredReleaseFrames() const { return (512); }
 
-	virtual PluginView * instantiateView( QWidget * _parent );
-
+	virtual PluginView* instantiateView(QWidget* _parent);
 
 private:
 	FloatModel m_startFreqModel;
@@ -91,37 +77,30 @@ private:
 	IntModel m_versionModel;
 
 	friend class kickerInstrumentView;
+};
 
-} ;
-
-
-
-class kickerInstrumentView : public InstrumentViewFixedSize
-{
+class kickerInstrumentView : public InstrumentViewFixedSize {
 	Q_OBJECT
 public:
-	kickerInstrumentView( Instrument * _instrument, QWidget * _parent );
+	kickerInstrumentView(Instrument* _instrument, QWidget* _parent);
 	virtual ~kickerInstrumentView();
 
 private:
 	virtual void modelChanged();
 
-	Knob * m_startFreqKnob;
-	Knob * m_endFreqKnob;
-	Knob * m_decayKnob;
-	Knob * m_distKnob;
-	Knob * m_distEndKnob;
-	Knob * m_gainKnob;
-	Knob * m_envKnob;
-	Knob * m_noiseKnob;
-	Knob * m_clickKnob;
-	Knob * m_slopeKnob;
+	Knob* m_startFreqKnob;
+	Knob* m_endFreqKnob;
+	Knob* m_decayKnob;
+	Knob* m_distKnob;
+	Knob* m_distEndKnob;
+	Knob* m_gainKnob;
+	Knob* m_envKnob;
+	Knob* m_noiseKnob;
+	Knob* m_clickKnob;
+	Knob* m_slopeKnob;
 
-	LedCheckBox * m_startNoteToggle;
-	LedCheckBox * m_endNoteToggle;
-
-} ;
-
-
+	LedCheckBox* m_startNoteToggle;
+	LedCheckBox* m_endNoteToggle;
+};
 
 #endif

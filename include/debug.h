@@ -22,7 +22,6 @@
  *
  */
 
-
 #ifndef DEBUG_H
 #define DEBUG_H
 
@@ -31,12 +30,11 @@
 // Define standard macro NDEBUG when building without debug flag to make sure asserts become no-ops.
 #ifndef LMMS_DEBUG
 #ifndef NDEBUG
-	#define NDEBUG
+#define NDEBUG
 #endif
 #endif
 
 #include <cassert>
 #include <cstdio>
-
 
 #endif

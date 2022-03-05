@@ -1,5 +1,5 @@
 /*
- * CrossoverEQ.h - A native 4-band Crossover Equalizer 
+ * CrossoverEQ.h - A native 4-band Crossover Equalizer
  * good for simulating tonestacks or simple peakless (flat-band) equalization
  *
  * Copyright (c) 2014 Vesa Kivimäki <contact/dot/diizy/at/nbl/dot/fi>
@@ -27,50 +27,46 @@
 #ifndef CROSSOVEREQ_H
 #define CROSSOVEREQ_H
 
-#include "Effect.h"
-#include "CrossoverEQControls.h"
 #include "BasicFilters.h"
+#include "CrossoverEQControls.h"
+#include "Effect.h"
 
-class CrossoverEQEffect : public Effect
-{
+class CrossoverEQEffect : public Effect {
 public:
-	CrossoverEQEffect( Model* parent, const Descriptor::SubPluginFeatures::Key* key );
+	CrossoverEQEffect(Model* parent, const Descriptor::SubPluginFeatures::Key* key);
 	virtual ~CrossoverEQEffect();
-	virtual bool processAudioBuffer( sampleFrame* buf, const fpp_t frames );
+	virtual bool processAudioBuffer(sampleFrame* buf, const fpp_t frames);
 
-	virtual EffectControls* controls()
-	{
-		return &m_controls;
-	}
+	virtual EffectControls* controls() { return &m_controls; }
 
 	void clearFilterHistories();
-	
+
 private:
 	CrossoverEQControls m_controls;
 
 	void sampleRateChanged();
 
 	float m_sampleRate;
-	
+
 	float m_gain1;
 	float m_gain2;
 	float m_gain3;
 	float m_gain4;
-	
+
 	StereoLinkwitzRiley m_lp1;
 	StereoLinkwitzRiley m_lp2;
 	StereoLinkwitzRiley m_lp3;
-	
+
 	StereoLinkwitzRiley m_hp2;
 	StereoLinkwitzRiley m_hp3;
 	StereoLinkwitzRiley m_hp4;
-	
-	sampleFrame * m_tmp1;
-	sampleFrame * m_tmp2;
-	sampleFrame * m_work;
-	
+
+	sampleFrame* m_tmp1;
+	sampleFrame* m_tmp2;
+	sampleFrame* m_work;
+
 	bool m_needsUpdate;
-	
+
 	friend class CrossoverEQControls;
 };
 

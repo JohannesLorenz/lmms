@@ -22,39 +22,38 @@
  *
  */
 
-#include "Compressor.h"
 #include "CompressorControlDialog.h"
-#include "CompressorControls.h"
 
 #include <QLabel>
 #include <QPainter>
 #include <QWheelEvent>
 
-#include "AutomatableButton.h"
-#include "embed.h"
 #include "../Eq/EqFader.h"
+#include "AutomatableButton.h"
+#include "Compressor.h"
+#include "CompressorControls.h"
 #include "GuiApplication.h"
-#include "interpolation.h"
 #include "Knob.h"
 #include "MainWindow.h"
 #include "PixmapButton.h"
 #include "ToolTip.h"
+#include "embed.h"
+#include "interpolation.h"
 
-CompressorControlDialog::CompressorControlDialog(CompressorControls* controls) :
-	EffectControlDialog(controls),
-	m_controls(controls),
-	m_inVolAreaColor(209, 216, 228, 17),
-	m_inVolColor(209, 216, 228, 100),
-	m_outVolAreaColor(209, 216, 228, 30),
-	m_outVolColor(209, 216, 228, 240),
-	m_gainReductionColor(180, 100, 100, 210),
-	m_kneeColor(39, 171, 95, 255),
-	m_kneeColor2(9, 171, 160, 255),
-	m_threshColor(39, 171, 95, 100),
-	m_textColor(209, 216, 228, 50),
-	m_graphColor(209, 216, 228, 50),
-	m_resetColor(200, 100, 15, 200)
-{
+CompressorControlDialog::CompressorControlDialog(CompressorControls* controls)
+	: EffectControlDialog(controls)
+	, m_controls(controls)
+	, m_inVolAreaColor(209, 216, 228, 17)
+	, m_inVolColor(209, 216, 228, 100)
+	, m_outVolAreaColor(209, 216, 228, 30)
+	, m_outVolColor(209, 216, 228, 240)
+	, m_gainReductionColor(180, 100, 100, 210)
+	, m_kneeColor(39, 171, 95, 255)
+	, m_kneeColor2(9, 171, 160, 255)
+	, m_threshColor(39, 171, 95, 100)
+	, m_textColor(209, 216, 228, 50)
+	, m_graphColor(209, 216, 228, 50)
+	, m_resetColor(200, 100, 15, 200) {
 	setAutoFillBackground(true);
 	QPalette pal;
 	pal.setBrush(backgroundRole(), PLUGIN_NAME::getIconPixmap("artwork"));
@@ -93,103 +92,105 @@ CompressorControlDialog::CompressorControlDialog(CompressorControls* controls) :
 	m_ratioEnabledLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
 
 	m_thresholdKnob = new Knob(knobStyled, this);
-	makeLargeKnob(m_thresholdKnob, tr("Threshold:") , " dBFS");
+	makeLargeKnob(m_thresholdKnob, tr("Threshold:"), " dBFS");
 	m_thresholdKnob->setModel(&controls->m_thresholdModel);
 	ToolTip::add(m_thresholdKnob, tr("Volume at which the compression begins to take place"));
 
 	m_ratioKnob = new Knob(knobStyled, this);
-	makeLargeKnob(m_ratioKnob, tr("Ratio:") , ":1");
+	makeLargeKnob(m_ratioKnob, tr("Ratio:"), ":1");
 	m_ratioKnob->setModel(&controls->m_ratioModel);
 	ToolTip::add(m_ratioKnob, tr("How far the compressor must turn the volume down after crossing the threshold"));
 
 	m_attackKnob = new Knob(knobStyled, this);
-	makeLargeKnob(m_attackKnob, tr("Attack:") , " ms");
+	makeLargeKnob(m_attackKnob, tr("Attack:"), " ms");
 	m_attackKnob->setModel(&controls->m_attackModel);
 	ToolTip::add(m_attackKnob, tr("Speed at which the compressor starts to compress the audio"));
 
 	m_releaseKnob = new Knob(knobStyled, this);
-	makeLargeKnob(m_releaseKnob, tr("Release:") , " ms");
+	makeLargeKnob(m_releaseKnob, tr("Release:"), " ms");
 	m_releaseKnob->setModel(&controls->m_releaseModel);
 	ToolTip::add(m_releaseKnob, tr("Speed at which the compressor ceases to compress the audio"));
 
 	m_kneeKnob = new Knob(knobStyled, this);
-	makeSmallKnob(m_kneeKnob, tr("Knee:") , " dB");
+	makeSmallKnob(m_kneeKnob, tr("Knee:"), " dB");
 	m_kneeKnob->setModel(&controls->m_kneeModel);
 	ToolTip::add(m_kneeKnob, tr("Smooth out the gain reduction curve around the threshold"));
 
 	m_rangeKnob = new Knob(knobStyled, this);
-	makeSmallKnob(m_rangeKnob, tr("Range:") , " dBFS");
+	makeSmallKnob(m_rangeKnob, tr("Range:"), " dBFS");
 	m_rangeKnob->setModel(&controls->m_rangeModel);
 	ToolTip::add(m_rangeKnob, tr("Maximum gain reduction"));
 
 	m_lookaheadLengthKnob = new Knob(knobStyled, this);
-	makeSmallKnob(m_lookaheadLengthKnob, tr("Lookahead Length:") , " ms");
+	makeSmallKnob(m_lookaheadLengthKnob, tr("Lookahead Length:"), " ms");
 	m_lookaheadLengthKnob->setModel(&controls->m_lookaheadLengthModel);
-	ToolTip::add(m_lookaheadLengthKnob, tr("How long the compressor has to react to the sidechain signal ahead of time"));
+	ToolTip::add(
+		m_lookaheadLengthKnob, tr("How long the compressor has to react to the sidechain signal ahead of time"));
 
 	m_holdKnob = new Knob(knobStyled, this);
-	makeSmallKnob(m_holdKnob, tr("Hold:") , " ms");
+	makeSmallKnob(m_holdKnob, tr("Hold:"), " ms");
 	m_holdKnob->setModel(&controls->m_holdModel);
 	ToolTip::add(m_holdKnob, tr("Delay between attack and release stages"));
 
 	m_rmsKnob = new Knob(knobStyled, this);
-	makeSmallKnob(m_rmsKnob, tr("RMS Size:") , "");
+	makeSmallKnob(m_rmsKnob, tr("RMS Size:"), "");
 	m_rmsKnob->setModel(&controls->m_rmsModel);
 	ToolTip::add(m_rmsKnob, tr("Size of the RMS buffer"));
 
 	m_inBalanceKnob = new Knob(knobStyled, this);
-	makeSmallKnob(m_inBalanceKnob, tr("Input Balance:") , "");
+	makeSmallKnob(m_inBalanceKnob, tr("Input Balance:"), "");
 	m_inBalanceKnob->setModel(&controls->m_inBalanceModel);
 	ToolTip::add(m_inBalanceKnob, tr("Bias the input audio to the left/right or mid/side"));
 
 	m_outBalanceKnob = new Knob(knobStyled, this);
-	makeSmallKnob(m_outBalanceKnob, tr("Output Balance:") , "");
+	makeSmallKnob(m_outBalanceKnob, tr("Output Balance:"), "");
 	m_outBalanceKnob->setModel(&controls->m_outBalanceModel);
 	ToolTip::add(m_outBalanceKnob, tr("Bias the output audio to the left/right or mid/side"));
 
 	m_stereoBalanceKnob = new Knob(knobStyled, this);
-	makeSmallKnob(m_stereoBalanceKnob, tr("Stereo Balance:") , "");
+	makeSmallKnob(m_stereoBalanceKnob, tr("Stereo Balance:"), "");
 	m_stereoBalanceKnob->setModel(&controls->m_stereoBalanceModel);
 	ToolTip::add(m_stereoBalanceKnob, tr("Bias the sidechain signal to the left/right or mid/side"));
 
 	m_blendKnob = new Knob(knobStyled, this);
-	makeSmallKnob(m_blendKnob, tr("Stereo Link Blend:") , "");
+	makeSmallKnob(m_blendKnob, tr("Stereo Link Blend:"), "");
 	m_blendKnob->setModel(&controls->m_blendModel);
 	ToolTip::add(m_blendKnob, tr("Blend between unlinked/maximum/average/minimum stereo linking modes"));
 
 	m_tiltKnob = new Knob(knobStyled, this);
-	makeSmallKnob(m_tiltKnob, tr("Tilt Gain:") , " dB");
+	makeSmallKnob(m_tiltKnob, tr("Tilt Gain:"), " dB");
 	m_tiltKnob->setModel(&controls->m_tiltModel);
-	ToolTip::add(m_tiltKnob, tr("Bias the sidechain signal to the low or high frequencies.  -6 db is lowpass, 6 db is highpass."));
+	ToolTip::add(m_tiltKnob,
+		tr("Bias the sidechain signal to the low or high frequencies.  -6 db is lowpass, 6 db is highpass."));
 
 	m_tiltFreqKnob = new Knob(knobStyled, this);
-	makeSmallKnob(m_tiltFreqKnob, tr("Tilt Frequency:") , " Hz");
+	makeSmallKnob(m_tiltFreqKnob, tr("Tilt Frequency:"), " Hz");
 	m_tiltFreqKnob->setModel(&controls->m_tiltFreqModel);
 	ToolTip::add(m_tiltFreqKnob, tr("Center frequency of sidechain tilt filter"));
 
 	m_mixKnob = new Knob(knobStyled, this);
-	makeSmallKnob(m_mixKnob, tr("Mix:") , "%");
+	makeSmallKnob(m_mixKnob, tr("Mix:"), "%");
 	m_mixKnob->setModel(&controls->m_mixModel);
 	ToolTip::add(m_mixKnob, tr("Balance between wet and dry signals"));
 
 	m_autoAttackKnob = new Knob(knobStyled, this);
-	makeSmallKnob(m_autoAttackKnob, tr("Auto Attack:") , "%");
+	makeSmallKnob(m_autoAttackKnob, tr("Auto Attack:"), "%");
 	m_autoAttackKnob->setModel(&controls->m_autoAttackModel);
 	ToolTip::add(m_autoAttackKnob, tr("Automatically control attack value depending on crest factor"));
 
 	m_autoReleaseKnob = new Knob(knobStyled, this);
-	makeSmallKnob(m_autoReleaseKnob, tr("Auto Release:") , "%");
+	makeSmallKnob(m_autoReleaseKnob, tr("Auto Release:"), "%");
 	m_autoReleaseKnob->setModel(&controls->m_autoReleaseModel);
 	ToolTip::add(m_autoReleaseKnob, tr("Automatically control release value depending on crest factor"));
 
-	m_outFader = new EqFader(&controls->m_outGainModel,tr("Output gain"),
-		this, &controls->m_outPeakL, &controls->m_outPeakR);
+	m_outFader
+		= new EqFader(&controls->m_outGainModel, tr("Output gain"), this, &controls->m_outPeakL, &controls->m_outPeakR);
 	m_outFader->setDisplayConversion(false);
 	m_outFader->setHintText(tr("Gain"), "dBFS");
 	ToolTip::add(m_outFader, tr("Output volume"));
 
-	m_inFader = new EqFader(&controls->m_inGainModel,tr("Input gain"),
-		this, &controls->m_inPeakL, &controls->m_inPeakR);
+	m_inFader
+		= new EqFader(&controls->m_inGainModel, tr("Input gain"), this, &controls->m_inPeakL, &controls->m_inPeakR);
 	m_inFader->setDisplayConversion(false);
 	m_inFader->setHintText(tr("Gain"), "dBFS");
 	ToolTip::add(m_inFader, tr("Input volume"));
@@ -203,7 +204,7 @@ CompressorControlDialog::CompressorControlDialog(CompressorControls* controls) :
 	peakButton->setActiveGraphic(PLUGIN_NAME::getIconPixmap("peak_sel"));
 	peakButton->setInactiveGraphic(PLUGIN_NAME::getIconPixmap("peak_unsel"));
 	ToolTip::add(peakButton, tr("Use absolute value of the input"));
-	
+
 	rmsPeakGroup = new automatableButtonGroup(this);
 	rmsPeakGroup->addButton(rmsButton);
 	rmsPeakGroup->addButton(peakButton);
@@ -218,7 +219,7 @@ CompressorControlDialog::CompressorControlDialog(CompressorControls* controls) :
 	midSideButton->setActiveGraphic(PLUGIN_NAME::getIconPixmap("midside_sel"));
 	midSideButton->setInactiveGraphic(PLUGIN_NAME::getIconPixmap("midside_unsel"));
 	ToolTip::add(midSideButton, tr("Compress mid and side audio"));
-	
+
 	leftRightMidSideGroup = new automatableButtonGroup(this);
 	leftRightMidSideGroup->addButton(leftRightButton);
 	leftRightMidSideGroup->addButton(midSideButton);
@@ -275,7 +276,8 @@ CompressorControlDialog::CompressorControlDialog(CompressorControls* controls) :
 	autoMakeupButton = new PixmapButton(this, tr("Auto Makeup Gain"));
 	autoMakeupButton->setActiveGraphic(PLUGIN_NAME::getIconPixmap("autogain_sel"));
 	autoMakeupButton->setInactiveGraphic(PLUGIN_NAME::getIconPixmap("autogain_unsel"));
-	ToolTip::add(autoMakeupButton, tr("Automatically change makeup gain depending on threshold, knee, and ratio settings"));
+	ToolTip::add(
+		autoMakeupButton, tr("Automatically change makeup gain depending on threshold, knee, and ratio settings"));
 	autoMakeupButton->setCheckable(true);
 	autoMakeupButton->setModel(&controls->m_autoMakeupModel);
 
@@ -315,9 +317,7 @@ CompressorControlDialog::CompressorControlDialog(CompressorControls* controls) :
 	limiterChanged();
 }
 
-
-void CompressorControlDialog::makeLargeKnob(Knob * knob, QString hint, QString unit)
-{
+void CompressorControlDialog::makeLargeKnob(Knob* knob, QString hint, QString unit) {
 	knob->setHintText(hint, unit);
 	knob->setFixedSize(56, 56);
 	knob->setOuterRadius(23);
@@ -326,8 +326,7 @@ void CompressorControlDialog::makeLargeKnob(Knob * knob, QString hint, QString u
 	knob->setCenterPointY(28);
 }
 
-void CompressorControlDialog::makeSmallKnob(Knob * knob, QString hint, QString unit)
-{
+void CompressorControlDialog::makeSmallKnob(Knob* knob, QString hint, QString unit) {
 	knob->setHintText(hint, unit);
 	knob->setFixedSize(30, 30);
 	knob->setOuterRadius(10);
@@ -336,39 +335,28 @@ void CompressorControlDialog::makeSmallKnob(Knob * knob, QString hint, QString u
 	knob->setCenterPointY(15);
 }
 
-
-void CompressorControlDialog::peakmodeChanged()
-{
+void CompressorControlDialog::peakmodeChanged() {
 	m_rmsKnob->setVisible(!m_controls->m_peakmodeModel.value());
 	m_rmsEnabledLabel->setVisible(!m_controls->m_peakmodeModel.value());
 }
 
-
-void CompressorControlDialog::stereoLinkChanged()
-{
+void CompressorControlDialog::stereoLinkChanged() {
 	m_blendKnob->setVisible(m_controls->m_stereoLinkModel.value() == 4);
 	m_blendEnabledLabel->setVisible(m_controls->m_stereoLinkModel.value() == 4);
 }
 
-
-void CompressorControlDialog::lookaheadChanged()
-{
+void CompressorControlDialog::lookaheadChanged() {
 	m_lookaheadLengthKnob->setVisible(m_controls->m_lookaheadModel.value());
 	m_lookaheadEnabledLabel->setVisible(m_controls->m_lookaheadModel.value());
 }
 
-
-void CompressorControlDialog::limiterChanged()
-{
+void CompressorControlDialog::limiterChanged() {
 	m_ratioKnob->setVisible(!m_controls->m_limiterModel.value());
 	m_ratioEnabledLabel->setVisible(!m_controls->m_limiterModel.value());
 }
 
-
-void CompressorControlDialog::updateDisplay()
-{
-	if (!isVisible())
-	{
+void CompressorControlDialog::updateDisplay() {
+	if (!isVisible()) {
 		m_timeElapsed.restart();
 		return;
 	}
@@ -380,13 +368,9 @@ void CompressorControlDialog::updateDisplay()
 	m_timeSinceLastUpdate %= COMP_MILLI_PER_PIXEL;
 
 	// Time Change / Daylight Savings Time protection
-	if (!m_compPixelMovement || m_compPixelMovement <= 0)
-	{
-		return;
-	}
+	if (!m_compPixelMovement || m_compPixelMovement <= 0) { return; }
 
-	if (!m_controls->m_effect->isEnabled() || !m_controls->m_effect->isRunning())
-	{
+	if (!m_controls->m_effect->isEnabled() || !m_controls->m_effect->isRunning()) {
 		m_controls->m_effect->m_displayPeak[0] = COMP_NOISE_FLOOR;
 		m_controls->m_effect->m_displayPeak[1] = COMP_NOISE_FLOOR;
 		m_controls->m_effect->m_displayGain[0] = 1;
@@ -409,17 +393,11 @@ void CompressorControlDialog::updateDisplay()
 
 	drawVisPixmap();
 
-	if (m_controls->m_effect->m_redrawKnee)
-	{
-		redrawKnee();
-	}
+	if (m_controls->m_effect->m_redrawKnee) { redrawKnee(); }
 
 	drawKneePixmap2();
 
-	if (m_controls->m_effect->m_redrawThreshold)
-	{
-		drawMiscPixmap();
-	}
+	if (m_controls->m_effect->m_redrawThreshold) { drawMiscPixmap(); }
 
 	m_lastPoint = m_yPoint;
 	m_lastGainPoint = m_yGainPoint;
@@ -427,53 +405,51 @@ void CompressorControlDialog::updateDisplay()
 	update();
 }
 
-
-void CompressorControlDialog::drawVisPixmap()
-{
+void CompressorControlDialog::drawVisPixmap() {
 	m_p.begin(&m_visPixmap);
 
 	// Move entire display to the left
 	m_p.setCompositionMode(QPainter::CompositionMode_Source);
 	m_p.drawPixmap(-m_compPixelMovement, 0, m_visPixmap);
-	m_p.fillRect(m_windowSizeX-m_compPixelMovement, 0, m_windowSizeX, m_windowSizeY, QColor("transparent"));
+	m_p.fillRect(m_windowSizeX - m_compPixelMovement, 0, m_windowSizeX, m_windowSizeY, QColor("transparent"));
 	m_p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 
 	m_p.setRenderHint(QPainter::Antialiasing, true);
 
 	// Draw translucent portion of input volume line
 	m_p.setPen(QPen(m_inVolAreaColor, 1));
-	for (int i = 0; i < m_compPixelMovement; ++i)
-	{
+	for (int i = 0; i < m_compPixelMovement; ++i) {
 		const int temp = linearInterpolate(m_lastPoint, m_yPoint, float(i) / float(m_compPixelMovement));
-		m_p.drawLine(m_windowSizeX-m_compPixelMovement+i, temp, m_windowSizeX-m_compPixelMovement+i, m_windowSizeY);
+		m_p.drawLine(
+			m_windowSizeX - m_compPixelMovement + i, temp, m_windowSizeX - m_compPixelMovement + i, m_windowSizeY);
 	}
 
 	// Draw input volume line
 	m_p.setPen(QPen(m_inVolColor, 1));
-	m_p.drawLine(m_windowSizeX-m_compPixelMovement-1, m_lastPoint, m_windowSizeX, m_yPoint);
+	m_p.drawLine(m_windowSizeX - m_compPixelMovement - 1, m_lastPoint, m_windowSizeX, m_yPoint);
 
 	// Draw translucent portion of output volume line
 	m_p.setPen(QPen(m_outVolAreaColor, 1));
-	for (int i = 0; i < m_compPixelMovement; ++i)
-	{
-		const int temp = linearInterpolate(m_lastPoint+m_lastGainPoint, m_yPoint+m_yGainPoint, float(i) / float(m_compPixelMovement));
-		m_p.drawLine(m_windowSizeX-m_compPixelMovement+i, temp, m_windowSizeX-m_compPixelMovement+i, m_windowSizeY);
+	for (int i = 0; i < m_compPixelMovement; ++i) {
+		const int temp = linearInterpolate(
+			m_lastPoint + m_lastGainPoint, m_yPoint + m_yGainPoint, float(i) / float(m_compPixelMovement));
+		m_p.drawLine(
+			m_windowSizeX - m_compPixelMovement + i, temp, m_windowSizeX - m_compPixelMovement + i, m_windowSizeY);
 	}
 
 	// Draw output volume line
 	m_p.setPen(QPen(m_outVolColor, 1));
-	m_p.drawLine(m_windowSizeX-m_compPixelMovement-1, m_lastPoint+m_lastGainPoint, m_windowSizeX, m_yPoint+m_yGainPoint);
+	m_p.drawLine(
+		m_windowSizeX - m_compPixelMovement - 1, m_lastPoint + m_lastGainPoint, m_windowSizeX, m_yPoint + m_yGainPoint);
 
 	// Draw gain reduction line
 	m_p.setPen(QPen(m_gainReductionColor, 2));
-	m_p.drawLine(m_windowSizeX-m_compPixelMovement-1, m_lastGainPoint, m_windowSizeX, m_yGainPoint);
+	m_p.drawLine(m_windowSizeX - m_compPixelMovement - 1, m_lastGainPoint, m_windowSizeX, m_yGainPoint);
 
 	m_p.end();
 }
 
-
-void CompressorControlDialog::redrawKnee()
-{
+void CompressorControlDialog::redrawKnee() {
 	m_controls->m_effect->m_redrawKnee = false;
 
 	// Start drawing knee visualizer
@@ -496,33 +472,33 @@ void CompressorControlDialog::redrawKnee()
 	// Calculate endpoints for the two straight lines
 	float kneePoint1 = m_controls->m_effect->m_thresholdVal - m_controls->m_effect->m_kneeVal;
 	float kneePoint2X = m_controls->m_effect->m_thresholdVal + m_controls->m_effect->m_kneeVal;
-	float kneePoint2Y = (m_controls->m_effect->m_thresholdVal + (-m_controls->m_effect->m_thresholdVal * (actualRatio * (m_controls->m_effect->m_kneeVal / -m_controls->m_effect->m_thresholdVal))));
+	float kneePoint2Y = (m_controls->m_effect->m_thresholdVal
+		+ (-m_controls->m_effect->m_thresholdVal
+			* (actualRatio * (m_controls->m_effect->m_kneeVal / -m_controls->m_effect->m_thresholdVal))));
 	float ratioPoint = m_controls->m_effect->m_thresholdVal + (-m_controls->m_effect->m_thresholdVal * actualRatio);
 
 	// Draw two straight lines
 	m_p.drawLine(0, m_kneeWindowSizeY, dbfsToXPoint(kneePoint1), dbfsToYPoint(kneePoint1));
-	if (dbfsToXPoint(kneePoint2X) < m_kneeWindowSizeY)
-	{
+	if (dbfsToXPoint(kneePoint2X) < m_kneeWindowSizeY) {
 		m_p.drawLine(dbfsToXPoint(kneePoint2X), dbfsToYPoint(kneePoint2Y), m_kneeWindowSizeY, dbfsToYPoint(ratioPoint));
 	}
 
 	// Draw knee section
-	if (m_controls->m_effect->m_kneeVal)
-	{
+	if (m_controls->m_effect->m_kneeVal) {
 		m_p.setPen(QPen(m_kneeColor2, 3));
 
 		float prevPoint[2] = {kneePoint1, kneePoint1};
 		float newPoint[2] = {0, 0};
 
 		// Draw knee curve using many straight lines.
-		for (int i = 0; i < COMP_KNEE_LINES; ++i)
-		{
+		for (int i = 0; i < COMP_KNEE_LINES; ++i) {
 			newPoint[0] = linearInterpolate(kneePoint1, kneePoint2X, (i + 1) / (float)COMP_KNEE_LINES);
 
 			const float temp = newPoint[0] - m_controls->m_effect->m_thresholdVal + m_controls->m_effect->m_kneeVal;
 			newPoint[1] = (newPoint[0] + (actualRatio - 1) * temp * temp / (4 * m_controls->m_effect->m_kneeVal));
 
-			m_p.drawLine(dbfsToXPoint(prevPoint[0]), dbfsToYPoint(prevPoint[1]), dbfsToXPoint(newPoint[0]), dbfsToYPoint(newPoint[1]));
+			m_p.drawLine(dbfsToXPoint(prevPoint[0]), dbfsToYPoint(prevPoint[1]), dbfsToXPoint(newPoint[0]),
+				dbfsToYPoint(newPoint[1]));
 
 			prevPoint[0] = newPoint[0];
 			prevPoint[1] = newPoint[1];
@@ -539,7 +515,7 @@ void CompressorControlDialog::redrawKnee()
 	m_p.end();
 
 	m_p.begin(&m_kneePixmap2);
-	
+
 	m_p.setCompositionMode(QPainter::CompositionMode_Source);
 	m_p.fillRect(0, 0, m_windowSizeX, m_kneeWindowSizeY, QColor("transparent"));
 	m_p.setCompositionMode(QPainter::CompositionMode_SourceOver);
@@ -549,21 +525,16 @@ void CompressorControlDialog::redrawKnee()
 	m_lastKneePoint = 0;
 }
 
-
-void CompressorControlDialog::drawKneePixmap2()
-{
+void CompressorControlDialog::drawKneePixmap2() {
 	m_p.begin(&m_kneePixmap2);
 
 	m_p.setRenderHint(QPainter::Antialiasing, false);
 
 	int kneePoint = dbfsToXPoint(ampToDbfs(m_peakAvg));
-	if (kneePoint > m_lastKneePoint)
-	{
+	if (kneePoint > m_lastKneePoint) {
 		QRectF knee2Rect = QRect(m_lastKneePoint, 0, kneePoint - m_lastKneePoint, m_kneeWindowSizeY);
 		m_p.drawPixmap(knee2Rect, m_kneePixmap, knee2Rect);
-	}
-	else
-	{
+	} else {
 		m_p.setCompositionMode(QPainter::CompositionMode_Source);
 		m_p.fillRect(kneePoint, 0, m_lastKneePoint, m_kneeWindowSizeY, QColor("transparent"));
 		m_p.setCompositionMode(QPainter::CompositionMode_SourceOver);
@@ -573,9 +544,7 @@ void CompressorControlDialog::drawKneePixmap2()
 	m_p.end();
 }
 
-
-void CompressorControlDialog::drawMiscPixmap()
-{
+void CompressorControlDialog::drawMiscPixmap() {
 	m_p.begin(&m_miscPixmap);
 
 	m_p.setCompositionMode(QPainter::CompositionMode_Source);
@@ -594,14 +563,8 @@ void CompressorControlDialog::drawMiscPixmap()
 	m_controls->m_effect->m_redrawThreshold = false;
 }
 
-
-
-void CompressorControlDialog::paintEvent(QPaintEvent *event)
-{
-	if (!isVisible())
-	{
-		return;
-	}
+void CompressorControlDialog::paintEvent(QPaintEvent* event) {
+	if (!isVisible()) { return; }
 
 	m_p.begin(this);
 
@@ -614,51 +577,34 @@ void CompressorControlDialog::paintEvent(QPaintEvent *event)
 	m_p.setOpacity(0.25);
 	m_p.drawPixmap(0, 0, m_kneePixmap);
 	m_p.setOpacity(1);
-	if (m_controls->m_effect->isEnabled() && m_controls->m_effect->isRunning())
-	{
-		m_p.drawPixmap(0, 0, m_kneePixmap2);
-	}
+	if (m_controls->m_effect->isEnabled() && m_controls->m_effect->isRunning()) { m_p.drawPixmap(0, 0, m_kneePixmap2); }
 	m_p.drawPixmap(0, 0, m_miscPixmap);
 
 	m_p.end();
 }
 
-
-inline int CompressorControlDialog::dbfsToYPoint(float inDbfs)
-{
+inline int CompressorControlDialog::dbfsToYPoint(float inDbfs) {
 	return (-((inDbfs + m_dbRange) / m_dbRange) + 1) * m_windowSizeY;
 }
 
-inline int CompressorControlDialog::dbfsToXPoint(float inDbfs)
-{
-	return m_kneeWindowSizeY - dbfsToYPoint(inDbfs);
-}
+inline int CompressorControlDialog::dbfsToXPoint(float inDbfs) { return m_kneeWindowSizeY - dbfsToYPoint(inDbfs); }
 
+void CompressorControlDialog::resizeEvent(QResizeEvent* event) { resetCompressorView(); }
 
-void CompressorControlDialog::resizeEvent(QResizeEvent *event)
-{
-	resetCompressorView();
-}
-
-
-void CompressorControlDialog::wheelEvent(QWheelEvent * event)
-{
+void CompressorControlDialog::wheelEvent(QWheelEvent* event) {
 	const float temp = m_dbRange;
 	const float dbRangeNew = m_dbRange - copysignf(COMP_GRID_SPACING, event->angleDelta().y());
 	m_dbRange = round(qBound(COMP_GRID_SPACING, dbRangeNew, COMP_GRID_MAX) / COMP_GRID_SPACING) * COMP_GRID_SPACING;
 
 	// Only reset view if the scolling had an effect
-	if (m_dbRange != temp)
-	{
+	if (m_dbRange != temp) {
 		drawGraph();
 		m_controls->m_effect->m_redrawKnee = true;
 		m_controls->m_effect->m_redrawThreshold = true;
 	}
 }
 
-
-void CompressorControlDialog::drawGraph()
-{
+void CompressorControlDialog::drawGraph() {
 	m_p.begin(&m_graphPixmap);
 
 	m_p.setRenderHint(QPainter::Antialiasing, false);
@@ -674,19 +620,17 @@ void CompressorControlDialog::drawGraph()
 
 	// Redraw graph
 	m_p.setPen(QPen(m_graphColor, 1));
-	for (int i = 1; i < m_dbRange / COMP_GRID_SPACING + 1; ++i)
-	{
+	for (int i = 1; i < m_dbRange / COMP_GRID_SPACING + 1; ++i) {
 		m_p.drawLine(0, dbfsToYPoint(-COMP_GRID_SPACING * i), m_windowSizeX, dbfsToYPoint(-COMP_GRID_SPACING * i));
 		m_p.drawLine(dbfsToXPoint(-COMP_GRID_SPACING * i), 0, dbfsToXPoint(-COMP_GRID_SPACING * i), m_kneeWindowSizeY);
-		m_p.drawText(QRectF(m_windowSizeX - 50, dbfsToYPoint(-COMP_GRID_SPACING * i), 50, 50), Qt::AlignRight | Qt::AlignTop, QString::number(i * -COMP_GRID_SPACING));
+		m_p.drawText(QRectF(m_windowSizeX - 50, dbfsToYPoint(-COMP_GRID_SPACING * i), 50, 50),
+			Qt::AlignRight | Qt::AlignTop, QString::number(i * -COMP_GRID_SPACING));
 	}
 
 	m_p.end();
 }
 
-
-void CompressorControlDialog::resetCompressorView()
-{
+void CompressorControlDialog::resetCompressorView() {
 	m_windowSizeX = size().width();
 	m_windowSizeY = size().height();
 	m_kneeWindowSizeX = m_windowSizeY;

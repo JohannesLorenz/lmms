@@ -27,12 +27,10 @@
 
 #include "TabWidget.h"
 
-
-class AudioDeviceSetupWidget : public TabWidget
-{
-    Q_OBJECT
+class AudioDeviceSetupWidget : public TabWidget {
+	Q_OBJECT
 public:
-	AudioDeviceSetupWidget( const QString & _caption, QWidget * _parent );
+	AudioDeviceSetupWidget(const QString& _caption, QWidget* _parent);
 
 	virtual ~AudioDeviceSetupWidget();
 
@@ -40,6 +38,5 @@ public:
 
 	virtual void show();
 };
-
 
 #endif

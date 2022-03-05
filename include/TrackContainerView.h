@@ -22,20 +22,18 @@
  *
  */
 
-
 #ifndef TRACK_CONTAINER_VIEW_H
 #define TRACK_CONTAINER_VIEW_H
 
-#include <QVector>
 #include <QScrollArea>
-#include <QWidget>
 #include <QThread>
+#include <QVector>
+#include <QWidget>
 
 #include "JournallingObject.h"
 #include "ModelView.h"
 #include "Rubberband.h"
 #include "TimePos.h"
-
 
 class QVBoxLayout;
 
@@ -44,168 +42,118 @@ class Track;
 class TrackContainer;
 class TrackView;
 
-
-class TrackContainerView : public QWidget, public ModelView,
-						public JournallingObject,
-						public SerializingObjectHook
-{
+class TrackContainerView : public QWidget, public ModelView, public JournallingObject, public SerializingObjectHook {
 	Q_OBJECT
 public:
-	TrackContainerView( TrackContainer* tc );
+	TrackContainerView(TrackContainer* tc);
 	virtual ~TrackContainerView();
 
-	void saveSettings( QDomDocument & _doc, QDomElement & _this ) override;
-	void loadSettings( const QDomElement & _this ) override;
+	void saveSettings(QDomDocument& _doc, QDomElement& _this) override;
+	void loadSettings(const QDomElement& _this) override;
 
-	QScrollArea * contentWidget()
-	{
-		return m_scrollArea;
-	}
+	QScrollArea* contentWidget() { return m_scrollArea; }
 
-	inline const TimePos & currentPosition() const
-	{
-		return m_currentPosition;
-	}
+	inline const TimePos& currentPosition() const { return m_currentPosition; }
 
-	virtual bool fixedClips() const
-	{
-		return false;
-	}
+	virtual bool fixedClips() const { return false; }
 
-	inline float pixelsPerBar() const
-	{
-		return m_ppb;
-	}
+	inline float pixelsPerBar() const { return m_ppb; }
 
-	void setPixelsPerBar( int ppb );
+	void setPixelsPerBar(int ppb);
 
-	const TrackView * trackViewAt( const int _y ) const;
+	const TrackView* trackViewAt(const int _y) const;
 
 	virtual bool allowRubberband() const;
 	virtual bool knifeMode() const;
 
-	inline bool rubberBandActive() const
-	{
-		return m_rubberBand->isEnabled() && m_rubberBand->isVisible();
-	}
+	inline bool rubberBandActive() const { return m_rubberBand->isEnabled() && m_rubberBand->isVisible(); }
 
-	inline QVector<selectableObject *> selectedObjects()
-	{
-		return m_rubberBand->selectedObjects();
-	}
+	inline QVector<selectableObject*> selectedObjects() { return m_rubberBand->selectedObjects(); }
 
+	TrackContainer* model() { return m_tc; }
 
-	TrackContainer* model()
-	{
-		return m_tc;
-	}
+	const TrackContainer* model() const { return m_tc; }
 
-	const TrackContainer* model() const
-	{
-		return m_tc;
-	}
+	const QList<TrackView*>& trackViews() const { return (m_trackViews); }
 
-	const QList<TrackView *> & trackViews() const
-	{
-		return( m_trackViews );
-	}
-
-	void moveTrackView( TrackView * trackView, int indexTo );
-	void moveTrackViewUp( TrackView * trackView );
-	void moveTrackViewDown( TrackView * trackView );
-	void scrollToTrackView( TrackView * _tv );
+	void moveTrackView(TrackView* trackView, int indexTo);
+	void moveTrackViewUp(TrackView* trackView);
+	void moveTrackViewDown(TrackView* trackView);
+	void scrollToTrackView(TrackView* _tv);
 
 	// -- for usage by trackView only ---------------
-	TrackView * addTrackView( TrackView * _tv );
-	void removeTrackView( TrackView * _tv );
+	TrackView* addTrackView(TrackView* _tv);
+	void removeTrackView(TrackView* _tv);
 	// -------------------------------------------------------
 
 	void clearAllTracks();
 
-	QString nodeName() const override
-	{
-		return "trackcontainerview";
-	}
+	QString nodeName() const override { return "trackcontainerview"; }
 
-
-	RubberBand *rubberBand() const;
+	RubberBand* rubberBand() const;
 
 public slots:
 	void realignTracks();
-	TrackView * createTrackView( Track * _t );
-	void deleteTrackView( TrackView * _tv );
+	TrackView* createTrackView(Track* _t);
+	void deleteTrackView(TrackView* _tv);
 
-	void dropEvent( QDropEvent * _de ) override;
-	void dragEnterEvent( QDragEnterEvent * _dee ) override;
+	void dropEvent(QDropEvent* _de) override;
+	void dragEnterEvent(QDragEnterEvent* _dee) override;
 
 	///
 	/// \brief stopRubberBand
 	/// Removes the rubber band from display when finished with.
 	void stopRubberBand();
 
-
 protected:
 	static const int DEFAULT_PIXELS_PER_BAR = 16;
 
-	void resizeEvent( QResizeEvent * ) override;
+	void resizeEvent(QResizeEvent*) override;
 
 	TimePos m_currentPosition;
 
-
 private:
-	enum Actions
-	{
-		AddTrack,
-		RemoveTrack
-	} ;
+	enum Actions { AddTrack, RemoveTrack };
 
-	class scrollArea : public QScrollArea
-	{
+	class scrollArea : public QScrollArea {
 	public:
-		scrollArea( TrackContainerView* parent );
+		scrollArea(TrackContainerView* parent);
 		virtual ~scrollArea();
 
 	protected:
-		void wheelEvent( QWheelEvent * _we ) override;
+		void wheelEvent(QWheelEvent* _we) override;
 
 	private:
 		TrackContainerView* m_trackContainerView;
-
-	} ;
+	};
 	friend class TrackContainerView::scrollArea;
 
 	TrackContainer* m_tc;
-	typedef QList<TrackView *> trackViewList;
+	typedef QList<TrackView*> trackViewList;
 	trackViewList m_trackViews;
 
-	scrollArea * m_scrollArea;
-	QVBoxLayout * m_scrollLayout;
+	scrollArea* m_scrollArea;
+	QVBoxLayout* m_scrollLayout;
 
 	float m_ppb;
 
-	RubberBand * m_rubberBand;
-
-
+	RubberBand* m_rubberBand;
 
 signals:
-	void positionChanged( const TimePos & _pos );
+	void positionChanged(const TimePos& _pos);
+};
 
-
-} ;
-
-class InstrumentLoaderThread : public QThread
-{
+class InstrumentLoaderThread : public QThread {
 	Q_OBJECT
 public:
-	InstrumentLoaderThread( QObject *parent = 0, InstrumentTrack *it = 0,
-							QString name = "" );
+	InstrumentLoaderThread(QObject* parent = 0, InstrumentTrack* it = 0, QString name = "");
 
 	void run() override;
 
 private:
-	InstrumentTrack *m_it;
+	InstrumentTrack* m_it;
 	QString m_name;
-	QThread *m_containerThread;
+	QThread* m_containerThread;
 };
 
 #endif

@@ -31,48 +31,29 @@
 #include "AudioDevice.h"
 #include "OutputSettings.h"
 
-
-class AudioFileDevice : public AudioDevice
-{
+class AudioFileDevice : public AudioDevice {
 public:
-	AudioFileDevice(OutputSettings const & outputSettings,
-			const ch_cnt_t _channels, const QString & _file,
-			AudioEngine* audioEngine );
+	AudioFileDevice(
+		OutputSettings const& outputSettings, const ch_cnt_t _channels, const QString& _file, AudioEngine* audioEngine);
 	virtual ~AudioFileDevice();
 
-	QString outputFile() const
-	{
-		return m_outputFile.fileName();
-	}
+	QString outputFile() const { return m_outputFile.fileName(); }
 
-	OutputSettings const & getOutputSettings() const { return m_outputSettings; }
-
+	OutputSettings const& getOutputSettings() const { return m_outputSettings; }
 
 protected:
-	int writeData( const void* data, int len );
+	int writeData(const void* data, int len);
 
-	inline bool outputFileOpened() const
-	{
-		return m_outputFile.isOpen();
-	}
+	inline bool outputFileOpened() const { return m_outputFile.isOpen(); }
 
-	inline int outputFileHandle() const
-	{
-		return m_outputFile.handle();
-	}
+	inline int outputFileHandle() const { return m_outputFile.handle(); }
 
 private:
 	QFile m_outputFile;
 	OutputSettings m_outputSettings;
-} ;
+};
 
-
-typedef AudioFileDevice * ( * AudioFileDeviceInstantiaton )
-					( const QString & outputFilename,
-					  OutputSettings const & outputSettings,
-					  const ch_cnt_t channels,
-					  AudioEngine* audioEngine,
-					  bool & successful );
-
+typedef AudioFileDevice* (*AudioFileDeviceInstantiaton)(const QString& outputFilename,
+	OutputSettings const& outputSettings, const ch_cnt_t channels, AudioEngine* audioEngine, bool& successful);
 
 #endif

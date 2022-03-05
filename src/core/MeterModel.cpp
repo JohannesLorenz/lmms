@@ -22,62 +22,34 @@
  *
  */
 
-
 #include "MeterModel.h"
+
 #include "AutomationClip.h"
 
-
-MeterModel::MeterModel( ::Model * _parent ) :
-	Model( _parent ),
-	m_numeratorModel( 4, 1, 32, this, tr( "Numerator" ) ),
-	m_denominatorModel( 4, 1, 32, this, tr( "Denominator" ) )
-{
-	connect( &m_numeratorModel, SIGNAL( dataChanged() ), 
-			this, SIGNAL( dataChanged() ), Qt::DirectConnection );
-	connect( &m_denominatorModel, SIGNAL( dataChanged() ), 
-			this, SIGNAL( dataChanged() ), Qt::DirectConnection );
+MeterModel::MeterModel(::Model* _parent)
+	: Model(_parent)
+	, m_numeratorModel(4, 1, 32, this, tr("Numerator"))
+	, m_denominatorModel(4, 1, 32, this, tr("Denominator")) {
+	connect(&m_numeratorModel, SIGNAL(dataChanged()), this, SIGNAL(dataChanged()), Qt::DirectConnection);
+	connect(&m_denominatorModel, SIGNAL(dataChanged()), this, SIGNAL(dataChanged()), Qt::DirectConnection);
 }
 
+MeterModel::~MeterModel() {}
 
+void MeterModel::reset() {
+	m_numeratorModel.setValue(4);
+	m_denominatorModel.setValue(4);
 
-
-MeterModel::~MeterModel()
-{
+	AutomationClip::globalAutomationClip(&m_numeratorModel)->clear();
+	AutomationClip::globalAutomationClip(&m_denominatorModel)->clear();
 }
 
-
-
-
-void MeterModel::reset()
-{
-	m_numeratorModel.setValue( 4 );
-	m_denominatorModel.setValue( 4 );
-
-	AutomationClip::globalAutomationClip( &m_numeratorModel )->clear();
-	AutomationClip::globalAutomationClip( &m_denominatorModel )->clear();
+void MeterModel::saveSettings(QDomDocument& _doc, QDomElement& _this, const QString& _name) {
+	m_numeratorModel.saveSettings(_doc, _this, _name + "_numerator");
+	m_denominatorModel.saveSettings(_doc, _this, _name + "_denominator");
 }
 
-
-
-
-void MeterModel::saveSettings( QDomDocument & _doc, QDomElement & _this,
-								const QString & _name )
-{
-	m_numeratorModel.saveSettings( _doc, _this, _name + "_numerator" );
-	m_denominatorModel.saveSettings( _doc, _this, _name + "_denominator" );
+void MeterModel::loadSettings(const QDomElement& _this, const QString& _name) {
+	m_numeratorModel.loadSettings(_this, _name + "_numerator");
+	m_denominatorModel.loadSettings(_this, _name + "_denominator");
 }
-
-
-
-
-void MeterModel::loadSettings( const QDomElement & _this,
-								const QString & _name )
-{
-	m_numeratorModel.loadSettings( _this, _name + "_numerator" );
-	m_denominatorModel.loadSettings( _this, _name + "_denominator" );
-}
-
-
-
-
-

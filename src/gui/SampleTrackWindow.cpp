@@ -21,7 +21,7 @@
  * Boston, MA 02110-1301 USA.
  *
  */
- 
+
 #include "SampleTrackWindow.h"
 
 #include <QCloseEvent>
@@ -32,8 +32,6 @@
 #include <QVBoxLayout>
 
 #include "EffectRackView.h"
-#include "embed.h"
-#include "gui_templates.h"
 #include "GuiApplication.h"
 #include "Knob.h"
 #include "MainWindow.h"
@@ -43,17 +41,17 @@
 #include "SubWindow.h"
 #include "TabWidget.h"
 #include "TrackLabelButton.h"
- 
+#include "embed.h"
+#include "gui_templates.h"
 
-SampleTrackWindow::SampleTrackWindow(SampleTrackView * tv) :
-	QWidget(),
-	ModelView(nullptr, this),
-	m_track(tv->model()),
-	m_stv(tv)
-{
+SampleTrackWindow::SampleTrackWindow(SampleTrackView* tv)
+	: QWidget()
+	, ModelView(nullptr, this)
+	, m_track(tv->model())
+	, m_stv(tv) {
 	// init own layout + widgets
 	setFocusPolicy(Qt::StrongFocus);
-	QVBoxLayout * vlayout = new QVBoxLayout(this);
+	QVBoxLayout* vlayout = new QVBoxLayout(this);
 	vlayout->setMargin(0);
 	vlayout->setSpacing(0);
 
@@ -72,15 +70,12 @@ SampleTrackWindow::SampleTrackWindow(SampleTrackView * tv) :
 	// setup line edit for changing sample track name
 	m_nameLineEdit = new QLineEdit;
 	m_nameLineEdit->setFont(pointSize<9>(m_nameLineEdit->font()));
-	connect(m_nameLineEdit, SIGNAL(textChanged(const QString &)),
-				this, SLOT(textChanged(const QString &)));
+	connect(m_nameLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(textChanged(const QString&)));
 
 	m_nameLineEdit->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred));
 	nameLayout->addWidget(m_nameLineEdit);
 
-
 	generalSettingsLayout->addWidget(nameWidget);
-
 
 	QGridLayout* basicControlsLayout = new QGridLayout;
 	basicControlsLayout->setHorizontalSpacing(3);
@@ -99,11 +94,10 @@ SampleTrackWindow::SampleTrackWindow(SampleTrackView * tv) :
 	basicControlsLayout->addWidget(m_volumeKnob, 0, 0);
 	basicControlsLayout->setAlignment(m_volumeKnob, widgetAlignment);
 
-	QLabel *label = new QLabel(tr("VOL"), this);
+	QLabel* label = new QLabel(tr("VOL"), this);
 	label->setStyleSheet(labelStyleSheet);
 	basicControlsLayout->addWidget(label, 1, 0);
 	basicControlsLayout->setAlignment(label, labelAlignment);
-
 
 	// set up panning knob
 	m_panningKnob = new Knob(knobBright_26, nullptr, tr("Panning"));
@@ -112,14 +106,12 @@ SampleTrackWindow::SampleTrackWindow(SampleTrackView * tv) :
 	basicControlsLayout->addWidget(m_panningKnob, 0, 1);
 	basicControlsLayout->setAlignment(m_panningKnob, widgetAlignment);
 
-	label = new QLabel(tr("PAN"),this);
+	label = new QLabel(tr("PAN"), this);
 	label->setStyleSheet(labelStyleSheet);
 	basicControlsLayout->addWidget(label, 1, 1);
 	basicControlsLayout->setAlignment(label, labelAlignment);
 
-
 	basicControlsLayout->setColumnStretch(2, 1);
-
 
 	// setup spinbox for selecting Mixer-channel
 	m_mixerChannelNumber = new MixerLineLcdSpinBox(2, nullptr, tr("Mixer channel"), m_stv);
@@ -140,10 +132,9 @@ SampleTrackWindow::SampleTrackWindow(SampleTrackView * tv) :
 	vlayout->addWidget(generalSettingsWidget);
 	vlayout->addWidget(m_effectRack);
 
-
 	setModel(tv->model());
 
-	QMdiSubWindow * subWin = getGUI()->mainWindow()->addWindowedWidget(this);
+	QMdiSubWindow* subWin = getGUI()->mainWindow()->addWindowedWidget(this);
 	Qt::WindowFlags flags = subWin->windowFlags();
 	flags |= Qt::MSWindowsFixedSizeDialogHint;
 	flags &= ~Qt::WindowMaximizeButtonHint;
@@ -151,7 +142,7 @@ SampleTrackWindow::SampleTrackWindow(SampleTrackView * tv) :
 
 	// Hide the Size and Maximize options from the system menu
 	// since the dialog size is fixed.
-	QMenu * systemMenu = subWin->systemMenu();
+	QMenu* systemMenu = subWin->systemMenu();
 	systemMenu->actions().at(2)->setVisible(false); // Size
 	systemMenu->actions().at(4)->setVisible(false); // Maximize
 
@@ -160,34 +151,22 @@ SampleTrackWindow::SampleTrackWindow(SampleTrackView * tv) :
 	subWin->hide();
 }
 
-SampleTrackWindow::~SampleTrackWindow()
-{
-}
+SampleTrackWindow::~SampleTrackWindow() {}
 
-
-
-void SampleTrackWindow::setSampleTrackView(SampleTrackView* tv)
-{
-	if(m_stv && tv)
-	{
-		m_stv->m_tlb->setChecked(false);
-	}
+void SampleTrackWindow::setSampleTrackView(SampleTrackView* tv) {
+	if (m_stv && tv) { m_stv->m_tlb->setChecked(false); }
 
 	m_stv = tv;
 }
 
-
-
-void SampleTrackWindow::modelChanged()
-{
+void SampleTrackWindow::modelChanged() {
 	m_track = castModel<SampleTrack>();
 
 	m_nameLineEdit->setText(m_track->name());
 
 	m_track->disconnect(SIGNAL(nameChanged()), this);
 
-	connect(m_track, SIGNAL(nameChanged()),
-			this, SLOT(updateName()));
+	connect(m_track, SIGNAL(nameChanged()), this, SLOT(updateName()));
 
 	m_volumeKnob->setModel(&m_track->m_volumeModel);
 	m_panningKnob->setModel(&m_track->m_panningModel);
@@ -196,56 +175,33 @@ void SampleTrackWindow::modelChanged()
 	updateName();
 }
 
-
-
-
-void SampleTrackWindow::updateName()
-{
+void SampleTrackWindow::updateName() {
 	setWindowTitle(m_track->name().length() > 25 ? (m_track->name().left(24) + "...") : m_track->name());
 
-	if(m_nameLineEdit->text() != m_track->name())
-	{
-		m_nameLineEdit->setText(m_track->name());
-	}
+	if (m_nameLineEdit->text() != m_track->name()) { m_nameLineEdit->setText(m_track->name()); }
 }
 
-
-
-void SampleTrackWindow::textChanged(const QString& new_name)
-{
+void SampleTrackWindow::textChanged(const QString& new_name) {
 	m_track->setName(new_name);
 	Engine::getSong()->setModified();
 }
 
-
-
-void SampleTrackWindow::toggleVisibility(bool on)
-{
-	if(on)
-	{
+void SampleTrackWindow::toggleVisibility(bool on) {
+	if (on) {
 		show();
 		parentWidget()->show();
 		parentWidget()->raise();
-	}
-	else
-	{
+	} else {
 		parentWidget()->hide();
 	}
 }
 
-
-
-
-void SampleTrackWindow::closeEvent(QCloseEvent* ce)
-{
+void SampleTrackWindow::closeEvent(QCloseEvent* ce) {
 	ce->ignore();
 
-	if(getGUI()->mainWindow()->workspace())
-	{
+	if (getGUI()->mainWindow()->workspace()) {
 		parentWidget()->hide();
-	}
-	else
-	{
+	} else {
 		hide();
 	}
 
@@ -253,21 +209,12 @@ void SampleTrackWindow::closeEvent(QCloseEvent* ce)
 	m_stv->m_tlb->setChecked(false);
 }
 
-
-
-void SampleTrackWindow::saveSettings(QDomDocument& doc, QDomElement & element)
-{
+void SampleTrackWindow::saveSettings(QDomDocument& doc, QDomElement& element) {
 	MainWindow::saveWidgetState(this, element);
 	Q_UNUSED(element)
 }
 
-
-
-void SampleTrackWindow::loadSettings(const QDomElement& element)
-{
+void SampleTrackWindow::loadSettings(const QDomElement& element) {
 	MainWindow::restoreWidgetState(this, element);
-	if(isVisible())
-	{
-		m_stv->m_tlb->setChecked(true);
-	}
+	if (isVisible()) { m_stv->m_tlb->setChecked(true); }
 }

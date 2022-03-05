@@ -2,7 +2,7 @@
  * patches_dialog.cpp - display sf2 patches
  *
  * Copyright (c) 2008 Paul Giblock <drfaygo/at/gmail/dot/com>
- * 
+ *
  * This file is part of LMMS - https://lmms.io
  *
  * This program is free software; you can redistribute it and/or
@@ -22,114 +22,86 @@
  *
  */
 
-
 #include "patches_dialog.h"
 
-#include <fluidsynth.h>
 #include <QHeaderView>
+#include <fluidsynth.h>
 //#include <QFileInfo>
 #include <QLabel>
 
 #include "fluidsynthshims.h"
 
-
 // Custom list-view item (as for numerical sort purposes...)
-class patchItem : public QTreeWidgetItem
-{
+class patchItem : public QTreeWidgetItem {
 public:
-
 	// Constructor.
-	patchItem( QTreeWidget *pListView,
-		QTreeWidgetItem *pItemAfter )
-		: QTreeWidgetItem( pListView, pItemAfter ) {}
+	patchItem(QTreeWidget* pListView, QTreeWidgetItem* pItemAfter)
+		: QTreeWidgetItem(pListView, pItemAfter) {}
 
 	// Sort/compare overriden method.
-	bool operator< ( const QTreeWidgetItem& other ) const
-	{
+	bool operator<(const QTreeWidgetItem& other) const {
 		int iColumn = QTreeWidgetItem::treeWidget()->sortColumn();
-		const QString& s1 = text( iColumn );
-		const QString& s2 = other.text( iColumn );
-		if( iColumn == 0 || iColumn == 2 )
-		{
-			return( s1.toInt() < s2.toInt() );
-		} 
-		else 
-		{
-			return( s1 < s2 );
+		const QString& s1 = text(iColumn);
+		const QString& s2 = other.text(iColumn);
+		if (iColumn == 0 || iColumn == 2) {
+			return (s1.toInt() < s2.toInt());
+		} else {
+			return (s1 < s2);
 		}
 	}
 };
 
-
-
 // Constructor.
-patchesDialog::patchesDialog( QWidget *pParent, Qt::WindowFlags wflags )
-	: QDialog( pParent, wflags )
-{
+patchesDialog::patchesDialog(QWidget* pParent, Qt::WindowFlags wflags)
+	: QDialog(pParent, wflags) {
 	// Setup UI struct...
-	setupUi( this );
+	setupUi(this);
 
 	m_pSynth = nullptr;
-	m_iChan  = 0;
-	m_iBank  = 0;
-	m_iProg  = 0;
+	m_iChan = 0;
+	m_iBank = 0;
+	m_iProg = 0;
 
 	// Soundfonts list view...
-	QHeaderView *pHeader = m_progListView->header();
-//	pHeader->setResizeMode(QHeaderView::Custom);
+	QHeaderView* pHeader = m_progListView->header();
+	//	pHeader->setResizeMode(QHeaderView::Custom);
 	pHeader->setDefaultAlignment(Qt::AlignLeft);
-//	pHeader->setDefaultSectionSize(200);
+	//	pHeader->setDefaultSectionSize(200);
 	pHeader->setSectionsMovable(false);
 	pHeader->setStretchLastSection(true);
 
-	m_progListView->resizeColumnToContents(0);	// Prog.
-	//pHeader->resizeSection(1, 200);					// Name.
+	m_progListView->resizeColumnToContents(0); // Prog.
+	// pHeader->resizeSection(1, 200);					// Name.
 
 	// Initial sort order...
 	m_bankListView->sortItems(0, Qt::AscendingOrder);
 	m_progListView->sortItems(0, Qt::AscendingOrder);
 
 	// UI connections...
-	QObject::connect(m_bankListView,
-		SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
-		SLOT(bankChanged()));
-	QObject::connect(m_progListView,
-		SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
-		SLOT(progChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
-	QObject::connect(m_progListView,
-		SIGNAL(itemActivated(QTreeWidgetItem*,int)),
-		SLOT(accept()));
-	QObject::connect(m_okButton,
-		SIGNAL(clicked()),
-		SLOT(accept()));
-	QObject::connect(m_cancelButton,
-		SIGNAL(clicked()),
-		SLOT(reject()));
+	QObject::connect(
+		m_bankListView, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), SLOT(bankChanged()));
+	QObject::connect(m_progListView, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
+		SLOT(progChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
+	QObject::connect(m_progListView, SIGNAL(itemActivated(QTreeWidgetItem*, int)), SLOT(accept()));
+	QObject::connect(m_okButton, SIGNAL(clicked()), SLOT(accept()));
+	QObject::connect(m_cancelButton, SIGNAL(clicked()), SLOT(reject()));
 }
-
 
 // Destructor.
-patchesDialog::~patchesDialog()
-{
-}
-
+patchesDialog::~patchesDialog() {}
 
 // Dialog setup loader.
-void patchesDialog::setup ( fluid_synth_t * pSynth, int iChan,
-						const QString & _chanName,
-						LcdSpinBoxModel * _bankModel,
-						LcdSpinBoxModel * _progModel,
-							QLabel * _patchLabel )
-{
+void patchesDialog::setup(fluid_synth_t* pSynth, int iChan, const QString& _chanName, LcdSpinBoxModel* _bankModel,
+	LcdSpinBoxModel* _progModel, QLabel* _patchLabel) {
 
 	// We'll going to changes the whole thing...
 	m_dirty = 0;
 	m_bankModel = _bankModel;
 	m_progModel = _progModel;
-	m_patchLabel =  _patchLabel;
+	m_patchLabel = _patchLabel;
 
 	// Set the proper caption...
-	setWindowTitle( _chanName + " - Soundfont patches" );
+	setWindowTitle(_chanName + " - Soundfont patches");
 
 	// set m_pSynth to NULL so we don't trigger any progChanged events
 	m_pSynth = nullptr;
@@ -140,14 +112,13 @@ void patchesDialog::setup ( fluid_synth_t * pSynth, int iChan,
 
 	// now it should be safe to set internal stuff
 	m_pSynth = pSynth;
-	m_iChan  = iChan;
+	m_iChan = iChan;
 
-
-	QTreeWidgetItem *pBankItem = nullptr;
+	QTreeWidgetItem* pBankItem = nullptr;
 	// For all soundfonts (in reversed stack order) fill the available banks...
 	int cSoundFonts = ::fluid_synth_sfcount(m_pSynth);
 	for (int i = 0; i < cSoundFonts; i++) {
-		fluid_sfont_t *pSoundFont = ::fluid_synth_get_sfont(m_pSynth, i);
+		fluid_sfont_t* pSoundFont = ::fluid_synth_get_sfont(m_pSynth, i);
 		if (pSoundFont) {
 #ifdef CONFIG_FLUID_BANK_OFFSET
 			int iBankOffset = ::fluid_synth_get_bank_offset(m_pSynth, fluid_sfont_get_id(pSoundFont));
@@ -155,9 +126,9 @@ void patchesDialog::setup ( fluid_synth_t * pSynth, int iChan,
 			fluid_sfont_iteration_start(pSoundFont);
 #if FLUIDSYNTH_VERSION_MAJOR < 2
 			fluid_preset_t preset;
-			fluid_preset_t *pCurPreset = &preset;
+			fluid_preset_t* pCurPreset = &preset;
 #else
-			fluid_preset_t *pCurPreset;
+			fluid_preset_t* pCurPreset;
 #endif
 			while ((pCurPreset = fluid_sfont_iteration_next_wrapper(pSoundFont, pCurPreset))) {
 				int iBank = fluid_preset_get_banknum(pCurPreset);
@@ -166,8 +137,7 @@ void patchesDialog::setup ( fluid_synth_t * pSynth, int iChan,
 #endif
 				if (!findBankItem(iBank)) {
 					pBankItem = new patchItem(m_bankListView, pBankItem);
-					if (pBankItem)
-						pBankItem->setText(0, QString::number(iBank));
+					if (pBankItem) pBankItem->setText(0, QString::number(iBank));
 				}
 			}
 		}
@@ -176,7 +146,7 @@ void patchesDialog::setup ( fluid_synth_t * pSynth, int iChan,
 
 	// Set the selected bank.
 	m_iBank = 0;
-	fluid_preset_t *pPreset = ::fluid_synth_get_channel_preset(m_pSynth, m_iChan);
+	fluid_preset_t* pPreset = ::fluid_synth_get_channel_preset(m_pSynth, m_iChan);
 	if (pPreset) {
 		m_iBank = fluid_preset_get_banknum(pPreset);
 #ifdef CONFIG_FLUID_BANK_OFFSET
@@ -190,27 +160,20 @@ void patchesDialog::setup ( fluid_synth_t * pSynth, int iChan,
 	bankChanged();
 
 	// Set the selected program.
-	if (pPreset)
-		m_iProg = fluid_preset_get_num(pPreset);
-	QTreeWidgetItem *pProgItem = findProgItem(m_iProg);
+	if (pPreset) m_iProg = fluid_preset_get_num(pPreset);
+	QTreeWidgetItem* pProgItem = findProgItem(m_iProg);
 	m_progListView->setCurrentItem(pProgItem);
 	m_progListView->scrollToItem(pProgItem);
 
 	// Done with setup...
-	//m_iDirtySetup--;
+	// m_iDirtySetup--;
 }
-
 
 // Stabilize current state form.
-void patchesDialog::stabilizeForm()
-{
-	m_okButton->setEnabled(validateForm());
-}
-
+void patchesDialog::stabilizeForm() { m_okButton->setEnabled(validateForm()); }
 
 // Validate form fields.
-bool patchesDialog::validateForm()
-{
+bool patchesDialog::validateForm() {
 	bool bValid = true;
 
 	bValid = bValid && (m_bankListView->currentItem() != nullptr);
@@ -219,12 +182,9 @@ bool patchesDialog::validateForm()
 	return bValid;
 }
 
-
 // Realize a bank-program selection preset.
-void patchesDialog::setBankProg ( int iBank, int iProg )
-{
-	if (m_pSynth == nullptr)
-		return;
+void patchesDialog::setBankProg(int iBank, int iProg) {
+	if (m_pSynth == nullptr) return;
 
 	// just select the synth's program preset...
 	::fluid_synth_bank_select(m_pSynth, m_iChan, iBank);
@@ -233,95 +193,74 @@ void patchesDialog::setBankProg ( int iBank, int iProg )
 	::fluid_synth_program_reset(m_pSynth);
 }
 
-
 // Validate form fields and accept it valid.
-void patchesDialog::accept()
-{
+void patchesDialog::accept() {
 	if (validateForm()) {
 		// Unload from current selected dialog items.
 		int iBank = (m_bankListView->currentItem())->text(0).toInt();
 		int iProg = (m_progListView->currentItem())->text(0).toInt();
 		// And set it right away...
 		setBankProg(iBank, iProg);
-		
+
 		if (m_dirty > 0) {
-			m_bankModel->setValue( iBank );
-			m_progModel->setValue( iProg );
-			m_patchLabel->setText( m_progListView->
-						currentItem()->text( 1 ) );
+			m_bankModel->setValue(iBank);
+			m_progModel->setValue(iProg);
+			m_patchLabel->setText(m_progListView->currentItem()->text(1));
 		}
 
 		// Do remember preview state...
 		// if (m_pOptions)
-			// m_pOptions->bPresetPreview = m_ui.PreviewCheckBox->isChecked();
+		// m_pOptions->bPresetPreview = m_ui.PreviewCheckBox->isChecked();
 		// We got it.
 		QDialog::accept();
 	}
 }
 
-
 // Reject settings (Cancel button slot).
-void patchesDialog::reject (void)
-{
+void patchesDialog::reject(void) {
 	// Reset selection to initial selection, if applicable...
-	if (m_dirty > 0)
-		setBankProg(m_bankModel->value(), m_progModel->value());
+	if (m_dirty > 0) setBankProg(m_bankModel->value(), m_progModel->value());
 	// Done (hopefully nothing).
 	QDialog::reject();
 }
 
-
 // Find the bank item of given bank number id.
-QTreeWidgetItem *patchesDialog::findBankItem ( int iBank )
-{
-	QList<QTreeWidgetItem *> banks
-		= m_bankListView->findItems(
-			QString::number(iBank), Qt::MatchExactly, 0);
+QTreeWidgetItem* patchesDialog::findBankItem(int iBank) {
+	QList<QTreeWidgetItem*> banks = m_bankListView->findItems(QString::number(iBank), Qt::MatchExactly, 0);
 
-	QListIterator<QTreeWidgetItem *> iter(banks);
-	if (iter.hasNext())
-		return iter.next();
+	QListIterator<QTreeWidgetItem*> iter(banks);
+	if (iter.hasNext()) return iter.next();
 	else
 		return nullptr;
 }
-
 
 // Find the program item of given program number id.
-QTreeWidgetItem *patchesDialog::findProgItem ( int iProg )
-{
-	QList<QTreeWidgetItem *> progs
-		= m_progListView->findItems(
-			QString::number(iProg), Qt::MatchExactly, 0);
+QTreeWidgetItem* patchesDialog::findProgItem(int iProg) {
+	QList<QTreeWidgetItem*> progs = m_progListView->findItems(QString::number(iProg), Qt::MatchExactly, 0);
 
-	QListIterator<QTreeWidgetItem *> iter(progs);
-	if (iter.hasNext())
-		return iter.next();
+	QListIterator<QTreeWidgetItem*> iter(progs);
+	if (iter.hasNext()) return iter.next();
 	else
 		return nullptr;
 }
 
-
-
 // Bank change slot.
-void patchesDialog::bankChanged (void)
-{
-	if (m_pSynth == nullptr)
-		return;
+void patchesDialog::bankChanged(void) {
+	if (m_pSynth == nullptr) return;
 
-	QTreeWidgetItem *pBankItem = m_bankListView->currentItem();
-	if (pBankItem == nullptr)
-		return;
+	QTreeWidgetItem* pBankItem = m_bankListView->currentItem();
+	if (pBankItem == nullptr) return;
 
 	int iBankSelected = pBankItem->text(0).toInt();
 
 	// Clear up the program listview.
 	m_progListView->setSortingEnabled(false);
 	m_progListView->clear();
-	QTreeWidgetItem *pProgItem = nullptr;
+	QTreeWidgetItem* pProgItem = nullptr;
 	// For all soundfonts (in reversed stack order) fill the available programs...
 	int cSoundFonts = ::fluid_synth_sfcount(m_pSynth);
 	for (int i = 0; i < cSoundFonts && !pProgItem; i++) {
-		fluid_sfont_t *pSoundFont = ::fluid_synth_get_sfont(m_pSynth, i);
+		fluid_sfont_t* pSoundFont = ::fluid_synth_get_sfont(m_pSynth, i);
 		if (pSoundFont) {
 #ifdef CONFIG_FLUID_BANK_OFFSET
 			int iBankOffset = ::fluid_synth_get_bank_offset(m_pSynth, fluid_sfont_get_id(pSoundFont));
@@ -329,9 +268,9 @@ void patchesDialog::bankChanged (void)
 			fluid_sfont_iteration_start(pSoundFont);
 #if FLUIDSYNTH_VERSION_MAJOR < 2
 			fluid_preset_t preset;
-			fluid_preset_t *pCurPreset = &preset;
+			fluid_preset_t* pCurPreset = &preset;
 #else
-			fluid_preset_t *pCurPreset;
+			fluid_preset_t* pCurPreset;
 #endif
 			while ((pCurPreset = fluid_sfont_iteration_next_wrapper(pSoundFont, pCurPreset))) {
 				int iBank = fluid_preset_get_banknum(pCurPreset);
@@ -344,8 +283,8 @@ void patchesDialog::bankChanged (void)
 					if (pProgItem) {
 						pProgItem->setText(0, QString::number(iProg));
 						pProgItem->setText(1, fluid_preset_get_name(pCurPreset));
-						//pProgItem->setText(2, QString::number(fluid_sfont_get_id(pSoundFont)));
-						//pProgItem->setText(3, QFileInfo(
+						// pProgItem->setText(2, QString::number(fluid_sfont_get_id(pSoundFont)));
+						// pProgItem->setText(3, QFileInfo(
 						//	fluid_sfont_get_name(pSoundFont).baseName());
 					}
 				}
@@ -358,15 +297,12 @@ void patchesDialog::bankChanged (void)
 	stabilizeForm();
 }
 
-
 // Program change slot.
-void patchesDialog::progChanged (QTreeWidgetItem * _curr, QTreeWidgetItem * _prev)
-{
-	if (m_pSynth == nullptr || _curr == nullptr)
-		return;
+void patchesDialog::progChanged(QTreeWidgetItem* _curr, QTreeWidgetItem* _prev) {
+	if (m_pSynth == nullptr || _curr == nullptr) return;
 
 	// Which preview state...
-	if( validateForm() ) {
+	if (validateForm()) {
 		// Set current selection.
 		int iBank = (m_bankListView->currentItem())->text(0).toInt();
 		int iProg = _curr->text(0).toInt();
@@ -379,6 +315,3 @@ void patchesDialog::progChanged (QTreeWidgetItem * _curr, QTreeWidgetItem * _pre
 	// Stabilize the form.
 	stabilizeForm();
 }
-
-
-

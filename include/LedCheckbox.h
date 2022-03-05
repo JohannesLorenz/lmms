@@ -22,60 +22,40 @@
  *
  */
 
-
 #ifndef LED_CHECKBOX_H
 #define LED_CHECKBOX_H
 
 #include "AutomatableButton.h"
 
-
 class QPixmap;
 
-
-class LMMS_EXPORT LedCheckBox : public AutomatableButton
-{
+class LMMS_EXPORT LedCheckBox : public AutomatableButton {
 	Q_OBJECT
 public:
-	enum LedColors
-	{
-		Yellow,
-		Green,
-		Red,
-		NumColors
-	} ;
+	enum LedColors { Yellow, Green, Red, NumColors };
 
-	LedCheckBox( const QString & _txt, QWidget * _parent,
-				const QString & _name = QString(),
-						LedColors _color = Yellow );
-	LedCheckBox( QWidget * _parent,
-				const QString & _name = QString(),
-						LedColors _color = Yellow );
+	LedCheckBox(const QString& _txt, QWidget* _parent, const QString& _name = QString(), LedColors _color = Yellow);
+	LedCheckBox(QWidget* _parent, const QString& _name = QString(), LedColors _color = Yellow);
 
 	virtual ~LedCheckBox();
 
+	inline const QString& text() { return (m_text); }
 
-	inline const QString & text()
-	{
-		return( m_text );
-	}
+	void setText(const QString& s);
 
-	void setText( const QString& s );
-
-	Q_PROPERTY( QString text READ text WRITE setText )
+	Q_PROPERTY(QString text READ text WRITE setText)
 
 protected:
-	void paintEvent( QPaintEvent * _pe ) override;
-
+	void paintEvent(QPaintEvent* _pe) override;
 
 private:
-	QPixmap * m_ledOnPixmap;
-	QPixmap * m_ledOffPixmap;
+	QPixmap* m_ledOnPixmap;
+	QPixmap* m_ledOffPixmap;
 
 	QString m_text;
 
-	void initUi( LedColors _color ); //!< to be called by ctors
-	void onTextUpdated(); //!< to be called when you updated @a m_text
-
-} ;
+	void initUi(LedColors _color); //!< to be called by ctors
+	void onTextUpdated();		   //!< to be called when you updated @a m_text
+};
 
 #endif

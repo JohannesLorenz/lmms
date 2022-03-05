@@ -22,24 +22,17 @@
  *
  */
 
-
-#include "lmmsconfig.h"
-
 #include <cstdio>
 
+#include "lmmsconfig.h"
 
 #ifdef _WIN32
 #include <windows.h>
 
-std::wstring toWString(const std::string& s)
-{
+std::wstring toWString(const std::string& s) {
 	std::wstring ret;
-	int len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, s.data(),
-			s.length(), nullptr, 0);
-	if (len == 0)
-	{
-		return ret;
-	}
+	int len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, s.data(), s.length(), nullptr, 0);
+	if (len == 0) { return ret; }
 	ret.resize(len);
 	MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, s.data(), s.length(), &ret[0], len);
 	return ret;
@@ -54,7 +47,7 @@ std::wstring toWString(const std::string& s)
 #endif
 #endif
 
-FILE* F_OPEN_UTF8(std::string const& fname, const char* mode){
+FILE* F_OPEN_UTF8(std::string const& fname, const char* mode) {
 #ifdef LMMS_BUILD_WIN32
 	return _wfopen(toWString(fname).data(), toWString(mode).data());
 #else
@@ -62,10 +55,9 @@ FILE* F_OPEN_UTF8(std::string const& fname, const char* mode){
 #endif
 }
 
-int fileToDescriptor(FILE* f, bool closeFile = true)
-{
+int fileToDescriptor(FILE* f, bool closeFile = true) {
 	int fh;
-	if (f == nullptr) {return -1;}
+	if (f == nullptr) { return -1; }
 
 #ifdef LMMS_BUILD_WIN32
 	fh = _dup(_fileno(f));
@@ -73,6 +65,6 @@ int fileToDescriptor(FILE* f, bool closeFile = true)
 	fh = dup(fileno(f));
 #endif
 
-	if (closeFile) {fclose(f);}
+	if (closeFile) { fclose(f); }
 	return fh;
 }

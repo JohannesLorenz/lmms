@@ -38,127 +38,89 @@
 #include "Plugin.h"
 #include "Track.h"
 
-
 class Instrument;
 class DataFile;
 
-
-class LMMS_EXPORT InstrumentTrack : public Track, public MidiEventProcessor
-{
+class LMMS_EXPORT InstrumentTrack : public Track, public MidiEventProcessor {
 	Q_OBJECT
 	MM_OPERATORS
-	mapPropertyFromModel(int,getVolume,setVolume,m_volumeModel);
+	mapPropertyFromModel(int, getVolume, setVolume, m_volumeModel);
+
 public:
-	InstrumentTrack( TrackContainer* tc );
+	InstrumentTrack(TrackContainer* tc);
 	virtual ~InstrumentTrack();
 
 	// used by instrument
-	void processAudioBuffer( sampleFrame * _buf, const fpp_t _frames,
-							NotePlayHandle * _n );
+	void processAudioBuffer(sampleFrame* _buf, const fpp_t _frames, NotePlayHandle* _n);
 
-	MidiEvent applyMasterKey( const MidiEvent& event );
+	MidiEvent applyMasterKey(const MidiEvent& event);
 
-	void processInEvent( const MidiEvent& event, const TimePos& time = TimePos(), f_cnt_t offset = 0 ) override;
-	void processOutEvent( const MidiEvent& event, const TimePos& time = TimePos(), f_cnt_t offset = 0 ) override;
+	void processInEvent(const MidiEvent& event, const TimePos& time = TimePos(), f_cnt_t offset = 0) override;
+	void processOutEvent(const MidiEvent& event, const TimePos& time = TimePos(), f_cnt_t offset = 0) override;
 	// silence all running notes played by this track
-	void silenceAllNotes( bool removeIPH = false );
+	void silenceAllNotes(bool removeIPH = false);
 
-	bool isSustainPedalPressed() const
-	{
-		return m_sustainPedalPressed;
-	}
+	bool isSustainPedalPressed() const { return m_sustainPedalPressed; }
 
-	f_cnt_t beatLen( NotePlayHandle * _n ) const;
-
+	f_cnt_t beatLen(NotePlayHandle* _n) const;
 
 	// for capturing note-play-events -> need that for arpeggio,
 	// filter and so on
-	void playNote( NotePlayHandle * _n, sampleFrame * _working_buffer );
+	void playNote(NotePlayHandle* _n, sampleFrame* _working_buffer);
 
 	QString instrumentName() const;
-	const Instrument *instrument() const
-	{
-		return m_instrument;
-	}
+	const Instrument* instrument() const { return m_instrument; }
 
-	Instrument *instrument()
-	{
-		return m_instrument;
-	}
+	Instrument* instrument() { return m_instrument; }
 
-	void deleteNotePluginData( NotePlayHandle * _n );
+	void deleteNotePluginData(NotePlayHandle* _n);
 
 	// name-stuff
-	void setName( const QString & _new_name ) override;
+	void setName(const QString& _new_name) override;
 
 	// translate given key of a note-event to absolute key (i.e.
 	// add global master-pitch and base-note of this instrument track)
-	int masterKey( int _midi_key ) const;
+	int masterKey(int _midi_key) const;
 
 	// translate pitch to midi-pitch [0,16383]
-	int midiPitch() const
-	{
-		return static_cast<int>( ( ( m_pitchModel.value() + m_pitchModel.range()/2 ) * MidiMaxPitchBend ) / m_pitchModel.range() );
+	int midiPitch() const {
+		return static_cast<int>(
+			((m_pitchModel.value() + m_pitchModel.range() / 2) * MidiMaxPitchBend) / m_pitchModel.range());
 	}
 
 	/*! \brief Returns current range for pitch bend in semitones */
-	int midiPitchRange() const
-	{
-		return m_pitchRangeModel.value();
-	}
+	int midiPitchRange() const { return m_pitchRangeModel.value(); }
 
 	// play everything in given frame-range - creates note-play-handles
-	virtual bool play( const TimePos & _start, const fpp_t _frames,
-						const f_cnt_t _frame_base, int _clip_num = -1 ) override;
+	virtual bool play(
+		const TimePos& _start, const fpp_t _frames, const f_cnt_t _frame_base, int _clip_num = -1) override;
 	// create new view for me
-	TrackView * createView( TrackContainerView* tcv ) override;
+	TrackView* createView(TrackContainerView* tcv) override;
 
 	// create new track-content-object = clip
-	Clip* createClip(const TimePos & pos) override;
-
+	Clip* createClip(const TimePos& pos) override;
 
 	// called by track
-	virtual void saveTrackSpecificSettings( QDomDocument & _doc,
-							QDomElement & _parent ) override;
-	void loadTrackSpecificSettings( const QDomElement & _this ) override;
+	virtual void saveTrackSpecificSettings(QDomDocument& _doc, QDomElement& _parent) override;
+	void loadTrackSpecificSettings(const QDomElement& _this) override;
 
 	using Track::setJournalling;
 
-
 	// load instrument whose name matches given one
-	Instrument * loadInstrument(const QString & _instrument_name,
-				const Plugin::Descriptor::SubPluginFeatures::Key* key = nullptr,
-				bool keyFromDnd = false);
+	Instrument* loadInstrument(const QString& _instrument_name,
+		const Plugin::Descriptor::SubPluginFeatures::Key* key = nullptr, bool keyFromDnd = false);
 
-	AudioPort * audioPort()
-	{
-		return &m_audioPort;
-	}
+	AudioPort* audioPort() { return &m_audioPort; }
 
-	MidiPort * midiPort()
-	{
-		return &m_midiPort;
-	}
+	MidiPort* midiPort() { return &m_midiPort; }
 
-	const IntModel *baseNoteModel() const
-	{
-		return &m_baseNoteModel;
-	}
+	const IntModel* baseNoteModel() const { return &m_baseNoteModel; }
 
-	IntModel *baseNoteModel()
-	{
-		return &m_baseNoteModel;
-	}
+	IntModel* baseNoteModel() { return &m_baseNoteModel; }
 
-	IntModel *firstKeyModel()
-	{
-		return &m_firstKeyModel;
-	}
+	IntModel* firstKeyModel() { return &m_firstKeyModel; }
 
-	IntModel *lastKeyModel()
-	{
-		return &m_lastKeyModel;
-	}
+	IntModel* lastKeyModel() { return &m_lastKeyModel; }
 
 	bool keyRangeImport() const;
 	bool isKeyMapped(int key) const;
@@ -167,84 +129,52 @@ public:
 	int baseNote() const;
 	float baseFreq() const;
 
-	Piano *pianoModel()
-	{
-		return &m_piano;
-	}
+	Piano* pianoModel() { return &m_piano; }
 
-	Microtuner *microtuner()
-	{
-		return &m_microtuner;
-	}
+	Microtuner* microtuner() { return &m_microtuner; }
 
-	bool isArpeggioEnabled() const
-	{
-		return m_arpeggio.m_arpEnabledModel.value();
-	}
+	bool isArpeggioEnabled() const { return m_arpeggio.m_arpEnabledModel.value(); }
 
 	// simple helper for removing midiport-XML-node when loading presets
-	static void removeMidiPortNode( DataFile& dataFile );
+	static void removeMidiPortNode(DataFile& dataFile);
 
-	FloatModel * pitchModel()
-	{
-		return &m_pitchModel;
-	}
+	FloatModel* pitchModel() { return &m_pitchModel; }
 
-	FloatModel * volumeModel()
-	{
-		return &m_volumeModel;
-	}
+	FloatModel* volumeModel() { return &m_volumeModel; }
 
-	FloatModel * panningModel()
-	{
-		return &m_panningModel;
-	}
+	FloatModel* panningModel() { return &m_panningModel; }
 
-	IntModel* pitchRangeModel()
-	{
-		return &m_pitchRangeModel;
-	}
+	IntModel* pitchRangeModel() { return &m_pitchRangeModel; }
 
-	IntModel * mixerChannelModel()
-	{
-		return &m_mixerChannelModel;
-	}
+	IntModel* mixerChannelModel() { return &m_mixerChannelModel; }
 
-	void setPreviewMode( const bool );
+	void setPreviewMode(const bool);
 
-	bool isPreviewMode() const
-	{
-		return m_previewMode;
-	}
-	
+	bool isPreviewMode() const { return m_previewMode; }
+
 	void replaceInstrument(DataFile dataFile);
 
-	void autoAssignMidiDevice( bool );
+	void autoAssignMidiDevice(bool);
 
 signals:
 	void instrumentChanged();
-	void midiNoteOn( const Note& );
-	void midiNoteOff( const Note& );
+	void midiNoteOn(const Note&);
+	void midiNoteOff(const Note&);
 	void nameChanged();
 	void newNote();
 	void endNote();
 
 protected:
-	QString nodeName() const override
-	{
-		return "instrumenttrack";
-	}
+	QString nodeName() const override { return "instrumenttrack"; }
 
 	// get the name of the instrument in the saved data
-	QString getSavedInstrumentName(const QDomElement & thisElement) const;
-
+	QString getSavedInstrumentName(const QDomElement& thisElement) const;
 
 protected slots:
 	void updateBaseNote();
 	void updatePitch();
 	void updatePitchRange();
 	void updateMixerChannel();
-
 
 private:
 	void processCCEvent(int controller);
@@ -263,12 +193,12 @@ private:
 
 	bool m_previewMode;
 
-	IntModel m_baseNoteModel;	//!< The "A4" or "440 Hz" key (default 69)
-	IntModel m_firstKeyModel;	//!< First key the instrument reacts to
-	IntModel m_lastKeyModel;	//!< Last key the instrument reacts to
+	IntModel m_baseNoteModel; //!< The "A4" or "440 Hz" key (default 69)
+	IntModel m_firstKeyModel; //!< First key the instrument reacts to
+	IntModel m_lastKeyModel;  //!< Last key the instrument reacts to
 
 	bool m_hasAutoMidiDev;
-	static InstrumentTrack *s_autoAssignedTrack;
+	static InstrumentTrack* s_autoAssignedTrack;
 
 	NotePlayHandleList m_processHandles;
 
@@ -282,7 +212,7 @@ private:
 	IntModel m_mixerChannelModel;
 	BoolModel m_useMasterPitchModel;
 
-	Instrument * m_instrument;
+	Instrument* m_instrument;
 	InstrumentSoundShaping m_soundShaping;
 	InstrumentFunctionArpeggio m_arpeggio;
 	InstrumentFunctionNoteStacking m_noteStacking;
@@ -299,7 +229,6 @@ private:
 	friend class NotePlayHandle;
 	friend class InstrumentMiscView;
 	friend class MidiCCRackView;
-
-} ;
+};
 
 #endif

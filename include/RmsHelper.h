@@ -28,67 +28,54 @@
 
 #include "lmms_math.h"
 
-class RmsHelper
-{
+class RmsHelper {
 public:
-	RmsHelper( int size ) :
-		m_buffer( nullptr )
-	{
-		setSize( size );
+	RmsHelper(int size)
+		: m_buffer(nullptr) {
+		setSize(size);
 	}
-	virtual ~RmsHelper() 
-	{
-		if( m_buffer ) delete[] m_buffer;
+	virtual ~RmsHelper() {
+		if (m_buffer) delete[] m_buffer;
 	}
 
-	inline void setSize( int size )
-	{
-		if( m_buffer )
-		{
-			if( m_size < size )
-			{
+	inline void setSize(int size) {
+		if (m_buffer) {
+			if (m_size < size) {
 				delete m_buffer;
-				m_buffer = new float[ size ];
+				m_buffer = new float[size];
+				m_size = size;
+				reset();
+			} else {
 				m_size = size;
 				reset();
 			}
-			else
-			{
-				m_size = size;
-				reset();
-			}
-		}
-		else
-		{
-			m_buffer = new float[ size ];
+		} else {
+			m_buffer = new float[size];
 			m_size = size;
 			reset();
 		}
 	}
 
-	inline void reset()
-	{
-		m_sizef = 1.0f / (float) m_size;
+	inline void reset() {
+		m_sizef = 1.0f / (float)m_size;
 		m_pos = 0;
 		m_sum = 0.0f;
-		memset( m_buffer, 0, m_size * sizeof( float ) );
+		memset(m_buffer, 0, m_size * sizeof(float));
 	}
 
-	inline float update( const float in )
-	{
-		m_sum -= m_buffer[ m_pos ];
-		m_sum += m_buffer[ m_pos ] = in * in;
+	inline float update(const float in) {
+		m_sum -= m_buffer[m_pos];
+		m_sum += m_buffer[m_pos] = in * in;
 		++m_pos %= m_size;
-		return sqrtf( m_sum * m_sizef );
+		return sqrtf(m_sum * m_sizef);
 	}
 
 private:
-	float * m_buffer;
+	float* m_buffer;
 	float m_sum;
 	unsigned int m_pos;
 	unsigned int m_size;
 	float m_sizef;
 };
-
 
 #endif

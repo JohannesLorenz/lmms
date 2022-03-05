@@ -21,7 +21,6 @@
  * Boston, MA 02110-1301 USA.
  *
  */
- 
 
 #ifndef PATTERN_CLIP_H
 #define PATTERN_CLIP_H
@@ -31,28 +30,22 @@
 /*! \brief Dummy clip for PatternTracks
  *
  *  Only used in the Song (Editor). See PatternStore.h for more info.
-*/
-class PatternClip : public Clip
-{
+ */
+class PatternClip : public Clip {
 public:
 	PatternClip(Track* track);
 	virtual ~PatternClip() = default;
 
-	void saveSettings( QDomDocument & _doc, QDomElement & _parent ) override;
-	void loadSettings( const QDomElement & _this ) override;
-	inline QString nodeName() const override
-	{
-		return "patternclip";
-	}
+	void saveSettings(QDomDocument& _doc, QDomElement& _parent) override;
+	void loadSettings(const QDomElement& _this) override;
+	inline QString nodeName() const override { return "patternclip"; }
 
 	int patternIndex();
 
-	ClipView * createView( TrackView * _tv ) override;
+	ClipView* createView(TrackView* _tv) override;
 
 private:
 	friend class PatternClipView;
-} ;
-
-
+};
 
 #endif

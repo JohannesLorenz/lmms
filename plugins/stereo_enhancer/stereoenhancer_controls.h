@@ -2,7 +2,7 @@
  * stereoenhancer_controls.h - controls for stereoEnhancer-effect
  *
  * Copyright (c) 2008 Tobias Doerffel <tobydox/at/users.sourceforge.net>
- * 
+ *
  * This file is part of LMMS - https://lmms.io
  *
  * This program is free software; you can redistribute it and/or
@@ -30,44 +30,28 @@
 
 class stereoEnhancerEffect;
 
-class stereoEnhancerControls : public EffectControls
-{
+class stereoEnhancerControls : public EffectControls {
 	Q_OBJECT
 public:
-	stereoEnhancerControls( stereoEnhancerEffect( * _eff ) ); 
-	virtual ~stereoEnhancerControls()
-	{
-	}
+	stereoEnhancerControls(stereoEnhancerEffect(*_eff));
+	virtual ~stereoEnhancerControls() {}
 
-	virtual void saveSettings( QDomDocument & _doc, QDomElement & _parent );
-	virtual void loadSettings( const QDomElement & _this );
-	inline virtual QString nodeName() const
-	{
-		return( "stereoenhancercontrols" );
-	}
+	virtual void saveSettings(QDomDocument& _doc, QDomElement& _parent);
+	virtual void loadSettings(const QDomElement& _this);
+	inline virtual QString nodeName() const { return ("stereoenhancercontrols"); }
 
-	virtual int controlCount()
-	{
-		return( 1 );
-	}
-	
-	virtual EffectControlDialog * createView()
-	{
-		return new stereoEnhancerControlDialog( this );
-	}
+	virtual int controlCount() { return (1); }
 
+	virtual EffectControlDialog* createView() { return new stereoEnhancerControlDialog(this); }
 
 private slots:
 	void changeWideCoeff();
 
-
 private:
-	stereoEnhancerEffect * m_effect;
+	stereoEnhancerEffect* m_effect;
 	FloatModel m_widthModel;
-	
+
 	friend class stereoEnhancerControlDialog;
-
-} ;
-
+};
 
 #endif /*_STEREO_ENHANCER_CONTROLS_H*/

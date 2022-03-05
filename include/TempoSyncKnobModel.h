@@ -30,13 +30,11 @@
 
 class QAction;
 
-class LMMS_EXPORT TempoSyncKnobModel : public FloatModel
-{
+class LMMS_EXPORT TempoSyncKnobModel : public FloatModel {
 	Q_OBJECT
 	MODEL_IS_VISITABLE
 public:
-	enum TempoSyncMode
-	{
+	enum TempoSyncMode {
 		SyncNone,
 		SyncDoubleWholeNote,
 		SyncWholeNote,
@@ -46,49 +44,35 @@ public:
 		SyncSixteenthNote,
 		SyncThirtysecondNote,
 		SyncCustom
-	} ;
+	};
 
-	TempoSyncKnobModel( const float _val, const float _min,
-				const float _max, const float _step,
-				const float _scale, Model * _parent,
-				const QString & _display_name = QString() );
+	TempoSyncKnobModel(const float _val, const float _min, const float _max, const float _step, const float _scale,
+		Model* _parent, const QString& _display_name = QString());
 	~TempoSyncKnobModel() override;
 
-	void saveSettings( QDomDocument & _doc, QDomElement & _this, const QString& name ) override;
-	void loadSettings( const QDomElement & _this, const QString& name ) override;
+	void saveSettings(QDomDocument& _doc, QDomElement& _this, const QString& name) override;
+	void loadSettings(const QDomElement& _this, const QString& name) override;
 
-	TempoSyncMode syncMode() const
-	{
-		return m_tempoSyncMode;
-	}
+	TempoSyncMode syncMode() const { return m_tempoSyncMode; }
 
-	void setSyncMode( TempoSyncMode _new_mode );
+	void setSyncMode(TempoSyncMode _new_mode);
 
-	float scale() const
-	{
-		return m_scale;
-	}
+	float scale() const { return m_scale; }
 
-	void setScale( float _new_scale );
+	void setScale(float _new_scale);
 
 signals:
-	void syncModeChanged( TempoSyncMode _new_mode );
-	void scaleChanged( float _new_scale );
-
+	void syncModeChanged(TempoSyncMode _new_mode);
+	void scaleChanged(float _new_scale);
 
 public slots:
-	inline void disableSync()
-	{
-		setTempoSync( SyncNone );
-	}
-	void setTempoSync( int _note_type );
-	void setTempoSync( QAction * _item );
-
+	inline void disableSync() { setTempoSync(SyncNone); }
+	void setTempoSync(int _note_type);
+	void setTempoSync(QAction* _item);
 
 protected slots:
-	void calculateTempoSyncTime( bpm_t _bpm );
+	void calculateTempoSyncTime(bpm_t _bpm);
 	void updateCustom();
-
 
 private:
 	TempoSyncMode m_tempoSyncMode;
@@ -97,9 +81,7 @@ private:
 
 	MeterModel m_custom;
 
-
 	friend class TempoSyncKnob;
-
-} ;
+};
 
 #endif

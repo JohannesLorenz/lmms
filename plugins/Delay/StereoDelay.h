@@ -27,26 +27,18 @@
 
 #include "lmms_basics.h"
 
-class StereoDelay
-{
+class StereoDelay {
 public:
-	StereoDelay( int maxLength, int sampleRate );
+	StereoDelay(int maxLength, int sampleRate);
 	~StereoDelay();
-	inline void setLength( float length )
-	{
-		if( length <= m_maxLength && length >= 0 )
-		{
-			m_length = length;
-		}
+	inline void setLength(float length) {
+		if (length <= m_maxLength && length >= 0) { m_length = length; }
 	}
 
-	inline void setFeedback( float feedback )
-	{
-		m_feedback = feedback;
-	}
+	inline void setFeedback(float feedback) { m_feedback = feedback; }
 
-	void tick( sampleFrame& frame );
-	void setSampleRate( int sampleRate );
+	void tick(sampleFrame& frame);
+	void setSampleRate(int sampleRate);
 
 private:
 	sampleFrame* m_buffer;

@@ -27,19 +27,13 @@
 
 #include "EffectControlDialog.h"
 
-
 class BassBoosterControls;
 
-
-class BassBoosterControlDialog : public EffectControlDialog
-{
+class BassBoosterControlDialog : public EffectControlDialog {
 	Q_OBJECT
 public:
-	BassBoosterControlDialog( BassBoosterControls* controls );
-	virtual ~BassBoosterControlDialog()
-	{
-	}
-
-} ;
+	BassBoosterControlDialog(BassBoosterControls* controls);
+	virtual ~BassBoosterControlDialog() {}
+};
 
 #endif

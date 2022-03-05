@@ -21,7 +21,7 @@
  * Boston, MA 02110-1301 USA.
  *
  */
- 
+
 #include "PatternTrackView.h"
 
 #include "Engine.h"
@@ -31,45 +31,31 @@
 #include "PatternTrack.h"
 #include "TrackLabelButton.h"
 
-PatternTrackView::PatternTrackView(PatternTrack* pt, TrackContainerView* tcv) :
-	TrackView(pt, tcv),
-	m_patternTrack(pt)
-{
-	setFixedHeight( 32 );
+PatternTrackView::PatternTrackView(PatternTrack* pt, TrackContainerView* tcv)
+	: TrackView(pt, tcv)
+	, m_patternTrack(pt) {
+	setFixedHeight(32);
 	// drag'n'drop with pattern tracks only causes troubles (and makes no sense too), so disable it
-	setAcceptDrops( false );
+	setAcceptDrops(false);
 
-	m_trackLabel = new TrackLabelButton( this, getTrackSettingsWidget() );
-	m_trackLabel->setIcon( embed::getIconPixmap("pattern_track"));
-	m_trackLabel->move( 3, 1 );
+	m_trackLabel = new TrackLabelButton(this, getTrackSettingsWidget());
+	m_trackLabel->setIcon(embed::getIconPixmap("pattern_track"));
+	m_trackLabel->move(3, 1);
 	m_trackLabel->show();
-	connect( m_trackLabel, SIGNAL( clicked( bool ) ),
-			this, SLOT( clickedTrackLabel() ) );
+	connect(m_trackLabel, SIGNAL(clicked(bool)), this, SLOT(clickedTrackLabel()));
 	setModel(pt);
 }
 
-
-
-
-PatternTrackView::~PatternTrackView()
-{
+PatternTrackView::~PatternTrackView() {
 	getGUI()->patternEditor()->m_editor->removeViewsForPattern(PatternTrack::s_infoMap[m_patternTrack]);
 }
 
-
-
-
-bool PatternTrackView::close()
-{
+bool PatternTrackView::close() {
 	getGUI()->patternEditor()->m_editor->removeViewsForPattern(PatternTrack::s_infoMap[m_patternTrack]);
 	return TrackView::close();
 }
 
-
-
-
-void PatternTrackView::clickedTrackLabel()
-{
+void PatternTrackView::clickedTrackLabel() {
 	Engine::patternStore()->setCurrentPattern(m_patternTrack->patternIndex());
 	getGUI()->patternEditor()->parentWidget()->show();
 	getGUI()->patternEditor()->setFocus(Qt::ActiveWindowFocusReason);

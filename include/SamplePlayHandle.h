@@ -26,58 +26,39 @@
 #ifndef SAMPLE_PLAY_HANDLE_H
 #define SAMPLE_PLAY_HANDLE_H
 
-#include "SampleBuffer.h"
 #include "AutomatableModel.h"
 #include "PlayHandle.h"
+#include "SampleBuffer.h"
 
 class PatternTrack;
 class SampleClip;
 class Track;
 class AudioPort;
 
-
-class SamplePlayHandle : public PlayHandle
-{
+class SamplePlayHandle : public PlayHandle {
 public:
-	SamplePlayHandle( SampleBuffer* sampleBuffer , bool ownAudioPort = true );
-	SamplePlayHandle( const QString& sampleFile );
-	SamplePlayHandle( SampleClip* clip );
+	SamplePlayHandle(SampleBuffer* sampleBuffer, bool ownAudioPort = true);
+	SamplePlayHandle(const QString& sampleFile);
+	SamplePlayHandle(SampleClip* clip);
 	virtual ~SamplePlayHandle();
 
-	inline bool affinityMatters() const override
-	{
-		return true;
-	}
+	inline bool affinityMatters() const override { return true; }
 
-
-	void play( sampleFrame * buffer ) override;
+	void play(sampleFrame* buffer) override;
 	bool isFinished() const override;
 
-	bool isFromTrack( const Track * _track ) const override;
+	bool isFromTrack(const Track* _track) const override;
 
 	f_cnt_t totalFrames() const;
-	inline f_cnt_t framesDone() const
-	{
-		return( m_frame );
-	}
-	void setDoneMayReturnTrue( bool _enable )
-	{
-		m_doneMayReturnTrue = _enable;
-	}
+	inline f_cnt_t framesDone() const { return (m_frame); }
+	void setDoneMayReturnTrue(bool _enable) { m_doneMayReturnTrue = _enable; }
 
-	void setPatternTrack(PatternTrack* pt)
-	{
-		m_patternTrack = pt;
-	}
+	void setPatternTrack(PatternTrack* pt) { m_patternTrack = pt; }
 
-	void setVolumeModel( FloatModel * _model )
-	{
-		m_volumeModel = _model;
-	}
-
+	void setVolumeModel(FloatModel* _model) { m_volumeModel = _model; }
 
 private:
-	SampleBuffer * m_sampleBuffer;
+	SampleBuffer* m_sampleBuffer;
 	bool m_doneMayReturnTrue;
 
 	f_cnt_t m_frame;
@@ -86,12 +67,10 @@ private:
 	const bool m_ownAudioPort;
 
 	FloatModel m_defaultVolumeModel;
-	FloatModel * m_volumeModel;
-	Track * m_track;
+	FloatModel* m_volumeModel;
+	Track* m_track;
 
 	PatternTrack* m_patternTrack;
-
-} ;
-
+};
 
 #endif

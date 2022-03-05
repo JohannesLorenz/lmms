@@ -23,8 +23,8 @@
 
 #include <QColor>
 #include <QElapsedTimer>
-#include <QTimer>
 #include <QObject>
+#include <QTimer>
 
 #include "Note.h"
 
@@ -34,18 +34,17 @@ class QKeyEvent;
 class QMouseEvent;
 class StepRecorderWidget;
 
-class StepRecorder : public QObject
-{
+class StepRecorder : public QObject {
 	Q_OBJECT
 
-	public:
+public:
 	StepRecorder(PianoRoll& pianoRoll, StepRecorderWidget& stepRecorderWidget);
 
 	void initialize();
-	void start(const TimePos& currentPosition,const TimePos& stepLength);
+	void start(const TimePos& currentPosition, const TimePos& stepLength);
 	void stop();
-	void notePressed(const Note & n);
-	void noteReleased(const Note & n);
+	void notePressed(const Note& n);
+	void noteReleased(const Note& n);
 	bool keyPressEvent(QKeyEvent* ke);
 	bool mousePressEvent(QMouseEvent* ke);
 	void setCurrentMidiClip(MidiClip* newMidiClip);
@@ -53,20 +52,16 @@ class StepRecorder : public QObject
 
 	QVector<Note*> getCurStepNotes();
 
-	bool isRecording() const
-	{
-		return m_isRecording;
+	bool isRecording() const { return m_isRecording; }
+
+	QColor curStepNoteColor() const {
+		return QColor(245, 3, 139); // radiant pink
 	}
 
-	QColor curStepNoteColor() const
-	{
-		return QColor(245,3,139); // radiant pink
-	}
-
-	private slots:
+private slots:
 	void removeNotesReleasedForTooLong();
 
-	private:
+private:
 	void stepForwards();
 	void stepBackwards();
 
@@ -89,56 +84,45 @@ class StepRecorder : public QObject
 	TimePos m_curStepEndPos = 0;
 
 	TimePos m_stepsLength;
-	TimePos m_curStepLength; // current step length refers to the step currently recorded. it may defer from m_stepsLength
-							  // since the user can make current step larger
+	TimePos m_curStepLength; // current step length refers to the step currently recorded. it may defer from
+							 // m_stepsLength since the user can make current step larger
 
 	QTimer m_updateReleasedTimer;
 
 	MidiClip* m_midiClip;
 
-	class StepNote
-	{
-		public:
-		StepNote(const Note & note) : m_note(note), m_pressed(true) {};
+	class StepNote {
+	public:
+		StepNote(const Note& note)
+			: m_note(note)
+			, m_pressed(true){};
 
-		void setPressed()
-		{
-			m_pressed = true;
-		}
+		void setPressed() { m_pressed = true; }
 
-		void setReleased()
-		{
+		void setReleased() {
 			m_pressed = false;
 			releasedTimer.start();
 		}
 
-		int timeSinceReleased()
-		{
-			return releasedTimer.elapsed();
-		}
+		int timeSinceReleased() { return releasedTimer.elapsed(); }
 
-		bool isPressed() const
-		{
-			return m_pressed;
-		}
+		bool isPressed() const { return m_pressed; }
 
-		bool isReleased() const
-		{
-			return !m_pressed;
-		}
+		bool isReleased() const { return !m_pressed; }
 
 		Note m_note;
 
-		private:
+	private:
 		bool m_pressed;
 		QElapsedTimer releasedTimer;
-	} ;
+	};
 
-	QVector<StepNote*> m_curStepNotes; // contains the current recorded step notes (i.e. while user still press the notes; before they are applied to the clip)
+	QVector<StepNote*> m_curStepNotes; // contains the current recorded step notes (i.e. while user still press the
+									   // notes; before they are applied to the clip)
 
 	StepNote* findCurStepNote(const int key);
 
 	bool m_isStepInProgress = false;
 };
 
-#endif //STEP_RECORDER_H
+#endif // STEP_RECORDER_H

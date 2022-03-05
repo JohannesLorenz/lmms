@@ -32,64 +32,37 @@
 #include "AutomatableModel.h"
 #include "embed.h"
 
-
-class LMMS_EXPORT ComboBoxModel : public IntModel
-{
+class LMMS_EXPORT ComboBoxModel : public IntModel {
 	Q_OBJECT
 	MODEL_IS_VISITABLE
 public:
-	ComboBoxModel( Model* parent = nullptr,
-					const QString& displayName = QString(),
-					bool isDefaultConstructed = false ) :
-		IntModel( 0, 0, 0, parent, displayName, isDefaultConstructed )
-	{
-	}
+	ComboBoxModel(Model* parent = nullptr, const QString& displayName = QString(), bool isDefaultConstructed = false)
+		: IntModel(0, 0, 0, parent, displayName, isDefaultConstructed) {}
 
-	virtual ~ComboBoxModel()
-	{
-		clear();
-	}
+	virtual ~ComboBoxModel() { clear(); }
 
-	void addItem( QString item, std::unique_ptr<PixmapLoader> loader = nullptr );
+	void addItem(QString item, std::unique_ptr<PixmapLoader> loader = nullptr);
 
 	void replaceItem(std::size_t index, QString item, std::unique_ptr<PixmapLoader> loader = nullptr);
 
 	void clear();
 
-	int findText( const QString& txt ) const;
+	int findText(const QString& txt) const;
 
-	QString currentText() const
-	{
-		return ( size() > 0 && value() < size() ) ? m_items[value()].first : QString();
-	}
+	QString currentText() const { return (size() > 0 && value() < size()) ? m_items[value()].first : QString(); }
 
-	const PixmapLoader* currentData() const
-	{
-		return m_items[value()].second.get();
-	}
+	const PixmapLoader* currentData() const { return m_items[value()].second.get(); }
 
-	const QString & itemText( int i ) const
-	{
-		return m_items[qBound<int>( minValue(), i,  maxValue() )].first;
-	}
+	const QString& itemText(int i) const { return m_items[qBound<int>(minValue(), i, maxValue())].first; }
 
-	const PixmapLoader* itemPixmap( int i ) const
-	{
-		return m_items[qBound<int>( minValue(), i, maxValue() )].second.get();
-	}
+	const PixmapLoader* itemPixmap(int i) const { return m_items[qBound<int>(minValue(), i, maxValue())].second.get(); }
 
-	int size() const
-	{
-		return m_items.size();
-	}
-
+	int size() const { return m_items.size(); }
 
 private:
-	typedef std::pair<QString, std::unique_ptr<PixmapLoader> > Item;
+	typedef std::pair<QString, std::unique_ptr<PixmapLoader>> Item;
 
 	std::vector<Item> m_items;
-
-} ;
-
+};
 
 #endif

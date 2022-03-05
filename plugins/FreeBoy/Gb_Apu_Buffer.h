@@ -1,7 +1,7 @@
 /*
  * Gb_Apu_Buffer.cpp - Gb_Apu subclass which allows direct buffer access
  * Copyright (c) 2017 Tres Finocchiaro <tres.finocchiaro/at/gmail.com>
- * 
+ *
  * This file is part of LMMS - https://lmms.io
  *
  * This program is free software; you can redistribute it and/or
@@ -24,8 +24,8 @@
 #define GB_APU_BUFFER_H
 
 #include "Gb_Apu.h"
-#include "Multi_Buffer.h"
 #include "MemoryManager.h"
+#include "Multi_Buffer.h"
 
 class Gb_Apu_Buffer : public Gb_Apu {
 	MM_OPERATORS
@@ -40,9 +40,9 @@ public:
 	typedef blip_sample_t sample_t;
 	long read_samples(sample_t* out, long count);
 	void bass_freq(int freq);
+
 private:
 	Stereo_Buffer m_buf;
 };
 
 #endif
-

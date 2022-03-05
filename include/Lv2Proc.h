@@ -32,41 +32,37 @@
 #include <lilv/lilv.h>
 #include <memory>
 
+#include "../src/3rdparty/ringbuffer/include/ringbuffer/ringbuffer.h"
+#include "LinkedModelGroups.h"
 #include "Lv2Basics.h"
 #include "Lv2Features.h"
 #include "Lv2Options.h"
-#include "LinkedModelGroups.h"
 #include "Plugin.h"
-#include "../src/3rdparty/ringbuffer/include/ringbuffer/ringbuffer.h"
 #include "TimePos.h"
 
 class PluginIssue;
 
 // forward declare port structs/enums
-namespace Lv2Ports
-{
-	struct Audio;
-	struct PortBase;
-	struct AtomSeq;
+namespace Lv2Ports {
+struct Audio;
+struct PortBase;
+struct AtomSeq;
 
-	enum class Type;
-	enum class Flow;
-	enum class Vis;
-}
-
+enum class Type;
+enum class Flow;
+enum class Vis;
+} // namespace Lv2Ports
 
 //! Class representing one Lv2 processor, i.e. one Lv2 handle
 //! For Mono effects, 1 Lv2ControlBase references 2 Lv2Proc
-class Lv2Proc : public LinkedModelGroup
-{
+class Lv2Proc : public LinkedModelGroup {
 public:
-	static Plugin::PluginTypes check(const LilvPlugin* plugin,
-		std::vector<PluginIssue> &issues);
+	static Plugin::PluginTypes check(const LilvPlugin* plugin, std::vector<PluginIssue>& issues);
 
 	/*
 		ctor/dtor
 	*/
-	Lv2Proc(const LilvPlugin* plugin, Model *parent);
+	Lv2Proc(const LilvPlugin* plugin, Model* parent);
 	~Lv2Proc() override;
 	//! Must be checked after ctor or reload
 	bool isValid() const { return m_valid; }
@@ -74,8 +70,7 @@ public:
 	/*
 		port access
 	 */
-	struct StereoPortRef
-	{
+	struct StereoPortRef {
 		//! mono port or left port in case of stereo
 		Lv2Ports::Audio* m_left = nullptr;
 		//! unused, or right port in case of stereo
@@ -86,19 +81,13 @@ public:
 	const StereoPortRef& inPorts() const { return m_inPorts; }
 	StereoPortRef& outPorts() { return m_outPorts; }
 	const StereoPortRef& outPorts() const { return m_outPorts; }
-	template<class Functor>
-	void foreach_port(const Functor& ftor)
-	{
-		for (std::unique_ptr<Lv2Ports::PortBase>& port : m_ports)
-		{
+	template <class Functor> void foreach_port(const Functor& ftor) {
+		for (std::unique_ptr<Lv2Ports::PortBase>& port : m_ports) {
 			ftor(port.get());
 		}
 	}
-	template<class Functor>
-	void foreach_port(const Functor& ftor) const
-	{
-		for (const std::unique_ptr<Lv2Ports::PortBase>& port : m_ports)
-		{
+	template <class Functor> void foreach_port(const Functor& ftor) const {
+		for (const std::unique_ptr<Lv2Ports::PortBase>& port : m_ports) {
 			ftor(port.get());
 		}
 	}
@@ -125,8 +114,7 @@ public:
 	 * @param num Number of channels we must read from @param buf (starting at
 	 *   @p offset)
 	 */
-	void copyBuffersFromCore(const sampleFrame *buf,
-								unsigned firstChan, unsigned num, fpp_t frames);
+	void copyBuffersFromCore(const sampleFrame* buf, unsigned firstChan, unsigned num, fpp_t frames);
 	/**
 	 * Copy our ports into buffers passed by the core
 	 * @param buf buffer of sample frames, each sample frame is something like
@@ -138,18 +126,16 @@ public:
 	 * @param num Number of channels we must write to @param buf (starting at
 	 *   @p offset)
 	 */
-	void copyBuffersToCore(sampleFrame *buf, unsigned firstChan, unsigned num,
-								fpp_t frames) const;
+	void copyBuffersToCore(sampleFrame* buf, unsigned firstChan, unsigned num, fpp_t frames) const;
 	//! Run the Lv2 plugin instance for @param frames frames
 	void run(fpp_t frames);
 
-	void handleMidiInputEvent(const class MidiEvent &event,
-		const TimePos &time, f_cnt_t offset);
+	void handleMidiInputEvent(const class MidiEvent& event, const TimePos& time, f_cnt_t offset);
 
 	/*
 		misc
 	 */
-	class AutomatableModel *modelAtPort(const QString &uri); // unused currently
+	class AutomatableModel* modelAtPort(const QString& uri); // unused currently
 	std::size_t controlCount() const { return LinkedModelGroup::modelNum(); }
 	bool hasNoteInput() const;
 
@@ -191,13 +177,13 @@ private:
 	static int32_t defaultEvbufSize() { return 1 << 15; /* ardour uses this*/ }
 
 	//! models for the controls, sorted by port symbols
-	std::map<std::string, AutomatableModel *> m_connectedModels;
+	std::map<std::string, AutomatableModel*> m_connectedModels;
 
 	void initMOptions(); //!< initialize m_options
 	void initPluginSpecificFeatures();
 
 	//! load a file in the plugin, but don't do anything in LMMS
-	void loadFileInternal(const QString &file);
+	void loadFileInternal(const QString& file);
 	//! allocate m_ports, fill all with metadata, and assign meaning of ports
 	void createPorts();
 	//! fill m_ports[portNum] with metadata
@@ -207,8 +193,8 @@ private:
 
 	void dumpPort(std::size_t num);
 
-	static bool portIsSideChain(const LilvPlugin* plugin, const LilvPort *port);
-	static bool portIsOptional(const LilvPlugin* plugin, const LilvPort *port);
+	static bool portIsSideChain(const LilvPlugin* plugin, const LilvPort* port);
+	static bool portIsOptional(const LilvPlugin* plugin, const LilvPort* port);
 	static AutoLilvNode uri(const char* uriStr);
 };
 

@@ -29,36 +29,30 @@
 
 class SampleClip;
 
-class SampleClipView : public ClipView
-{
+class SampleClipView : public ClipView {
 	Q_OBJECT
 
 public:
-	SampleClipView( SampleClip * _clip, TrackView * _tv );
+	SampleClipView(SampleClip* _clip, TrackView* _tv);
 	virtual ~SampleClipView() = default;
 
 public slots:
 	void updateSample();
 	void reverseSample();
 
-
-
 protected:
 	void constructContextMenu(QMenu* cm) override;
-	void mousePressEvent( QMouseEvent * _me ) override;
-	void mouseReleaseEvent( QMouseEvent * _me ) override;
-	void dragEnterEvent( QDragEnterEvent * _dee ) override;
-	void dropEvent( QDropEvent * _de ) override;
-	void mouseDoubleClickEvent( QMouseEvent * ) override;
-	void paintEvent( QPaintEvent * ) override;
-
+	void mousePressEvent(QMouseEvent* _me) override;
+	void mouseReleaseEvent(QMouseEvent* _me) override;
+	void dragEnterEvent(QDragEnterEvent* _dee) override;
+	void dropEvent(QDropEvent* _de) override;
+	void mouseDoubleClickEvent(QMouseEvent*) override;
+	void paintEvent(QPaintEvent*) override;
 
 private:
-	SampleClip * m_clip;
+	SampleClip* m_clip;
 	QPixmap m_paintPixmap;
-	bool splitClip( const TimePos pos ) override;
-} ;
-
-
+	bool splitClip(const TimePos pos) override;
+};
 
 #endif

@@ -23,61 +23,38 @@
  *
  */
 
-
 #include "waveshaper.h"
-#include "lmms_math.h"
+
 #include "embed.h"
 #include "interpolation.h"
-
+#include "lmms_math.h"
 #include "plugin_export.h"
 
-extern "C"
-{
+extern "C" {
 
-Plugin::Descriptor PLUGIN_EXPORT waveshaper_plugin_descriptor =
-{
-	STRINGIFY( PLUGIN_NAME ),
+Plugin::Descriptor PLUGIN_EXPORT waveshaper_plugin_descriptor = {
+	STRINGIFY(PLUGIN_NAME),
 	"Waveshaper Effect",
-	QT_TRANSLATE_NOOP( "PluginBrowser",
-				"plugin for waveshaping" ),
+	QT_TRANSLATE_NOOP("PluginBrowser", "plugin for waveshaping"),
 	"Vesa Kivimäki <contact/dot/diizy/at/nbl/dot/fi>",
 	0x0100,
 	Plugin::Effect,
 	new PluginPixmapLoader("logo"),
 	nullptr,
 	nullptr,
-} ;
-
+};
 }
 
+waveShaperEffect::waveShaperEffect(Model* _parent, const Descriptor::SubPluginFeatures::Key* _key)
+	: Effect(&waveshaper_plugin_descriptor, _parent, _key)
+	, m_wsControls(this) {}
 
+waveShaperEffect::~waveShaperEffect() {}
 
-waveShaperEffect::waveShaperEffect( Model * _parent,
-			const Descriptor::SubPluginFeatures::Key * _key ) :
-	Effect( &waveshaper_plugin_descriptor, _parent, _key ),
-	m_wsControls( this )
-{
-}
+bool waveShaperEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames) {
+	if (!isEnabled() || !isRunning()) { return (false); }
 
-
-
-
-waveShaperEffect::~waveShaperEffect()
-{
-}
-
-
-
-
-bool waveShaperEffect::processAudioBuffer( sampleFrame * _buf,
-							const fpp_t _frames )
-{
-	if( !isEnabled() || !isRunning () )
-	{
-		return( false );
-	}
-
-// variables for effect
+	// variables for effect
 	int i = 0;
 
 	double out_sum = 0.0;
@@ -85,62 +62,52 @@ bool waveShaperEffect::processAudioBuffer( sampleFrame * _buf,
 	const float w = wetLevel();
 	float input = m_wsControls.m_inputModel.value();
 	float output = m_wsControls.m_outputModel.value();
-	const float * samples = m_wsControls.m_wavegraphModel.samples();
+	const float* samples = m_wsControls.m_wavegraphModel.samples();
 	const bool clip = m_wsControls.m_clipModel.value();
 
-	ValueBuffer *inputBuffer = m_wsControls.m_inputModel.valueBuffer();
-	ValueBuffer *outputBufer = m_wsControls.m_outputModel.valueBuffer();
+	ValueBuffer* inputBuffer = m_wsControls.m_inputModel.valueBuffer();
+	ValueBuffer* outputBufer = m_wsControls.m_outputModel.valueBuffer();
 
 	int inputInc = inputBuffer ? 1 : 0;
 	int outputInc = outputBufer ? 1 : 0;
 
-	const float *inputPtr = inputBuffer ? &( inputBuffer->values()[ 0 ] ) : &input;
-	const float *outputPtr = outputBufer ? &( outputBufer->values()[ 0 ] ) : &output;
+	const float* inputPtr = inputBuffer ? &(inputBuffer->values()[0]) : &input;
+	const float* outputPtr = outputBufer ? &(outputBufer->values()[0]) : &output;
 
-	for( fpp_t f = 0; f < _frames; ++f )
-	{
-		float s[2] = { _buf[f][0], _buf[f][1] };
+	for (fpp_t f = 0; f < _frames; ++f) {
+		float s[2] = {_buf[f][0], _buf[f][1]};
 
-// apply input gain
+		// apply input gain
 		s[0] *= *inputPtr;
 		s[1] *= *inputPtr;
 
-// clip if clip enabled
-		if( clip )
-		{
-			s[0] = qBound( -1.0f, s[0], 1.0f );
-			s[1] = qBound( -1.0f, s[1], 1.0f );
+		// clip if clip enabled
+		if (clip) {
+			s[0] = qBound(-1.0f, s[0], 1.0f);
+			s[1] = qBound(-1.0f, s[1], 1.0f);
 		}
 
-// start effect
+		// start effect
 
-		for( i=0; i <= 1; ++i )
-		{
-			const int lookup = static_cast<int>( qAbs( s[i] ) * 200.0f );
-			const float frac = fraction( qAbs( s[i] ) * 200.0f ); 
+		for (i = 0; i <= 1; ++i) {
+			const int lookup = static_cast<int>(qAbs(s[i]) * 200.0f);
+			const float frac = fraction(qAbs(s[i]) * 200.0f);
 			const float posneg = s[i] < 0 ? -1.0f : 1.0f;
 
-			if( lookup < 1 )
-			{
+			if (lookup < 1) {
 				s[i] = frac * samples[0] * posneg;
-			}
-			else if( lookup < 200 )
-			{	
-				s[i] = linearInterpolate( samples[ lookup - 1 ], 
-						samples[ lookup ], frac )
-						* posneg;
-			}
-			else
-			{
+			} else if (lookup < 200) {
+				s[i] = linearInterpolate(samples[lookup - 1], samples[lookup], frac) * posneg;
+			} else {
 				s[i] *= samples[199];
 			}
 		}
 
-// apply output gain
+		// apply output gain
 		s[0] *= *outputPtr;
 		s[1] *= *outputPtr;
 
-// mix wet/dry signals
+		// mix wet/dry signals
 		_buf[f][0] = d * _buf[f][0] + w * s[0];
 		_buf[f][1] = d * _buf[f][1] + w * s[1];
 		out_sum += _buf[f][0] * _buf[f][0] + _buf[f][1] * _buf[f][1];
@@ -149,25 +116,15 @@ bool waveShaperEffect::processAudioBuffer( sampleFrame * _buf,
 		inputPtr += inputInc;
 	}
 
-	checkGate( out_sum / _frames );
+	checkGate(out_sum / _frames);
 
-	return( isRunning() );
+	return (isRunning());
 }
 
-
-
-
-
-extern "C"
-{
+extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin * lmms_plugin_main( Model * _parent, void * _data )
-{
-	return( new waveShaperEffect( _parent,
-		static_cast<const Plugin::Descriptor::SubPluginFeatures::Key *>(
-								_data ) ) );
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data) {
+	return (new waveShaperEffect(_parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(_data)));
 }
-
 }
-

@@ -26,43 +26,29 @@
 #ifndef DUALFILTER_CONTROLS_H
 #define DUALFILTER_CONTROLS_H
 
-#include "EffectControls.h"
-#include "DualFilterControlDialog.h"
 #include "ComboBoxModel.h"
+#include "DualFilterControlDialog.h"
+#include "EffectControls.h"
 
 class DualFilterEffect;
 
-
-class DualFilterControls : public EffectControls
-{
+class DualFilterControls : public EffectControls {
 	Q_OBJECT
 public:
-	DualFilterControls( DualFilterEffect* effect );
-	virtual ~DualFilterControls()
-	{
-	}
+	DualFilterControls(DualFilterEffect* effect);
+	virtual ~DualFilterControls() {}
 
-	virtual void saveSettings( QDomDocument & _doc, QDomElement & _parent );
-	virtual void loadSettings( const QDomElement & _this );
-	inline virtual QString nodeName() const
-	{
-		return "DualFilterControls";
-	}
+	virtual void saveSettings(QDomDocument& _doc, QDomElement& _parent);
+	virtual void loadSettings(const QDomElement& _this);
+	inline virtual QString nodeName() const { return "DualFilterControls"; }
 
-	virtual int controlCount()
-	{
-		return 11;
-	}
+	virtual int controlCount() { return 11; }
 
-	virtual EffectControlDialog* createView()
-	{
-		return new DualFilterControlDialog( this );
-	}
-
+	virtual EffectControlDialog* createView() { return new DualFilterControlDialog(this); }
 
 private slots:
 	void updateFilters();
-	
+
 private:
 	DualFilterEffect* m_effect;
 
@@ -82,7 +68,6 @@ private:
 
 	friend class DualFilterControlDialog;
 	friend class DualFilterEffect;
-
-} ;
+};
 
 #endif

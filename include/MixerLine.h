@@ -28,9 +28,6 @@
 
 #include <QWidget>
 
-
-
-
 class QGraphicsView;
 class QLineEdit;
 class Knob;
@@ -38,53 +35,52 @@ class LcdWidget;
 class MixerView;
 class SendButtonIndicator;
 
-class MixerLine : public QWidget
-{
+class MixerLine : public QWidget {
 	Q_OBJECT
 public:
-	Q_PROPERTY( QBrush backgroundActive READ backgroundActive WRITE setBackgroundActive )
-	Q_PROPERTY( QColor strokeOuterActive READ strokeOuterActive WRITE setStrokeOuterActive )
-	Q_PROPERTY( QColor strokeOuterInactive READ strokeOuterInactive WRITE setStrokeOuterInactive )
-	Q_PROPERTY( QColor strokeInnerActive READ strokeInnerActive WRITE setStrokeInnerActive )
-	Q_PROPERTY( QColor strokeInnerInactive READ strokeInnerInactive WRITE setStrokeInnerInactive )
-	MixerLine( QWidget * _parent, MixerView * _mv, int _channelIndex);
+	Q_PROPERTY(QBrush backgroundActive READ backgroundActive WRITE setBackgroundActive)
+	Q_PROPERTY(QColor strokeOuterActive READ strokeOuterActive WRITE setStrokeOuterActive)
+	Q_PROPERTY(QColor strokeOuterInactive READ strokeOuterInactive WRITE setStrokeOuterInactive)
+	Q_PROPERTY(QColor strokeInnerActive READ strokeInnerActive WRITE setStrokeInnerActive)
+	Q_PROPERTY(QColor strokeInnerInactive READ strokeInnerInactive WRITE setStrokeInnerInactive)
+	MixerLine(QWidget* _parent, MixerView* _mv, int _channelIndex);
 	~MixerLine();
 
-	void paintEvent( QPaintEvent * ) override;
-	void mousePressEvent( QMouseEvent * ) override;
-	void mouseDoubleClickEvent( QMouseEvent * ) override;
-	void contextMenuEvent( QContextMenuEvent * ) override;
+	void paintEvent(QPaintEvent*) override;
+	void mousePressEvent(QMouseEvent*) override;
+	void mouseDoubleClickEvent(QMouseEvent*) override;
+	void contextMenuEvent(QContextMenuEvent*) override;
 
 	inline int channelIndex() { return m_channelIndex; }
 	void setChannelIndex(int index);
 
-	Knob * m_sendKnob;
-	SendButtonIndicator * m_sendBtn;
+	Knob* m_sendKnob;
+	SendButtonIndicator* m_sendBtn;
 
 	QBrush backgroundActive() const;
-	void setBackgroundActive( const QBrush & c );
-	
+	void setBackgroundActive(const QBrush& c);
+
 	QColor strokeOuterActive() const;
-	void setStrokeOuterActive( const QColor & c );
-	
+	void setStrokeOuterActive(const QColor& c);
+
 	QColor strokeOuterInactive() const;
-	void setStrokeOuterInactive( const QColor & c );
-	
+	void setStrokeOuterInactive(const QColor& c);
+
 	QColor strokeInnerActive() const;
-	void setStrokeInnerActive( const QColor & c );
-	
+	void setStrokeInnerActive(const QColor& c);
+
 	QColor strokeInnerInactive() const;
-	void setStrokeInnerInactive( const QColor & c );
+	void setStrokeInnerInactive(const QColor& c);
 
 	static const int MixerLineHeight;
 
-	bool eventFilter (QObject *dist, QEvent *event) override;
+	bool eventFilter(QObject* dist, QEvent* event) override;
 
 private:
-	void drawMixerLine( QPainter* p, const MixerLine *mixerLine, bool isActive, bool sendToThis, bool receiveFromThis );
-	QString elideName( const QString & name );
+	void drawMixerLine(QPainter* p, const MixerLine* mixerLine, bool isActive, bool sendToThis, bool receiveFromThis);
+	QString elideName(const QString& name);
 
-	MixerView * m_mv;
+	MixerView* m_mv;
 	LcdWidget* m_lcd;
 	int m_channelIndex;
 	QBrush m_backgroundActive;
@@ -92,11 +88,11 @@ private:
 	QColor m_strokeOuterInactive;
 	QColor m_strokeInnerActive;
 	QColor m_strokeInnerInactive;
-	static QPixmap * s_sendBgArrow;
-	static QPixmap * s_receiveBgArrow;
+	static QPixmap* s_sendBgArrow;
+	static QPixmap* s_receiveBgArrow;
 	bool m_inRename;
-	QLineEdit * m_renameLineEdit;
-	QGraphicsView * m_view;
+	QLineEdit* m_renameLineEdit;
+	QGraphicsView* m_view;
 
 public slots:
 	void renameChannel();
@@ -111,6 +107,5 @@ private slots:
 	void moveChannelLeft();
 	void moveChannelRight();
 };
-
 
 #endif // MIXERLINE_H

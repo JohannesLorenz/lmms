@@ -28,15 +28,15 @@
  *
  */
 
-
 #ifndef LB302_H_
 #define LB302_H_
+
+#include <QMutex>
 
 #include "DspEffectLibrary.h"
 #include "Instrument.h"
 #include "InstrumentView.h"
 #include "NotePlayHandle.h"
-#include <QMutex>
 
 static const int NUM_FILTERS = 2;
 
@@ -46,9 +46,8 @@ class lb302SynthView;
 class LedCheckBox;
 class NotePlayHandle;
 
-class lb302FilterKnobState
-{
-	public:
+class lb302FilterKnobState {
+public:
 	float cutoff;
 	float reso;
 	float envmod;
@@ -56,31 +55,28 @@ class lb302FilterKnobState
 	float dist;
 };
 
-
-class lb302Filter
-{
-	public:
+class lb302Filter {
+public:
 	lb302Filter(lb302FilterKnobState* p_fs);
-	virtual ~lb302Filter() {};
+	virtual ~lb302Filter(){};
 
 	virtual void recalc();
 	virtual void envRecalc();
-	virtual float process(const float& samp)=0;
+	virtual float process(const float& samp) = 0;
 	virtual void playNote();
 
-	protected:
-	lb302FilterKnobState *fs;
+protected:
+	lb302FilterKnobState* fs;
 
 	// Filter Decay
-	float vcf_c0;           // c0=e1 on retrigger; c0*=ed every sample; cutoff=e0+c0
-	float vcf_e0,           // e0 and e1 for interpolation
-	      vcf_e1;
-	float vcf_rescoeff;     // Resonance coefficient [0.30,9.54]
+	float vcf_c0; // c0=e1 on retrigger; c0*=ed every sample; cutoff=e0+c0
+	float vcf_e0, // e0 and e1 for interpolation
+		vcf_e1;
+	float vcf_rescoeff; // Resonance coefficient [0.30,9.54]
 };
 
-class lb302FilterIIR2 : public lb302Filter
-{
-	public:
+class lb302FilterIIR2 : public lb302Filter {
+public:
 	lb302FilterIIR2(lb302FilterKnobState* p_fs);
 	virtual ~lb302FilterIIR2();
 
@@ -88,87 +84,66 @@ class lb302FilterIIR2 : public lb302Filter
 	virtual void envRecalc();
 	virtual float process(const float& samp);
 
-	protected:
-	float vcf_d1,           //   d1 and d2 are added back into the sample with
-	      vcf_d2;           //   vcf_a and b as coefficients. IIR2 resonance
-	                        //   loop.
+protected:
+	float vcf_d1, //   d1 and d2 are added back into the sample with
+		vcf_d2;	  //   vcf_a and b as coefficients. IIR2 resonance
+				  //   loop.
 
-	                        // IIR2 Coefficients for mixing dry and delay.
-	float vcf_a,            //   Mixing coefficients for the final sound.
-	      vcf_b,            //
-	      vcf_c;
+	// IIR2 Coefficients for mixing dry and delay.
+	float vcf_a, //   Mixing coefficients for the final sound.
+		vcf_b,	 //
+		vcf_c;
 
-	DspEffectLibrary::Distortion * m_dist;
+	DspEffectLibrary::Distortion* m_dist;
 };
 
-
-class lb302Filter3Pole : public lb302Filter
-{
-	public:
+class lb302Filter3Pole : public lb302Filter {
+public:
 	lb302Filter3Pole(lb302FilterKnobState* p_fs);
 
-	//virtual void recalc();
+	// virtual void recalc();
 	virtual void envRecalc();
 	virtual void recalc();
 	virtual float process(const float& samp);
 
-	protected:
-	float kfcn,
-	      kp,
-	      kp1,
-	      kp1h,
-	      kres;
-	float ay1,
-	      ay2,
-	      aout,
-	      lastin,
-	      value;
+protected:
+	float kfcn, kp, kp1, kp1h, kres;
+	float ay1, ay2, aout, lastin, value;
 };
 
-
-
-class lb302Note
-{
+class lb302Note {
 public:
 	float vco_inc;
 	bool dead;
 };
 
-
-class lb302Synth : public Instrument
-{
+class lb302Synth : public Instrument {
 	Q_OBJECT
 public:
-	lb302Synth( InstrumentTrack * _instrument_track );
+	lb302Synth(InstrumentTrack* _instrument_track);
 	virtual ~lb302Synth();
 
-	virtual void play( sampleFrame * _working_buffer );
-	virtual void playNote( NotePlayHandle * _n,
-						sampleFrame * _working_buffer );
-	virtual void deleteNotePluginData( NotePlayHandle * _n );
+	virtual void play(sampleFrame* _working_buffer);
+	virtual void playNote(NotePlayHandle* _n, sampleFrame* _working_buffer);
+	virtual void deleteNotePluginData(NotePlayHandle* _n);
 
-
-	virtual void saveSettings( QDomDocument & _doc, QDomElement & _parent );
-	virtual void loadSettings( const QDomElement & _this );
+	virtual void saveSettings(QDomDocument& _doc, QDomElement& _parent);
+	virtual void loadSettings(const QDomElement& _this);
 
 	virtual QString nodeName() const;
 
-	virtual Flags flags() const
-	{
-		return IsSingleStreamed;
+	virtual Flags flags() const { return IsSingleStreamed; }
+
+	virtual f_cnt_t desiredReleaseFrames() const {
+		return 0; // 4048;
 	}
 
-	virtual f_cnt_t desiredReleaseFrames() const
-	{
-		return 0; //4048;
-	}
-
-	virtual PluginView * instantiateView( QWidget * _parent );
+	virtual PluginView* instantiateView(QWidget* _parent);
 
 private:
-	void processNote( NotePlayHandle * n );
+	void processNote(NotePlayHandle* n);
 
-	void initNote(lb302Note *Note);
+	void initNote(lb302Note* Note);
 	void initSlide();
 
 private:
@@ -188,23 +163,34 @@ private:
 	BoolModel deadToggle;
 	BoolModel db24Toggle;
 
-
 public slots:
 	void filterChanged();
 	void db24Toggled();
 
 private:
 	// Oscillator
-	float vco_inc,          // Sample increment for the frequency. Creates Sawtooth.
-	      vco_k,            // Raw oscillator sample [-0.5,0.5]
-	      vco_c;            // Raw oscillator sample [-0.5,0.5]
+	float vco_inc, // Sample increment for the frequency. Creates Sawtooth.
+		vco_k,	   // Raw oscillator sample [-0.5,0.5]
+		vco_c;	   // Raw oscillator sample [-0.5,0.5]
 
-	float vco_slide,        //* Current value of slide exponential curve. Nonzero=sliding
-	      vco_slideinc,     //* Slide base to use in next node. Nonzero=slide next note
-	      vco_slidebase;    //* The base vco_inc while sliding.
+	float vco_slide,   //* Current value of slide exponential curve. Nonzero=sliding
+		vco_slideinc,  //* Slide base to use in next node. Nonzero=slide next note
+		vco_slidebase; //* The base vco_inc while sliding.
 
-	enum  vco_shape_t { SAWTOOTH, SQUARE, TRIANGLE, MOOG, ROUND_SQUARE, SINE, EXPONENTIAL, WHITE_NOISE,
-							BL_SAWTOOTH, BL_SQUARE, BL_TRIANGLE, BL_MOOG };
+	enum vco_shape_t {
+		SAWTOOTH,
+		SQUARE,
+		TRIANGLE,
+		MOOG,
+		ROUND_SQUARE,
+		SINE,
+		EXPONENTIAL,
+		WHITE_NOISE,
+		BL_SAWTOOTH,
+		BL_SQUARE,
+		BL_TRIANGLE,
+		BL_MOOG
+	};
 	vco_shape_t vco_shape;
 
 	// Filters (just keep both loaded and switch)
@@ -217,27 +203,21 @@ private:
 	int release_frame;
 
 	// More States
-	int   vcf_envpos;       // Update counter. Updates when >= ENVINC
+	int vcf_envpos; // Update counter. Updates when >= ENVINC
 
-	float vca_attack,       // Amp attack
-	      vca_decay,        // Amp decay
-	      vca_a0,           // Initial amplifier coefficient
-	      vca_a;            // Amplifier coefficient.
+	float vca_attack, // Amp attack
+		vca_decay,	  // Amp decay
+		vca_a0,		  // Initial amplifier coefficient
+		vca_a;		  // Amplifier coefficient.
 
 	// Envelope State
-	enum VCA_Mode
-	{
-		attack = 0,
-		decay = 1,
-		idle = 2,
-		never_played = 3
-	};
+	enum VCA_Mode { attack = 0, decay = 1, idle = 2, never_played = 3 };
 	VCA_Mode vca_mode;
 
 	// My hacks
-	int   sample_cnt;
+	int sample_cnt;
 
-	int   last_offset;
+	int last_offset;
 
 	int catch_frame;
 	int catch_decay;
@@ -247,41 +227,37 @@ private:
 
 	void recalcFilter();
 
-	int process(sampleFrame *outbuf, const int size);
+	int process(sampleFrame* outbuf, const int size);
 
 	friend class lb302SynthView;
 
-	NotePlayHandle * m_playingNote;
+	NotePlayHandle* m_playingNote;
 	NotePlayHandleList m_notes;
 	QMutex m_notesMutex;
-} ;
+};
 
-
-class lb302SynthView : public InstrumentViewFixedSize
-{
+class lb302SynthView : public InstrumentViewFixedSize {
 	Q_OBJECT
 public:
-	lb302SynthView( Instrument * _instrument,
-	                QWidget * _parent );
+	lb302SynthView(Instrument* _instrument, QWidget* _parent);
 	virtual ~lb302SynthView();
 
 private:
 	virtual void modelChanged();
 
-	Knob * m_vcfCutKnob;
-	Knob * m_vcfResKnob;
-	Knob * m_vcfDecKnob;
-	Knob * m_vcfModKnob;
+	Knob* m_vcfCutKnob;
+	Knob* m_vcfResKnob;
+	Knob* m_vcfDecKnob;
+	Knob* m_vcfModKnob;
 
-	Knob * m_distKnob;
-	Knob * m_slideDecKnob;
-	automatableButtonGroup * m_waveBtnGrp;
+	Knob* m_distKnob;
+	Knob* m_slideDecKnob;
+	automatableButtonGroup* m_waveBtnGrp;
 
-	LedCheckBox * m_slideToggle;
+	LedCheckBox* m_slideToggle;
 	/*LedCheckBox * m_accentToggle;*/ // removed pending accent implementation
-	LedCheckBox * m_deadToggle;
-	LedCheckBox * m_db24Toggle;
-
-} ;
+	LedCheckBox* m_deadToggle;
+	LedCheckBox* m_db24Toggle;
+};
 
 #endif

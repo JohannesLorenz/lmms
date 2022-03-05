@@ -22,39 +22,24 @@
  *
  */
 
-#include <QDomElement>
-
 #include "InlineAutomation.h"
 
+#include <QDomElement>
 
-void InlineAutomation::saveSettings( QDomDocument & _doc,
-							QDomElement & _parent )
-{
-	if( hasAutomation() )
-	{
-		QDomElement ap = _doc.createElement(
-					AutomationClip::classNodeName() );
-		QDomElement v = _doc.createElement( nodeName() );
-		automationClip()->saveSettings( _doc, v );
-		ap.appendChild( v );
-		_parent.appendChild( ap );
+void InlineAutomation::saveSettings(QDomDocument& _doc, QDomElement& _parent) {
+	if (hasAutomation()) {
+		QDomElement ap = _doc.createElement(AutomationClip::classNodeName());
+		QDomElement v = _doc.createElement(nodeName());
+		automationClip()->saveSettings(_doc, v);
+		ap.appendChild(v);
+		_parent.appendChild(ap);
 	}
 }
 
-
-
-
-void InlineAutomation::loadSettings( const QDomElement & _this )
-{
-	QDomNode node = _this.namedItem( AutomationClip::classNodeName() );
-	if( node.isElement() )
-	{
-		node = node.namedItem( nodeName() );
-		if( node.isElement() )
-		{
-			automationClip()->loadSettings(
-							node.toElement() );
-		}
+void InlineAutomation::loadSettings(const QDomElement& _this) {
+	QDomNode node = _this.namedItem(AutomationClip::classNodeName());
+	if (node.isElement()) {
+		node = node.namedItem(nodeName());
+		if (node.isElement()) { automationClip()->loadSettings(node.toElement()); }
 	}
 }
-

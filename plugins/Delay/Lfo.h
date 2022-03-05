@@ -27,45 +27,24 @@
 
 #include "lmms_constants.h"
 
-
-class Lfo
-{
+class Lfo {
 public:
-	Lfo( int samplerate );
-	~Lfo()
-	{
-	}
+	Lfo(int samplerate);
+	~Lfo() {}
 
-
-
-
-	inline void setFrequency( double frequency )
-	{
-		if( frequency < 0 || frequency > ( m_samplerate / 2.0 ) || frequency == m_frequency )
-		{
-			return;
-		}
+	inline void setFrequency(double frequency) {
+		if (frequency < 0 || frequency > (m_samplerate / 2.0) || frequency == m_frequency) { return; }
 		m_frequency = frequency;
 		m_increment = m_frequency * m_twoPiOverSr;
 
-		if( m_phase >= F_2PI )
-		{
-			m_phase -= F_2PI;
-		}
+		if (m_phase >= F_2PI) { m_phase -= F_2PI; }
 	}
 
-
-
-
-	inline void setSampleRate ( int samplerate )
-	{
+	inline void setSampleRate(int samplerate) {
 		m_samplerate = samplerate;
 		m_twoPiOverSr = F_2PI / samplerate;
 		m_increment = m_frequency * m_twoPiOverSr;
 	}
-
-
-
 
 	float tick();
 

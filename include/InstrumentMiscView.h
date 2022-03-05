@@ -29,35 +29,32 @@
 
 #include <QWidget>
 
-
 class ComboBox;
 class GroupBox;
 class InstrumentTrack;
 class LedCheckBox;
 
-
-class InstrumentMiscView : public QWidget
-{
+class InstrumentMiscView : public QWidget {
 	Q_OBJECT
 public:
-	InstrumentMiscView(InstrumentTrack *it, QWidget *parent);
+	InstrumentMiscView(InstrumentTrack* it, QWidget* parent);
 
-	GroupBox *pitchGroupBox() {return m_pitchGroupBox;}
-	GroupBox *microtunerGroupBox() {return m_microtunerGroupBox;}
+	GroupBox* pitchGroupBox() { return m_pitchGroupBox; }
+	GroupBox* microtunerGroupBox() { return m_microtunerGroupBox; }
 
-	ComboBox *scaleCombo() {return m_scaleCombo;}
-	ComboBox *keymapCombo() {return m_keymapCombo;}
+	ComboBox* scaleCombo() { return m_scaleCombo; }
+	ComboBox* keymapCombo() { return m_keymapCombo; }
 
-	LedCheckBox *rangeImportCheckbox() {return m_rangeImportCheckbox;}
+	LedCheckBox* rangeImportCheckbox() { return m_rangeImportCheckbox; }
 
 private:
-	GroupBox *m_pitchGroupBox;
-	GroupBox *m_microtunerGroupBox;
+	GroupBox* m_pitchGroupBox;
+	GroupBox* m_microtunerGroupBox;
 
-	ComboBox *m_scaleCombo;
-	ComboBox *m_keymapCombo;
+	ComboBox* m_scaleCombo;
+	ComboBox* m_keymapCombo;
 
-	LedCheckBox *m_rangeImportCheckbox;
+	LedCheckBox* m_rangeImportCheckbox;
 };
 
 #endif

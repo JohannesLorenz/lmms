@@ -27,58 +27,39 @@
 
 #include "lmms_math.h"
 
-class QuadratureLfo
-{
+class QuadratureLfo {
 public:
-	QuadratureLfo( int sampleRate ) :
-		m_frequency(0),
-		m_phase(0),
-		m_offset(D_PI / 2)
-	{
+	QuadratureLfo(int sampleRate)
+		: m_frequency(0)
+		, m_phase(0)
+		, m_offset(D_PI / 2) {
 		setSampleRate(sampleRate);
 	}
 
 	~QuadratureLfo() = default;
 
-	inline void setFrequency( double frequency )
-	{
-		if( frequency < 0 || frequency > m_samplerate / 2.0 || frequency == m_frequency )
-		{
-			return;
-		}
+	inline void setFrequency(double frequency) {
+		if (frequency < 0 || frequency > m_samplerate / 2.0 || frequency == m_frequency) { return; }
 		m_frequency = frequency;
 		m_increment = m_frequency * m_twoPiOverSr;
 	}
 
+	inline void restart() { m_phase = 0; }
 
-	inline void restart()
-	{
-		m_phase = 0;
-	}
-
-
-	inline void setSampleRate ( int samplerate )
-	{
+	inline void setSampleRate(int samplerate) {
 		m_samplerate = samplerate;
 		m_twoPiOverSr = F_2PI / samplerate;
 		m_increment = m_frequency * m_twoPiOverSr;
 	}
 
+	inline void setOffset(double offsetVal) { m_offset = offsetVal; }
 
-	inline void setOffset( double offsetVal )
-	{
-		m_offset = offsetVal;
-	}
-
-
-	void tick( float *l, float *r )
-	{
-		*l = sinf( m_phase );
-		*r = sinf( m_phase + m_offset );
+	void tick(float* l, float* r) {
+		*l = sinf(m_phase);
+		*r = sinf(m_phase + m_offset);
 		m_phase += m_increment;
 
-		while (m_phase >= D_2PI)
-		{
+		while (m_phase >= D_2PI) {
 			m_phase -= D_2PI;
 		}
 	}
@@ -90,7 +71,6 @@ private:
 	double m_twoPiOverSr;
 	double m_offset;
 	int m_samplerate;
-
 };
 
 #endif // QUADRATURELFO_H

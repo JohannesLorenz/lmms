@@ -23,24 +23,22 @@
  *
  */
 
-
 #ifndef TRACK_RENAME_LINE_EDIT_H
 #define TRACK_RENAME_LINE_EDIT_H
 
 #include <QLineEdit>
 
-class TrackRenameLineEdit : public QLineEdit
-{
+class TrackRenameLineEdit : public QLineEdit {
 	Q_OBJECT
 public:
-	TrackRenameLineEdit( QWidget * parent );
+	TrackRenameLineEdit(QWidget* parent);
 	void show();
-	
+
 protected:
-	void keyPressEvent( QKeyEvent * ke ) override;
-	
+	void keyPressEvent(QKeyEvent* ke) override;
+
 private:
 	QString m_oldName;
-} ;
+};
 
 #endif

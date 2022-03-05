@@ -22,92 +22,45 @@
  *
  */
 
-#include <QDomElement>
-
 #include "SerializingObject.h"
 
+#include <QDomElement>
 
+SerializingObject::SerializingObject()
+	: m_hook(nullptr) {}
 
-SerializingObject::SerializingObject() :
-	m_hook( nullptr )
-{
+SerializingObject::~SerializingObject() {
+	if (m_hook) { m_hook->m_hookedIn = nullptr; }
 }
 
+QDomElement SerializingObject::saveState(QDomDocument& doc, QDomElement& parent) {
+	QDomElement element = doc.createElement(nodeName());
+	parent.appendChild(element);
 
+	saveSettings(doc, element);
 
-
-SerializingObject::~SerializingObject()
-{
-	if( m_hook )
-	{
-		m_hook->m_hookedIn = nullptr;
-	}
-}
-
-
-
-
-QDomElement SerializingObject::saveState( QDomDocument& doc, QDomElement& parent )
-{
-	QDomElement element = doc.createElement( nodeName() );
-	parent.appendChild( element );
-
-	saveSettings( doc, element );
-
-	if( hook() )
-	{
-		hook()->saveSettings( doc, element );
-	}
+	if (hook()) { hook()->saveSettings(doc, element); }
 
 	return element;
 }
 
+void SerializingObject::restoreState(const QDomElement& element) {
+	loadSettings(element);
 
-
-
-void SerializingObject::restoreState( const QDomElement& element )
-{
-	loadSettings( element );
-
-	if( hook() )
-	{
-		hook()->loadSettings( element );
-	}
+	if (hook()) { hook()->loadSettings(element); }
 }
 
-
-
-
-void SerializingObject::setHook( SerializingObjectHook* hook )
-{
-	if( m_hook )
-	{
-		m_hook->m_hookedIn = nullptr;
-	}
+void SerializingObject::setHook(SerializingObjectHook* hook) {
+	if (m_hook) { m_hook->m_hookedIn = nullptr; }
 
 	m_hook = hook;
 
-	if( m_hook )
-	{
-		m_hook->m_hookedIn = this;
-	}
+	if (m_hook) { m_hook->m_hookedIn = this; }
 }
 
-
-
-
-void SerializingObject::saveSettings( QDomDocument& doc, QDomElement& element )
-{
+void SerializingObject::saveSettings(QDomDocument& doc, QDomElement& element) {
 	Q_UNUSED(doc)
 	Q_UNUSED(element)
 }
 
-
-
-
-void SerializingObject::loadSettings( const QDomElement& element )
-{
-	Q_UNUSED(element)
-}
-
-
+void SerializingObject::loadSettings(const QDomElement& element) { Q_UNUSED(element) }

@@ -2,7 +2,7 @@
  * stereo_matrix.h - stereo-matrix-effect-plugin
  *
  * Copyright (c) 2008 Paul Giblock <drfaygo/at/gmail/dot/com>
- * 
+ *
  * This file is part of LMMS - https://lmms.io
  *
  * This program is free software; you can redistribute it and/or
@@ -22,34 +22,24 @@
  *
  */
 
-
 #ifndef _STEREO_MATRIX_H
 #define _STEREO_MATRIX_H
 
 #include "Effect.h"
 #include "stereomatrix_controls.h"
 
-class stereoMatrixEffect : public Effect
-{
+class stereoMatrixEffect : public Effect {
 public:
-	stereoMatrixEffect( Model * parent, 
-	                      const Descriptor::SubPluginFeatures::Key * _key );
+	stereoMatrixEffect(Model* parent, const Descriptor::SubPluginFeatures::Key* _key);
 	virtual ~stereoMatrixEffect();
-	virtual bool processAudioBuffer( sampleFrame * _buf,
-		                                          const fpp_t _frames );
+	virtual bool processAudioBuffer(sampleFrame* _buf, const fpp_t _frames);
 
-	virtual EffectControls * controls()
-	{
-		return( &m_smControls );
-	}
-
+	virtual EffectControls* controls() { return (&m_smControls); }
 
 private:
 	stereoMatrixControls m_smControls;
 
 	friend class stereoMatrixControls;
-} ;
-
-
+};
 
 #endif

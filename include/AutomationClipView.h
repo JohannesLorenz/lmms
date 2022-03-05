@@ -31,14 +31,11 @@
 
 class AutomationClip;
 
-
-class AutomationClipView : public ClipView
-{
+class AutomationClipView : public ClipView {
 	Q_OBJECT
 
-
 public:
-	AutomationClipView( AutomationClip * _clip, TrackView * _parent );
+	AutomationClipView(AutomationClip* _clip, TrackView* _parent);
 	virtual ~AutomationClipView();
 
 public slots:
@@ -46,33 +43,30 @@ public slots:
 	void openInAutomationEditor();
 	void update() override;
 
-
 protected slots:
 	void resetName();
 	void changeName();
-	void disconnectObject( QAction * _a );
+	void disconnectObject(QAction* _a);
 	void toggleRecording();
 	void flipY();
 	void flipX();
 
 protected:
-	void constructContextMenu( QMenu * ) override;
-	void mouseDoubleClickEvent(QMouseEvent * me ) override;
-	void paintEvent( QPaintEvent * pe ) override;
-	void dragEnterEvent( QDragEnterEvent * _dee ) override;
-	void dropEvent( QDropEvent * _de ) override;
-
+	void constructContextMenu(QMenu*) override;
+	void mouseDoubleClickEvent(QMouseEvent* me) override;
+	void paintEvent(QPaintEvent* pe) override;
+	void dragEnterEvent(QDragEnterEvent* _dee) override;
+	void dropEvent(QDropEvent* _de) override;
 
 private:
-	AutomationClip * m_clip;
+	AutomationClip* m_clip;
 	QPixmap m_paintPixmap;
-	
+
 	QStaticText m_staticTextName;
-	
-	static QPixmap * s_clip_rec;
 
-	void scaleTimemapToFit( float oldMin, float oldMax );
-} ;
+	static QPixmap* s_clip_rec;
 
+	void scaleTimemapToFit(float oldMin, float oldMax);
+};
 
 #endif

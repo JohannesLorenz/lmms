@@ -28,19 +28,13 @@
 
 #include "EffectControlDialog.h"
 
-
 class DualFilterControls;
 
-
-class DualFilterControlDialog : public EffectControlDialog
-{
+class DualFilterControlDialog : public EffectControlDialog {
 	Q_OBJECT
 public:
-	DualFilterControlDialog( DualFilterControls* controls );
-	virtual ~DualFilterControlDialog()
-	{
-	}
-
-} ;
+	DualFilterControlDialog(DualFilterControls* controls);
+	virtual ~DualFilterControlDialog() {}
+};
 
 #endif

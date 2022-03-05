@@ -25,50 +25,32 @@
 #ifndef SAMPLE_TRACK_H
 #define SAMPLE_TRACK_H
 
-
 #include "AudioPort.h"
 #include "Track.h"
 
-
-class SampleTrack : public Track
-{
+class SampleTrack : public Track {
 	Q_OBJECT
 public:
-	SampleTrack( TrackContainer* tc );
+	SampleTrack(TrackContainer* tc);
 	virtual ~SampleTrack();
 
-	virtual bool play( const TimePos & _start, const fpp_t _frames,
-						const f_cnt_t _frame_base, int _clip_num = -1 ) override;
-	TrackView * createView( TrackContainerView* tcv ) override;
-	Clip* createClip(const TimePos & pos) override;
+	virtual bool play(
+		const TimePos& _start, const fpp_t _frames, const f_cnt_t _frame_base, int _clip_num = -1) override;
+	TrackView* createView(TrackContainerView* tcv) override;
+	Clip* createClip(const TimePos& pos) override;
 
+	virtual void saveTrackSpecificSettings(QDomDocument& _doc, QDomElement& _parent) override;
+	void loadTrackSpecificSettings(const QDomElement& _this) override;
 
-	virtual void saveTrackSpecificSettings( QDomDocument & _doc,
-							QDomElement & _parent ) override;
-	void loadTrackSpecificSettings( const QDomElement & _this ) override;
+	inline IntModel* mixerChannelModel() { return &m_mixerChannelModel; }
 
-	inline IntModel * mixerChannelModel()
-	{
-		return &m_mixerChannelModel;
-	}
+	inline AudioPort* audioPort() { return &m_audioPort; }
 
-	inline AudioPort * audioPort()
-	{
-		return &m_audioPort;
-	}
+	QString nodeName() const override { return "sampletrack"; }
 
-	QString nodeName() const override
-	{
-		return "sampletrack";
-	}
+	bool isPlaying() { return m_isPlaying; }
 
-	bool isPlaying()
-	{
-		return m_isPlaying;
-	}
-
-	void setPlaying(bool playing)
-	{
+	void setPlaying(bool playing) {
 		if (m_isPlaying != playing) { emit playingChanged(); }
 		m_isPlaying = playing;
 	}
@@ -78,7 +60,7 @@ signals:
 
 public slots:
 	void updateClips();
-	void setPlayingClips( bool isPlaying );
+	void setPlayingClips(bool isPlaying);
 	void updateMixerChannel();
 
 private:
@@ -88,13 +70,8 @@ private:
 	AudioPort m_audioPort;
 	bool m_isPlaying;
 
-
-
 	friend class SampleTrackView;
 	friend class SampleTrackWindow;
-
-} ;
-
-
+};
 
 #endif

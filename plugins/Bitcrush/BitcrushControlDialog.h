@@ -23,7 +23,6 @@
  *
  */
 
-
 #ifndef BITCRUSH_CONTROL_DIALOG_H
 #define BITCRUSH_CONTROL_DIALOG_H
 
@@ -31,14 +30,11 @@
 
 class BitcrushControls;
 
-class BitcrushControlDialog : public EffectControlDialog
-{
+class BitcrushControlDialog : public EffectControlDialog {
 	Q_OBJECT
 public:
-	BitcrushControlDialog( BitcrushControls * controls );
-	virtual ~BitcrushControlDialog()
-	{
-	}
+	BitcrushControlDialog(BitcrushControls* controls);
+	virtual ~BitcrushControlDialog() {}
 };
 
 #endif

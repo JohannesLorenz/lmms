@@ -28,78 +28,54 @@
 
 #include <QReadWriteLock>
 
-#include "Track.h"
 #include "JournallingObject.h"
-
+#include "Track.h"
 
 class AutomationClip;
 class InstrumentTrack;
 class TrackContainerView;
 
-
-class LMMS_EXPORT TrackContainer : public Model, public JournallingObject
-{
+class LMMS_EXPORT TrackContainer : public Model, public JournallingObject {
 	Q_OBJECT
 public:
-	typedef QVector<Track *> TrackList;
-	enum TrackContainerTypes
-	{
-		PatternContainer,
-		SongContainer
-	} ;
+	typedef QVector<Track*> TrackList;
+	enum TrackContainerTypes { PatternContainer, SongContainer };
 
 	TrackContainer();
 	virtual ~TrackContainer();
 
-	void saveSettings( QDomDocument & _doc, QDomElement & _parent ) override;
+	void saveSettings(QDomDocument& _doc, QDomElement& _parent) override;
 
-	void loadSettings( const QDomElement & _this ) override;
+	void loadSettings(const QDomElement& _this) override;
 
+	virtual AutomationClip* tempoAutomationClip() { return nullptr; }
 
-	virtual AutomationClip * tempoAutomationClip()
-	{
-		return nullptr;
-	}
+	int countTracks(Track::TrackTypes _tt = Track::NumTrackTypes) const;
 
-	int countTracks( Track::TrackTypes _tt = Track::NumTrackTypes ) const;
-
-
-	void addTrack( Track * _track );
-	void removeTrack( Track * _track );
+	void addTrack(Track* _track);
+	void removeTrack(Track* _track);
 
 	virtual void updateAfterTrackAdd();
 
 	void clearAllTracks();
 
-	const TrackList & tracks() const
-	{
-		return m_tracks;
-	}
+	const TrackList& tracks() const { return m_tracks; }
 
 	bool isEmpty() const;
 
-	static const QString classNodeName()
-	{
-		return "trackcontainer";
-	}
+	static const QString classNodeName() { return "trackcontainer"; }
 
-	inline void setType( TrackContainerTypes newType )
-	{
-		m_TrackContainerType = newType;
-	}
+	inline void setType(TrackContainerTypes newType) { m_TrackContainerType = newType; }
 
-	inline TrackContainerTypes type() const
-	{
-		return m_TrackContainerType;
-	}
+	inline TrackContainerTypes type() const { return m_TrackContainerType; }
 
 	virtual AutomatedValueMap automatedValuesAt(TimePos time, int clipNum = -1) const;
 
 signals:
-	void trackAdded( Track * _track );
+	void trackAdded(Track* _track);
 
 protected:
-	static AutomatedValueMap automatedValuesFromTracks(const TrackList &tracks, TimePos timeStart, int clipNum = -1);
+	static AutomatedValueMap automatedValuesFromTracks(const TrackList& tracks, TimePos timeStart, int clipNum = -1);
 
 	mutable QReadWriteLock m_tracksMutex;
 
@@ -108,11 +84,8 @@ private:
 
 	TrackContainerTypes m_TrackContainerType;
 
-
 	friend class TrackContainerView;
 	friend class Track;
-
-} ;
-
+};
 
 #endif

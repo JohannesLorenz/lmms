@@ -25,17 +25,14 @@
 #ifndef LINKEDMODELGROUPVIEWS_H
 #define LINKEDMODELGROUPVIEWS_H
 
-
+#include <QWidget>
 #include <cstddef>
 #include <memory>
-#include <QWidget>
-
 
 /**
 	@file LinkedModelGroupViews.h
 	See Lv2ViewBase.h for example usage
 */
-
 
 /**
 	View for a representative processor
@@ -48,27 +45,24 @@
 		ModelView. The "view" in the name is just for consistency
 		with LinkedModelGroupsView.
 */
-class LinkedModelGroupView : public QWidget
-{
+class LinkedModelGroupView : public QWidget {
 public:
 	/**
 		@param colNum numbers of columns for the controls
 			(link LEDs not counted)
 	*/
-	LinkedModelGroupView(QWidget *parent, class LinkedModelGroup* model,
-		std::size_t colNum);
+	LinkedModelGroupView(QWidget* parent, class LinkedModelGroup* model, std::size_t colNum);
 	~LinkedModelGroupView();
 
 	//! Reconnect models if model changed
-	void modelChanged(class LinkedModelGroup *linkedModelGroup);
+	void modelChanged(class LinkedModelGroup* linkedModelGroup);
 
 protected:
 	//! Add a control to this widget
 	//! @warning This widget will own this control, do not free it
-	void addControl(class Control *ctrl, const std::string &id,
-					const std::string& display, bool removable);
+	void addControl(class Control* ctrl, const std::string& id, const std::string& display, bool removable);
 
-	void removeControl(const QString &key);
+	void removeControl(const QString& key);
 
 	void removeFocusFromSearchBar();
 
@@ -81,15 +75,13 @@ private:
 	std::map<std::string, std::unique_ptr<class Control>> m_widgets;
 };
 
-
 /**
 	Container class for one LinkedModelGroupView
 
 	@note It's intended this class does not inherit from ModelView.
 		Inheriting classes need to do that, see e.g. Lv2Instrument.h
 */
-class LinkedModelGroupsView
-{
+class LinkedModelGroupsView {
 protected:
 	~LinkedModelGroupsView() = default;
 
@@ -101,6 +93,5 @@ private:
 	//! which has the same value as "this"
 	virtual LinkedModelGroupView* getGroupView() = 0;
 };
-
 
 #endif // LINKEDMODELGROUPVIEWS_H

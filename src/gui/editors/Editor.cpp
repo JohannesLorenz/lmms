@@ -24,37 +24,30 @@
 
 #include "Editor.h"
 
-#include "Song.h"
+#include <QAction>
+#include <QCloseEvent>
+#include <QShortcut>
 
+#include "Song.h"
 #include "embed.h"
 
-#include <QAction>
-#include <QShortcut>
-#include <QCloseEvent>
-
-
-void Editor::setPauseIcon(bool displayPauseIcon)
-{
+void Editor::setPauseIcon(bool displayPauseIcon) {
 	// If we're playing, show a pause icon
-	if (displayPauseIcon)
-		m_playAction->setIcon(embed::getIconPixmap("pause"));
+	if (displayPauseIcon) m_playAction->setIcon(embed::getIconPixmap("pause"));
 	else
 		m_playAction->setIcon(embed::getIconPixmap("play"));
 }
 
-DropToolBar * Editor::addDropToolBarToTop(QString const & windowTitle)
-{
+DropToolBar* Editor::addDropToolBarToTop(QString const& windowTitle) {
 	return addDropToolBar(Qt::TopToolBarArea, windowTitle);
 }
 
-DropToolBar * Editor::addDropToolBar(Qt::ToolBarArea whereToAdd, QString const & windowTitle)
-{
+DropToolBar* Editor::addDropToolBar(Qt::ToolBarArea whereToAdd, QString const& windowTitle) {
 	return addDropToolBar(this, whereToAdd, windowTitle);
 }
 
-DropToolBar * Editor::addDropToolBar(QWidget * parent, Qt::ToolBarArea whereToAdd, QString const & windowTitle)
-{
-	DropToolBar *toolBar = new DropToolBar(parent);
+DropToolBar* Editor::addDropToolBar(QWidget* parent, Qt::ToolBarArea whereToAdd, QString const& windowTitle) {
+	DropToolBar* toolBar = new DropToolBar(parent);
 	addToolBar(whereToAdd, toolBar);
 	toolBar->setMovable(false);
 	toolBar->setFloatable(false);
@@ -64,32 +57,23 @@ DropToolBar * Editor::addDropToolBar(QWidget * parent, Qt::ToolBarArea whereToAd
 	return toolBar;
 }
 
-void Editor::togglePlayStop()
-{
-	if (Engine::getSong()->isPlaying())
-		stop();
+void Editor::togglePlayStop() {
+	if (Engine::getSong()->isPlaying()) stop();
 	else
 		play();
 }
 
-void Editor::togglePause()
-{
-	Engine::getSong()->togglePause();
-}
+void Editor::togglePause() { Engine::getSong()->togglePause(); }
 
-void Editor::toggleMaximize()
-{
-	isMaximized() ? showNormal() : showMaximized();
-}
+void Editor::toggleMaximize() { isMaximized() ? showNormal() : showMaximized(); }
 
-Editor::Editor(bool record, bool stepRecord) :
-	m_toolBar(new DropToolBar(this)),
-	m_playAction(nullptr),
-	m_recordAction(nullptr),
-	m_recordAccompanyAction(nullptr),
-	m_toggleStepRecordingAction(nullptr),
-	m_stopAction(nullptr)
-{
+Editor::Editor(bool record, bool stepRecord)
+	: m_toolBar(new DropToolBar(this))
+	, m_playAction(nullptr)
+	, m_recordAction(nullptr)
+	, m_recordAccompanyAction(nullptr)
+	, m_toggleStepRecordingAction(nullptr)
+	, m_stopAction(nullptr) {
 	m_toolBar = addDropToolBarToTop(tr("Transport controls"));
 
 	auto addButton = [this](QAction* action, QString objectName) {
@@ -103,7 +87,8 @@ Editor::Editor(bool record, bool stepRecord) :
 
 	m_recordAction = new QAction(embed::getIconPixmap("record"), tr("Record"), this);
 	m_recordAccompanyAction = new QAction(embed::getIconPixmap("record_accompany"), tr("Record while playing"), this);
-	m_toggleStepRecordingAction = new QAction(embed::getIconPixmap("record_step_off"), tr("Toggle Step Recording"), this);
+	m_toggleStepRecordingAction
+		= new QAction(embed::getIconPixmap("record_step_off"), tr("Toggle Step Recording"), this);
 
 	// Set up connections
 	connect(m_playAction, SIGNAL(triggered()), this, SLOT(play()));
@@ -117,55 +102,32 @@ Editor::Editor(bool record, bool stepRecord) :
 
 	// Add actions to toolbar
 	addButton(m_playAction, "playButton");
-	if (record)
-	{
+	if (record) {
 		addButton(m_recordAction, "recordButton");
 		addButton(m_recordAccompanyAction, "recordAccompanyButton");
 	}
-	if(stepRecord)
-	{
-		addButton(m_toggleStepRecordingAction, "stepRecordButton");
-	}
+	if (stepRecord) { addButton(m_toggleStepRecordingAction, "stepRecordButton"); }
 	addButton(m_stopAction, "stopButton");
 }
 
-Editor::~Editor()
-{
+Editor::~Editor() {}
 
-}
+QAction* Editor::playAction() const { return m_playAction; }
 
-QAction *Editor::playAction() const
-{
-	return m_playAction;
-}
-
-void Editor::closeEvent( QCloseEvent * _ce )
-{
-	if( parentWidget() )
-	{
+void Editor::closeEvent(QCloseEvent* _ce) {
+	if (parentWidget()) {
 		parentWidget()->hide();
-	}
-	else
-	{
+	} else {
 		hide();
 	}
 	_ce->ignore();
- }
+}
 
-DropToolBar::DropToolBar(QWidget* parent) : QToolBar(parent)
-{
+DropToolBar::DropToolBar(QWidget* parent)
+	: QToolBar(parent) {
 	setAcceptDrops(true);
 }
 
-void DropToolBar::dragEnterEvent(QDragEnterEvent* event)
-{
-	dragEntered(event);
-}
+void DropToolBar::dragEnterEvent(QDragEnterEvent* event) { dragEntered(event); }
 
-void DropToolBar::dropEvent(QDropEvent* event)
-{
-	dropped(event);
-}
-
-
-
+void DropToolBar::dropEvent(QDropEvent* event) { dropped(event); }

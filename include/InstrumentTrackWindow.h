@@ -30,7 +30,6 @@
 #include "ModelView.h"
 #include "SerializingObject.h"
 
-
 class EffectRackView;
 class MixerLineLcdSpinBox;
 class InstrumentFunctionArpeggioView;
@@ -51,65 +50,43 @@ class QLineEdit;
 class QWidget;
 class TabWidget;
 
-
-class InstrumentTrackWindow : public QWidget, public ModelView,
-								public SerializingObjectHook
-{
+class InstrumentTrackWindow : public QWidget, public ModelView, public SerializingObjectHook {
 	Q_OBJECT
 public:
-	InstrumentTrackWindow( InstrumentTrackView * _tv );
+	InstrumentTrackWindow(InstrumentTrackView* _tv);
 	virtual ~InstrumentTrackWindow();
 
 	// parent for all internal tab-widgets
-	TabWidget * tabWidgetParent()
-	{
-		return m_tabWidget;
-	}
+	TabWidget* tabWidgetParent() { return m_tabWidget; }
 
-	InstrumentTrack * model()
-	{
-		return castModel<InstrumentTrack>();
-	}
+	InstrumentTrack* model() { return castModel<InstrumentTrack>(); }
 
-	const InstrumentTrack * model() const
-	{
-		return castModel<InstrumentTrack>();
-	}
+	const InstrumentTrack* model() const { return castModel<InstrumentTrack>(); }
 
-	void setInstrumentTrackView( InstrumentTrackView * _tv );
+	void setInstrumentTrackView(InstrumentTrackView* _tv);
 
-	InstrumentTrackView *instrumentTrackView()
-	{
-		return m_itv;
-	}
+	InstrumentTrackView* instrumentTrackView() { return m_itv; }
 
+	PianoView* pianoView() { return m_pianoView; }
 
-	PianoView * pianoView()
-	{
-		return m_pianoView;
-	}
+	static void dragEnterEventGeneric(QDragEnterEvent* _dee);
 
-	static void dragEnterEventGeneric( QDragEnterEvent * _dee );
-
-	void dragEnterEvent( QDragEnterEvent * _dee ) override;
-	void dropEvent( QDropEvent * _de ) override;
-
+	void dragEnterEvent(QDragEnterEvent* _dee) override;
+	void dropEvent(QDropEvent* _de) override;
 
 public slots:
-	void textChanged( const QString & _new_name );
-	void toggleVisibility( bool _on );
+	void textChanged(const QString& _new_name);
+	void toggleVisibility(bool _on);
 	void updateName();
 	void updateInstrumentView();
 
-
 protected:
 	// capture close-events for toggling instrument-track-button
-	void closeEvent( QCloseEvent * _ce ) override;
-	void focusInEvent( QFocusEvent * _fe ) override;
+	void closeEvent(QCloseEvent* _ce) override;
+	void focusInEvent(QFocusEvent* _fe) override;
 
-	void saveSettings( QDomDocument & _doc, QDomElement & _this ) override;
-	void loadSettings( const QDomElement & _this ) override;
-
+	void saveSettings(QDomDocument& _doc, QDomElement& _this) override;
+	void loadSettings(const QDomElement& _this) override;
 
 protected slots:
 	void saveSettingsBtnClicked();
@@ -121,41 +98,37 @@ private:
 	void viewInstrumentInDirection(int d);
 	//! adjust size of any child widget of the main tab
 	//! required to keep the old look when using a variable sized tab widget
-	void adjustTabSize(QWidget *w);
+	void adjustTabSize(QWidget* w);
 
-	InstrumentTrack * m_track;
-	InstrumentTrackView * m_itv;
+	InstrumentTrack* m_track;
+	InstrumentTrackView* m_itv;
 
 	// widgets on the top of an instrument-track-window
-	QLineEdit * m_nameLineEdit;
-	LeftRightNav * m_leftRightNav;
-	Knob * m_volumeKnob;
-	Knob * m_panningKnob;
-	Knob * m_pitchKnob;
-	QLabel * m_pitchLabel;
+	QLineEdit* m_nameLineEdit;
+	LeftRightNav* m_leftRightNav;
+	Knob* m_volumeKnob;
+	Knob* m_panningKnob;
+	Knob* m_pitchKnob;
+	QLabel* m_pitchLabel;
 	LcdSpinBox* m_pitchRangeSpinBox;
-	QLabel * m_pitchRangeLabel;
-	MixerLineLcdSpinBox * m_mixerChannelNumber;
-
-
+	QLabel* m_pitchRangeLabel;
+	MixerLineLcdSpinBox* m_mixerChannelNumber;
 
 	// tab-widget with all children
-	TabWidget * m_tabWidget;
-	PluginView * m_instrumentView;
-	InstrumentSoundShapingView * m_ssView;
+	TabWidget* m_tabWidget;
+	PluginView* m_instrumentView;
+	InstrumentSoundShapingView* m_ssView;
 	InstrumentFunctionNoteStackingView* m_noteStackingView;
 	InstrumentFunctionArpeggioView* m_arpeggioView;
-	InstrumentMidiIOView * m_midiView;
-	EffectRackView * m_effectView;
-	InstrumentMiscView *m_miscView;
-
+	InstrumentMidiIOView* m_midiView;
+	EffectRackView* m_effectView;
+	InstrumentMiscView* m_miscView;
 
 	// test-piano at the bottom of every instrument-settings-window
-	PianoView * m_pianoView;
+	PianoView* m_pianoView;
 
 	friend class InstrumentView;
 	friend class InstrumentTrackView;
-} ;
+};
 
 #endif
-

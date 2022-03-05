@@ -3,7 +3,7 @@
  * controller's settings
  *
  * Copyright (c) 2008-2009 Paul Giblock <drfaygo/at/gmail.com>
- * 
+ *
  * This file is part of LMMS - https://lmms.io
  *
  * This program is free software; you can redistribute it and/or
@@ -23,41 +23,30 @@
  *
  */
 
-
+#include <QIcon>
 #include <QLabel>
 #include <QPainter>
-#include <QIcon>
-
-#include "embed.h"
-#include "ToolTip.h"
 
 #include "PeakController.h"
+#include "ToolTip.h"
+#include "embed.h"
 
+PeakControllerDialog::PeakControllerDialog(Controller* _model, QWidget* _parent)
+	: ControllerDialog(_model, _parent) {
+	setWindowTitle(tr("PEAK"));
+	setWindowIcon(embed::getIconPixmap("controller"));
+	setFixedSize(256, 64);
 
-PeakControllerDialog::PeakControllerDialog( Controller * _model, QWidget * _parent ) :
-	ControllerDialog( _model, _parent )
-{
-	setWindowTitle( tr( "PEAK" ) );
-	setWindowIcon( embed::getIconPixmap( "controller" ) );
-	setFixedSize( 256, 64 );
-	
-	ToolTip::add( this, tr( "LFO Controller" ) );
+	ToolTip::add(this, tr("LFO Controller"));
 
-	QLabel * l = new QLabel( this );
-	l->setText( "Use FX's controls" );
+	QLabel* l = new QLabel(this);
+	l->setText("Use FX's controls");
 	l->move(10, 10);
 
-	setModel( _model );
+	setModel(_model);
 }
 
-
-
-
-PeakControllerDialog::~PeakControllerDialog()
-{
-}
-
-
+PeakControllerDialog::~PeakControllerDialog() {}
 
 /*
 void effectView::closeEffects()
@@ -67,24 +56,8 @@ void effectView::closeEffects()
 }
 */
 
+void PeakControllerDialog::contextMenuEvent(QContextMenuEvent*) {}
 
-void PeakControllerDialog::contextMenuEvent( QContextMenuEvent * )
-{
-}
+void PeakControllerDialog::paintEvent(QPaintEvent*) { QPainter p(this); }
 
-
-
-
-void PeakControllerDialog::paintEvent( QPaintEvent * )
-{
-	QPainter p( this );
-}
-
-
-
-void PeakControllerDialog::modelChanged()
-{
-	m_peakController = castModel<PeakController>();
-}
-
-
+void PeakControllerDialog::modelChanged() { m_peakController = castModel<PeakController>(); }

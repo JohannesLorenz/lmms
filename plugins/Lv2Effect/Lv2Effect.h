@@ -28,8 +28,7 @@
 #include "Effect.h"
 #include "Lv2FxControls.h"
 
-class Lv2Effect : public Effect
-{
+class Lv2Effect : public Effect {
 	Q_OBJECT
 
 public:
@@ -40,7 +39,7 @@ public:
 	//! Must be checked after ctor or reload
 	bool isValid() const { return m_controls.isValid(); }
 
-	bool processAudioBuffer( sampleFrame* buf, const fpp_t frames ) override;
+	bool processAudioBuffer(sampleFrame* buf, const fpp_t frames) override;
 	EffectControls* controls() override { return &m_controls; }
 
 	Lv2FxControls* lv2Controls() { return &m_controls; }

@@ -22,46 +22,40 @@
  *
  */
 
-#include <QtGlobal>
+#include "AudioFileFlac.h"
 
+#include <QtGlobal>
 #include <cmath>
 #include <memory>
 
-#include "AudioFileFlac.h"
-#include "endian_handling.h"
 #include "AudioEngine.h"
+#include "endian_handling.h"
 
-AudioFileFlac::AudioFileFlac(OutputSettings const& outputSettings, ch_cnt_t const channels, bool& successful, QString const& file, AudioEngine* audioEngine):
-	AudioFileDevice(outputSettings,channels,file,audioEngine),
-	m_sf(nullptr)
-{
+AudioFileFlac::AudioFileFlac(OutputSettings const& outputSettings, ch_cnt_t const channels, bool& successful,
+	QString const& file, AudioEngine* audioEngine)
+	: AudioFileDevice(outputSettings, channels, file, audioEngine)
+	, m_sf(nullptr) {
 	successful = outputFileOpened() && startEncoding();
 }
 
-AudioFileFlac::~AudioFileFlac()
-{
-	finishEncoding();
-}
+AudioFileFlac::~AudioFileFlac() { finishEncoding(); }
 
-bool AudioFileFlac::startEncoding()
-{
-	m_sfinfo.samplerate=sampleRate();
-	m_sfinfo.channels=channels();
+bool AudioFileFlac::startEncoding() {
+	m_sfinfo.samplerate = sampleRate();
+	m_sfinfo.channels = channels();
 	m_sfinfo.frames = audioEngine()->framesPerPeriod();
-	m_sfinfo.sections=1;
-	m_sfinfo.seekable=0;
+	m_sfinfo.sections = 1;
+	m_sfinfo.seekable = 0;
 
 	m_sfinfo.format = SF_FORMAT_FLAC;
 
-	switch (getOutputSettings().getBitDepth())
-	{
-		case OutputSettings::Depth_24Bit:
-		case OutputSettings::Depth_32Bit:
-			// FLAC does not support 32bit sampling, so take it as 24.
-			m_sfinfo.format |= SF_FORMAT_PCM_24;
-			break;
-		default:
-			m_sfinfo.format |= SF_FORMAT_PCM_16;
+	switch (getOutputSettings().getBitDepth()) {
+	case OutputSettings::Depth_24Bit:
+	case OutputSettings::Depth_32Bit:
+		// FLAC does not support 32bit sampling, so take it as 24.
+		m_sfinfo.format |= SF_FORMAT_PCM_24;
+		break;
+	default: m_sfinfo.format |= SF_FORMAT_PCM_16;
 	}
 
 #ifdef LMMS_HAVE_SF_COMPLEVEL
@@ -75,9 +69,7 @@ bool AudioFileFlac::startEncoding()
 #else
 		outputFile().toUtf8().constData(),
 #endif
-		SFM_WRITE,
-		&m_sfinfo
-	);
+		SFM_WRITE, &m_sfinfo);
 
 	sf_command(m_sf, SFC_SET_CLIPPING, nullptr, SF_TRUE);
 
@@ -86,40 +78,32 @@ bool AudioFileFlac::startEncoding()
 	return true;
 }
 
-void AudioFileFlac::writeBuffer(surroundSampleFrame const* _ab, fpp_t const frames, float master_gain)
-{
+void AudioFileFlac::writeBuffer(surroundSampleFrame const* _ab, fpp_t const frames, float master_gain) {
 	OutputSettings::BitDepth depth = getOutputSettings().getBitDepth();
-	float clipvalue = std::nextafterf( -1.0f, 0.0f );
+	float clipvalue = std::nextafterf(-1.0f, 0.0f);
 
 	if (depth == OutputSettings::Depth_24Bit || depth == OutputSettings::Depth_32Bit) // Float encoding
 	{
-		std::unique_ptr<sample_t[]> buf{ new sample_t[frames*channels()] };
-		for(fpp_t frame = 0; frame < frames; ++frame)
-		{
-			for(ch_cnt_t channel=0; channel<channels(); ++channel)
-			{
+		std::unique_ptr<sample_t[]> buf{new sample_t[frames * channels()]};
+		for (fpp_t frame = 0; frame < frames; ++frame) {
+			for (ch_cnt_t channel = 0; channel < channels(); ++channel) {
 				// Clip the negative side to just above -1.0 in order to prevent it from changing sign
 				// Upstream issue: https://github.com/erikd/libsndfile/issues/309
 				// When this commit is reverted libsndfile-1.0.29 must be made a requirement for FLAC
-				buf[frame*channels() + channel] = qMax( clipvalue, _ab[frame][channel] * master_gain );
+				buf[frame * channels() + channel] = qMax(clipvalue, _ab[frame][channel] * master_gain);
 			}
 		}
-		sf_writef_float(m_sf,static_cast<float*>(buf.get()),frames);
-	}
-	else // integer PCM encoding
+		sf_writef_float(m_sf, static_cast<float*>(buf.get()), frames);
+	} else // integer PCM encoding
 	{
-		std::unique_ptr<int_sample_t[]> buf{ new int_sample_t[frames*channels()] };
+		std::unique_ptr<int_sample_t[]> buf{new int_sample_t[frames * channels()]};
 		convertToS16(_ab, frames, master_gain, buf.get(), !isLittleEndian());
 		sf_writef_short(m_sf, static_cast<short*>(buf.get()), frames);
 	}
-
 }
 
-
-void AudioFileFlac::finishEncoding()
-{
-	if (m_sf)
-	{
+void AudioFileFlac::finishEncoding() {
+	if (m_sf) {
 		sf_write_sync(m_sf);
 		sf_close(m_sf);
 	}

@@ -38,49 +38,37 @@ class QVBoxLayout;
 class EffectView;
 class GroupBox;
 
-
-class EffectRackView : public QWidget, public ModelView
-{
+class EffectRackView : public QWidget, public ModelView {
 	Q_OBJECT
 public:
-	EffectRackView( EffectChain* model, QWidget* parent = nullptr );
+	EffectRackView(EffectChain* model, QWidget* parent = nullptr);
 	virtual ~EffectRackView();
 
 	static constexpr int DEFAULT_WIDTH = 245;
 
 public slots:
 	void clearViews();
-	void moveUp( EffectView* view );
-	void moveDown( EffectView* view );
-	void deletePlugin( EffectView* view );
-
+	void moveUp(EffectView* view);
+	void moveDown(EffectView* view);
+	void deletePlugin(EffectView* view);
 
 private slots:
 	virtual void update();
 	void addEffect();
 
-
 private:
 	void modelChanged() override;
 
-	inline EffectChain* fxChain()
-	{
-		return castModel<EffectChain>();
-	}
+	inline EffectChain* fxChain() { return castModel<EffectChain>(); }
 
-	inline const EffectChain* fxChain() const
-	{
-		return castModel<EffectChain>();
-	}
+	inline const EffectChain* fxChain() const { return castModel<EffectChain>(); }
 
-
-	QVector<EffectView *> m_effectViews;
+	QVector<EffectView*> m_effectViews;
 
 	GroupBox* m_effectsGroupBox;
 	QScrollArea* m_scrollArea;
 
 	int m_lastY;
-
-} ;
+};
 
 #endif

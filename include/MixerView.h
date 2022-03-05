@@ -2,7 +2,7 @@
  * MixerView.h - effect-mixer-view for LMMS
  *
  * Copyright (c) 2008-2014 Tobias Doerffel <tobydox/at/users.sourceforge.net>
- * 
+ *
  * This file is part of LMMS - https://lmms.io
  *
  * This program is free software; you can redistribute it and/or
@@ -25,66 +25,54 @@
 #ifndef MIXER_VIEW_H
 #define MIXER_VIEW_H
 
-#include <QWidget>
 #include <QHBoxLayout>
-#include <QStackedLayout>
 #include <QScrollArea>
+#include <QStackedLayout>
+#include <QWidget>
 
-#include "ModelView.h"
+#include "EffectRackView.h"
 #include "Engine.h"
 #include "Fader.h"
+#include "ModelView.h"
 #include "PixmapButton.h"
 #include "ToolTip.h"
 #include "embed.h"
-#include "EffectRackView.h"
 
 class QButtonGroup;
 class MixerLine;
 
-class LMMS_EXPORT MixerView : public QWidget, public ModelView,
-					public SerializingObjectHook
-{
+class LMMS_EXPORT MixerView : public QWidget, public ModelView, public SerializingObjectHook {
 	Q_OBJECT
 public:
-	class MixerChannelView
-	{
+	class MixerChannelView {
 	public:
-		MixerChannelView(QWidget * _parent, MixerView * _mv, int _chIndex );
+		MixerChannelView(QWidget* _parent, MixerView* _mv, int _chIndex);
 
-		void setChannelIndex( int index );
+		void setChannelIndex(int index);
 
-		MixerLine * m_mixerLine;
-		PixmapButton * m_muteBtn;
-		PixmapButton * m_soloBtn;
-		Fader * m_fader;
-		EffectRackView * m_rackView;
+		MixerLine* m_mixerLine;
+		PixmapButton* m_muteBtn;
+		PixmapButton* m_soloBtn;
+		Fader* m_fader;
+		EffectRackView* m_rackView;
 	};
-
 
 	MixerView();
 	virtual ~MixerView();
 
-	void keyPressEvent(QKeyEvent * e) override;
+	void keyPressEvent(QKeyEvent* e) override;
 
-	void saveSettings( QDomDocument & _doc, QDomElement & _this ) override;
-	void loadSettings( const QDomElement & _this ) override;
+	void saveSettings(QDomDocument& _doc, QDomElement& _this) override;
+	void loadSettings(const QDomElement& _this) override;
 
-	inline MixerLine * currentMixerLine()
-	{
-		return m_currentMixerLine;
-	}
+	inline MixerLine* currentMixerLine() { return m_currentMixerLine; }
 
-	inline MixerChannelView * channelView(int index)
-	{
-		return m_mixerChannelViews[index];
-	}
+	inline MixerChannelView* channelView(int index) { return m_mixerChannelViews[index]; }
 
-
-	void setCurrentMixerLine( MixerLine * _line );
-	void setCurrentMixerLine( int _line );
+	void setCurrentMixerLine(MixerLine* _line);
+	void setCurrentMixerLine(int _line);
 
 	void clear();
-
 
 	// display the send button and knob correctly
 	void updateMixerLine(int index);
@@ -110,26 +98,26 @@ public slots:
 	int addNewChannel();
 
 protected:
-	void closeEvent( QCloseEvent * _ce ) override;
-	
+	void closeEvent(QCloseEvent* _ce) override;
+
 private slots:
 	void updateFaders();
 	void toggledSolo();
 
 private:
-	QVector<MixerChannelView *> m_mixerChannelViews;
+	QVector<MixerChannelView*> m_mixerChannelViews;
 
-	MixerLine * m_currentMixerLine;
+	MixerLine* m_currentMixerLine;
 
-	QScrollArea * channelArea;
-	QHBoxLayout * chLayout;
-	QWidget * m_channelAreaWidget;
-	QStackedLayout * m_racksLayout;
-	QWidget * m_racksWidget;
+	QScrollArea* channelArea;
+	QHBoxLayout* chLayout;
+	QWidget* m_channelAreaWidget;
+	QStackedLayout* m_racksLayout;
+	QWidget* m_racksWidget;
 
 	void updateMaxChannelSelector();
-	
+
 	friend class MixerChannelView;
-} ;
+};
 
 #endif

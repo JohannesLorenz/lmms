@@ -21,53 +21,37 @@
  * Boston, MA 02110-1301 USA.
  *
  */
- 
+
 #include "PlayHandle.h"
+
+#include <QThread>
+
 #include "AudioEngine.h"
 #include "BufferManager.h"
 #include "Engine.h"
 
-#include <QThread>
+PlayHandle::PlayHandle(const Type type, f_cnt_t offset)
+	: m_type(type)
+	, m_offset(offset)
+	, m_affinity(QThread::currentThread())
+	, m_playHandleBuffer(BufferManager::acquire())
+	, m_bufferReleased(true)
+	, m_usesBuffer(true) {}
 
+PlayHandle::~PlayHandle() { BufferManager::release(m_playHandleBuffer); }
 
-PlayHandle::PlayHandle(const Type type, f_cnt_t offset) :
-		m_type(type),
-		m_offset(offset),
-		m_affinity(QThread::currentThread()),
-		m_playHandleBuffer(BufferManager::acquire()),
-		m_bufferReleased(true),
-		m_usesBuffer(true)
-{
-}
-
-
-PlayHandle::~PlayHandle()
-{
-	BufferManager::release(m_playHandleBuffer);
-}
-
-
-void PlayHandle::doProcessing()
-{
-	if( m_usesBuffer )
-	{
+void PlayHandle::doProcessing() {
+	if (m_usesBuffer) {
 		m_bufferReleased = false;
 		BufferManager::clear(m_playHandleBuffer, Engine::audioEngine()->framesPerPeriod());
-		play( buffer() );
-	}
-	else
-	{
-		play( nullptr );
+		play(buffer());
+	} else {
+		play(nullptr);
 	}
 }
 
+void PlayHandle::releaseBuffer() { m_bufferReleased = true; }
 
-void PlayHandle::releaseBuffer()
-{
-	m_bufferReleased = true;
-}
-
-sampleFrame* PlayHandle::buffer()
-{
+sampleFrame* PlayHandle::buffer() {
 	return m_bufferReleased ? nullptr : reinterpret_cast<sampleFrame*>(m_playHandleBuffer);
 };

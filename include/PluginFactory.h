@@ -25,30 +25,27 @@
 #ifndef PLUGINFACTORY_H
 #define PLUGINFACTORY_H
 
-#include <memory>
-#include <string>
-
 #include <QFileInfo>
 #include <QList>
 #include <QString>
 #include <QVector>
+#include <memory>
+#include <string>
 
-#include "lmms_export.h"
 #include "Plugin.h"
+#include "lmms_export.h"
 
 class QLibrary;
 
-class LMMS_EXPORT PluginFactory
-{
+class LMMS_EXPORT PluginFactory {
 public:
-	struct PluginInfo
-	{
+	struct PluginInfo {
 		const QString name() const;
 		QFileInfo file;
 		std::shared_ptr<QLibrary> library = nullptr;
 		Plugin::Descriptor* descriptor = nullptr;
 
-		bool isNull() const {return ! library;}
+		bool isNull() const { return !library; }
 	};
 	typedef QList<PluginInfo> PluginInfoList;
 	typedef QMultiMap<Plugin::PluginTypes, Plugin::Descriptor*> DescriptorMap;
@@ -66,8 +63,7 @@ public:
 	const Plugin::DescriptorList descriptors() const;
 	const Plugin::DescriptorList descriptors(Plugin::PluginTypes type) const;
 
-	struct PluginInfoAndKey
-	{
+	struct PluginInfoAndKey {
 		PluginInfo info;
 		Plugin::Descriptor::SubPluginFeatures::Key key;
 		bool isNull() const { return info.isNull(); }
@@ -102,7 +98,7 @@ private:
 	static std::unique_ptr<PluginFactory> s_instance;
 };
 
-//Short-hand function
+// Short-hand function
 LMMS_EXPORT PluginFactory* getPluginFactory();
 
 #endif // PLUGINFACTORY_H

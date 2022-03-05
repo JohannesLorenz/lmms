@@ -26,7 +26,6 @@
  *
  */
 
-
 #ifndef CONTROLLER_CONNECTION_H
 #define CONTROLLER_CONNECTION_H
 
@@ -39,74 +38,50 @@
 
 class ControllerConnection;
 
-typedef QVector<ControllerConnection *> ControllerConnectionVector;
+typedef QVector<ControllerConnection*> ControllerConnectionVector;
 
-
-class LMMS_EXPORT ControllerConnection : public QObject, public JournallingObject
-{
+class LMMS_EXPORT ControllerConnection : public QObject, public JournallingObject {
 	Q_OBJECT
 public:
-
-	ControllerConnection(Controller * _controller);
-	ControllerConnection( int _controllerId );
+	ControllerConnection(Controller* _controller);
+	ControllerConnection(int _controllerId);
 
 	virtual ~ControllerConnection();
 
-	inline Controller * getController()
-	{
-		return m_controller;
-	}
+	inline Controller* getController() { return m_controller; }
 
-	void setController( Controller * _controller );
+	void setController(Controller* _controller);
 
-	inline void setController( int _controllerId );
+	inline void setController(int _controllerId);
 
-	float currentValue( int _offset )
-	{
-		return m_controller->currentValue( _offset );
-	}
-	
-	ValueBuffer * valueBuffer()
-	{
-		return m_controller->valueBuffer();
-	}
+	float currentValue(int _offset) { return m_controller->currentValue(_offset); }
 
-	inline void setTargetName( const QString & _name );
+	ValueBuffer* valueBuffer() { return m_controller->valueBuffer(); }
 
-	inline QString targetName() const
-	{
-		return m_targetName;
-	}
+	inline void setTargetName(const QString& _name);
 
-	inline bool isFinalized()
-	{
-		return m_controllerId < 0;
-	}
+	inline QString targetName() const { return m_targetName; }
+
+	inline bool isFinalized() { return m_controllerId < 0; }
 
 	static void finalizeConnections();
 
-	void saveSettings( QDomDocument & _doc, QDomElement & _this ) override;
-	void loadSettings( const QDomElement & _this ) override;
+	void saveSettings(QDomDocument& _doc, QDomElement& _this) override;
+	void loadSettings(const QDomElement& _this) override;
 
-	static inline const QString classNodeName()
-	{
-		return "connection";
-	}
+	static inline const QString classNodeName() { return "connection"; }
 
-	QString nodeName() const override
-	{
-		return classNodeName();
-	}
+	QString nodeName() const override { return classNodeName(); }
 
 public slots:
 	void deleteConnection();
 
 protected:
-	//virtual controllerDialog * createDialog( QWidget * _parent );
-	Controller * m_controller;
+	// virtual controllerDialog * createDialog( QWidget * _parent );
+	Controller* m_controller;
 	QString m_targetName;
 	int m_controllerId;
-	
+
 	bool m_ownsController;
 
 	static ControllerConnectionVector s_connections;
@@ -119,4 +94,3 @@ signals:
 };
 
 #endif
-

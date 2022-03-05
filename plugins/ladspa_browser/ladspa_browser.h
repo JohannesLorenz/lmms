@@ -33,54 +33,36 @@
 
 class TabBar;
 
-
-class ladspaBrowserView : public ToolPluginView
-{
+class ladspaBrowserView : public ToolPluginView {
 	Q_OBJECT
 public:
-	ladspaBrowserView( ToolPlugin * _tool );
+	ladspaBrowserView(ToolPlugin* _tool);
 	virtual ~ladspaBrowserView();
 
-
 public slots:
-	void showPorts( const ladspa_key_t & _key );
-
+	void showPorts(const ladspa_key_t& _key);
 
 private:
-	TabBar * m_tabBar;
+	TabBar* m_tabBar;
 
-	QWidget * createTab( QWidget * _parent, const QString & _txt,
-						ladspaPluginType _type );
+	QWidget* createTab(QWidget* _parent, const QString& _txt, ladspaPluginType _type);
+};
 
-} ;
-
-
-class ladspaBrowser : public ToolPlugin
-{
+class ladspaBrowser : public ToolPlugin {
 public:
 	ladspaBrowser();
 	virtual ~ladspaBrowser();
 
-	virtual PluginView * instantiateView( QWidget * )
-	{
-		return new ladspaBrowserView( this );
-	}
+	virtual PluginView* instantiateView(QWidget*) { return new ladspaBrowserView(this); }
 
 	virtual QString nodeName() const;
 
-	virtual void saveSettings( QDomDocument& doc, QDomElement& element )
-	{
+	virtual void saveSettings(QDomDocument& doc, QDomElement& element) {
 		Q_UNUSED(doc)
 		Q_UNUSED(element)
 	}
 
-	virtual void loadSettings( const QDomElement& element )
-	{
-		Q_UNUSED(element)
-	}
-
-
-} ;
-
+	virtual void loadSettings(const QDomElement& element) { Q_UNUSED(element) }
+};
 
 #endif

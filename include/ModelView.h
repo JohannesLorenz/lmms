@@ -26,61 +26,36 @@
 #define MODEL_VIEW_H
 
 #include <QPointer>
+
 #include "Model.h"
 
-
-class LMMS_EXPORT ModelView
-{
+class LMMS_EXPORT ModelView {
 public:
-	ModelView( Model* model, QWidget* widget );
+	ModelView(Model* model, QWidget* widget);
 	virtual ~ModelView();
 
-	virtual void setModel( Model* model, bool isOldModelValid = true );
+	virtual void setModel(Model* model, bool isOldModelValid = true);
 	virtual void unsetModel();
 
-	Model* model()
-	{
-		return m_model;
-	}
+	Model* model() { return m_model; }
 
-	const Model* model() const
-	{
-		return m_model;
-	}
+	const Model* model() const { return m_model; }
 
-	template<class T>
-	T* castModel()
-	{
-		return dynamic_cast<T*>( model() );
-	}
+	template <class T> T* castModel() { return dynamic_cast<T*>(model()); }
 
-	template<class T>
-	const T* castModel() const
-	{
-		return dynamic_cast<const T*>( model() );
-	}
-
+	template <class T> const T* castModel() const { return dynamic_cast<const T*>(model()); }
 
 protected:
 	// sub-classes can re-implement this to track model-changes
-	virtual void modelChanged()
-	{
-	}
+	virtual void modelChanged() {}
 
-	QWidget* widget()
-	{
-		return m_widget;
-	}
+	QWidget* widget() { return m_widget; }
 
 	virtual void doConnections();
-
 
 private:
 	QWidget* m_widget;
 	QPointer<Model> m_model;
-
-} ;
-
+};
 
 #endif
-

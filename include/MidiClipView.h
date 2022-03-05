@@ -21,46 +21,43 @@
  * Boston, MA 02110-1301 USA.
  *
  */
- 
+
 #ifndef MIDI_CLIP_VIEW_H
 #define MIDI_CLIP_VIEW_H
- 
+
 #include <QStaticText>
 
 #include "ClipView.h"
 
 class MidiClip;
- 
- 
-class MidiClipView : public ClipView
-{
+
+class MidiClipView : public ClipView {
 	Q_OBJECT
 
 public:
-	MidiClipView( MidiClip* clip, TrackView* parent );
- 	virtual ~MidiClipView() = default;
+	MidiClipView(MidiClip* clip, TrackView* parent);
+	virtual ~MidiClipView() = default;
 
 	Q_PROPERTY(QColor noteFillColor READ getNoteFillColor WRITE setNoteFillColor)
 	Q_PROPERTY(QColor noteBorderColor READ getNoteBorderColor WRITE setNoteBorderColor)
 	Q_PROPERTY(QColor mutedNoteFillColor READ getMutedNoteFillColor WRITE setMutedNoteFillColor)
 	Q_PROPERTY(QColor mutedNoteBorderColor READ getMutedNoteBorderColor WRITE setMutedNoteBorderColor)
 
-	QColor const & getNoteFillColor() const { return m_noteFillColor; }
-	void setNoteFillColor(QColor const & color) { m_noteFillColor = color; }
+	QColor const& getNoteFillColor() const { return m_noteFillColor; }
+	void setNoteFillColor(QColor const& color) { m_noteFillColor = color; }
 
-	QColor const & getNoteBorderColor() const { return m_noteBorderColor; }
-	void setNoteBorderColor(QColor const & color) { m_noteBorderColor = color; }
+	QColor const& getNoteBorderColor() const { return m_noteBorderColor; }
+	void setNoteBorderColor(QColor const& color) { m_noteBorderColor = color; }
 
-	QColor const & getMutedNoteFillColor() const { return m_mutedNoteFillColor; }
-	void setMutedNoteFillColor(QColor const & color) { m_mutedNoteFillColor = color; }
+	QColor const& getMutedNoteFillColor() const { return m_mutedNoteFillColor; }
+	void setMutedNoteFillColor(QColor const& color) { m_mutedNoteFillColor = color; }
 
-	QColor const & getMutedNoteBorderColor() const { return m_mutedNoteBorderColor; }
-	void setMutedNoteBorderColor(QColor const & color) { m_mutedNoteBorderColor = color; }
+	QColor const& getMutedNoteBorderColor() const { return m_mutedNoteBorderColor; }
+	void setMutedNoteBorderColor(QColor const& color) { m_mutedNoteBorderColor = color; }
 
 public slots:
 	MidiClip* getMidiClip();
 	void update() override;
-
 
 protected slots:
 	void openInPianoRoll();
@@ -69,20 +66,18 @@ protected slots:
 	void resetName();
 	void changeName();
 
-
 protected:
-	void constructContextMenu( QMenu * ) override;
-	void mousePressEvent( QMouseEvent * _me ) override;
-	void mouseDoubleClickEvent( QMouseEvent * _me ) override;
-	void paintEvent( QPaintEvent * pe ) override;
-	void wheelEvent( QWheelEvent * _we ) override;
-
+	void constructContextMenu(QMenu*) override;
+	void mousePressEvent(QMouseEvent* _me) override;
+	void mouseDoubleClickEvent(QMouseEvent* _me) override;
+	void paintEvent(QPaintEvent* pe) override;
+	void wheelEvent(QWheelEvent* _we) override;
 
 private:
-	static QPixmap * s_stepBtnOn0;
-	static QPixmap * s_stepBtnOn200;
-	static QPixmap * s_stepBtnOff;
-	static QPixmap * s_stepBtnOffLight;
+	static QPixmap* s_stepBtnOn0;
+	static QPixmap* s_stepBtnOn200;
+	static QPixmap* s_stepBtnOff;
+	static QPixmap* s_stepBtnOffLight;
 
 	MidiClip* m_clip;
 	QPixmap m_paintPixmap;
@@ -93,10 +88,8 @@ private:
 	QColor m_mutedNoteBorderColor;
 
 	QStaticText m_staticTextName;
-	
+
 	bool m_legacySEPattern;
-} ;
- 
- 
- 
- #endif
+};
+
+#endif

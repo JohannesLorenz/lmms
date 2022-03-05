@@ -21,95 +21,61 @@
  * Boston, MA 02110-1301 USA.
  *
  */
- 
+
 #include "PatternClip.h"
- 
+
 #include <QDomElement>
- 
+
 #include "Engine.h"
 #include "PatternClipView.h"
 #include "PatternStore.h"
 #include "PatternTrack.h"
 
-
-PatternClip::PatternClip(Track* track) :
-	Clip(track)
-{
+PatternClip::PatternClip(Track* track)
+	: Clip(track) {
 	bar_t t = Engine::patternStore()->lengthOfPattern(patternIndex());
-	if( t > 0 )
-	{
-		saveJournallingState( false );
-		changeLength( TimePos( t, 0 ) );
+	if (t > 0) {
+		saveJournallingState(false);
+		changeLength(TimePos(t, 0));
 		restoreJournallingState();
 	}
-	setAutoResize( false );
+	setAutoResize(false);
 }
 
-void PatternClip::saveSettings(QDomDocument& doc, QDomElement& element)
-{
-	element.setAttribute( "name", name() );
-	if( element.parentNode().nodeName() == "clipboard" )
-	{
-		element.setAttribute( "pos", -1 );
+void PatternClip::saveSettings(QDomDocument& doc, QDomElement& element) {
+	element.setAttribute("name", name());
+	if (element.parentNode().nodeName() == "clipboard") {
+		element.setAttribute("pos", -1);
+	} else {
+		element.setAttribute("pos", startPosition());
 	}
-	else
-	{
-		element.setAttribute( "pos", startPosition() );
-	}
-	element.setAttribute( "len", length() );
-	element.setAttribute( "muted", isMuted() );
-	if( usesCustomClipColor() )
-	{
-		element.setAttribute( "color", color().name() );
-	}
+	element.setAttribute("len", length());
+	element.setAttribute("muted", isMuted());
+	if (usesCustomClipColor()) { element.setAttribute("color", color().name()); }
 }
 
+void PatternClip::loadSettings(const QDomElement& element) {
+	setName(element.attribute("name"));
+	if (element.attribute("pos").toInt() >= 0) { movePosition(element.attribute("pos").toInt()); }
+	changeLength(element.attribute("len").toInt());
+	if (element.attribute("muted").toInt() != isMuted()) { toggleMute(); }
 
-
-
-void PatternClip::loadSettings(const QDomElement& element)
-{
-	setName( element.attribute( "name" ) );
-	if( element.attribute( "pos" ).toInt() >= 0 )
-	{
-		movePosition( element.attribute( "pos" ).toInt() );
-	}
-	changeLength( element.attribute( "len" ).toInt() );
-	if( element.attribute( "muted" ).toInt() != isMuted() )
-	{
-		toggleMute();
-	}
-	
 	// for colors saved in 1.3-onwards
-	if( element.hasAttribute( "color" ) && !element.hasAttribute( "usestyle" ) )
-	{
-		useCustomClipColor( true );
-		setColor( element.attribute( "color" ) );
+	if (element.hasAttribute("color") && !element.hasAttribute("usestyle")) {
+		useCustomClipColor(true);
+		setColor(element.attribute("color"));
 	}
-	
+
 	// for colors saved before 1.3
-	else if(element.hasAttribute("color"))
-	{
+	else if (element.hasAttribute("color")) {
 		setColor(QColor(element.attribute("color").toUInt()));
-		
+
 		// usestyle attribute is no longer used
-	}
-	else
-	{
+	} else {
 		useCustomClipColor(false);
 	}
 }
 
+int PatternClip::patternIndex() { return dynamic_cast<PatternTrack*>(getTrack())->patternIndex(); }
 
-
-int PatternClip::patternIndex()
-{
-	return dynamic_cast<PatternTrack*>(getTrack())->patternIndex();
-}
-
-
-
-ClipView* PatternClip::createView(TrackView* tv)
-{
-	return new PatternClipView(this, tv);
-}
+ClipView* PatternClip::createView(TrackView* tv) { return new PatternClipView(this, tv); }

@@ -22,14 +22,13 @@
  * Boston, MA 02110-1301 USA.
  *
  */
- 
+
 #include "SampleTrack.h"
 
 #include <QDomElement>
 
 #include "EffectChain.h"
 #include "Mixer.h"
-#include "panning_constants.h"
 #include "PatternStore.h"
 #include "PatternTrack.h"
 #include "SampleClip.h"
@@ -37,125 +36,91 @@
 #include "SampleRecordHandle.h"
 #include "SampleTrackView.h"
 #include "Song.h"
+#include "panning_constants.h"
 #include "volume.h"
 
-
-
-SampleTrack::SampleTrack(TrackContainer* tc) :
-	Track(Track::SampleTrack, tc),
-	m_volumeModel(DefaultVolume, MinVolume, MaxVolume, 0.1f, this, tr("Volume")),
-	m_panningModel(DefaultPanning, PanningLeft, PanningRight, 0.1f, this, tr("Panning")),
-	m_mixerChannelModel(0, 0, 0, this, tr("Mixer channel")),
-	m_audioPort(tr("Sample track"), true, &m_volumeModel, &m_panningModel, &m_mutedModel),
-	m_isPlaying(false)
-{
+SampleTrack::SampleTrack(TrackContainer* tc)
+	: Track(Track::SampleTrack, tc)
+	, m_volumeModel(DefaultVolume, MinVolume, MaxVolume, 0.1f, this, tr("Volume"))
+	, m_panningModel(DefaultPanning, PanningLeft, PanningRight, 0.1f, this, tr("Panning"))
+	, m_mixerChannelModel(0, 0, 0, this, tr("Mixer channel"))
+	, m_audioPort(tr("Sample track"), true, &m_volumeModel, &m_panningModel, &m_mutedModel)
+	, m_isPlaying(false) {
 	setName(tr("Sample track"));
 	m_panningModel.setCenterValue(DefaultPanning);
-	m_mixerChannelModel.setRange(0, Engine::mixer()->numChannels()-1, 1);
+	m_mixerChannelModel.setRange(0, Engine::mixer()->numChannels() - 1, 1);
 
 	connect(&m_mixerChannelModel, SIGNAL(dataChanged()), this, SLOT(updateMixerChannel()));
 }
 
+SampleTrack::~SampleTrack() { Engine::audioEngine()->removePlayHandlesOfTypes(this, PlayHandle::TypeSamplePlayHandle); }
 
-
-
-SampleTrack::~SampleTrack()
-{
-	Engine::audioEngine()->removePlayHandlesOfTypes( this, PlayHandle::TypeSamplePlayHandle );
-}
-
-
-
-
-bool SampleTrack::play( const TimePos & _start, const fpp_t _frames,
-					const f_cnt_t _offset, int _clip_num )
-{
+bool SampleTrack::play(const TimePos& _start, const fpp_t _frames, const f_cnt_t _offset, int _clip_num) {
 	m_audioPort.effects()->startRunning();
 	bool played_a_note = false; // will be return variable
 
 	clipVector clips;
-	::PatternTrack * pattern_track = nullptr;
-	if( _clip_num >= 0 )
-	{
-		if (_start > getClip(_clip_num)->length())
-		{
-			setPlaying(false);
-		}
-		if( _start != 0 )
-		{
-			return false;
-		}
-		clips.push_back( getClip( _clip_num ) );
-		if (trackContainer() == Engine::patternStore())
-		{
+	::PatternTrack* pattern_track = nullptr;
+	if (_clip_num >= 0) {
+		if (_start > getClip(_clip_num)->length()) { setPlaying(false); }
+		if (_start != 0) { return false; }
+		clips.push_back(getClip(_clip_num));
+		if (trackContainer() == Engine::patternStore()) {
 			pattern_track = PatternTrack::findPatternTrack(_clip_num);
 			setPlaying(true);
 		}
-	}
-	else
-	{
+	} else {
 		bool nowPlaying = false;
-		for( int i = 0; i < numOfClips(); ++i )
-		{
-			Clip * clip = getClip( i );
-			SampleClip * sClip = dynamic_cast<SampleClip*>( clip );
+		for (int i = 0; i < numOfClips(); ++i) {
+			Clip* clip = getClip(i);
+			SampleClip* sClip = dynamic_cast<SampleClip*>(clip);
 
-			if( _start >= sClip->startPosition() && _start < sClip->endPosition() )
-			{
-				if( sClip->isPlaying() == false && _start >= (sClip->startPosition() + sClip->startTimeOffset()) )
-				{
-					auto bufferFramesPerTick = Engine::framesPerTick (sClip->sampleBuffer ()->sampleRate ());
-					f_cnt_t sampleStart = bufferFramesPerTick * ( _start - sClip->startPosition() - sClip->startTimeOffset() );
-					f_cnt_t clipFrameLength = bufferFramesPerTick * ( sClip->endPosition() - sClip->startPosition() - sClip->startTimeOffset() );
+			if (_start >= sClip->startPosition() && _start < sClip->endPosition()) {
+				if (sClip->isPlaying() == false && _start >= (sClip->startPosition() + sClip->startTimeOffset())) {
+					auto bufferFramesPerTick = Engine::framesPerTick(sClip->sampleBuffer()->sampleRate());
+					f_cnt_t sampleStart
+						= bufferFramesPerTick * (_start - sClip->startPosition() - sClip->startTimeOffset());
+					f_cnt_t clipFrameLength = bufferFramesPerTick
+						* (sClip->endPosition() - sClip->startPosition() - sClip->startTimeOffset());
 					f_cnt_t sampleBufferLength = sClip->sampleBuffer()->frames();
-					//if the Clip smaller than the sample length we play only until Clip end
-					//else we play the sample to the end but nothing more
-					f_cnt_t samplePlayLength = clipFrameLength > sampleBufferLength ? sampleBufferLength : clipFrameLength;
-					//we only play within the sampleBuffer limits
-					if( sampleStart < sampleBufferLength )
-					{
-						sClip->setSampleStartFrame( sampleStart );
-						sClip->setSamplePlayLength( samplePlayLength );
-						clips.push_back( sClip );
-						sClip->setIsPlaying( true );
+					// if the Clip smaller than the sample length we play only until Clip end
+					// else we play the sample to the end but nothing more
+					f_cnt_t samplePlayLength
+						= clipFrameLength > sampleBufferLength ? sampleBufferLength : clipFrameLength;
+					// we only play within the sampleBuffer limits
+					if (sampleStart < sampleBufferLength) {
+						sClip->setSampleStartFrame(sampleStart);
+						sClip->setSamplePlayLength(samplePlayLength);
+						clips.push_back(sClip);
+						sClip->setIsPlaying(true);
 						nowPlaying = true;
 					}
 				}
-			}
-			else
-			{
-				sClip->setIsPlaying( false );
+			} else {
+				sClip->setIsPlaying(false);
 			}
 			nowPlaying = nowPlaying || sClip->isPlaying();
 		}
 		setPlaying(nowPlaying);
 	}
 
-	for( clipVector::Iterator it = clips.begin(); it != clips.end(); ++it )
-	{
-		SampleClip * st = dynamic_cast<SampleClip *>( *it );
-		if( !st->isMuted() )
-		{
+	for (clipVector::Iterator it = clips.begin(); it != clips.end(); ++it) {
+		SampleClip* st = dynamic_cast<SampleClip*>(*it);
+		if (!st->isMuted()) {
 			PlayHandle* handle;
-			if( st->isRecord() )
-			{
-				if( !Engine::getSong()->isRecording() )
-				{
-					return played_a_note;
-				}
-				SampleRecordHandle* smpHandle = new SampleRecordHandle( st );
+			if (st->isRecord()) {
+				if (!Engine::getSong()->isRecording()) { return played_a_note; }
+				SampleRecordHandle* smpHandle = new SampleRecordHandle(st);
 				handle = smpHandle;
-			}
-			else
-			{
-				SamplePlayHandle* smpHandle = new SamplePlayHandle( st );
-				smpHandle->setVolumeModel( &m_volumeModel );
+			} else {
+				SamplePlayHandle* smpHandle = new SamplePlayHandle(st);
+				smpHandle->setVolumeModel(&m_volumeModel);
 				smpHandle->setPatternTrack(pattern_track);
 				handle = smpHandle;
 			}
-			handle->setOffset( _offset );
+			handle->setOffset(_offset);
 			// send it to the audio engine
-			Engine::audioEngine()->addPlayHandle( handle );
+			Engine::audioEngine()->addPlayHandle(handle);
 			played_a_note = true;
 		}
 	}
@@ -163,89 +128,52 @@ bool SampleTrack::play( const TimePos & _start, const fpp_t _frames,
 	return played_a_note;
 }
 
+TrackView* SampleTrack::createView(TrackContainerView* tcv) { return new SampleTrackView(this, tcv); }
 
-
-
-TrackView * SampleTrack::createView( TrackContainerView* tcv )
-{
-	return new SampleTrackView( this, tcv );
-}
-
-
-
-
-Clip * SampleTrack::createClip(const TimePos & pos)
-{
-	SampleClip * sClip = new SampleClip(this);
+Clip* SampleTrack::createClip(const TimePos& pos) {
+	SampleClip* sClip = new SampleClip(this);
 	sClip->movePosition(pos);
 	return sClip;
 }
 
-
-
-
-void SampleTrack::saveTrackSpecificSettings( QDomDocument & _doc,
-							QDomElement & _this )
-{
-	m_audioPort.effects()->saveState( _doc, _this );
+void SampleTrack::saveTrackSpecificSettings(QDomDocument& _doc, QDomElement& _this) {
+	m_audioPort.effects()->saveState(_doc, _this);
 #if 0
 	_this.setAttribute( "icon", tlb->pixmapFile() );
 #endif
-	m_volumeModel.saveSettings( _doc, _this, "vol" );
-	m_panningModel.saveSettings( _doc, _this, "pan" );
-	m_mixerChannelModel.saveSettings( _doc, _this, "mixch" );
+	m_volumeModel.saveSettings(_doc, _this, "vol");
+	m_panningModel.saveSettings(_doc, _this, "pan");
+	m_mixerChannelModel.saveSettings(_doc, _this, "mixch");
 }
 
-
-
-
-void SampleTrack::loadTrackSpecificSettings( const QDomElement & _this )
-{
+void SampleTrack::loadTrackSpecificSettings(const QDomElement& _this) {
 	QDomNode node = _this.firstChild();
 	m_audioPort.effects()->clear();
-	while( !node.isNull() )
-	{
-		if( node.isElement() )
-		{
-			if( m_audioPort.effects()->nodeName() == node.nodeName() )
-			{
-				m_audioPort.effects()->restoreState( node.toElement() );
+	while (!node.isNull()) {
+		if (node.isElement()) {
+			if (m_audioPort.effects()->nodeName() == node.nodeName()) {
+				m_audioPort.effects()->restoreState(node.toElement());
 			}
 		}
 		node = node.nextSibling();
 	}
-	m_volumeModel.loadSettings( _this, "vol" );
-	m_panningModel.loadSettings( _this, "pan" );
-	m_mixerChannelModel.setRange( 0, Engine::mixer()->numChannels() - 1 );
-	m_mixerChannelModel.loadSettings( _this, "mixch" );
+	m_volumeModel.loadSettings(_this, "vol");
+	m_panningModel.loadSettings(_this, "pan");
+	m_mixerChannelModel.setRange(0, Engine::mixer()->numChannels() - 1);
+	m_mixerChannelModel.loadSettings(_this, "mixch");
 }
 
-
-
-
-void SampleTrack::updateClips()
-{
-	Engine::audioEngine()->removePlayHandlesOfTypes( this, PlayHandle::TypeSamplePlayHandle );
-	setPlayingClips( false );
+void SampleTrack::updateClips() {
+	Engine::audioEngine()->removePlayHandlesOfTypes(this, PlayHandle::TypeSamplePlayHandle);
+	setPlayingClips(false);
 }
 
-
-
-
-void SampleTrack::setPlayingClips( bool isPlaying )
-{
-	for( int i = 0; i < numOfClips(); ++i )
-	{
-		Clip * clip = getClip( i );
-		SampleClip * sClip = dynamic_cast<SampleClip*>( clip );
-		sClip->setIsPlaying( isPlaying );
+void SampleTrack::setPlayingClips(bool isPlaying) {
+	for (int i = 0; i < numOfClips(); ++i) {
+		Clip* clip = getClip(i);
+		SampleClip* sClip = dynamic_cast<SampleClip*>(clip);
+		sClip->setIsPlaying(isPlaying);
 	}
 }
 
-
-
-
-void SampleTrack::updateMixerChannel()
-{
-	m_audioPort.setNextMixerChannel( m_mixerChannelModel.value() );
-}
+void SampleTrack::updateMixerChannel() { m_audioPort.setNextMixerChannel(m_mixerChannelModel.value()); }

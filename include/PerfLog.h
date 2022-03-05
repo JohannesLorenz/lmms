@@ -25,15 +25,14 @@
 #ifndef PERFLOG_H
 #define PERFLOG_H
 
-#include <ctime>
 #include <QString>
+#include <ctime>
 
 /// \brief CPU time point
 ///
 /// Represents a point in CPU time (not wall-clock time) intended for measuring
 /// performance.
-class PerfTime
-{
+class PerfTime {
 public:
 	PerfTime();
 	bool valid() const;
@@ -46,6 +45,7 @@ public:
 	static clock_t ticksPerSecond();
 
 	friend PerfTime operator-(const PerfTime& lhs, const PerfTime& rhs);
+
 private:
 	clock_t m_real;
 	clock_t m_user;
@@ -56,16 +56,15 @@ private:
 ///
 /// Measures time between construction and destruction and prints the result to
 /// stderr, along with \p name. Alternatively, call begin() and end() explicitly.
-class PerfLogTimer
-{
- public:
+class PerfLogTimer {
+public:
 	PerfLogTimer(const QString& name);
 	~PerfLogTimer();
 
 	void begin();
 	void end();
 
- private:
+private:
 	QString name;
 	PerfTime begin_time;
 };

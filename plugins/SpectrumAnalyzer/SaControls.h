@@ -30,12 +30,10 @@
 
 //#define SA_DEBUG 1	// define SA_DEBUG to enable performance measurements
 
-
 class Analyzer;
 
 // Holds all the configuration values
-class SaControls : public EffectControls
-{
+class SaControls : public EffectControls {
 	Q_OBJECT
 public:
 	explicit SaControls(Analyzer* effect);
@@ -43,14 +41,14 @@ public:
 
 	EffectControlDialog* createView() override;
 
-	void saveSettings (QDomDocument& doc, QDomElement& parent) override;
-	void loadSettings (const QDomElement &_this) override;
+	void saveSettings(QDomDocument& doc, QDomElement& parent) override;
+	void loadSettings(const QDomElement& _this) override;
 
-	QString nodeName() const override {return "Analyzer";}
-	int controlCount() override {return 20;}
+	QString nodeName() const override { return "Analyzer"; }
+	int controlCount() override { return 20; }
 
 private:
-	Analyzer *m_effect;
+	Analyzer* m_effect;
 
 	// basic settings
 	BoolModel m_pauseModel;
@@ -80,13 +78,13 @@ private:
 	FloatModel m_zeroPaddingModel;
 
 	// colors (hard-coded, values must add up to specific numbers)
-	QColor m_colorL;		//!< color of the left channel
-	QColor m_colorR;		//!< color of the right channel
-	QColor m_colorMono;		//!< mono color for spectrum display
-	QColor m_colorMonoW;	//!< mono color for waterfall display
-	QColor m_colorBG;		//!< spectrum display background color
-	QColor m_colorGrid;		//!< color of grid lines
-	QColor m_colorLabels;	//!< color of axis labels
+	QColor m_colorL;	  //!< color of the left channel
+	QColor m_colorR;	  //!< color of the right channel
+	QColor m_colorMono;	  //!< mono color for spectrum display
+	QColor m_colorMonoW;  //!< mono color for waterfall display
+	QColor m_colorBG;	  //!< spectrum display background color
+	QColor m_colorGrid;	  //!< color of grid lines
+	QColor m_colorLabels; //!< color of axis labels
 
 	friend class SaControlsDialog;
 	friend class SaSpectrumView;

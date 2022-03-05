@@ -29,117 +29,75 @@
 
 #include "AutomatableModel.h"
 
-
 class Track;
 class ClipView;
 class TrackContainer;
 class TrackView;
 
-
-class LMMS_EXPORT Clip : public Model, public JournallingObject
-{
+class LMMS_EXPORT Clip : public Model, public JournallingObject {
 	Q_OBJECT
 	MM_OPERATORS
-	mapPropertyFromModel(bool,isMuted,setMuted,m_mutedModel);
-	mapPropertyFromModel(bool,isSolo,setSolo,m_soloModel);
+	mapPropertyFromModel(bool, isMuted, setMuted, m_mutedModel);
+	mapPropertyFromModel(bool, isSolo, setSolo, m_soloModel);
+
 public:
-	Clip( Track * track );
+	Clip(Track* track);
 	virtual ~Clip();
 
-	inline Track * getTrack() const
-	{
-		return m_track;
-	}
+	inline Track* getTrack() const { return m_track; }
 
-	inline const QString & name() const
-	{
-		return m_name;
-	}
+	inline const QString& name() const { return m_name; }
 
-	inline void setName( const QString & name )
-	{
+	inline void setName(const QString& name) {
 		m_name = name;
 		emit dataChanged();
 	}
 
-	QString displayName() const override
-	{
-		return name();
-	}
+	QString displayName() const override { return name(); }
 
+	inline const TimePos& startPosition() const { return m_startPosition; }
 
-	inline const TimePos & startPosition() const
-	{
-		return m_startPosition;
-	}
-
-	inline TimePos endPosition() const
-	{
+	inline TimePos endPosition() const {
 		const int sp = m_startPosition;
 		return sp + m_length;
 	}
 
-	inline const TimePos & length() const
-	{
-		return m_length;
-	}
+	inline const TimePos& length() const { return m_length; }
 
-	inline void setAutoResize( const bool r )
-	{
-		m_autoResize = r;
-	}
+	inline void setAutoResize(const bool r) { m_autoResize = r; }
 
-	inline const bool getAutoResize() const
-	{
-		return m_autoResize;
-	}
+	inline const bool getAutoResize() const { return m_autoResize; }
 
-	QColor color() const
-	{
-		return m_color;
-	}
+	QColor color() const { return m_color; }
 
-	void setColor( const QColor & c )
-	{
-		m_color = c;
-	}
+	void setColor(const QColor& c) { m_color = c; }
 
 	bool hasColor();
 
-	void useCustomClipColor( bool b );
+	void useCustomClipColor(bool b);
 
-	bool usesCustomClipColor()
-	{
-		return m_useCustomClipColor;
-	}
+	bool usesCustomClipColor() { return m_useCustomClipColor; }
 
-	virtual void movePosition( const TimePos & pos );
-	virtual void changeLength( const TimePos & length );
+	virtual void movePosition(const TimePos& pos);
+	virtual void changeLength(const TimePos& length);
 
-	virtual ClipView * createView( TrackView * tv ) = 0;
+	virtual ClipView* createView(TrackView* tv) = 0;
 
-	inline void selectViewOnCreate( bool select )
-	{
-		m_selectViewOnCreate = select;
-	}
+	inline void selectViewOnCreate(bool select) { m_selectViewOnCreate = select; }
 
-	inline bool getSelectViewOnCreate()
-	{
-		return m_selectViewOnCreate;
-	}
+	inline bool getSelectViewOnCreate() { return m_selectViewOnCreate; }
 
 	/// Returns true if and only if a->startPosition() < b->startPosition()
 	static bool comparePosition(const Clip* a, const Clip* b);
 
 	TimePos startTimeOffset() const;
-	void setStartTimeOffset( const TimePos &startTimeOffset );
+	void setStartTimeOffset(const TimePos& startTimeOffset);
 
 	// Will copy the state of a clip to another clip
-	static void copyStateTo( Clip *src, Clip *dst );
+	static void copyStateTo(Clip* src, Clip* dst);
 
 public slots:
 	void toggleMute();
-
 
 signals:
 	void lengthChanged();
@@ -147,16 +105,10 @@ signals:
 	void destroyedClip();
 	void colorChanged();
 
-
 private:
-	enum Actions
-	{
-		NoAction,
-		Move,
-		Resize
-	} ;
+	enum Actions { NoAction, Move, Resize };
 
-	Track * m_track;
+	Track* m_track;
 	QString m_name;
 
 	TimePos m_startPosition;
@@ -173,8 +125,6 @@ private:
 	bool m_useCustomClipColor;
 
 	friend class ClipView;
-
-} ;
-
+};
 
 #endif

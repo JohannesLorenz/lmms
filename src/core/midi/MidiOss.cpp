@@ -22,56 +22,36 @@
  *
  */
 
-
 #include "MidiOss.h"
 
 #ifdef LMMS_HAVE_OSS
 
 #include "ConfigManager.h"
 
-
-
-MidiOss::MidiOss() :
-	MidiClientRaw(),
-	m_midiDev( probeDevice() ),
-	m_quit( false )
-{
+MidiOss::MidiOss()
+	: MidiClientRaw()
+	, m_midiDev(probeDevice())
+	, m_quit(false) {
 	// only start thread, if opening of MIDI-device is successful,
 	// otherwise isRunning()==false indicates error
-	if( m_midiDev.open( QIODevice::ReadWrite |
-		QIODevice::Unbuffered ) ||
-		m_midiDev.open( QIODevice::ReadOnly |
-			QIODevice::Unbuffered ) )
-	{
-		start( QThread::LowPriority );
+	if (m_midiDev.open(QIODevice::ReadWrite | QIODevice::Unbuffered)
+		|| m_midiDev.open(QIODevice::ReadOnly | QIODevice::Unbuffered)) {
+		start(QThread::LowPriority);
 	}
 }
 
-
-
-
-MidiOss::~MidiOss()
-{
-	if( isRunning() )
-	{
+MidiOss::~MidiOss() {
+	if (isRunning()) {
 		m_quit = true;
-		wait( 1000 );
+		wait(1000);
 		terminate();
 	}
 }
 
-
-
-
-QString MidiOss::probeDevice()
-{
-	QString dev = ConfigManager::inst()->value( "midioss", "device" );
-	if( dev.isEmpty() )
-	{
-		if( getenv( "MIDIDEV" ) != nullptr )
-		{
-			return getenv( "MIDIDEV" );
-		}
+QString MidiOss::probeDevice() {
+	QString dev = ConfigManager::inst()->value("midioss", "device");
+	if (dev.isEmpty()) {
+		if (getenv("MIDIDEV") != nullptr) { return getenv("MIDIDEV"); }
 #ifdef __NetBSD__
 		return "/dev/rmidi0";
 #else
@@ -81,31 +61,14 @@ QString MidiOss::probeDevice()
 	return dev;
 }
 
+void MidiOss::sendByte(const unsigned char c) { m_midiDev.putChar(c); }
 
-
-
-void MidiOss::sendByte( const unsigned char c )
-{
-	m_midiDev.putChar( c );
-}
-
-
-
-
-void MidiOss::run()
-{
-	while( m_quit == false && m_midiDev.isOpen() )
-	{
+void MidiOss::run() {
+	while (m_quit == false && m_midiDev.isOpen()) {
 		char c;
-		if( !m_midiDev.getChar( &c ) )
-		{
-			continue;
-		}
-		parseData( c );
+		if (!m_midiDev.getChar(&c)) { continue; }
+		parseData(c);
 	}
 }
 
-
 #endif
-
-

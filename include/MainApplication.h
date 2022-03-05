@@ -25,17 +25,19 @@
 #ifndef MAINAPPLICATION_H
 #define MAINAPPLICATION_H
 
-#include "lmmsconfig.h"
-
 #include <QApplication>
+
+#include "lmmsconfig.h"
 
 #ifdef LMMS_BUILD_WIN32
 #include <windows.h>
+
 #include <QAbstractNativeEventFilter>
 #endif
 
 #if defined(LMMS_BUILD_WIN32)
-class MainApplication : public QApplication, public QAbstractNativeEventFilter
+class MainApplication : public QApplication,
+						public QAbstractNativeEventFilter
 #else
 class MainApplication : public QApplication
 #endif
@@ -45,13 +47,10 @@ public:
 	bool event(QEvent* event) override;
 #ifdef LMMS_BUILD_WIN32
 	bool winEventFilter(MSG* msg, long* result);
-	bool nativeEventFilter(const QByteArray& eventType, void* message,
-				long* result);
+	bool nativeEventFilter(const QByteArray& eventType, void* message, long* result);
 #endif
-	inline QString& queuedFile()
-	{
-	    return m_queuedFile;
-	}
+	inline QString& queuedFile() { return m_queuedFile; }
+
 private:
 	QString m_queuedFile;
 };

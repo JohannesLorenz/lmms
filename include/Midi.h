@@ -27,9 +27,7 @@
 
 #include "lmms_basics.h"
 
-
-enum MidiEventTypes
-{
+enum MidiEventTypes {
 	// messages
 	MidiNoteOff = 0x80,
 	MidiNoteOn = 0x90,
@@ -39,13 +37,13 @@ enum MidiEventTypes
 	MidiChannelPressure = 0xD0,
 	MidiPitchBend = 0xE0,
 	// system exclusive
-	MidiSysEx= 0xF0,
+	MidiSysEx = 0xF0,
 	// system common - never in midi files
-	MidiTimeCode= 0xF1,
+	MidiTimeCode = 0xF1,
 	MidiSongPosition = 0xF2,
 	MidiSongSelect = 0xF3,
 	MidiTuneRequest = 0xF6,
-	MidiEOX= 0xF7,
+	MidiEOX = 0xF7,
 	// system real-time - never in midi files
 	MidiSync = 0xF8,
 	MidiTick = 0xF9,
@@ -56,10 +54,9 @@ enum MidiEventTypes
 	MidiSystemReset = 0xFF,
 	// meta event - for midi files only
 	MidiMetaEvent = 0xFF
-} ;
+};
 
-enum MidiMetaEventTypes
-{
+enum MidiMetaEventTypes {
 	MidiMetaInvalid = 0x00,
 	MidiCopyright = 0x02,
 	MidiTrackName = 0x03,
@@ -76,12 +73,10 @@ enum MidiMetaEventTypes
 	MidiSequencerEvent = 0x7f,
 	MidiMetaCustom = 0x80,
 	MidiNotePanning
-} ;
+};
 typedef MidiMetaEventTypes MidiMetaEventType;
 
-
-enum MidiStandardControllers
-{
+enum MidiStandardControllers {
 	MidiControllerBankSelect = 0,
 	MidiControllerModulationWheel = 1,
 	MidiControllerBreathController = 2,
@@ -112,8 +107,7 @@ enum MidiStandardControllers
 
 };
 
-enum MidiControllerRegisteredParameterNumbers
-{
+enum MidiControllerRegisteredParameterNumbers {
 	MidiPitchBendSensitivityRPN = 0x0000,
 	MidiChannelFineTuningRPN = 0x0001,
 	MidiChannelCoarseTuningRPN = 0x0002,

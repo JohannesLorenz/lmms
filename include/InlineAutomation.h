@@ -25,47 +25,32 @@
 #ifndef INLINE_AUTOMATION_H
 #define INLINE_AUTOMATION_H
 
-#include "AutomationNode.h"
 #include "AutomationClip.h"
+#include "AutomationNode.h"
 #include "shared_object.h"
 
-
-class InlineAutomation : public FloatModel, public sharedObject
-{
+class InlineAutomation : public FloatModel, public sharedObject {
 public:
-	InlineAutomation() :
-		FloatModel(),
-		sharedObject(),
-		m_autoClip( nullptr )
-	{
-	}
+	InlineAutomation()
+		: FloatModel()
+		, sharedObject()
+		, m_autoClip(nullptr) {}
 
-	virtual ~InlineAutomation()
-	{
-		if( m_autoClip )
-		{
-			delete m_autoClip;
-		}
+	virtual ~InlineAutomation() {
+		if (m_autoClip) { delete m_autoClip; }
 	}
 
 	virtual float defaultValue() const = 0;
 
-	bool hasAutomation() const
-	{
-		if( m_autoClip != nullptr && m_autoClip->getTimeMap().isEmpty() == false )
-		{
+	bool hasAutomation() const {
+		if (m_autoClip != nullptr && m_autoClip->getTimeMap().isEmpty() == false) {
 			// Prevent saving inline automation if there's just one node at the beginning of
 			// the clip, which has a InValue equal to the value of model (which is going
 			// to be saved anyways) and no offset between the InValue and OutValue
-			AutomationClip::timeMap::const_iterator firstNode =
-				m_autoClip->getTimeMap().begin();
+			AutomationClip::timeMap::const_iterator firstNode = m_autoClip->getTimeMap().begin();
 
-			if (isAtInitValue()
-				&& m_autoClip->getTimeMap().size() == 1
-				&& POS(firstNode) == 0
-				&& INVAL(firstNode) == value()
-				&& OFFSET(firstNode) == 0)
-			{
+			if (isAtInitValue() && m_autoClip->getTimeMap().size() == 1 && POS(firstNode) == 0
+				&& INVAL(firstNode) == value() && OFFSET(firstNode) == 0) {
 				return false;
 			}
 
@@ -75,24 +60,19 @@ public:
 		return false;
 	}
 
-	AutomationClip * automationClip()
-	{
-		if( m_autoClip == nullptr )
-		{
-			m_autoClip = new AutomationClip( nullptr );
-			m_autoClip->addObject( this );
+	AutomationClip* automationClip() {
+		if (m_autoClip == nullptr) {
+			m_autoClip = new AutomationClip(nullptr);
+			m_autoClip->addObject(this);
 		}
 		return m_autoClip;
 	}
 
-	void saveSettings( QDomDocument & _doc, QDomElement & _parent ) override;
-	void loadSettings( const QDomElement & _this ) override;
-
+	void saveSettings(QDomDocument& _doc, QDomElement& _parent) override;
+	void loadSettings(const QDomElement& _this) override;
 
 private:
-	AutomationClip * m_autoClip;
-
-} ;
-
+	AutomationClip* m_autoClip;
+};
 
 #endif

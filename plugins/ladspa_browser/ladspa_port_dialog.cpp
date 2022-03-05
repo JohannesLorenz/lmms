@@ -2,7 +2,7 @@
  * ladspa_port_dialog.cpp - dialog to test a LADSPA plugin
  *
  * Copyright (c) 2006-2008 Danny McRae <khjklujn/at/users.sourceforge.net>
- * 
+ *
  * This file is part of LMMS - https://lmms.io
  *
  * This program is free software; you can redistribute it and/or
@@ -22,154 +22,107 @@
  *
  */
 
-
 #include "ladspa_port_dialog.h"
 
 #include <QTableWidget>
 #include <QVBoxLayout>
 
 #include "AudioEngine.h"
-#include "embed.h"
 #include "Engine.h"
 #include "Ladspa2LMMS.h"
+#include "embed.h"
 
+ladspaPortDialog::ladspaPortDialog(const ladspa_key_t& _key) {
+	Ladspa2LMMS* manager = Engine::getLADSPAManager();
 
-ladspaPortDialog::ladspaPortDialog( const ladspa_key_t & _key )
-{
-	Ladspa2LMMS * manager = Engine::getLADSPAManager();
+	setWindowIcon(embed::getIconPixmap("ports"));
+	setWindowTitle(tr("Ports"));
+	setModal(true);
 
-	setWindowIcon( embed::getIconPixmap( "ports" ) );
-	setWindowTitle( tr( "Ports" ) );
-	setModal( true );
+	QVBoxLayout* vlayout = new QVBoxLayout(this);
+	vlayout->setSpacing(0);
+	vlayout->setMargin(0);
 
-	QVBoxLayout * vlayout = new QVBoxLayout( this );
-	vlayout->setSpacing( 0 );
-	vlayout->setMargin( 0 );
+	int pc = manager->getPortCount(_key);
 
-	int pc = manager->getPortCount( _key );
-
-	QTableWidget * settings = new QTableWidget( pc, 7, this );
+	QTableWidget* settings = new QTableWidget(pc, 7, this);
 
 	QStringList ports;
-	ports.append( tr( "Name" ) );
-	ports.append( tr( "Rate" ) );
-	ports.append( tr( "Direction" ) );
-	ports.append( tr( "Type" ) );
-	ports.append( tr( "Min < Default < Max" ) );
-	ports.append( tr( "Logarithmic" ) );
-	ports.append( tr( "SR Dependent" ) );
-	settings->setHorizontalHeaderLabels( ports );
+	ports.append(tr("Name"));
+	ports.append(tr("Rate"));
+	ports.append(tr("Direction"));
+	ports.append(tr("Type"));
+	ports.append(tr("Min < Default < Max"));
+	ports.append(tr("Logarithmic"));
+	ports.append(tr("SR Dependent"));
+	settings->setHorizontalHeaderLabels(ports);
 
-	for( int row = 0; row < pc; row++ )
-	{
-		for( int col = 0; col < 7; ++col )
-		{
-			QTableWidgetItem * item = new QTableWidgetItem;
+	for (int row = 0; row < pc; row++) {
+		for (int col = 0; col < 7; ++col) {
+			QTableWidgetItem* item = new QTableWidgetItem;
 			item->setFlags(QFlag(0));
-			settings->setItem( row, col, item );
+			settings->setItem(row, col, item);
 		}
 
 		int col = 0;
-		settings->item( row, col++ )->setText( manager->getPortName( _key, row ) );
+		settings->item(row, col++)->setText(manager->getPortName(_key, row));
 
-		settings->item( row, col++ )->setText( manager->isPortAudio( _key, row ) ?  tr( "Audio" ) : tr( "Control" ) );
+		settings->item(row, col++)->setText(manager->isPortAudio(_key, row) ? tr("Audio") : tr("Control"));
 
-		settings->item( row, col++ )->setText( manager->isPortInput( _key, row ) ?  tr( "Input" ) : tr( "Output" ) );
+		settings->item(row, col++)->setText(manager->isPortInput(_key, row) ? tr("Input") : tr("Output"));
 
-		settings->item( row, col++ )->setText( manager->isPortToggled( _key, row ) ? tr( "Toggled" ) : manager->isInteger( _key, row ) ? tr( "Integer" ) : tr( "Float" ) );
+		settings->item(row, col++)
+			->setText(manager->isPortToggled(_key, row) ? tr("Toggled")
+					: manager->isInteger(_key, row)		? tr("Integer")
+														: tr("Float"));
 
-		float min = manager->getLowerBound( _key, row );
-		float max = manager->getUpperBound( _key, row );
-		float def = manager->getDefaultSetting( _key, row );
+		float min = manager->getLowerBound(_key, row);
+		float max = manager->getUpperBound(_key, row);
+		float def = manager->getDefaultSetting(_key, row);
 		QString range = "";
 
-		if( manager->areHintsSampleRateDependent( _key, row ) )
-		{
-			if( min != NOHINT )
-			{
-				min *= Engine::audioEngine()->processingSampleRate();
-			}
-			if( max != NOHINT )
-			{
-				max *= Engine::audioEngine()->processingSampleRate();
-			}
+		if (manager->areHintsSampleRateDependent(_key, row)) {
+			if (min != NOHINT) { min *= Engine::audioEngine()->processingSampleRate(); }
+			if (max != NOHINT) { max *= Engine::audioEngine()->processingSampleRate(); }
 		}
 
-		if( min == NOHINT )
-		{
+		if (min == NOHINT) {
 			range += "-Inf < ";
-		}
-		else if( manager->isInteger( _key, row ) )
-		{
-			range += QString::number( static_cast<int>( min ) ) +
-									" < ";
-		}
-		else
-		{
-			range += QString::number( min ) + " < ";
+		} else if (manager->isInteger(_key, row)) {
+			range += QString::number(static_cast<int>(min)) + " < ";
+		} else {
+			range += QString::number(min) + " < ";
 		}
 
-		if( def == NOHINT )
-		{
+		if (def == NOHINT) {
 			range += "None < ";
-		}
-		else if( manager->isInteger( _key, row ) )
-		{
-			range += QString::number( static_cast<int>( def ) ) + 
-									" < ";
-		}
-		else
-		{
-			range += QString::number( def ) + " < ";
+		} else if (manager->isInteger(_key, row)) {
+			range += QString::number(static_cast<int>(def)) + " < ";
+		} else {
+			range += QString::number(def) + " < ";
 		}
 
-		if( max == NOHINT )
-		{
+		if (max == NOHINT) {
 			range += "Inf";
-		}
-		else if( manager->isInteger( _key, row ) )
-		{
-			range += QString::number( static_cast<int>( max ) );
-		}
-		else
-		{
-			range += QString::number( max );
+		} else if (manager->isInteger(_key, row)) {
+			range += QString::number(static_cast<int>(max));
+		} else {
+			range += QString::number(max);
 		}
 
-		if( manager->isPortOutput( _key, row ) ||
-					manager->isPortToggled( _key, row ) )
-		{
-			range = "";
-		}
+		if (manager->isPortOutput(_key, row) || manager->isPortToggled(_key, row)) { range = ""; }
 
-		settings->item( row, col++ )->setText( range );
+		settings->item(row, col++)->setText(range);
 
-		if( manager->isLogarithmic( _key, row ) )
-		{
-			settings->item( row, col )->setText( tr( "Yes" ) );
-		}
+		if (manager->isLogarithmic(_key, row)) { settings->item(row, col)->setText(tr("Yes")); }
 		col++;
 
-		if( manager->areHintsSampleRateDependent( _key, row ) )
-		{
-			settings->item( row, col )->setText( tr( "Yes" ) );
-		}
+		if (manager->areHintsSampleRateDependent(_key, row)) { settings->item(row, col)->setText(tr("Yes")); }
 	}
 
-
-	vlayout->addWidget( settings );
+	vlayout->addWidget(settings);
 
 	show();
 }
 
-
-
-
-ladspaPortDialog::~ladspaPortDialog()
-{
-}
-
-
-
-
-
+ladspaPortDialog::~ladspaPortDialog() {}

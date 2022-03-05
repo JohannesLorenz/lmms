@@ -42,9 +42,9 @@ class PianoRollWindow;
 class ProjectNotes;
 class SongEditorWindow;
 
-class LMMS_EXPORT GuiApplication : public QObject
-{
+class LMMS_EXPORT GuiApplication : public QObject {
 	Q_OBJECT;
+
 public:
 	explicit GuiApplication();
 	~GuiApplication();
@@ -65,10 +65,10 @@ public:
 	ControllerRackView* getControllerRackView() { return m_controllerRackView; }
 
 public slots:
-	void displayInitProgress(const QString &msg);
+	void displayInitProgress(const QString& msg);
 
 private slots:
-	void childDestroyed(QObject *obj);
+	void childDestroyed(QObject* obj);
 
 private:
 	static GuiApplication* s_instance;

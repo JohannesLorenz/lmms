@@ -23,192 +23,146 @@
  */
 
 #include "AudioPort.h"
+
 #include "AudioDevice.h"
 #include "AudioEngine.h"
+#include "BufferManager.h"
 #include "EffectChain.h"
-#include "Mixer.h"
 #include "Engine.h"
 #include "MixHelpers.h"
-#include "BufferManager.h"
+#include "Mixer.h"
 
-
-AudioPort::AudioPort( const QString & _name, bool _has_effect_chain,
-		FloatModel * volumeModel, FloatModel * panningModel,
-		BoolModel * mutedModel ) :
-	m_bufferUsage( false ),
-	m_portBuffer( BufferManager::acquire() ),
-	m_extOutputEnabled( false ),
-	m_nextMixerChannel( 0 ),
-	m_name( "unnamed port" ),
-	m_effects( _has_effect_chain ? new EffectChain( nullptr ) : nullptr ),
-	m_volumeModel( volumeModel ),
-	m_panningModel( panningModel ),
-	m_mutedModel( mutedModel )
-{
-	Engine::audioEngine()->addAudioPort( this );
-	setExtOutputEnabled( true );
+AudioPort::AudioPort(const QString& _name, bool _has_effect_chain, FloatModel* volumeModel, FloatModel* panningModel,
+	BoolModel* mutedModel)
+	: m_bufferUsage(false)
+	, m_portBuffer(BufferManager::acquire())
+	, m_extOutputEnabled(false)
+	, m_nextMixerChannel(0)
+	, m_name("unnamed port")
+	, m_effects(_has_effect_chain ? new EffectChain(nullptr) : nullptr)
+	, m_volumeModel(volumeModel)
+	, m_panningModel(panningModel)
+	, m_mutedModel(mutedModel) {
+	Engine::audioEngine()->addAudioPort(this);
+	setExtOutputEnabled(true);
 }
 
-
-
-
-AudioPort::~AudioPort()
-{
-	setExtOutputEnabled( false );
-	Engine::audioEngine()->removeAudioPort( this );
-	BufferManager::release( m_portBuffer );
+AudioPort::~AudioPort() {
+	setExtOutputEnabled(false);
+	Engine::audioEngine()->removeAudioPort(this);
+	BufferManager::release(m_portBuffer);
 }
 
-
-
-
-void AudioPort::setExtOutputEnabled( bool _enabled )
-{
-	if( _enabled != m_extOutputEnabled )
-	{
+void AudioPort::setExtOutputEnabled(bool _enabled) {
+	if (_enabled != m_extOutputEnabled) {
 		m_extOutputEnabled = _enabled;
-		if( m_extOutputEnabled )
-		{
-			Engine::audioEngine()->audioDev()->registerPort( this );
-		}
-		else
-		{
-			Engine::audioEngine()->audioDev()->unregisterPort( this );
+		if (m_extOutputEnabled) {
+			Engine::audioEngine()->audioDev()->registerPort(this);
+		} else {
+			Engine::audioEngine()->audioDev()->unregisterPort(this);
 		}
 	}
 }
 
-
-
-
-void AudioPort::setName( const QString & _name )
-{
+void AudioPort::setName(const QString& _name) {
 	m_name = _name;
-	Engine::audioEngine()->audioDev()->renamePort( this );
+	Engine::audioEngine()->audioDev()->renamePort(this);
 }
 
-
-
-
-bool AudioPort::processEffects()
-{
-	if( m_effects )
-	{
-		bool more = m_effects->processAudioBuffer( m_portBuffer, Engine::audioEngine()->framesPerPeriod(), m_bufferUsage );
+bool AudioPort::processEffects() {
+	if (m_effects) {
+		bool more
+			= m_effects->processAudioBuffer(m_portBuffer, Engine::audioEngine()->framesPerPeriod(), m_bufferUsage);
 		return more;
 	}
 	return false;
 }
 
-
-void AudioPort::doProcessing()
-{
-	if( m_mutedModel && m_mutedModel->value() )
-	{
-		return;
-	}
+void AudioPort::doProcessing() {
+	if (m_mutedModel && m_mutedModel->value()) { return; }
 
 	const fpp_t fpp = Engine::audioEngine()->framesPerPeriod();
 
 	// clear the buffer
-	BufferManager::clear( m_portBuffer, fpp );
+	BufferManager::clear(m_portBuffer, fpp);
 
-	//qDebug( "Playhandles: %d", m_playHandles.size() );
-	for( PlayHandle * ph : m_playHandles ) // now we mix all playhandle buffers into the audioport buffer
+	// qDebug( "Playhandles: %d", m_playHandles.size() );
+	for (PlayHandle* ph : m_playHandles) // now we mix all playhandle buffers into the audioport buffer
 	{
-		if( ph->buffer() )
-		{
-			if( ph->usesBuffer()
-				&& ( ph->type() == PlayHandle::TypeNotePlayHandle
-					|| !MixHelpers::isSilent( ph->buffer(), fpp ) ) )
-			{
+		if (ph->buffer()) {
+			if (ph->usesBuffer()
+				&& (ph->type() == PlayHandle::TypeNotePlayHandle || !MixHelpers::isSilent(ph->buffer(), fpp))) {
 				m_bufferUsage = true;
-				MixHelpers::add( m_portBuffer, ph->buffer(), fpp );
+				MixHelpers::add(m_portBuffer, ph->buffer(), fpp);
 			}
-			ph->releaseBuffer(); 	// gets rid of playhandle's buffer and sets
-									// pointer to null, so if it doesn't get re-acquired we know to skip it next time
+			ph->releaseBuffer(); // gets rid of playhandle's buffer and sets
+								 // pointer to null, so if it doesn't get re-acquired we know to skip it next time
 		}
 	}
 
-	if( m_bufferUsage )
-	{
+	if (m_bufferUsage) {
 		// handle volume and panning
 		// has both vol and pan models
-		if( m_volumeModel && m_panningModel )
-		{
-			ValueBuffer * volBuf = m_volumeModel->valueBuffer();
-			ValueBuffer * panBuf = m_panningModel->valueBuffer();
+		if (m_volumeModel && m_panningModel) {
+			ValueBuffer* volBuf = m_volumeModel->valueBuffer();
+			ValueBuffer* panBuf = m_panningModel->valueBuffer();
 
 			// both vol and pan have s.ex.data:
-			if( volBuf && panBuf )
-			{
-				for( f_cnt_t f = 0; f < fpp; ++f )
-				{
-					float v = volBuf->values()[ f ] * 0.01f;
-					float p = panBuf->values()[ f ] * 0.01f;
-					m_portBuffer[f][0] *= ( p <= 0 ? 1.0f : 1.0f - p ) * v;
-					m_portBuffer[f][1] *= ( p >= 0 ? 1.0f : 1.0f + p ) * v;
+			if (volBuf && panBuf) {
+				for (f_cnt_t f = 0; f < fpp; ++f) {
+					float v = volBuf->values()[f] * 0.01f;
+					float p = panBuf->values()[f] * 0.01f;
+					m_portBuffer[f][0] *= (p <= 0 ? 1.0f : 1.0f - p) * v;
+					m_portBuffer[f][1] *= (p >= 0 ? 1.0f : 1.0f + p) * v;
 				}
 			}
 
 			// only vol has s.ex.data:
-			else if( volBuf )
-			{
+			else if (volBuf) {
 				float p = m_panningModel->value() * 0.01f;
-				float l = ( p <= 0 ? 1.0f : 1.0f - p );
-				float r = ( p >= 0 ? 1.0f : 1.0f + p );
-				for( f_cnt_t f = 0; f < fpp; ++f )
-				{
-					float v = volBuf->values()[ f ] * 0.01f;
+				float l = (p <= 0 ? 1.0f : 1.0f - p);
+				float r = (p >= 0 ? 1.0f : 1.0f + p);
+				for (f_cnt_t f = 0; f < fpp; ++f) {
+					float v = volBuf->values()[f] * 0.01f;
 					m_portBuffer[f][0] *= v * l;
 					m_portBuffer[f][1] *= v * r;
 				}
 			}
 
 			// only pan has s.ex.data:
-			else if( panBuf )
-			{
+			else if (panBuf) {
 				float v = m_volumeModel->value() * 0.01f;
-				for( f_cnt_t f = 0; f < fpp; ++f )
-				{
-					float p = panBuf->values()[ f ] * 0.01f;
-					m_portBuffer[f][0] *= ( p <= 0 ? 1.0f : 1.0f - p ) * v;
-					m_portBuffer[f][1] *= ( p >= 0 ? 1.0f : 1.0f + p ) * v;
+				for (f_cnt_t f = 0; f < fpp; ++f) {
+					float p = panBuf->values()[f] * 0.01f;
+					m_portBuffer[f][0] *= (p <= 0 ? 1.0f : 1.0f - p) * v;
+					m_portBuffer[f][1] *= (p >= 0 ? 1.0f : 1.0f + p) * v;
 				}
 			}
 
 			// neither has s.ex.data:
-			else
-			{
+			else {
 				float p = m_panningModel->value() * 0.01f;
 				float v = m_volumeModel->value() * 0.01f;
-				for( f_cnt_t f = 0; f < fpp; ++f )
-				{
-					m_portBuffer[f][0] *= ( p <= 0 ? 1.0f : 1.0f - p ) * v;
-					m_portBuffer[f][1] *= ( p >= 0 ? 1.0f : 1.0f + p ) * v;
+				for (f_cnt_t f = 0; f < fpp; ++f) {
+					m_portBuffer[f][0] *= (p <= 0 ? 1.0f : 1.0f - p) * v;
+					m_portBuffer[f][1] *= (p >= 0 ? 1.0f : 1.0f + p) * v;
 				}
 			}
 		}
 
 		// has vol model only
-		else if( m_volumeModel )
-		{
-			ValueBuffer * volBuf = m_volumeModel->valueBuffer();
+		else if (m_volumeModel) {
+			ValueBuffer* volBuf = m_volumeModel->valueBuffer();
 
-			if( volBuf )
-			{
-				for( f_cnt_t f = 0; f < fpp; ++f )
-				{
-					float v = volBuf->values()[ f ] * 0.01f;
+			if (volBuf) {
+				for (f_cnt_t f = 0; f < fpp; ++f) {
+					float v = volBuf->values()[f] * 0.01f;
 					m_portBuffer[f][0] *= v;
 					m_portBuffer[f][1] *= v;
 				}
-			}
-			else
-			{
+			} else {
 				float v = m_volumeModel->value() * 0.01f;
-				for( f_cnt_t f = 0; f < fpp; ++f )
-				{
+				for (f_cnt_t f = 0; f < fpp; ++f) {
 					m_portBuffer[f][0] *= v;
 					m_portBuffer[f][1] *= v;
 				}
@@ -220,30 +174,23 @@ void AudioPort::doProcessing()
 
 	// handle effects
 	const bool me = processEffects();
-	if( me || m_bufferUsage )
-	{
-		Engine::mixer()->mixToChannel( m_portBuffer, m_nextMixerChannel ); 	// send output to mixer
-																			// TODO: improve the flow here - convert to pull model
+	if (me || m_bufferUsage) {
+		Engine::mixer()->mixToChannel(
+			m_portBuffer, m_nextMixerChannel); // send output to mixer
+											   // TODO: improve the flow here - convert to pull model
 		m_bufferUsage = false;
 	}
 }
 
-
-void AudioPort::addPlayHandle( PlayHandle * handle )
-{
+void AudioPort::addPlayHandle(PlayHandle* handle) {
 	m_playHandleLock.lock();
-		m_playHandles.append( handle );
+	m_playHandles.append(handle);
 	m_playHandleLock.unlock();
 }
 
-
-void AudioPort::removePlayHandle( PlayHandle * handle )
-{
+void AudioPort::removePlayHandle(PlayHandle* handle) {
 	m_playHandleLock.lock();
-		PlayHandleList::Iterator it =	std::find( m_playHandles.begin(), m_playHandles.end(), handle );
-		if( it != m_playHandles.end() )
-		{
-			m_playHandles.erase( it );
-		}
+	PlayHandleList::Iterator it = std::find(m_playHandles.begin(), m_playHandles.end(), handle);
+	if (it != m_playHandles.end()) { m_playHandles.erase(it); }
 	m_playHandleLock.unlock();
 }

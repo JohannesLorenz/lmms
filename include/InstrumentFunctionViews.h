@@ -25,9 +25,9 @@
 #ifndef INSTRUMENT_FUNCTION_VIEWS_H
 #define INSTRUMENT_FUNCTION_VIEWS_H
 
-#include "ModelView.h"
-
 #include <QWidget>
+
+#include "ModelView.h"
 
 class QLabel;
 class ComboBox;
@@ -38,57 +38,44 @@ class TempoSyncKnob;
 class InstrumentFunctionArpeggio;
 class InstrumentFunctionNoteStacking;
 
-
-
-class InstrumentFunctionNoteStackingView : public QWidget, public ModelView
-{
+class InstrumentFunctionNoteStackingView : public QWidget, public ModelView {
 	Q_OBJECT
 public:
-	InstrumentFunctionNoteStackingView( InstrumentFunctionNoteStacking* cc, QWidget* parent = nullptr );
+	InstrumentFunctionNoteStackingView(InstrumentFunctionNoteStacking* cc, QWidget* parent = nullptr);
 	virtual ~InstrumentFunctionNoteStackingView();
 
-
 private:
 	void modelChanged() override;
 
-	InstrumentFunctionNoteStacking * m_cc;
+	InstrumentFunctionNoteStacking* m_cc;
 
-	GroupBox * m_chordsGroupBox;
-	ComboBox * m_chordsComboBox;
-	Knob * m_chordRangeKnob;
+	GroupBox* m_chordsGroupBox;
+	ComboBox* m_chordsComboBox;
+	Knob* m_chordRangeKnob;
+};
 
-} ;
-
-
-
-
-
-class InstrumentFunctionArpeggioView : public QWidget, public ModelView
-{
+class InstrumentFunctionArpeggioView : public QWidget, public ModelView {
 	Q_OBJECT
 public:
-	InstrumentFunctionArpeggioView( InstrumentFunctionArpeggio* arp, QWidget* parent = nullptr );
+	InstrumentFunctionArpeggioView(InstrumentFunctionArpeggio* arp, QWidget* parent = nullptr);
 	virtual ~InstrumentFunctionArpeggioView();
-
 
 private:
 	void modelChanged() override;
 
-	InstrumentFunctionArpeggio * m_a;
-	GroupBox * m_arpGroupBox;
-	ComboBox * m_arpComboBox;
-	Knob * m_arpRangeKnob;
-	Knob * m_arpRepeatsKnob;
-	Knob * m_arpCycleKnob;
-	Knob * m_arpSkipKnob;
-	Knob * m_arpMissKnob;
-	TempoSyncKnob * m_arpTimeKnob;
-	Knob * m_arpGateKnob;
+	InstrumentFunctionArpeggio* m_a;
+	GroupBox* m_arpGroupBox;
+	ComboBox* m_arpComboBox;
+	Knob* m_arpRangeKnob;
+	Knob* m_arpRepeatsKnob;
+	Knob* m_arpCycleKnob;
+	Knob* m_arpSkipKnob;
+	Knob* m_arpMissKnob;
+	TempoSyncKnob* m_arpTimeKnob;
+	Knob* m_arpGateKnob;
 
-	ComboBox * m_arpDirectionComboBox;
-	ComboBox * m_arpModeComboBox;
-
-} ;
-
+	ComboBox* m_arpDirectionComboBox;
+	ComboBox* m_arpModeComboBox;
+};
 
 #endif

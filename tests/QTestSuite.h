@@ -1,15 +1,14 @@
 #ifndef QTESTSUITE_H
 #define QTESTSUITE_H
 
-#include <QTest>
-#include <QObject>
 #include <QList>
+#include <QObject>
+#include <QTest>
 
-class QTestSuite : public QObject
-{
+class QTestSuite : public QObject {
 	Q_OBJECT
 public:
-	explicit QTestSuite(QObject *parent = 0);
+	explicit QTestSuite(QObject* parent = 0);
 	~QTestSuite();
 
 	static QList<QTestSuite*> suites();

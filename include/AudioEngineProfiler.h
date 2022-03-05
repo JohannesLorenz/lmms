@@ -27,29 +27,21 @@
 
 #include <QFile>
 
-#include "lmms_basics.h"
 #include "MicroTimer.h"
+#include "lmms_basics.h"
 
-class AudioEngineProfiler
-{
+class AudioEngineProfiler {
 public:
 	AudioEngineProfiler();
 	~AudioEngineProfiler();
 
-	void startPeriod()
-	{
-		m_periodTimer.reset();
-	}
+	void startPeriod() { m_periodTimer.reset(); }
 
-	void finishPeriod( sample_rate_t sampleRate, fpp_t framesPerPeriod );
+	void finishPeriod(sample_rate_t sampleRate, fpp_t framesPerPeriod);
 
-	int cpuLoad() const
-	{
-		return m_cpuLoad;
-	}
+	int cpuLoad() const { return m_cpuLoad; }
 
-	void setOutputFile( const QString& outputFile );
-
+	void setOutputFile(const QString& outputFile);
 
 private:
 	MicroTimer m_periodTimer;

@@ -31,8 +31,7 @@
 #include "MemoryManager.h"
 #include "lmms_export.h"
 
-class LMMS_EXPORT ValueBuffer : public std::vector<float>
-{
+class LMMS_EXPORT ValueBuffer : public std::vector<float> {
 	MM_OPERATORS
 public:
 	ValueBuffer();
@@ -40,11 +39,11 @@ public:
 
 	void fill(float value);
 
-	float value(int offset ) const;
+	float value(int offset) const;
 
-	const float * values() const;
-	float * values();
-	
+	const float* values() const;
+	float* values();
+
 	int length() const;
 
 	void interpolate(float start, float end);

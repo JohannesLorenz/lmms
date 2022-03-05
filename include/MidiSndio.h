@@ -32,39 +32,29 @@
 
 #include <QThread>
 
-
 #include "MidiClient.h"
 
-
-class MidiSndio : public QThread, public MidiClientRaw
-{
+class MidiSndio : public QThread, public MidiClientRaw {
 	Q_OBJECT
 public:
-	MidiSndio( void );
+	MidiSndio(void);
 	virtual ~MidiSndio();
 
 	static QString probeDevice(void);
 
-	inline static QString name(void)
-	{
-		return QT_TRANSLATE_NOOP("MidiSetupWidget", "sndio MIDI");
-	}
+	inline static QString name(void) { return QT_TRANSLATE_NOOP("MidiSetupWidget", "sndio MIDI"); }
 
-	inline static QString configSection()
-	{
-		return "MidiSndio";
-	}
-
+	inline static QString configSection() { return "MidiSndio"; }
 
 protected:
 	void sendByte(const unsigned char c) override;
 	void run(void) override;
 
 private:
-	struct mio_hdl *m_hdl;
+	struct mio_hdl* m_hdl;
 	volatile bool m_quit;
-} ;
+};
 
-#endif	/* LMMS_HAVE_SNDIO */
+#endif /* LMMS_HAVE_SNDIO */
 
-#endif	/* _MIDI_SNDIO_H */
+#endif /* _MIDI_SNDIO_H */

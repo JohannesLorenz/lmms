@@ -3,15 +3,14 @@
 
 #include <QMenu>
 
-class RecentProjectsMenu : public QMenu
-{
+class RecentProjectsMenu : public QMenu {
 	Q_OBJECT
 public:
-	RecentProjectsMenu(QWidget *parent = nullptr);
+	RecentProjectsMenu(QWidget* parent = nullptr);
 
 private slots:
 	void fillMenu();
-	void openProject(QAction * _action );
+	void openProject(QAction* _action);
 };
 
 #endif // RECENTPROJECTSMENU_H

@@ -22,55 +22,40 @@
  *
  */
 
+#include "embed.h"
+
 #include <QDebug>
 #include <QImageReader>
 #include <QPixmapCache>
 #include <QResource>
-#include "embed.h"
 
-namespace embed
-{
+namespace embed {
 
-QPixmap getIconPixmap(const QString& pixmapName,
-	int width, int height, const char** xpm )
-{
+QPixmap getIconPixmap(const QString& pixmapName, int width, int height, const char** xpm) {
 	QString cacheName;
-	if (width > 0 && height > 0)
-	{
+	if (width > 0 && height > 0) {
 		cacheName = QString("%1_%2_%3").arg(pixmapName, width, height);
-	}
-	else
-	{
+	} else {
 		cacheName = pixmapName;
 	}
 
 	// Return cached pixmap
 	QPixmap pixmap;
-	if( QPixmapCache::find(cacheName, &pixmap) )
-	{
-		return pixmap;
-	}
+	if (QPixmapCache::find(cacheName, &pixmap)) { return pixmap; }
 
-	if(xpm)
-	{
+	if (xpm) {
 		pixmap = QPixmap(xpm);
-	}
-	else
-	{
+	} else {
 		QImageReader reader(QString("artwork:%1").arg(pixmapName));
 
-		if (width > 0 && height > 0)
-		{
-			reader.setScaledSize(QSize(width, height));
-		}
+		if (width > 0 && height > 0) { reader.setScaledSize(QSize(width, height)); }
 
 		pixmap = QPixmap::fromImageReader(&reader);
 
-		if (pixmap.isNull())
-		{
-			qWarning().nospace() << "Error loading icon pixmap " << pixmapName << ": " <<
-									reader.errorString().toLocal8Bit().data();
-			return QPixmap(1,1);
+		if (pixmap.isNull()) {
+			qWarning().nospace() << "Error loading icon pixmap " << pixmapName << ": "
+								 << reader.errorString().toLocal8Bit().data();
+			return QPixmap(1, 1);
 		}
 	}
 
@@ -79,13 +64,8 @@ QPixmap getIconPixmap(const QString& pixmapName,
 	return pixmap;
 }
 
-
-QString getText( const char * name )
-{
-	return QString::fromUtf8( (const char*) QResource(QString(":/%1").arg(name)).data());
+QString getText(const char* name) {
+	return QString::fromUtf8((const char*)QResource(QString(":/%1").arg(name)).data());
 }
 
-
-}
-
-
+} // namespace embed

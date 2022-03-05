@@ -22,7 +22,6 @@
  *
  */
 
-
 #ifndef AEFFECTX_H
 #define AEFFECTX_H
 
@@ -33,18 +32,13 @@
 #ifdef _WIN32
 #define VST_CALL_CONV __cdecl
 #else
-#define VST_CALL_CONV 
+#define VST_CALL_CONV
 #endif
 
-template<typename T>
-constexpr int32_t CCONST(T a, T b, T c, T d)
-{
-	static_assert(std::is_convertible<T,int32_t>::value, "int32 compatibility required.");
-	return (
-		static_cast<int32_t>(a) << 24 |
-		static_cast<int32_t>(b) << 16 |
-		static_cast<int32_t>(c) << 8 |
-		static_cast<int32_t>(d) << 0);
+template <typename T> constexpr int32_t CCONST(T a, T b, T c, T d) {
+	static_assert(std::is_convertible<T, int32_t>::value, "int32 compatibility required.");
+	return (static_cast<int32_t>(a) << 24 | static_cast<int32_t>(b) << 16 | static_cast<int32_t>(c) << 8
+		| static_cast<int32_t>(d) << 0);
 }
 
 constexpr int audioMasterAutomate = 0;
@@ -94,19 +88,19 @@ constexpr int audioMasterUpdateDisplay = 42;
 constexpr int audioMasterBeginEdit = 43;
 constexpr int audioMasterEndEdit = 44;
 constexpr int audioMasterOpenFileSelector = 45;
-constexpr int audioMasterCloseFileSelector = 46; // currently unused
-constexpr int audioMasterEditFile = 47; // currently unused
-constexpr int audioMasterGetChunkFile = 48; // currently unused
+constexpr int audioMasterCloseFileSelector = 46;		  // currently unused
+constexpr int audioMasterEditFile = 47;					  // currently unused
+constexpr int audioMasterGetChunkFile = 48;				  // currently unused
 constexpr int audioMasterGetInputSpeakerArrangement = 49; // currently unused
 
 constexpr int effFlagsHasEditor = 1;
 constexpr int effFlagsCanReplacing = 1 << 4; // very likely
-constexpr int effFlagsIsSynth = 1 << 8; // currently unused
+constexpr int effFlagsIsSynth = 1 << 8;		 // currently unused
 
 constexpr int effOpen = 0;
-constexpr int effClose = 1; // currently unused
-constexpr int effSetProgram = 2; // currently unused
-constexpr int effGetProgram = 3; // currently unused
+constexpr int effClose = 1;			 // currently unused
+constexpr int effSetProgram = 2;	 // currently unused
+constexpr int effGetProgram = 3;	 // currently unused
 constexpr int effGetProgramName = 5; // currently unused
 constexpr int effGetParamLabel = 6;
 constexpr int effGetParamDisplay = 7;
@@ -125,10 +119,10 @@ constexpr int effGetEffectName = 45;
 constexpr int effGetVendorString = 47;
 constexpr int effGetProductString = 48;
 constexpr int effGetVendorVersion = 49;
-constexpr int effCanDo = 51; // currently unused
+constexpr int effCanDo = 51;		 // currently unused
 constexpr int effGetVstVersion = 58; // currently unused
 
-constexpr int kEffectMagic = CCONST( 'V', 's', 't', 'P' );
+constexpr int kEffectMagic = CCONST('V', 's', 't', 'P');
 constexpr int kVstLangEnglish = 1;
 constexpr int kVstMidiType = 1;
 
@@ -158,11 +152,7 @@ constexpr int kVstSmpte249fps = 11;
 constexpr int kVstSmpte599fps = 12;
 constexpr int kVstSmpte60fps = 13;
 
-
-
-
-class VstMidiEvent
-{
+class VstMidiEvent {
 public:
 	// 00
 	int32_t type;
@@ -186,48 +176,35 @@ public:
 	char reserved1;
 	// 1f?
 	char reserved2;
+};
 
-} ;
+class VstEvent {
+	char dump[sizeof(VstMidiEvent)];
+};
 
-
-
-
-class VstEvent
-{
-	char dump[sizeof( VstMidiEvent )];
-
-} ;
-
-
-
-
-class VstEvents
-{
+class VstEvents {
 public:
 	// 00
 	int32_t numEvents;
 	// 04
-	void *reserved;
+	void* reserved;
 	// 08
 	VstEvent* events[1];
+};
 
-} ;
-
-
-class AEffect
-{
+class AEffect {
 public:
 	// Never use virtual functions!!!
 	// 00-03
 	int32_t magic;
 	// dispatcher 04-07
-	intptr_t (VST_CALL_CONV * dispatcher)( AEffect * , int32_t , int32_t , intptr_t, void * , float );
+	intptr_t(VST_CALL_CONV* dispatcher)(AEffect*, int32_t, int32_t, intptr_t, void*, float);
 	// process, quite sure 08-0b
-	void (VST_CALL_CONV * process)( AEffect * , float * * , float * * , int32_t );
+	void(VST_CALL_CONV* process)(AEffect*, float**, float**, int32_t);
 	// setParameter 0c-0f
-	void (VST_CALL_CONV * setParameter)( AEffect * , int32_t , float );
+	void(VST_CALL_CONV* setParameter)(AEffect*, int32_t, float);
 	// getParameter 10-13
-	float (VST_CALL_CONV * getParameter)( AEffect * , int32_t );
+	float(VST_CALL_CONV* getParameter)(AEffect*, int32_t);
 	// programs 14-17
 	int32_t numPrograms;
 	// Params 18-1b
@@ -239,30 +216,25 @@ public:
 	// flags 24-27
 	int32_t flags;
 	// Fill somewhere 28-2b
-	void *ptr1;
-	void *ptr2;
+	void* ptr1;
+	void* ptr2;
 	// Zeroes 2c-2f 30-33 34-37 38-3b
 	char empty3[4 + 4 + 4];
 	// 1.0f 3c-3f
 	float unknown_float;
 	// An object? pointer 40-43
-	void *ptr3;
+	void* ptr3;
 	// Zeroes 44-47
-	void *user;
+	void* user;
 	// Id 48-4b
 	int32_t uniqueID;
 	// Don't know 4c-4f
 	char unknown1[4];
 	// processReplacing 50-53
-	void (VST_CALL_CONV * processReplacing)( AEffect * , float * * , float * * , int );
+	void(VST_CALL_CONV* processReplacing)(AEffect*, float**, float**, int);
+};
 
-} ;
-
-
-
-
-class VstTimeInfo
-{
+class VstTimeInfo {
 public:
 	// 00
 	double samplePos;
@@ -292,12 +264,8 @@ public:
 	int32_t samplesToNextClock;
 	// 54
 	int32_t flags;
+};
 
-} ;
-
-
-
-typedef intptr_t (VST_CALL_CONV * audioMasterCallback)( AEffect * , int32_t, int32_t, intptr_t, void * , float );
-
+typedef intptr_t(VST_CALL_CONV* audioMasterCallback)(AEffect*, int32_t, int32_t, intptr_t, void*, float);
 
 #endif

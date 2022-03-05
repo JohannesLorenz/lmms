@@ -25,22 +25,18 @@
 #ifndef DELAYEFFECT_H
 #define DELAYEFFECT_H
 
-#include "Effect.h"
 #include "DelayControls.h"
+#include "Effect.h"
 
 class Lfo;
 class StereoDelay;
 
-class DelayEffect : public Effect
-{
+class DelayEffect : public Effect {
 public:
-	DelayEffect(Model* parent , const Descriptor::SubPluginFeatures::Key* key );
+	DelayEffect(Model* parent, const Descriptor::SubPluginFeatures::Key* key);
 	virtual ~DelayEffect();
-	virtual bool processAudioBuffer( sampleFrame* buf, const fpp_t frames );
-	virtual EffectControls* controls()
-	{
-		return &m_delayControls;
-	}
+	virtual bool processAudioBuffer(sampleFrame* buf, const fpp_t frames);
+	virtual EffectControls* controls() { return &m_delayControls; }
 	void changeSampleRate();
 
 private:

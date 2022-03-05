@@ -25,39 +25,24 @@
 #ifndef BASSBOOSTER_CONTROLS_H
 #define BASSBOOSTER_CONTROLS_H
 
-#include "EffectControls.h"
 #include "BassBoosterControlDialog.h"
-
+#include "EffectControls.h"
 
 class BassBoosterEffect;
 
-
-class BassBoosterControls : public EffectControls
-{
+class BassBoosterControls : public EffectControls {
 	Q_OBJECT
 public:
-	BassBoosterControls( BassBoosterEffect* effect );
-	virtual ~BassBoosterControls()
-	{
-	}
+	BassBoosterControls(BassBoosterEffect* effect);
+	virtual ~BassBoosterControls() {}
 
-	virtual void saveSettings( QDomDocument & _doc, QDomElement & _parent );
-	virtual void loadSettings( const QDomElement & _this );
-	inline virtual QString nodeName() const
-	{
-		return "bassboostercontrols";
-	}
+	virtual void saveSettings(QDomDocument& _doc, QDomElement& _parent);
+	virtual void loadSettings(const QDomElement& _this);
+	inline virtual QString nodeName() const { return "bassboostercontrols"; }
 
-	virtual int controlCount()
-	{
-		return 3;
-	}
+	virtual int controlCount() { return 3; }
 
-	virtual EffectControlDialog* createView()
-	{
-		return new BassBoosterControlDialog( this );
-	}
-
+	virtual EffectControlDialog* createView() { return new BassBoosterControlDialog(this); }
 
 private slots:
 	void changeFrequency();
@@ -70,6 +55,6 @@ private:
 
 	friend class BassBoosterControlDialog;
 	friend class BassBoosterEffect;
-} ;
+};
 
 #endif

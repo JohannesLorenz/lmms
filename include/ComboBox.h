@@ -22,32 +22,24 @@
  *
  */
 
-
 #ifndef COMBOBOX_H
 #define COMBOBOX_H
 
 #include <QMenu>
 #include <QWidget>
 
-#include "ComboBoxModel.h"
 #include "AutomatableModelView.h"
+#include "ComboBoxModel.h"
 
-class LMMS_EXPORT ComboBox : public QWidget, public IntModelView
-{
+class LMMS_EXPORT ComboBox : public QWidget, public IntModelView {
 	Q_OBJECT
 public:
-	ComboBox( QWidget* parent = nullptr, const QString& name = QString() );
+	ComboBox(QWidget* parent = nullptr, const QString& name = QString());
 	virtual ~ComboBox();
 
-	ComboBoxModel* model()
-	{
-		return castModel<ComboBoxModel>();
-	}
+	ComboBoxModel* model() { return castModel<ComboBoxModel>(); }
 
-	const ComboBoxModel* model() const
-	{
-		return castModel<ComboBoxModel>();
-	}
+	const ComboBoxModel* model() const { return castModel<ComboBoxModel>(); }
 
 	static constexpr int DEFAULT_HEIGHT = 22;
 
@@ -55,13 +47,11 @@ public slots:
 	void selectNext();
 	void selectPrevious();
 
-
 protected:
-	void contextMenuEvent( QContextMenuEvent* event ) override;
-	void mousePressEvent( QMouseEvent* event ) override;
-	void paintEvent( QPaintEvent* event ) override;
-	void wheelEvent( QWheelEvent* event ) override;
-
+	void contextMenuEvent(QContextMenuEvent* event) override;
+	void mousePressEvent(QMouseEvent* event) override;
+	void paintEvent(QPaintEvent* event) override;
+	void wheelEvent(QWheelEvent* event) override;
 
 private:
 	static QPixmap* s_background;
@@ -72,10 +62,8 @@ private:
 
 	bool m_pressed;
 
-
 private slots:
-	void setItem( QAction* item );
-
-} ;
+	void setItem(QAction* item);
+};
 
 #endif

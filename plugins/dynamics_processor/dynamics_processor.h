@@ -23,7 +23,6 @@
  *
  */
 
-
 #ifndef DYNPROC_H
 #define DYNPROC_H
 
@@ -32,21 +31,13 @@
 
 class RmsHelper;
 
-
-class dynProcEffect : public Effect
-{
+class dynProcEffect : public Effect {
 public:
-	dynProcEffect( Model * _parent,
-			const Descriptor::SubPluginFeatures::Key * _key );
+	dynProcEffect(Model* _parent, const Descriptor::SubPluginFeatures::Key* _key);
 	virtual ~dynProcEffect();
-	virtual bool processAudioBuffer( sampleFrame * _buf,
-							const fpp_t _frames );
+	virtual bool processAudioBuffer(sampleFrame* _buf, const fpp_t _frames);
 
-	virtual EffectControls * controls()
-	{
-		return( &m_dpControls );
-	}
-
+	virtual EffectControls* controls() { return (&m_dpControls); }
 
 private:
 	void calcAttack();
@@ -54,21 +45,16 @@ private:
 
 	dynProcControls m_dpControls;
 
-// this member array is needed for peak detection 
+	// this member array is needed for peak detection
 	float m_currentPeak[2];
 	double m_attCoeff;
 	double m_relCoeff;
-	
+
 	bool m_needsUpdate;
-	
-	RmsHelper * m_rms [2];
+
+	RmsHelper* m_rms[2];
 
 	friend class dynProcControls;
-
-} ;
-
-
-
-
+};
 
 #endif

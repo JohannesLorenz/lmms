@@ -22,49 +22,45 @@
  *
  */
 
-
 #include "Engine.h"
+
 #include "AudioEngine.h"
+#include "BandLimitedWave.h"
 #include "ConfigManager.h"
-#include "Mixer.h"
 #include "Ladspa2LMMS.h"
 #include "Lv2Manager.h"
+#include "Mixer.h"
+#include "Oscillator.h"
 #include "PatternStore.h"
 #include "Plugin.h"
 #include "PresetPreviewPlayHandle.h"
 #include "ProjectJournal.h"
 #include "Song.h"
-#include "BandLimitedWave.h"
-#include "Oscillator.h"
 
 float LmmsCore::s_framesPerTick;
 AudioEngine* LmmsCore::s_audioEngine = nullptr;
-Mixer * LmmsCore::s_mixer = nullptr;
-PatternStore * LmmsCore::s_patternStore = nullptr;
-Song * LmmsCore::s_song = nullptr;
-ProjectJournal * LmmsCore::s_projectJournal = nullptr;
+Mixer* LmmsCore::s_mixer = nullptr;
+PatternStore* LmmsCore::s_patternStore = nullptr;
+Song* LmmsCore::s_song = nullptr;
+ProjectJournal* LmmsCore::s_projectJournal = nullptr;
 #ifdef LMMS_HAVE_LV2
-Lv2Manager * LmmsCore::s_lv2Manager = nullptr;
+Lv2Manager* LmmsCore::s_lv2Manager = nullptr;
 #endif
-Ladspa2LMMS * LmmsCore::s_ladspaManager = nullptr;
+Ladspa2LMMS* LmmsCore::s_ladspaManager = nullptr;
 void* LmmsCore::s_dndPluginKey = nullptr;
 
-
-
-
-void LmmsCore::init( bool renderOnly )
-{
-	LmmsCore *engine = inst();
+void LmmsCore::init(bool renderOnly) {
+	LmmsCore* engine = inst();
 
 	emit engine->initProgress(tr("Generating wavetables"));
 	// generate (load from file) bandlimited wavetables
 	BandLimitedWave::generateWaves();
-	//initilize oscillators
+	// initilize oscillators
 	Oscillator::waveTableInit();
 
 	emit engine->initProgress(tr("Initializing data structures"));
 	s_projectJournal = new ProjectJournal;
-	s_audioEngine = new AudioEngine( renderOnly );
+	s_audioEngine = new AudioEngine(renderOnly);
 	s_song = new Song;
 	s_mixer = new Mixer;
 	s_patternStore = new PatternStore;
@@ -75,7 +71,7 @@ void LmmsCore::init( bool renderOnly )
 #endif
 	s_ladspaManager = new Ladspa2LMMS;
 
-	s_projectJournal->setJournalling( true );
+	s_projectJournal->setJournalling(true);
 
 	emit engine->initProgress(tr("Opening audio and midi devices"));
 	s_audioEngine->initDevices();
@@ -86,11 +82,7 @@ void LmmsCore::init( bool renderOnly )
 	s_audioEngine->startProcessing();
 }
 
-
-
-
-void LmmsCore::destroy()
-{
+void LmmsCore::destroy() {
 	s_projectJournal->stopAllJournalling();
 	s_audioEngine->stopProcessing();
 
@@ -98,20 +90,20 @@ void LmmsCore::destroy()
 
 	s_song->clearProject();
 
-	deleteHelper( &s_patternStore );
+	deleteHelper(&s_patternStore);
 
-	deleteHelper( &s_mixer );
-	deleteHelper( &s_audioEngine );
+	deleteHelper(&s_mixer);
+	deleteHelper(&s_audioEngine);
 
 #ifdef LMMS_HAVE_LV2
-	deleteHelper( &s_lv2Manager );
+	deleteHelper(&s_lv2Manager);
 #endif
-	deleteHelper( &s_ladspaManager );
+	deleteHelper(&s_ladspaManager);
 
-	//delete ConfigManager::inst();
-	deleteHelper( &s_projectJournal );
+	// delete ConfigManager::inst();
+	deleteHelper(&s_projectJournal);
 
-	deleteHelper( &s_song );
+	deleteHelper(&s_song);
 
 	delete ConfigManager::inst();
 
@@ -120,50 +112,24 @@ void LmmsCore::destroy()
 	Oscillator::destroyFFTPlans();
 }
 
-
-
-
-bool LmmsCore::ignorePluginBlacklist()
-{
+bool LmmsCore::ignorePluginBlacklist() {
 	const char* envVar = getenv("LMMS_IGNORE_BLACKLIST");
 	return (envVar && *envVar);
 }
 
-
-
-
-float LmmsCore::framesPerTick(sample_rate_t sampleRate)
-{
-	return sampleRate * 60.0f * 4 /
-			DefaultTicksPerBar / s_song->getTempo();
+float LmmsCore::framesPerTick(sample_rate_t sampleRate) {
+	return sampleRate * 60.0f * 4 / DefaultTicksPerBar / s_song->getTempo();
 }
 
-
-
-
-void LmmsCore::updateFramesPerTick()
-{
+void LmmsCore::updateFramesPerTick() {
 	s_framesPerTick = s_audioEngine->processingSampleRate() * 60.0f * 4 / DefaultTicksPerBar / s_song->getTempo();
 }
 
-
-
-
-void LmmsCore::setDndPluginKey(void *newKey)
-{
+void LmmsCore::setDndPluginKey(void* newKey) {
 	Q_ASSERT(static_cast<Plugin::Descriptor::SubPluginFeatures::Key*>(newKey));
 	s_dndPluginKey = newKey;
 }
 
+void* LmmsCore::pickDndPluginKey() { return s_dndPluginKey; }
 
-
-
-void *LmmsCore::pickDndPluginKey()
-{
-	return s_dndPluginKey;
-}
-
-
-
-
-LmmsCore * LmmsCore::s_instanceOfMe = nullptr;
+LmmsCore* LmmsCore::s_instanceOfMe = nullptr;

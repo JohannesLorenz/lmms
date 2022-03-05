@@ -25,21 +25,18 @@
 #ifndef TRACK_H
 #define TRACK_H
 
-
-#include <QVector>
 #include <QColor>
+#include <QVector>
 
 #include "AutomatableModel.h"
 #include "JournallingObject.h"
 #include "lmms_basics.h"
-
 
 class TimePos;
 class TrackContainer;
 class TrackContainerView;
 class Clip;
 class TrackView;
-
 
 /*! The minimum track height in pixels
  *
@@ -49,21 +46,19 @@ class TrackView;
 const int MINIMAL_TRACK_HEIGHT = 32;
 const int DEFAULT_TRACK_HEIGHT = 32;
 
-char const *const FILENAME_FILTER = "[\\0000-\x1f\"*/:<>?\\\\|\x7f]";
-
+char const* const FILENAME_FILTER = "[\\0000-\x1f\"*/:<>?\\\\|\x7f]";
 
 //! Base-class for all tracks
-class LMMS_EXPORT Track : public Model, public JournallingObject
-{
+class LMMS_EXPORT Track : public Model, public JournallingObject {
 	Q_OBJECT
 	MM_OPERATORS
-	mapPropertyFromModel(bool,isMuted,setMuted,m_mutedModel);
-	mapPropertyFromModel(bool,isSolo,setSolo,m_soloModel);
-public:
-	typedef QVector<Clip *> clipVector;
+	mapPropertyFromModel(bool, isMuted, setMuted, m_mutedModel);
+	mapPropertyFromModel(bool, isSolo, setSolo, m_soloModel);
 
-	enum TrackTypes
-	{
+public:
+	typedef QVector<Clip*> clipVector;
+
+	enum TrackTypes {
 		InstrumentTrack,
 		PatternTrack,
 		SampleTrack,
@@ -72,139 +67,82 @@ public:
 		AutomationTrack,
 		HiddenAutomationTrack,
 		NumTrackTypes
-	} ;
+	};
 
-	Track( TrackTypes type, TrackContainer * tc );
+	Track(TrackTypes type, TrackContainer* tc);
 	virtual ~Track();
 
-	static Track * create( TrackTypes tt, TrackContainer * tc );
-	static Track * create( const QDomElement & element,
-							TrackContainer * tc );
-	Track * clone();
-
+	static Track* create(TrackTypes tt, TrackContainer* tc);
+	static Track* create(const QDomElement& element, TrackContainer* tc);
+	Track* clone();
 
 	// pure virtual functions
-	TrackTypes type() const
-	{
-		return m_type;
-	}
+	TrackTypes type() const { return m_type; }
 
-	virtual bool play( const TimePos & start, const fpp_t frames,
-						const f_cnt_t frameBase, int clipNum = -1 ) = 0;
+	virtual bool play(const TimePos& start, const fpp_t frames, const f_cnt_t frameBase, int clipNum = -1) = 0;
 
+	virtual TrackView* createView(TrackContainerView* view) = 0;
+	virtual Clip* createClip(const TimePos& pos) = 0;
 
-	virtual TrackView * createView( TrackContainerView * view ) = 0;
-	virtual Clip * createClip( const TimePos & pos ) = 0;
+	virtual void saveTrackSpecificSettings(QDomDocument& doc, QDomElement& parent) = 0;
+	virtual void loadTrackSpecificSettings(const QDomElement& element) = 0;
 
-	virtual void saveTrackSpecificSettings( QDomDocument & doc,
-						QDomElement & parent ) = 0;
-	virtual void loadTrackSpecificSettings( const QDomElement & element ) = 0;
+	void saveSettings(QDomDocument& doc, QDomElement& element) override;
+	void loadSettings(const QDomElement& element) override;
 
-
-	void saveSettings( QDomDocument & doc, QDomElement & element ) override;
-	void loadSettings( const QDomElement & element ) override;
-
-	void setSimpleSerializing()
-	{
-		m_simpleSerializingMode = true;
-	}
+	void setSimpleSerializing() { m_simpleSerializingMode = true; }
 
 	// -- for usage by Clip only ---------------
-	Clip * addClip( Clip * clip );
-	void removeClip( Clip * clip );
+	Clip* addClip(Clip* clip);
+	void removeClip(Clip* clip);
 	// -------------------------------------------------------
 	void deleteClips();
 
 	int numOfClips();
-	Clip * getClip( int clipNum );
-	int getClipNum(const Clip* clip );
+	Clip* getClip(int clipNum);
+	int getClipNum(const Clip* clip);
 
-	const clipVector & getClips() const
-	{
-		return m_clips;
-	}
-	void getClipsInRange( clipVector & clipV, const TimePos & start,
-							const TimePos & end );
-	void swapPositionOfClips( int clipNum1, int clipNum2 );
+	const clipVector& getClips() const { return m_clips; }
+	void getClipsInRange(clipVector& clipV, const TimePos& start, const TimePos& end);
+	void swapPositionOfClips(int clipNum1, int clipNum2);
 
 	void createClipsForPattern(int pattern);
 
-
-	void insertBar( const TimePos & pos );
-	void removeBar( const TimePos & pos );
+	void insertBar(const TimePos& pos);
+	void removeBar(const TimePos& pos);
 
 	bar_t length() const;
 
-
-	inline TrackContainer* trackContainer() const
-	{
-		return m_trackContainer;
-	}
+	inline TrackContainer* trackContainer() const { return m_trackContainer; }
 
 	// name-stuff
-	virtual const QString & name() const
-	{
-		return m_name;
-	}
+	virtual const QString& name() const { return m_name; }
 
-	QString displayName() const override
-	{
-		return name();
-	}
+	QString displayName() const override { return name(); }
 
 	using Model::dataChanged;
 
-	inline int getHeight()
-	{
-		return m_height >= MINIMAL_TRACK_HEIGHT
-			? m_height
-			: DEFAULT_TRACK_HEIGHT;
-	}
-	inline void setHeight( int height )
-	{
-		m_height = height;
-	}
+	inline int getHeight() { return m_height >= MINIMAL_TRACK_HEIGHT ? m_height : DEFAULT_TRACK_HEIGHT; }
+	inline void setHeight(int height) { m_height = height; }
 
-	void lock()
-	{
-		m_processingLock.lock();
-	}
-	void unlock()
-	{
-		m_processingLock.unlock();
-	}
-	bool tryLock()
-	{
-		return m_processingLock.tryLock();
-	}
-	
-	QColor color()
-	{
-		return m_color;
-	}
-	bool useColor()
-	{
-		return m_hasColor;
-	}
+	void lock() { m_processingLock.lock(); }
+	void unlock() { m_processingLock.unlock(); }
+	bool tryLock() { return m_processingLock.tryLock(); }
 
-	bool isMutedBeforeSolo() const
-	{
-		return m_mutedBeforeSolo;
-	}
-	
+	QColor color() { return m_color; }
+	bool useColor() { return m_hasColor; }
+
+	bool isMutedBeforeSolo() const { return m_mutedBeforeSolo; }
+
 	BoolModel* getMutedModel();
 
 public slots:
-	virtual void setName( const QString & newName )
-	{
+	virtual void setName(const QString& newName) {
 		m_name = newName;
 		emit nameChanged();
 	}
 
-	void setMutedBeforeSolo(const bool muted)
-	{
-		m_mutedBeforeSolo = muted;
-	}
+	void setMutedBeforeSolo(const bool muted) { m_mutedBeforeSolo = muted; }
 
 	void toggleSolo();
 
@@ -229,20 +167,17 @@ private:
 	clipVector m_clips;
 
 	QMutex m_processingLock;
-	
+
 	QColor m_color;
 	bool m_hasColor;
 
 	friend class TrackView;
 
-
 signals:
 	void destroyedTrack();
 	void nameChanged();
-	void clipAdded( Clip * );
+	void clipAdded(Clip*);
 	void colorChanged();
-} ;
-
-
+};
 
 #endif

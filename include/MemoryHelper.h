@@ -21,7 +21,6 @@
  *
  */
 
-
 #ifndef MEMORY_HELPER_H
 #define MEMORY_HELPER_H
 
@@ -32,13 +31,11 @@
  */
 class MemoryHelper {
 public:
+	static void* alignedMalloc(size_t);
 
-	static void* alignedMalloc( size_t );
-
-	static void alignedFree( void* );
+	static void alignedFree(void*);
 
 private:
 };
 
 #endif
-

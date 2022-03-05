@@ -32,19 +32,16 @@ class QPushButton;
 class PixmapButton;
 class TrackView;
 
-class TrackOperationsWidget : public QWidget
-{
+class TrackOperationsWidget : public QWidget {
 	Q_OBJECT
 public:
-	TrackOperationsWidget( TrackView * parent );
+	TrackOperationsWidget(TrackView* parent);
 	~TrackOperationsWidget();
 
-
 protected:
-	void mousePressEvent( QMouseEvent * me ) override;
-	void paintEvent( QPaintEvent * pe ) override;
+	void mousePressEvent(QMouseEvent* me) override;
+	void paintEvent(QPaintEvent* pe) override;
 	bool confirmRemoval();
-
 
 private slots:
 	void cloneTrack();
@@ -60,18 +57,16 @@ private slots:
 	void clearTrack();
 
 private:
-	TrackView * m_trackView;
+	TrackView* m_trackView;
 
-	QPushButton * m_trackOps;
-	PixmapButton * m_muteBtn;
-	PixmapButton * m_soloBtn;
-
+	QPushButton* m_trackOps;
+	PixmapButton* m_muteBtn;
+	PixmapButton* m_soloBtn;
 
 	friend class TrackView;
 
 signals:
-	void trackRemovalScheduled( TrackView * t );
-
-} ;
+	void trackRemovalScheduled(TrackView* t);
+};
 
 #endif

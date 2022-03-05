@@ -29,55 +29,44 @@
 
 #ifdef LMMS_HAVE_PULSEAUDIO
 
-#include <pulse/pulseaudio.h>
 #include <QSemaphore>
 #include <QThread>
+#include <pulse/pulseaudio.h>
 
 #include "AudioDevice.h"
 #include "AudioDeviceSetupWidget.h"
 
-
 class LcdSpinBox;
 class QLineEdit;
 
-
-class AudioPulseAudio : public QThread, public AudioDevice
-{
+class AudioPulseAudio : public QThread, public AudioDevice {
 	Q_OBJECT
 public:
-	AudioPulseAudio( bool & _success_ful, AudioEngine* audioEngine );
+	AudioPulseAudio(bool& _success_ful, AudioEngine* audioEngine);
 	virtual ~AudioPulseAudio();
 
-	inline static QString name()
-	{
-		return QT_TRANSLATE_NOOP( "AudioDeviceSetupWidget", "PulseAudio" );
-	}
+	inline static QString name() { return QT_TRANSLATE_NOOP("AudioDeviceSetupWidget", "PulseAudio"); }
 
 	static QString probeDevice();
 
-
-	class setupWidget : public AudioDeviceSetupWidget
-	{
+	class setupWidget : public AudioDeviceSetupWidget {
 	public:
-		setupWidget( QWidget * _parent );
+		setupWidget(QWidget* _parent);
 		virtual ~setupWidget();
 
 		void saveSettings() override;
 
 	private:
-		QLineEdit * m_device;
-		LcdSpinBox * m_channels;
+		QLineEdit* m_device;
+		LcdSpinBox* m_channels;
+	};
 
-	} ;
+	void streamWriteCallback(pa_stream* s, size_t length);
 
+	void signalConnected(bool connected);
 
-	void streamWriteCallback( pa_stream * s, size_t length );
-
-	void signalConnected( bool connected );
-
-	pa_stream * m_s;
+	pa_stream* m_s;
 	pa_sample_spec m_sampleSpec;
-
 
 private:
 	void startProcessing() override;
@@ -91,8 +80,7 @@ private:
 
 	bool m_connected;
 	QSemaphore m_connectedSemaphore;
-
-} ;
+};
 
 #endif
 

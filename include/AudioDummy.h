@@ -30,89 +30,52 @@
 #include "AudioEngine.h"
 #include "MicroTimer.h"
 
-
-class AudioDummy : public QThread, public AudioDevice
-{
+class AudioDummy : public QThread, public AudioDevice {
 	Q_OBJECT
 public:
-	AudioDummy( bool & _success_ful, AudioEngine* audioEngine ) :
-		AudioDevice( DEFAULT_CHANNELS, audioEngine )
-	{
+	AudioDummy(bool& _success_ful, AudioEngine* audioEngine)
+		: AudioDevice(DEFAULT_CHANNELS, audioEngine) {
 		_success_ful = true;
 	}
 
-	virtual ~AudioDummy()
-	{
-		stopProcessing();
-	}
+	virtual ~AudioDummy() { stopProcessing(); }
 
-	inline static QString name()
-	{
-		return QT_TRANSLATE_NOOP( "AudioDeviceSetupWidget", "Dummy (no sound output)" );
-	}
+	inline static QString name() { return QT_TRANSLATE_NOOP("AudioDeviceSetupWidget", "Dummy (no sound output)"); }
 
-
-	class setupWidget : public AudioDeviceSetupWidget
-	{
+	class setupWidget : public AudioDeviceSetupWidget {
 	public:
-		setupWidget( QWidget * _parent ) :
-			AudioDeviceSetupWidget( AudioDummy::name(), _parent )
-		{
-		}
+		setupWidget(QWidget* _parent)
+			: AudioDeviceSetupWidget(AudioDummy::name(), _parent) {}
 
-		virtual ~setupWidget()
-		{
-		}
+		virtual ~setupWidget() {}
 
-		void saveSettings() override
-		{
-		}
+		void saveSettings() override {}
 
-		void show() override
-		{
+		void show() override {
 			parentWidget()->hide();
 			QWidget::show();
 		}
-
-	} ;
-
+	};
 
 private:
-	void startProcessing() override
-	{
-		start();
-	}
+	void startProcessing() override { start(); }
 
-	void stopProcessing() override
-	{
-		stopProcessingThread( this );
-	}
+	void stopProcessing() override { stopProcessingThread(this); }
 
-	void run() override
-	{
+	void run() override {
 		MicroTimer timer;
-		while( true )
-		{
+		while (true) {
 			timer.reset();
 			const surroundSampleFrame* b = audioEngine()->nextBuffer();
-			if( !b )
-			{
-				break;
-			}
-			if( audioEngine()->hasFifoWriter() )
-			{
-				delete[] b;
-			}
+			if (!b) { break; }
+			if (audioEngine()->hasFifoWriter()) { delete[] b; }
 
-			const int microseconds = static_cast<int>( audioEngine()->framesPerPeriod() * 1000000.0f / audioEngine()->processingSampleRate() - timer.elapsed() );
-			if( microseconds > 0 )
-			{
-				usleep( microseconds );
-			}
+			const int microseconds
+				= static_cast<int>(audioEngine()->framesPerPeriod() * 1000000.0f / audioEngine()->processingSampleRate()
+					- timer.elapsed());
+			if (microseconds > 0) { usleep(microseconds); }
 		}
 	}
-
-} ;
-
+};
 
 #endif

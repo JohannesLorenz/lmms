@@ -22,17 +22,15 @@
  *
  */
 
-
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#include <QString>
 #include <QObject>
+#include <QString>
 
-
-#include "lmmsconfig.h"
-#include "lmms_export.h"
 #include "lmms_basics.h"
+#include "lmms_export.h"
+#include "lmmsconfig.h"
 
 class AudioEngine;
 class Mixer;
@@ -40,7 +38,6 @@ class PatternStore;
 class ProjectJournal;
 class Song;
 class Ladspa2LMMS;
-
 
 // Note: This class is called 'LmmsCore' instead of 'Engine' because of naming
 // conflicts caused by ZynAddSubFX. See https://github.com/LMMS/lmms/issues/2269
@@ -54,68 +51,39 @@ class Ladspa2LMMS;
 class LmmsCore;
 typedef LmmsCore Engine;
 
-class LMMS_EXPORT LmmsCore : public QObject
-{
+class LMMS_EXPORT LmmsCore : public QObject {
 	Q_OBJECT
 public:
-	static void init( bool renderOnly );
+	static void init(bool renderOnly);
 	static void destroy();
 
 	// core
-	static AudioEngine *audioEngine()
-	{
-		return s_audioEngine;
-	}
+	static AudioEngine* audioEngine() { return s_audioEngine; }
 
-	static Mixer * mixer()
-	{
-		return s_mixer;
-	}
+	static Mixer* mixer() { return s_mixer; }
 
-	static Song * getSong()
-	{
-		return s_song;
-	}
+	static Song* getSong() { return s_song; }
 
-	static PatternStore * patternStore()
-	{
-		return s_patternStore;
-	}
+	static PatternStore* patternStore() { return s_patternStore; }
 
-	static ProjectJournal * projectJournal()
-	{
-		return s_projectJournal;
-	}
+	static ProjectJournal* projectJournal() { return s_projectJournal; }
 
 	static bool ignorePluginBlacklist();
 
 #ifdef LMMS_HAVE_LV2
-	static class Lv2Manager * getLv2Manager()
-	{
-		return s_lv2Manager;
-	}
+	static class Lv2Manager* getLv2Manager() { return s_lv2Manager; }
 #endif
 
-	static Ladspa2LMMS * getLADSPAManager()
-	{
-		return s_ladspaManager;
-	}
+	static Ladspa2LMMS* getLADSPAManager() { return s_ladspaManager; }
 
-	static float framesPerTick()
-	{
-		return s_framesPerTick;
-	}
+	static float framesPerTick() { return s_framesPerTick; }
 
 	static float framesPerTick(sample_rate_t sample_rate);
 
 	static void updateFramesPerTick();
 
-	static inline LmmsCore * inst()
-	{
-		if( s_instanceOfMe == nullptr )
-		{
-			s_instanceOfMe = new LmmsCore();
-		}
+	static inline LmmsCore* inst() {
+		if (s_instanceOfMe == nullptr) { s_instanceOfMe = new LmmsCore(); }
 		return s_instanceOfMe;
 	}
 
@@ -123,16 +91,13 @@ public:
 	static void* pickDndPluginKey();
 
 signals:
-	void initProgress(const QString &msg);
-
+	void initProgress(const QString& msg);
 
 private:
 	// small helper function which sets the pointer to NULL before actually deleting
 	// the object it refers to
-	template<class T>
-	static inline void deleteHelper( T * * ptr )
-	{
-		T * tmp = *ptr;
+	template <class T> static inline void deleteHelper(T** ptr) {
+		T* tmp = *ptr;
 		*ptr = nullptr;
 		delete tmp;
 	}
@@ -140,24 +105,22 @@ private:
 	static float s_framesPerTick;
 
 	// core
-	static AudioEngine *s_audioEngine;
-	static Mixer * s_mixer;
-	static Song * s_song;
-	static PatternStore * s_patternStore;
-	static ProjectJournal * s_projectJournal;
+	static AudioEngine* s_audioEngine;
+	static Mixer* s_mixer;
+	static Song* s_song;
+	static PatternStore* s_patternStore;
+	static ProjectJournal* s_projectJournal;
 
 #ifdef LMMS_HAVE_LV2
 	static class Lv2Manager* s_lv2Manager;
 #endif
-	static Ladspa2LMMS * s_ladspaManager;
+	static Ladspa2LMMS* s_ladspaManager;
 	static void* s_dndPluginKey;
 
 	// even though most methods are static, an instance is needed for Qt slots/signals
-	static LmmsCore * s_instanceOfMe;
+	static LmmsCore* s_instanceOfMe;
 
 	friend class GuiApplication;
 };
 
-
 #endif
-

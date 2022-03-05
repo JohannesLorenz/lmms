@@ -25,10 +25,8 @@
 #ifndef INSTRUMENT_TRACK_VIEW_H
 #define INSTRUMENT_TRACK_VIEW_H
 
-#include "TrackView.h"
-
 #include "InstrumentTrack.h"
-
+#include "TrackView.h"
 
 class InstrumentTrackWindow;
 class Knob;
@@ -36,44 +34,31 @@ class MidiCCRackView;
 class TrackContainerView;
 class TrackLabelButton;
 
-
-class InstrumentTrackView : public TrackView
-{
+class InstrumentTrackView : public TrackView {
 	Q_OBJECT
 public:
-	InstrumentTrackView( InstrumentTrack * _it, TrackContainerView* tc );
+	InstrumentTrackView(InstrumentTrack* _it, TrackContainerView* tc);
 	virtual ~InstrumentTrackView();
 
-	InstrumentTrackWindow * getInstrumentTrackWindow();
+	InstrumentTrackWindow* getInstrumentTrackWindow();
 
-	InstrumentTrack * model()
-	{
-		return castModel<InstrumentTrack>();
-	}
+	InstrumentTrack* model() { return castModel<InstrumentTrack>(); }
 
-	const InstrumentTrack * model() const
-	{
-		return castModel<InstrumentTrack>();
-	}
+	const InstrumentTrack* model() const { return castModel<InstrumentTrack>(); }
 
-	static InstrumentTrackWindow * topLevelInstrumentTrackWindow();
+	static InstrumentTrackWindow* topLevelInstrumentTrackWindow();
 
-	QMenu * midiMenu()
-	{
-		return m_midiMenu;
-	}
+	QMenu* midiMenu() { return m_midiMenu; }
 
 	// Create a menu for assigning/creating channels for this track
-	QMenu * createMixerMenu( QString title, QString newMixerLabel ) override;
-
+	QMenu* createMixerMenu(QString title, QString newMixerLabel) override;
 
 protected:
-	void dragEnterEvent( QDragEnterEvent * _dee ) override;
-	void dropEvent( QDropEvent * _de ) override;
-
+	void dragEnterEvent(QDragEnterEvent* _dee) override;
+	void dropEvent(QDropEvent* _de) override;
 
 private slots:
-	void toggleInstrumentWindow( bool _on );
+	void toggleInstrumentWindow(bool _on);
 	void toggleMidiCCRack();
 	void activityIndicatorPressed();
 	void activityIndicatorReleased();
@@ -82,37 +67,32 @@ private slots:
 	void midiOutSelected();
 	void midiConfigChanged();
 
-	void assignMixerLine( int channelIndex );
+	void assignMixerLine(int channelIndex);
 	void createMixerLine();
 
 	void handleConfigChange(QString cls, QString attr, QString value);
 
-
 private:
-	InstrumentTrackWindow * m_window;
+	InstrumentTrackWindow* m_window;
 
 	// widgets in track-settings-widget
-	TrackLabelButton * m_tlb;
-	Knob * m_volumeKnob;
-	Knob * m_panningKnob;
-	FadeButton * m_activityIndicator;
+	TrackLabelButton* m_tlb;
+	Knob* m_volumeKnob;
+	Knob* m_panningKnob;
+	FadeButton* m_activityIndicator;
 
-	QMenu * m_midiMenu;
+	QMenu* m_midiMenu;
 
-	QAction * m_midiInputAction;
-	QAction * m_midiOutputAction;
+	QAction* m_midiInputAction;
+	QAction* m_midiOutputAction;
 
 	std::unique_ptr<MidiCCRackView> m_midiCCRackView;
 
 	QPoint m_lastPos;
 
-	FadeButton * getActivityIndicator() override
-	{
-		return m_activityIndicator;
-	}
+	FadeButton* getActivityIndicator() override { return m_activityIndicator; }
 
 	friend class InstrumentTrackWindow;
-} ;
+};
 
 #endif
-

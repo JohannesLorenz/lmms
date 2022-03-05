@@ -27,67 +27,45 @@
 
 #include <QStack>
 
-#include "lmms_basics.h"
 #include "SerializingObject.h"
+#include "lmms_basics.h"
 
-
-class LMMS_EXPORT JournallingObject : public SerializingObject
-{
+class LMMS_EXPORT JournallingObject : public SerializingObject {
 public:
 	JournallingObject();
 	virtual ~JournallingObject();
 
-	inline jo_id_t id() const
-	{
-		return m_id;
-	}
+	inline jo_id_t id() const { return m_id; }
 
-	void saveJournallingState( const bool newState )
-	{
-		m_journallingStateStack.push( m_journalling );
+	void saveJournallingState(const bool newState) {
+		m_journallingStateStack.push(m_journalling);
 		m_journalling = newState;
 	}
 
-	void restoreJournallingState()
-	{
-		if( !isJournallingStateStackEmpty())
-		{
-			m_journalling = m_journallingStateStack.pop();
-		}
+	void restoreJournallingState() {
+		if (!isJournallingStateStackEmpty()) { m_journalling = m_journallingStateStack.pop(); }
 	}
 
 	void addJournalCheckPoint();
 
-	virtual QDomElement saveState( QDomDocument & _doc,
-									QDomElement & _parent ) override;
+	virtual QDomElement saveState(QDomDocument& _doc, QDomElement& _parent) override;
 
-	void restoreState( const QDomElement & _this ) override;
+	void restoreState(const QDomElement& _this) override;
 
-	inline bool isJournalling() const
-	{
-		return m_journalling;
-	}
+	inline bool isJournalling() const { return m_journalling; }
 
-	inline void setJournalling( const bool _sr )
-	{
-		m_journalling = _sr;
-	}
+	inline void setJournalling(const bool _sr) { m_journalling = _sr; }
 
-	inline bool testAndSetJournalling( const bool newState )
-	{
+	inline bool testAndSetJournalling(const bool newState) {
 		const bool oldJournalling = m_journalling;
 		m_journalling = newState;
 		return oldJournalling;
 	}
 
-	bool isJournallingStateStackEmpty() const
-	{
-		return m_journallingStateStack.isEmpty();
-	}
+	bool isJournallingStateStackEmpty() const { return m_journallingStateStack.isEmpty(); }
 
 protected:
-	void changeID( jo_id_t _id );
-
+	void changeID(jo_id_t _id);
 
 private:
 	jo_id_t m_id;
@@ -95,9 +73,6 @@ private:
 	bool m_journalling;
 
 	QStack<bool> m_journallingStateStack;
-
-} ;
-
+};
 
 #endif
-

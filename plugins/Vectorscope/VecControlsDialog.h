@@ -30,18 +30,17 @@
 class VecControls;
 
 //! Top-level widget holding the configuration GUI and vector display
-class VecControlsDialog : public EffectControlDialog
-{
+class VecControlsDialog : public EffectControlDialog {
 	Q_OBJECT
 public:
-	explicit VecControlsDialog(VecControls *controls);
+	explicit VecControlsDialog(VecControls* controls);
 	virtual ~VecControlsDialog() {}
 
-	bool isResizable() const override {return true;}
+	bool isResizable() const override { return true; }
 	QSize sizeHint() const override;
 
 private:
-	VecControls *m_controls;
+	VecControls* m_controls;
 };
 
 #endif // VECCONTROLSDIALOG_H

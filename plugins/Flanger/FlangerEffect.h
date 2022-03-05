@@ -22,7 +22,6 @@
  *
  */
 
-
 #ifndef FLANGEREFFECT_H
 #define FLANGEREFFECT_H
 
@@ -36,17 +35,12 @@ class MonoDelay;
 class Noise;
 class QuadratureLfo;
 
-
-class FlangerEffect : public Effect
-{
+class FlangerEffect : public Effect {
 public:
-	FlangerEffect( Model* parent , const Descriptor::SubPluginFeatures::Key* key );
+	FlangerEffect(Model* parent, const Descriptor::SubPluginFeatures::Key* key);
 	virtual ~FlangerEffect();
-	virtual bool processAudioBuffer( sampleFrame *buf, const fpp_t frames );
-	virtual EffectControls* controls()
-	{
-		return &m_flangerControls;
-	}
+	virtual bool processAudioBuffer(sampleFrame* buf, const fpp_t frames);
+	virtual EffectControls* controls() { return &m_flangerControls; }
 	void changeSampleRate();
 	void restartLFO();
 
@@ -56,7 +50,6 @@ private:
 	MonoDelay* m_rDelay;
 	QuadratureLfo* m_lfo;
 	Noise* m_noise;
-
 };
 
 #endif // FLANGEREFFECT_H

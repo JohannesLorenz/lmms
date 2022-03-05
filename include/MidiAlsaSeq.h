@@ -28,22 +28,17 @@
 #include "lmmsconfig.h"
 
 #ifdef LMMS_HAVE_ALSA
-#include <alsa/asoundlib.h>
-
 #include <QMap>
 #include <QMutex>
 #include <QThread>
 #include <QTimer>
-
+#include <alsa/asoundlib.h>
 
 #include "MidiClient.h"
 
-
 struct pollfd;
 
-
-class MidiAlsaSeq : public QThread, public MidiClient
-{
+class MidiAlsaSeq : public QThread, public MidiClient {
 	Q_OBJECT
 public:
 	MidiAlsaSeq();
@@ -51,85 +46,61 @@ public:
 
 	static QString probeDevice();
 
-
-	inline static QString name()
-	{
-		return QT_TRANSLATE_NOOP( "MidiSetupWidget",
+	inline static QString name() {
+		return QT_TRANSLATE_NOOP("MidiSetupWidget",
 			"ALSA-Sequencer (Advanced Linux Sound "
-							"Architecture)" );
+			"Architecture)");
 	}
 
-	inline static QString configSection()
-	{
-		return "Midialsaseq";
-	}
+	inline static QString configSection() { return "Midialsaseq"; }
 
+	virtual void processOutEvent(const MidiEvent& _me, const TimePos& _time, const MidiPort* _port) override;
 
+	void applyPortMode(MidiPort* _port) override;
+	void applyPortName(MidiPort* _port) override;
 
-	virtual void processOutEvent( const MidiEvent & _me,
-						const TimePos & _time,
-						const MidiPort * _port ) override;
-
-	void applyPortMode( MidiPort * _port ) override;
-	void applyPortName( MidiPort * _port ) override;
-
-	void removePort( MidiPort * _port ) override;
-
+	void removePort(MidiPort* _port) override;
 
 	// list seq-ports from ALSA
-	QStringList readablePorts() const override
-	{
-		return m_readablePorts;
-	}
+	QStringList readablePorts() const override { return m_readablePorts; }
 
-	QStringList writablePorts() const override
-	{
-		return m_writablePorts;
-	}
+	QStringList writablePorts() const override { return m_writablePorts; }
 
 	// return name of port which specified MIDI event came from
-	QString sourcePortName( const MidiEvent & ) const override;
+	QString sourcePortName(const MidiEvent&) const override;
 
 	// (un)subscribe given MidiPort to/from destination-port
-	virtual void subscribeReadablePort( MidiPort * _port,
-						const QString & _dest,
-						bool _subscribe = true ) override;
-	virtual void subscribeWritablePort( MidiPort * _port,
-						const QString & _dest,
-						bool _subscribe = true ) override;
-	virtual void connectRPChanged( QObject * _receiver,
-							const char * _member ) override
-	{
-		connect( this, SIGNAL( readablePortsChanged() ),
-							_receiver, _member );
+	virtual void subscribeReadablePort(MidiPort* _port, const QString& _dest, bool _subscribe = true) override;
+	virtual void subscribeWritablePort(MidiPort* _port, const QString& _dest, bool _subscribe = true) override;
+	virtual void connectRPChanged(QObject* _receiver, const char* _member) override {
+		connect(this, SIGNAL(readablePortsChanged()), _receiver, _member);
 	}
 
-	virtual void connectWPChanged( QObject * _receiver,
-							const char * _member ) override
-	{
-		connect( this, SIGNAL( writablePortsChanged() ),
-							_receiver, _member );
+	virtual void connectWPChanged(QObject* _receiver, const char* _member) override {
+		connect(this, SIGNAL(writablePortsChanged()), _receiver, _member);
 	}
-
 
 private slots:
-	void changeQueueTempo( bpm_t _bpm );
+	void changeQueueTempo(bpm_t _bpm);
 	void updatePortList();
-
 
 private:
 	void run() override;
 
 #ifdef LMMS_HAVE_ALSA
 	QMutex m_seqMutex;
-	snd_seq_t * m_seqHandle;
-	struct Ports
-	{
-		Ports() { p[0] = -1; p[1] = -1; }
-		int & operator[]( const int _i ) { return p[_i]; }
-		private: int p[2];
-	} ;
-	QMap<MidiPort *, Ports> m_portIDs;
+	snd_seq_t* m_seqHandle;
+	struct Ports {
+		Ports() {
+			p[0] = -1;
+			p[1] = -1;
+		}
+		int& operator[](const int _i) { return p[_i]; }
+
+	private:
+		int p[2];
+	};
+	QMap<MidiPort*, Ports> m_portIDs;
 #endif
 
 	int m_queueID;
@@ -142,14 +113,11 @@ private:
 
 	int m_pipe[2];
 
-
 signals:
 	void readablePortsChanged();
 	void writablePortsChanged();
-
-} ;
-
-#endif
+};
 
 #endif
 
+#endif

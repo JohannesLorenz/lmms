@@ -21,11 +21,9 @@
  * Boston, MA 02110-1301 USA.
  *
  */
- 
 
 #ifndef PATTERN_CLIP_VIEW_H
 #define PATTERN_CLIP_VIEW_H
-
 
 #include <QStaticText>
 
@@ -33,14 +31,11 @@
 
 class PatternClip;
 
-
-class PatternClipView : public ClipView
-{
+class PatternClipView : public ClipView {
 	Q_OBJECT
 public:
 	PatternClipView(Clip* clip, TrackView* tv);
 	virtual ~PatternClipView() = default;
-
 
 public slots:
 	void update() override;
@@ -50,20 +45,16 @@ protected slots:
 	void resetName();
 	void changeName();
 
-
 protected:
-	void paintEvent( QPaintEvent * pe ) override;
-	void mouseDoubleClickEvent( QMouseEvent * _me ) override;
-	void constructContextMenu( QMenu * ) override;
-
+	void paintEvent(QPaintEvent* pe) override;
+	void mouseDoubleClickEvent(QMouseEvent* _me) override;
+	void constructContextMenu(QMenu*) override;
 
 private:
 	PatternClip* m_patternClip;
 	QPixmap m_paintPixmap;
-	
+
 	QStaticText m_staticTextName;
-} ;
-
-
+};
 
 #endif

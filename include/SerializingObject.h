@@ -29,72 +29,51 @@
 
 #include "lmms_export.h"
 
-
 class QDomDocument;
 class QDomElement;
 
 class SerializingObjectHook;
 
-
-class LMMS_EXPORT SerializingObject
-{
+class LMMS_EXPORT SerializingObject {
 public:
 	SerializingObject();
 	virtual ~SerializingObject();
 
-	virtual QDomElement saveState( QDomDocument & _doc, QDomElement & _parent );
+	virtual QDomElement saveState(QDomDocument& _doc, QDomElement& _parent);
 
-	virtual void restoreState( const QDomElement & _this );
-
+	virtual void restoreState(const QDomElement& _this);
 
 	// to be implemented by actual object
 	virtual QString nodeName() const = 0;
 
-	void setHook( SerializingObjectHook * _hook );
+	void setHook(SerializingObjectHook* _hook);
 
-	SerializingObjectHook* hook()
-	{
-		return m_hook;
-	}
-
+	SerializingObjectHook* hook() { return m_hook; }
 
 protected:
 	// to be implemented by sub-objects
-	virtual void saveSettings( QDomDocument& doc, QDomElement& element ) = 0;
-	virtual void loadSettings( const QDomElement& element ) = 0;
-
+	virtual void saveSettings(QDomDocument& doc, QDomElement& element) = 0;
+	virtual void loadSettings(const QDomElement& element) = 0;
 
 private:
-	SerializingObjectHook * m_hook;
+	SerializingObjectHook* m_hook;
+};
 
-} ;
-
-
-class SerializingObjectHook
-{
+class SerializingObjectHook {
 public:
-	SerializingObjectHook() :
-		m_hookedIn( nullptr )
-	{
-	}
-	virtual ~SerializingObjectHook()
-	{
-		if( m_hookedIn != nullptr )
-		{
-			m_hookedIn->setHook( nullptr );
-		}
+	SerializingObjectHook()
+		: m_hookedIn(nullptr) {}
+	virtual ~SerializingObjectHook() {
+		if (m_hookedIn != nullptr) { m_hookedIn->setHook(nullptr); }
 	}
 
-	virtual void saveSettings( QDomDocument & _doc, QDomElement & _this ) = 0;
-	virtual void loadSettings( const QDomElement & _this ) = 0;
+	virtual void saveSettings(QDomDocument& _doc, QDomElement& _this) = 0;
+	virtual void loadSettings(const QDomElement& _this) = 0;
 
 private:
-	SerializingObject * m_hookedIn;
+	SerializingObject* m_hookedIn;
 
 	friend class SerializingObject;
-
-} ;
-
+};
 
 #endif
-

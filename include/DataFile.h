@@ -23,28 +23,25 @@
  *
  */
 
-
 #ifndef DATA_FILE_H
 #define DATA_FILE_H
 
-#include <map>
 #include <QDomDocument>
+#include <map>
 
-#include "lmms_export.h"
 #include "MemoryManager.h"
+#include "lmms_export.h"
 
 class ProjectVersion;
 class QTextStream;
 
-class LMMS_EXPORT DataFile : public QDomDocument
-{
+class LMMS_EXPORT DataFile : public QDomDocument {
 	MM_OPERATORS
 
-	using UpgradeMethod = void(DataFile::*)();
+	using UpgradeMethod = void (DataFile::*)();
 
 public:
-	enum Types
-	{
+	enum Types {
 		UnknownType,
 		SongProject,
 		SongProjectTemplate,
@@ -55,12 +52,12 @@ public:
 		EffectSettings,
 		MidiClip,
 		TypeCount
-	} ;
+	};
 	typedef Types Type;
 
-	DataFile( const QString& fileName );
-	DataFile( const QByteArray& data );
-	DataFile( Type type );
+	DataFile(const QString& fileName);
+	DataFile(const QByteArray& data);
+	DataFile(Type type);
 
 	virtual ~DataFile();
 
@@ -68,37 +65,29 @@ public:
 	/// \brief validate
 	/// performs basic validation, compared to file extension.
 	///
-	bool validate( QString extension );
+	bool validate(QString extension);
 
-	QString nameWithExtension( const QString& fn ) const;
+	QString nameWithExtension(const QString& fn) const;
 
-	void write( QTextStream& strm );
+	void write(QTextStream& strm);
 	bool writeFile(const QString& fn, bool withResources = false);
-	bool copyResources(const QString& resourcesDir); //!< Copies resources to the resourcesDir and changes the DataFile to use local paths to them
+	bool copyResources(const QString&
+			resourcesDir); //!< Copies resources to the resourcesDir and changes the DataFile to use local paths to them
 	bool hasLocalPlugins(QDomElement parent = QDomElement(), bool firstCall = true) const;
 
-	QDomElement& content()
-	{
-		return m_content;
-	}
+	QDomElement& content() { return m_content; }
 
-	QDomElement& head()
-	{
-		return m_head;
-	}
+	QDomElement& head() { return m_head; }
 
-	Type type() const
-	{
-		return m_type;
-	}
+	Type type() const { return m_type; }
 
 	unsigned int legacyFileVersion();
 
 private:
-	static Type type( const QString& typeName );
-	static QString typeName( Type type );
+	static Type type(const QString& typeName);
+	static QString typeName(Type type);
 
-	void cleanMetaNodes( QDomElement de );
+	void cleanMetaNodes(QDomElement de);
 
 	// helper upgrade routines
 	void upgrade_0_2_1_20070501();
@@ -136,14 +125,12 @@ private:
 
 	void upgrade();
 
-	void loadData( const QByteArray & _data, const QString & _sourceFile );
+	void loadData(const QByteArray& _data, const QString& _sourceFile);
 
-
-	struct LMMS_EXPORT typeDescStruct
-	{
+	struct LMMS_EXPORT typeDescStruct {
 		Type m_type;
 		QString m_name;
-	} ;
+	};
 	static typeDescStruct s_types[TypeCount];
 
 	QString m_fileName; //!< The origin file name or "" if this DataFile didn't originate from a file
@@ -151,8 +138,6 @@ private:
 	QDomElement m_head;
 	Type m_type;
 	unsigned int m_fileVersion;
-
-} ;
-
+};
 
 #endif

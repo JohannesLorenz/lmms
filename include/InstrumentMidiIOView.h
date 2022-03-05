@@ -30,39 +30,34 @@
 
 #include "ModelView.h"
 
-
 class GroupBox;
 class LcdSpinBox;
 class QToolButton;
 class LedCheckBox;
 class InstrumentTrack;
 
-
-class InstrumentMidiIOView : public QWidget, public ModelView
-{
+class InstrumentMidiIOView : public QWidget, public ModelView {
 	Q_OBJECT
 public:
-	InstrumentMidiIOView( QWidget* parent );
+	InstrumentMidiIOView(QWidget* parent);
 	virtual ~InstrumentMidiIOView();
-
 
 private:
 	void modelChanged() override;
 
-	GroupBox * m_midiInputGroupBox;
-	LcdSpinBox * m_inputChannelSpinBox;
-	LcdSpinBox * m_fixedInputVelocitySpinBox;
-	QToolButton * m_rpBtn;
+	GroupBox* m_midiInputGroupBox;
+	LcdSpinBox* m_inputChannelSpinBox;
+	LcdSpinBox* m_fixedInputVelocitySpinBox;
+	QToolButton* m_rpBtn;
 
-	GroupBox * m_midiOutputGroupBox;
-	LcdSpinBox * m_outputChannelSpinBox;
-	LcdSpinBox * m_fixedOutputVelocitySpinBox;
-	LcdSpinBox * m_outputProgramSpinBox;
-	LcdSpinBox * m_fixedOutputNoteSpinBox;
-	QToolButton * m_wpBtn;
+	GroupBox* m_midiOutputGroupBox;
+	LcdSpinBox* m_outputChannelSpinBox;
+	LcdSpinBox* m_fixedOutputVelocitySpinBox;
+	LcdSpinBox* m_outputProgramSpinBox;
+	LcdSpinBox* m_fixedOutputNoteSpinBox;
+	QToolButton* m_wpBtn;
 
 	LcdSpinBox* m_baseVelocitySpinBox;
-
-} ;
+};
 
 #endif

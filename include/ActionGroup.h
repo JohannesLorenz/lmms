@@ -22,7 +22,6 @@
  *
  */
 
-
 #ifndef ACTION_GROUP_H
 #define ACTION_GROUP_H
 
@@ -33,15 +32,14 @@
 /// This class provides the same functionality as QActionGroup, but in addition
 /// has the actionTriggered(int) signal.
 /// It also sets every added action's checkable property to true.
-class ActionGroup : public QActionGroup
-{
+class ActionGroup : public QActionGroup {
 	Q_OBJECT
 public:
 	ActionGroup(QObject* parent);
 
-	QAction* addAction(QAction *a);
-	QAction* addAction(const QString &text);
-	QAction* addAction(const QIcon &icon, const QString &text);
+	QAction* addAction(QAction* a);
+	QAction* addAction(const QString& text);
+	QAction* addAction(const QIcon& icon, const QString& text);
 
 signals:
 	/// This signal is emitted when the action at the given index is triggered.

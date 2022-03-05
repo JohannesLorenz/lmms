@@ -21,7 +21,7 @@
  * Boston, MA 02110-1301 USA.
  *
  */
- 
+
 #ifndef SAMPLE_CLIP_H
 #define SAMPLE_CLIP_H
 
@@ -29,50 +29,41 @@
 
 class SampleBuffer;
 
-
-class SampleClip : public Clip
-{
+class SampleClip : public Clip {
 	Q_OBJECT
-	mapPropertyFromModel(bool,isRecord,setRecord,m_recordModel);
+	mapPropertyFromModel(bool, isRecord, setRecord, m_recordModel);
+
 public:
-	SampleClip( Track * _track );
-	SampleClip( const SampleClip& orig );
+	SampleClip(Track* _track);
+	SampleClip(const SampleClip& orig);
 	virtual ~SampleClip();
 
-	SampleClip& operator=( const SampleClip& that ) = delete;
+	SampleClip& operator=(const SampleClip& that) = delete;
 
-	void changeLength( const TimePos & _length ) override;
-	const QString & sampleFile() const;
+	void changeLength(const TimePos& _length) override;
+	const QString& sampleFile() const;
 
-	void saveSettings( QDomDocument & _doc, QDomElement & _parent ) override;
-	void loadSettings( const QDomElement & _this ) override;
-	inline QString nodeName() const override
-	{
-		return "sampleclip";
-	}
+	void saveSettings(QDomDocument& _doc, QDomElement& _parent) override;
+	void loadSettings(const QDomElement& _this) override;
+	inline QString nodeName() const override { return "sampleclip"; }
 
-	SampleBuffer* sampleBuffer()
-	{
-		return m_sampleBuffer;
-	}
+	SampleBuffer* sampleBuffer() { return m_sampleBuffer; }
 
 	TimePos sampleLength() const;
-	void setSampleStartFrame( f_cnt_t startFrame );
-	void setSamplePlayLength( f_cnt_t length );
-	ClipView * createView( TrackView * _tv ) override;
-
+	void setSampleStartFrame(f_cnt_t startFrame);
+	void setSamplePlayLength(f_cnt_t length);
+	ClipView* createView(TrackView* _tv) override;
 
 	bool isPlaying() const;
 	void setIsPlaying(bool isPlaying);
 
 public slots:
-	void setSampleBuffer( SampleBuffer* sb );
-	void setSampleFile( const QString & _sf );
+	void setSampleBuffer(SampleBuffer* sb);
+	void setSampleFile(const QString& _sf);
 	void updateLength();
 	void toggleRecord();
 	void playbackPositionChanged();
 	void updateTrackClips();
-
 
 private:
 	SampleBuffer* m_sampleBuffer;
@@ -81,12 +72,9 @@ private:
 
 	friend class SampleClipView;
 
-
 signals:
 	void sampleChanged();
 	void wasReversed();
-} ;
-
-
+};
 
 #endif

@@ -55,8 +55,7 @@
 		the feature
 	4. access the latter using feature()
 */
-class Lv2Options
-{
+class Lv2Options {
 public:
 	//! Return if an option is supported by LMMS
 	static bool isOptionSupported(LV2_URID key);
@@ -64,11 +63,9 @@ public:
 	static void supportOption(LV2_URID key);
 
 	//! Initialize an option
-	template<typename Opt, typename Arg>
-	void initOption(Lv2UridCache::Id key, Arg&& value,
-			LV2_Options_Context context = LV2_OPTIONS_INSTANCE,
-			std::uint32_t subject = 0)
-	{
+	template <typename Opt, typename Arg>
+	void initOption(Lv2UridCache::Id key, Arg&& value, LV2_Options_Context context = LV2_OPTIONS_INSTANCE,
+		std::uint32_t subject = 0) {
 		const Lv2UridCache& cache = Engine::getLv2Manager()->uridCache();
 		initOption(cache[key], sizeof(Opt), cache[Lv2UridCache::IdForType<Opt>::value],
 			std::make_shared<Opt>(std::forward<Arg>(value)), context, subject);
@@ -76,19 +73,12 @@ public:
 	//! Fill m_options and m_optionPointers with all options
 	void createOptionVectors();
 	//! Return the feature
-	const LV2_Options_Option* feature() const
-	{
-		return m_options.data();
-	}
+	const LV2_Options_Option* feature() const { return m_options.data(); }
 
 private:
 	//! Initialize an option internally
-	void initOption(LV2_URID key,
-		uint32_t size,
-		LV2_URID type,
-		std::shared_ptr<void> value,
-		LV2_Options_Context context = LV2_OPTIONS_INSTANCE,
-		uint32_t subject = 0);
+	void initOption(LV2_URID key, uint32_t size, LV2_URID type, std::shared_ptr<void> value,
+		LV2_Options_Context context = LV2_OPTIONS_INSTANCE, uint32_t subject = 0);
 	//! options that are supported by every processor
 	static std::set<LV2_URID> s_supportedOptions;
 	//! options + data, ordered by URID

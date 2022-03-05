@@ -22,45 +22,31 @@
  *
  */
 
-
 #ifndef TAB_BUTTON_H
 #define TAB_BUTTON_H
 
 #include <QPushButton>
 
-
-class TabButton : public QPushButton
-{
+class TabButton : public QPushButton {
 	Q_OBJECT
 public:
-	TabButton( const QString & _text, int _id, QWidget * _parent ) :
-		QPushButton( _text, _parent ),
-		m_id( _id )
-	{
-		setCheckable( true );
-		connect( this, SIGNAL( clicked() ), this,
-						SLOT( slotClicked() ) );
+	TabButton(const QString& _text, int _id, QWidget* _parent)
+		: QPushButton(_text, _parent)
+		, m_id(_id) {
+		setCheckable(true);
+		connect(this, SIGNAL(clicked()), this, SLOT(slotClicked()));
 	}
 
-	~TabButton()
-	{
-	}
-
+	~TabButton() {}
 
 signals:
-	void clicked( int );
-
+	void clicked(int);
 
 protected slots:
-	void slotClicked()
-	{
-		emit clicked( m_id );
-	}
-
+	void slotClicked() { emit clicked(m_id); }
 
 private:
 	int m_id;
-
-} ;
+};
 
 #endif

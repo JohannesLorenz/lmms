@@ -22,13 +22,11 @@
  *
  */
 
-
 #ifndef PATTERN_STORE_H
 #define PATTERN_STORE_H
 
-#include "TrackContainer.h"
 #include "ComboBoxModel.h"
-
+#include "TrackContainer.h"
 
 /*
  * PatternStore is the backend of Pattern Editor:
@@ -55,10 +53,10 @@
  * - PatternTracks are used in the Song Editor. Each one reference a "pattern" in the PatternStore.
  * - PatternClips are stored inside PatternTracks. They are just empty placeholders.
  */
-class LMMS_EXPORT PatternStore : public TrackContainer
-{
+class LMMS_EXPORT PatternStore : public TrackContainer {
 	Q_OBJECT
 	mapPropertyFromModel(int, currentPattern, setCurrentPattern, m_patternComboBoxModel);
+
 public:
 	PatternStore();
 	virtual ~PatternStore();
@@ -67,16 +65,10 @@ public:
 
 	void updateAfterTrackAdd() override;
 
-	inline QString nodeName() const override
-	{
-		return "patternstore";
-	}
+	inline QString nodeName() const override { return "patternstore"; }
 
 	bar_t lengthOfPattern(int pattern) const;
-	inline bar_t lengthOfCurrentPattern()
-	{
-		return lengthOfPattern(currentPattern());
-	}
+	inline bar_t lengthOfCurrentPattern() { return lengthOfPattern(currentPattern()); }
 	int numOfPatterns() const;
 	void removePattern(int pattern);
 
@@ -94,15 +86,11 @@ public slots:
 	void updateComboBox();
 	void currentPatternChanged();
 
-
 private:
 	ComboBoxModel m_patternComboBoxModel;
 
-
 	// Where the pattern selection combo box is
 	friend class PatternEditorWindow;
-
-} ;
-
+};
 
 #endif

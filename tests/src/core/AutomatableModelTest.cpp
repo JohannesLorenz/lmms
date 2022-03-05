@@ -22,13 +22,12 @@
  *
  */
 
+#include "AutomatableModel.h"
+
+#include "ComboBoxModel.h"
 #include "QTestSuite.h"
 
-#include "AutomatableModel.h"
-#include "ComboBoxModel.h"
-
-class AutomatableModelTest : QTestSuite
-{
+class AutomatableModelTest : QTestSuite {
 	Q_OBJECT
 
 	bool m1Changed, m2Changed;
@@ -41,31 +40,27 @@ private slots: // helper slots
 private slots: // tests
 	//! Test that upcast and exact casts work,
 	//! but no downcast or any other casts
-	void CastTests()
-	{
+	void CastTests() {
 		ComboBoxModel comboModel;
 		AutomatableModel* amPtr = &comboModel;
-		QVERIFY(nullptr == amPtr->dynamicCast<FloatModel>()); // not a parent class
+		QVERIFY(nullptr == amPtr->dynamicCast<FloatModel>());		   // not a parent class
 		QCOMPARE(&comboModel, amPtr->dynamicCast<AutomatableModel>()); // parent class
-		QCOMPARE(&comboModel, amPtr->dynamicCast<IntModel>()); // parent class
-		QCOMPARE(&comboModel, amPtr->dynamicCast<ComboBoxModel>()); // same class
+		QCOMPARE(&comboModel, amPtr->dynamicCast<IntModel>());		   // parent class
+		QCOMPARE(&comboModel, amPtr->dynamicCast<ComboBoxModel>());	   // same class
 
 		IntModel intModel;
 		IntModel* imPtr = &intModel;
-		QVERIFY(nullptr == imPtr->dynamicCast<FloatModel>()); // not a parent class
+		QVERIFY(nullptr == imPtr->dynamicCast<FloatModel>());		 // not a parent class
 		QCOMPARE(&intModel, imPtr->dynamicCast<AutomatableModel>()); // parent class
-		QCOMPARE(&intModel, imPtr->dynamicCast<IntModel>()); // same class
-		QVERIFY(nullptr == imPtr->dynamicCast<ComboBoxModel>()); // child class
+		QCOMPARE(&intModel, imPtr->dynamicCast<IntModel>());		 // same class
+		QVERIFY(nullptr == imPtr->dynamicCast<ComboBoxModel>());	 // child class
 	}
 
-	void LinkTests()
-	{
+	void LinkTests() {
 		BoolModel m1(false), m2(false);
 
-		QObject::connect(&m1, SIGNAL(dataChanged()),
-			this, SLOT(onM1Changed()));
-		QObject::connect(&m2, SIGNAL(dataChanged()),
-			this, SLOT(onM2Changed()));
+		QObject::connect(&m1, SIGNAL(dataChanged()), this, SLOT(onM1Changed()));
+		QObject::connect(&m2, SIGNAL(dataChanged()), this, SLOT(onM2Changed()));
 
 		resetChanged();
 		AutomatableModel::linkModels(&m1, &m1);
@@ -74,7 +69,7 @@ private slots: // tests
 
 		resetChanged();
 		AutomatableModel::linkModels(&m1, &m2);
-		QVERIFY(m1Changed); // since m1 takes the value of m2
+		QVERIFY(m1Changed);	 // since m1 takes the value of m2
 		QVERIFY(!m2Changed); // the second model is the source
 
 		resetChanged();

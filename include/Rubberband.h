@@ -23,73 +23,48 @@
  *
  */
 
-
 #ifndef RUBBERBAND_H
 #define RUBBERBAND_H
 
 #include <QRubberBand>
 #include <QVector>
 
-
-class selectableObject : public QWidget
-{
+class selectableObject : public QWidget {
 	Q_OBJECT
 public:
-	selectableObject( QWidget * _parent ) :
-		QWidget( _parent ),
-		m_selected( false )
-	{
-	}
+	selectableObject(QWidget* _parent)
+		: QWidget(_parent)
+		, m_selected(false) {}
 
-	virtual ~selectableObject()
-	{
-	}
+	virtual ~selectableObject() {}
 
-	inline void setSelected(bool selected)
-	{
+	inline void setSelected(bool selected) {
 		if (m_selected == selected) { return; }
 		m_selected = selected;
 		update();
 	}
 
-	inline bool isSelected() const
-	{
-		return( m_selected );
-	}
-
+	inline bool isSelected() const { return (m_selected); }
 
 public slots:
-	virtual void update()
-	{
-		QWidget::update();
-	}
-
+	virtual void update() { QWidget::update(); }
 
 private:
 	bool m_selected;
-
-} ;
-
-
-
-
-class RubberBand : public QRubberBand
-{
-public:
-	RubberBand( QWidget * _parent );
-	virtual ~RubberBand();
-
-	QVector<selectableObject *> selectedObjects() const;
-	QVector<selectableObject *> selectableObjects() const;
-
-
-protected:
-	void resizeEvent( QResizeEvent * _re ) override;
-
-private:
-
 };
 
+class RubberBand : public QRubberBand {
+public:
+	RubberBand(QWidget* _parent);
+	virtual ~RubberBand();
+
+	QVector<selectableObject*> selectedObjects() const;
+	QVector<selectableObject*> selectableObjects() const;
+
+protected:
+	void resizeEvent(QResizeEvent* _re) override;
+
+private:
+};
 
 #endif
-

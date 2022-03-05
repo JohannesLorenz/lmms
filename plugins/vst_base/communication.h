@@ -3,7 +3,7 @@
  *                   LVSL-server and -client
  *
  * Copyright (c) 2005-2010 Tobias Doerffel <tobydox/at/users.sourceforge.net>
- * 
+ *
  * This file is part of LMMS - https://lmms.io
  *
  * This program is free software; you can redistribute it and/or
@@ -23,23 +23,16 @@
  *
  */
 
-
 #ifndef _COMMUNICATION_H
 #define _COMMUNICATION_H
 
-
-
-struct VstParameterDumpItem
-{
+struct VstParameterDumpItem {
 	int32_t index;
 	std::string shortLabel;
 	float value;
-} ;
+};
 
-
-
-enum VstHostLanguages
-{
+enum VstHostLanguages {
 	LanguageEnglish = 1,
 	LanguageGerman,
 	LanguageFrench,
@@ -47,12 +40,9 @@ enum VstHostLanguages
 	LanguageSpanish,
 	LanguageJapanese,
 	LanguageKorean
-} ;
+};
 
-
-
-enum VstRemoteMessageIDs
-{
+enum VstRemoteMessageIDs {
 	// vstPlugin -> remoteVstPlugin
 	IdVstLoadPlugin = IdUserBase,
 	IdVstClosePlugin,
@@ -84,8 +74,6 @@ enum VstRemoteMessageIDs
 	IdVstParameterCount,
 	IdVstParameterDump
 
-} ;
-
-
+};
 
 #endif

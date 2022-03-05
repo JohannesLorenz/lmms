@@ -26,26 +26,18 @@
 #ifndef MIDI_CLIP_H
 #define MIDI_CLIP_H
 
-
 #include "Clip.h"
 #include "Note.h"
 
-
 class InstrumentTrack;
 
-
-class LMMS_EXPORT MidiClip : public Clip
-{
+class LMMS_EXPORT MidiClip : public Clip {
 	Q_OBJECT
 public:
-	enum MidiClipTypes
-	{
-		BeatClip,
-		MelodyClip
-	} ;
+	enum MidiClipTypes { BeatClip, MelodyClip };
 
-	MidiClip( InstrumentTrack* instrumentTrack );
-	MidiClip( const MidiClip& other );
+	MidiClip(InstrumentTrack* instrumentTrack);
+	MidiClip(const MidiClip& other);
 	virtual ~MidiClip();
 
 	void init();
@@ -53,55 +45,40 @@ public:
 	void updateLength();
 
 	// note management
-	Note * addNote( const Note & _new_note, const bool _quant_pos = true );
+	Note* addNote(const Note& _new_note, const bool _quant_pos = true);
 
-	void removeNote( Note * _note_to_del );
+	void removeNote(Note* _note_to_del);
 
-	Note * noteAtStep( int _step );
+	Note* noteAtStep(int _step);
 
 	void rearrangeAllNotes();
 	void clearNotes();
 
-	inline const NoteVector & notes() const
-	{
-		return m_notes;
-	}
+	inline const NoteVector& notes() const { return m_notes; }
 
-	Note * addStepNote( int step );
-	void setStep( int step, bool enabled );
+	Note* addStepNote(int step);
+	void setStep(int step, bool enabled);
 
 	// Split the list of notes on the given position
 	void splitNotes(NoteVector notes, TimePos pos);
 
 	// clip-type stuff
-	inline MidiClipTypes type() const
-	{
-		return m_clipType;
-	}
-
+	inline MidiClipTypes type() const { return m_clipType; }
 
 	// next/previous track based on position in the containing track
-	MidiClip * previousMidiClip() const;
-	MidiClip * nextMidiClip() const;
+	MidiClip* previousMidiClip() const;
+	MidiClip* nextMidiClip() const;
 
 	// settings-management
-	void saveSettings( QDomDocument & _doc, QDomElement & _parent ) override;
-	void loadSettings( const QDomElement & _this ) override;
-	inline QString nodeName() const override
-	{
-		return "midiclip";
-	}
+	void saveSettings(QDomDocument& _doc, QDomElement& _parent) override;
+	void loadSettings(const QDomElement& _this) override;
+	inline QString nodeName() const override { return "midiclip"; }
 
-	inline InstrumentTrack * instrumentTrack() const
-	{
-		return m_instrumentTrack;
-	}
+	inline InstrumentTrack* instrumentTrack() const { return m_instrumentTrack; }
 
 	bool empty();
 
-
-	ClipView * createView( TrackView * _tv ) override;
-
+	ClipView* createView(TrackView* _tv) override;
 
 	using Model::dataChanged;
 
@@ -117,16 +94,15 @@ protected:
 protected slots:
 	void changeTimeSignature();
 
-
 private:
 	TimePos beatClipLength() const;
 
-	void setType( MidiClipTypes _new_clip_type );
+	void setType(MidiClipTypes _new_clip_type);
 	void checkType();
 
 	void resizeToFirstTrack();
 
-	InstrumentTrack * m_instrumentTrack;
+	InstrumentTrack* m_instrumentTrack;
 
 	MidiClipTypes m_clipType;
 
@@ -134,15 +110,12 @@ private:
 	NoteVector m_notes;
 	int m_steps;
 
-	MidiClip * adjacentMidiClipByOffset(int offset) const;
+	MidiClip* adjacentMidiClipByOffset(int offset) const;
 
 	friend class MidiClipView;
 
-
 signals:
-	void destroyedMidiClip( MidiClip* );
-} ;
-
-
+	void destroyedMidiClip(MidiClip*);
+};
 
 #endif

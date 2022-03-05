@@ -44,9 +44,8 @@ constexpr size_t JACK_MIDI_BUFFER_MAX = 64; /* events */
 class AudioJack;
 class QLineEdit;
 
-class MidiJack : public QThread, public MidiClientRaw
-{
-        Q_OBJECT
+class MidiJack : public QThread, public MidiClientRaw {
+	Q_OBJECT
 public:
 	MidiJack();
 	virtual ~MidiJack();
@@ -55,42 +54,31 @@ public:
 
 	static QString probeDevice();
 
-	inline static QString name()
-	{
-		return( QT_TRANSLATE_NOOP( "MidiSetupWidget",
-			"Jack-MIDI" ) );
-	}
+	inline static QString name() { return (QT_TRANSLATE_NOOP("MidiSetupWidget", "Jack-MIDI")); }
 
 	void JackMidiWrite(jack_nframes_t nframes);
 	void JackMidiRead(jack_nframes_t nframes);
 
-
-	inline static QString configSection()
-	{
-		return "MidiJack";
-	}
-
+	inline static QString configSection() { return "MidiJack"; }
 
 protected:
-	virtual void sendByte( const unsigned char c );
+	virtual void sendByte(const unsigned char c);
 	virtual void run();
 
-
 private:
-	AudioJack *m_jackAudio;
-	jack_client_t *m_jackClient;
-	jack_port_t *m_input_port;
-	jack_port_t *m_output_port;
+	AudioJack* m_jackAudio;
+	jack_client_t* m_jackClient;
+	jack_port_t* m_input_port;
+	jack_port_t* m_output_port;
 	uint8_t m_jack_buffer[JACK_MIDI_BUFFER_MAX * 4];
 
-	void JackMidiOutEvent(uint8_t *buf, uint8_t len);
+	void JackMidiOutEvent(uint8_t* buf, uint8_t len);
 	void lock();
 	void unlock();
 
-	void getPortInfo( const QString& sPortName, int& nClient, int& nPort );
+	void getPortInfo(const QString& sPortName, int& nClient, int& nPort);
 
 	volatile bool m_quit;
-
 };
 
 #endif // LMMS_HAVE_JACK

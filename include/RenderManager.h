@@ -28,19 +28,14 @@
 
 #include <memory>
 
-#include "ProjectRenderer.h"
 #include "OutputSettings.h"
+#include "ProjectRenderer.h"
 
-
-class RenderManager : public QObject
-{
+class RenderManager : public QObject {
 	Q_OBJECT
 public:
-	RenderManager(
-		const AudioEngine::qualitySettings & qualitySettings,
-		const OutputSettings & outputSettings,
-		ProjectRenderer::ExportFileFormats fmt,
-		QString outputPath);
+	RenderManager(const AudioEngine::qualitySettings& qualitySettings, const OutputSettings& outputSettings,
+		ProjectRenderer::ExportFileFormats fmt, QString outputPath);
 
 	virtual ~RenderManager();
 
@@ -53,7 +48,7 @@ public:
 	void abortProcessing();
 
 signals:
-	void progressChanged( int );
+	void progressChanged(int);
 	void finished();
 
 private slots:
@@ -61,10 +56,10 @@ private slots:
 	void updateConsoleProgress();
 
 private:
-	QString pathForTrack( const Track *track, int num );
+	QString pathForTrack(const Track* track, int num);
 	void restoreMutedState();
 
-	void render( QString outputPath );
+	void render(QString outputPath);
 
 	const AudioEngine::qualitySettings m_qualitySettings;
 	const AudioEngine::qualitySettings m_oldQualitySettings;
@@ -76,6 +71,6 @@ private:
 
 	QVector<Track*> m_tracksToRender;
 	QVector<Track*> m_unmuted;
-} ;
+};
 
 #endif

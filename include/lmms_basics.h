@@ -22,125 +22,87 @@
  *
  */
 
-
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <array>
 #include <cstddef>
+#include <cstdint>
 #include <limits>
 
 #include "lmmsconfig.h"
-
-#include <cstdint>
-#include <array>
-
 
 typedef int32_t bar_t;
 typedef int32_t tick_t;
 typedef uint8_t volume_t;
 typedef int8_t panning_t;
 
+typedef float sample_t;		  // standard sample-type
+typedef int16_t int_sample_t; // 16-bit-int-sample
 
-typedef float sample_t;			// standard sample-type
-typedef int16_t int_sample_t;		// 16-bit-int-sample
-
-
-typedef uint32_t sample_rate_t;		// sample-rate
+typedef uint32_t sample_rate_t; // sample-rate
 typedef int16_t fpp_t;			// frames per period (0-16384)
-typedef int32_t f_cnt_t;			// standard frame-count
-typedef uint8_t ch_cnt_t;			// channel-count (0-SURROUND_CHANNELS)
+typedef int32_t f_cnt_t;		// standard frame-count
+typedef uint8_t ch_cnt_t;		// channel-count (0-SURROUND_CHANNELS)
 typedef uint16_t bpm_t;			// tempo (MIN_BPM to MAX_BPM)
 typedef uint16_t bitrate_t;		// bitrate in kbps
-typedef uint16_t mix_ch_t;			// Mixer-channel (0 to MAX_CHANNEL)
+typedef uint16_t mix_ch_t;		// Mixer-channel (0 to MAX_CHANNEL)
 
-typedef uint32_t jo_id_t;			// (unique) ID of a journalling object
-
+typedef uint32_t jo_id_t; // (unique) ID of a journalling object
 
 // windows headers define "min" and "max" macros, breaking the methods bwloe
 #undef min
 #undef max
 
-template<typename T>
-struct typeInfo
-{
-	static inline T min()
-	{
-		return std::numeric_limits<T>::min();
-	}
+template <typename T> struct typeInfo {
+	static inline T min() { return std::numeric_limits<T>::min(); }
 
-	static inline T max()
-	{
-		return std::numeric_limits<T>::max();
-	}
+	static inline T max() { return std::numeric_limits<T>::max(); }
 
-	static inline T minEps()
-	{
-		return 1;
-	}
+	static inline T minEps() { return 1; }
 
-	static inline bool isEqual( T x, T y )
-	{
-		return x == y;
-	}
+	static inline bool isEqual(T x, T y) { return x == y; }
 
-	static inline T absVal( T t )
-	{
-		return t >= 0 ? t : -t;
-	}
-} ;
+	static inline T absVal(T t) { return t >= 0 ? t : -t; }
+};
 
+template <> inline float typeInfo<float>::minEps() { return 1.0e-10f; }
 
-template<>
-inline float typeInfo<float>::minEps()
-{
-	return 1.0e-10f;
+template <> inline bool typeInfo<float>::isEqual(float x, float y) {
+	if (x == y) { return true; }
+	return absVal(x - y) < minEps();
 }
-
-template<>
-inline bool typeInfo<float>::isEqual( float x, float y )
-{
-	if( x == y )
-	{
-		return true;
-	}
-	return absVal( x - y ) < minEps();
-}
-
-
 
 constexpr ch_cnt_t DEFAULT_CHANNELS = 2;
 
 constexpr ch_cnt_t SURROUND_CHANNELS =
 #define LMMS_DISABLE_SURROUND
 #ifndef LMMS_DISABLE_SURROUND
-				4;
+	4;
 #else
-				2;
+	2;
 #endif
 
 constexpr char LADSPA_PATH_SEPERATOR =
 #ifdef LMMS_BUILD_WIN32
-';';
+	';';
 #else
-':';
+	':';
 #endif
 
-
-
-using         sampleFrame = std::array<sample_t,  DEFAULT_CHANNELS>;
+using sampleFrame = std::array<sample_t, DEFAULT_CHANNELS>;
 using surroundSampleFrame = std::array<sample_t, SURROUND_CHANNELS>;
 constexpr std::size_t LMMS_ALIGN_SIZE = 16;
 
-
 #define STRINGIFY(s) STR(s)
-#define STR(PN)	#PN
+#define STR(PN) #PN
 
 // Abstract away GUI CTRL key (linux/windows) vs ⌘ (apple)
 constexpr const char* UI_CTRL_KEY =
 #ifdef LMMS_BUILD_APPLE
-"⌘";
+	"⌘";
 #else
-"Ctrl";
+	"Ctrl";
 #endif
 
 #endif

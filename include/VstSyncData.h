@@ -35,12 +35,9 @@
 
 // define file for ftok as shared memory shmget key
 constexpr const char* VST_SNC_SHM_KEY_FILE = "/dev/null";
-//constexpr int64_t VST_SNC_SHM_RND_KEY = 3561653564469;
+// constexpr int64_t VST_SNC_SHM_RND_KEY = 3561653564469;
 
-
-
-struct VstSyncData
-{
+struct VstSyncData {
 	double ppqPos;
 	int timeSigNumer;
 	int timeSigDenom;
@@ -57,6 +54,6 @@ struct VstSyncData
 #ifdef VST_SNC_LATENCY
 	float m_latency;
 #endif
-} ;
+};
 
 #endif

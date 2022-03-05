@@ -34,49 +34,38 @@
 
 class MeterDialog;
 
-class LMMS_EXPORT TempoSyncKnob : public Knob
-{
+class LMMS_EXPORT TempoSyncKnob : public Knob {
 	Q_OBJECT
 public:
-	TempoSyncKnob( knobTypes knobNum, QWidget* parent = nullptr, const QString& name = QString() );
+	TempoSyncKnob(knobTypes knobNum, QWidget* parent = nullptr, const QString& name = QString());
 	virtual ~TempoSyncKnob();
 
-	const QString & syncDescription();
-	void setSyncDescription( const QString & _new_description );
+	const QString& syncDescription();
+	void setSyncDescription(const QString& _new_description);
 
-	const QPixmap & syncIcon();
-	void setSyncIcon( const QPixmap & _new_pix );
+	const QPixmap& syncIcon();
+	void setSyncIcon(const QPixmap& _new_pix);
 
-	TempoSyncKnobModel * model()
-	{
-		return castModel<TempoSyncKnobModel>();
-	}
+	TempoSyncKnobModel* model() { return castModel<TempoSyncKnobModel>(); }
 
 	void modelChanged() override;
 
-
 signals:
-	void syncDescriptionChanged( const QString & _new_description );
+	void syncDescriptionChanged(const QString& _new_description);
 	void syncIconChanged();
 
-
 protected:
-	void contextMenuEvent( QContextMenuEvent * _me ) override;
-
+	void contextMenuEvent(QContextMenuEvent* _me) override;
 
 protected slots:
 	void updateDescAndIcon();
 	void showCustom();
-
 
 private:
 	QPixmap m_tempoSyncIcon;
 	QString m_tempoSyncDescription;
 
 	QPointer<MeterDialog> m_custom;
-
-} ;
-
-
+};
 
 #endif

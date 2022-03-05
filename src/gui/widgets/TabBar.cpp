@@ -2,7 +2,7 @@
  * TabBar.cpp - implementation of tab-bar
  *
  * Copyright (c) 2004-2014 Tobias Doerffel <tobydox/at/users.sourceforge.net>
- * 
+ *
  * This file is part of LMMS - https://lmms.io
  *
  * This program is free software; you can redistribute it and/or
@@ -22,217 +22,130 @@
  *
  */
 
-
 #include "TabBar.h"
+
 #include "TabButton.h"
-#include "gui_templates.h"
 #include "ToolTip.h"
+#include "gui_templates.h"
 
+TabBar::TabBar(QWidget* _parent, QBoxLayout::Direction _dir)
+	: QWidget(_parent)
+	, m_layout(new QBoxLayout(_dir, this))
+	, m_exclusive(false) {
+	m_layout->setMargin(8);
+	m_layout->setSpacing(0);
 
-
-TabBar::TabBar( QWidget * _parent, QBoxLayout::Direction _dir ) :
-	QWidget( _parent ),
-	m_layout( new QBoxLayout( _dir, this ) ),
-	m_exclusive( false )
-{
-	m_layout->setMargin( 8 );
-	m_layout->setSpacing( 0 );
-
-	setLayout( m_layout );
+	setLayout(m_layout);
 }
 
-TabButton * TabBar::addTab( QWidget * _w, const QString & _text, int _id,
-				bool _add_stretch, bool _text_is_tooltip )
-{
+TabButton* TabBar::addTab(QWidget* _w, const QString& _text, int _id, bool _add_stretch, bool _text_is_tooltip) {
 	// already tab with id?
-	if( m_tabs.contains( _id ) )
-	{
+	if (m_tabs.contains(_id)) {
 		// then remove it
-		removeTab( _id );
+		removeTab(_id);
 	}
-	QString caption = ( _text_is_tooltip ) ? QString( "" ) : _text;
+	QString caption = (_text_is_tooltip) ? QString("") : _text;
 	// create tab-button
-	TabButton * b = new TabButton( caption, _id, this );
-	connect( b, SIGNAL( clicked( int ) ), this, SLOT( tabClicked( int ) ) );
-	b->setIconSize( QSize( 48, 48 ) );
-	b->setFixedSize( 64, 64 );
+	TabButton* b = new TabButton(caption, _id, this);
+	connect(b, SIGNAL(clicked(int)), this, SLOT(tabClicked(int)));
+	b->setIconSize(QSize(48, 48));
+	b->setFixedSize(64, 64);
 	b->show();
-	if( _text_is_tooltip )
-	{
-		ToolTip::add( b, _text );
-	}
+	if (_text_is_tooltip) { ToolTip::add(b, _text); }
 
 	// small workaround, because QBoxLayout::addWidget(...) doesn't
 	// work properly, so we first have to remove all tabs from the
 	// layout and them add them in the correct order
-	QMap<int, QPair<TabButton *, QWidget *> >::iterator it;
-	for( it = m_tabs.begin(); it != m_tabs.end(); ++it )
-	{
-		m_layout->removeWidget( it.value().first );
+	QMap<int, QPair<TabButton*, QWidget*>>::iterator it;
+	for (it = m_tabs.begin(); it != m_tabs.end(); ++it) {
+		m_layout->removeWidget(it.value().first);
 	}
-	m_tabs.insert( _id, qMakePair( b, _w ) );
-	for( it = m_tabs.begin(); it != m_tabs.end(); ++it )
-	{
-		m_layout->addWidget( it.value().first );
+	m_tabs.insert(_id, qMakePair(b, _w));
+	for (it = m_tabs.begin(); it != m_tabs.end(); ++it) {
+		m_layout->addWidget(it.value().first);
 	}
 
-	if( _add_stretch )
-	{
-		m_layout->addStretch();
-	}
-
+	if (_add_stretch) { m_layout->addStretch(); }
 
 	// we assume, parent-widget is a widget acting as widget-stack so all
 	// widgets have the same size and only the one on the top is visible
-	_w->setFixedSize( _w->parentWidget()->size() );
+	_w->setFixedSize(_w->parentWidget()->size());
 
-	b->setFont( pointSize<8>( b->font() ) );
+	b->setFont(pointSize<8>(b->font()));
 
-	return( b );
+	return (b);
 }
 
-
-
-
-void TabBar::removeTab( int _id )
-{
+void TabBar::removeTab(int _id) {
 	// find tab-button and delete it
-	if( m_tabs.find( _id ) != m_tabs.end() )
-	{
+	if (m_tabs.find(_id) != m_tabs.end()) {
 		delete m_tabs[_id].first;
-		m_tabs.erase( m_tabs.find( _id ) );
+		m_tabs.erase(m_tabs.find(_id));
 	}
 }
 
-
-
-
-void TabBar::setActiveTab( int _id )
-{
-	setTabState( _id, true );
-	hideAll( _id );
-	if( allHidden() )
-	{
+void TabBar::setActiveTab(int _id) {
+	setTabState(_id, true);
+	hideAll(_id);
+	if (allHidden()) {
 		emit allWidgetsHidden();
-	}
-	else
-	{
+	} else {
 		emit widgetShown();
 	}
 }
 
-
-
-
-int TabBar::activeTab()
-{
-	QMap<int, QPair<TabButton *, QWidget *> >::iterator it;
-	for( it = m_tabs.begin(); it != m_tabs.end(); ++it )
-	{
-		if( tabState( it.key() ) == true )
-		{
-			return( it.key() );
-		}
+int TabBar::activeTab() {
+	QMap<int, QPair<TabButton*, QWidget*>>::iterator it;
+	for (it = m_tabs.begin(); it != m_tabs.end(); ++it) {
+		if (tabState(it.key()) == true) { return (it.key()); }
 	}
-	return( -1 );
+	return (-1);
 }
 
-
-
-
-bool TabBar::tabState( int _id )
-{
-	if( m_tabs.find( _id ) == m_tabs.end() )
-	{
-		return( false );
-	}
-	return( m_tabs[_id].first->isChecked() );
+bool TabBar::tabState(int _id) {
+	if (m_tabs.find(_id) == m_tabs.end()) { return (false); }
+	return (m_tabs[_id].first->isChecked());
 }
 
-
-
-
-void TabBar::setTabState( int _id, bool _checked )
-{
-	if( m_tabs.find( _id ) != m_tabs.end() )
-	{
-		m_tabs[_id].first->setChecked( _checked );
-	}
+void TabBar::setTabState(int _id, bool _checked) {
+	if (m_tabs.find(_id) != m_tabs.end()) { m_tabs[_id].first->setChecked(_checked); }
 }
 
-
-
-
-void TabBar::hideAll( int _exception )
-{
-	QMap<int, QPair<TabButton *, QWidget *> >::iterator it;
-	for( it = m_tabs.begin(); it != m_tabs.end(); ++it )
-	{
-		if( it.key() != _exception )
-		{
-			setTabState( it.key(), false );
-		}
+void TabBar::hideAll(int _exception) {
+	QMap<int, QPair<TabButton*, QWidget*>>::iterator it;
+	for (it = m_tabs.begin(); it != m_tabs.end(); ++it) {
+		if (it.key() != _exception) { setTabState(it.key(), false); }
 		it.value().second->hide();
 	}
-	if( m_tabs.find( _exception ) != m_tabs.end() )
-	{
-		if( tabState( _exception ) )
-		{
+	if (m_tabs.find(_exception) != m_tabs.end()) {
+		if (tabState(_exception)) {
 			m_tabs[_exception].second->show();
-		}
-		else
-		{
+		} else {
 			m_tabs[_exception].second->hide();
 		}
 	}
 }
 
-
-
-
-void TabBar::tabClicked( int _id )
-{
-	if( m_exclusive == true && activeTab() == -1 )
-	{
-		setActiveTab( _id );
-	}
-	else
-	{
+void TabBar::tabClicked(int _id) {
+	if (m_exclusive == true && activeTab() == -1) {
+		setActiveTab(_id);
+	} else {
 		bool all_hidden_before = allHidden();
 		// disable tabbar-buttons except the one clicked
-		hideAll( _id );
+		hideAll(_id);
 		bool now_hidden = allHidden();
-		if( all_hidden_before == true && now_hidden == false )
-		{
+		if (all_hidden_before == true && now_hidden == false) {
 			emit widgetShown();
-		}
-		else if( all_hidden_before == false && now_hidden == true )
-		{
+		} else if (all_hidden_before == false && now_hidden == true) {
 			emit allWidgetsHidden();
 		}
 	}
 }
 
-
-
-
-bool TabBar::allHidden()
-{
-	QMap<int, QPair<TabButton *, QWidget *> >::iterator it;
-	for( it = m_tabs.begin(); it != m_tabs.end(); ++it )
-	{
-		if( !it.value().second->isHidden() )
-		{
-			return( false );
-		}
+bool TabBar::allHidden() {
+	QMap<int, QPair<TabButton*, QWidget*>>::iterator it;
+	for (it = m_tabs.begin(); it != m_tabs.end(); ++it) {
+		if (!it.value().second->isHidden()) { return (false); }
 	}
-	return( true );
+	return (true);
 }
-
-
-
-
-
-
-
-

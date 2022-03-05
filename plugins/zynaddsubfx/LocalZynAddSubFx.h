@@ -31,36 +31,31 @@ class Master;
 class MidiEvent;
 class NulEngine;
 
-class LocalZynAddSubFx
-{
+class LocalZynAddSubFx {
 public:
 	LocalZynAddSubFx();
 	~LocalZynAddSubFx();
 
 	void initConfig();
 
-	void setSampleRate( int _sampleRate );
-	void setBufferSize( int _bufferSize );
+	void setSampleRate(int _sampleRate);
+	void setBufferSize(int _bufferSize);
 
-	void saveXML( const std::string & _filename );
-	void loadXML( const std::string & _filename );
+	void saveXML(const std::string& _filename);
+	void loadXML(const std::string& _filename);
 
-	void loadPreset( const std::string & _filename, int _part = 0 );
+	void loadPreset(const std::string& _filename, int _part = 0);
 
-	void setPresetDir( const std::string & _dir );
-	void setLmmsWorkingDir( const std::string & _dir );
+	void setPresetDir(const std::string& _dir);
+	void setLmmsWorkingDir(const std::string& _dir);
 
-	void setPitchWheelBendRange( int semitones );
+	void setPitchWheelBendRange(int semitones);
 
-	void processMidiEvent( const MidiEvent& event );
+	void processMidiEvent(const MidiEvent& event);
 
-	void processAudio( sampleFrame * _out );
+	void processAudio(sampleFrame* _out);
 
-	inline Master * master()
-	{
-		return m_master;
-	}
-
+	inline Master* master() { return m_master; }
 
 protected:
 	static int s_instanceCount;
@@ -68,9 +63,8 @@ protected:
 	std::string m_presetsDir;
 
 	int m_runningNotes[NumKeys];
-	Master * m_master;
+	Master* m_master;
 	NulEngine* m_ioEngine;
-
-} ;
+};
 
 #endif

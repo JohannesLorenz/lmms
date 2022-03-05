@@ -26,38 +26,25 @@
 #define COMPRESSOR_CONTROLS_H
 
 #include "CompressorControlDialog.h"
-
 #include "EffectControls.h"
-
 
 class CompressorEffect;
 
-
-class CompressorControls : public EffectControls
-{
+class CompressorControls : public EffectControls {
 	Q_OBJECT
 public:
 	CompressorControls(CompressorEffect* effect);
 
-	void saveSettings(QDomDocument & _doc, QDomElement & _parent) override;
-	void loadSettings(const QDomElement & _this) override;
-	inline QString nodeName() const override
-	{
-		return "CompressorControls";
-	}
+	void saveSettings(QDomDocument& _doc, QDomElement& _parent) override;
+	void loadSettings(const QDomElement& _this) override;
+	inline QString nodeName() const override { return "CompressorControls"; }
 
-	int controlCount() override
-	{
-		return 28;
-	}
+	int controlCount() override { return 28; }
 
-	EffectControlDialog* createView() override
-	{
-		return new CompressorControlDialog(this);
-	}
+	EffectControlDialog* createView() override { return new CompressorControlDialog(this); }
 
 private:
-	CompressorEffect * m_effect;
+	CompressorEffect* m_effect;
 
 	FloatModel m_thresholdModel;
 	FloatModel m_ratioModel;
@@ -95,7 +82,6 @@ private:
 
 	friend class CompressorControlDialog;
 	friend class CompressorEffect;
-
-} ;
+};
 
 #endif

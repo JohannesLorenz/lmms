@@ -29,19 +29,15 @@
 
 #ifdef LMMS_HAVE_ALSA
 
-#include <alsa/asoundlib.h>
-
 #include <QMap>
 #include <QThread>
+#include <alsa/asoundlib.h>
 
 #include "MidiClient.h"
 
-
 struct pollfd;
 
-
-class MidiAlsaRaw : public QThread, public MidiClientRaw
-{
+class MidiAlsaRaw : public QThread, public MidiClientRaw {
 	Q_OBJECT
 public:
 	MidiAlsaRaw();
@@ -49,33 +45,24 @@ public:
 
 	static QString probeDevice();
 
-
-	inline static QString name()
-	{
-		return QT_TRANSLATE_NOOP( "MidiSetupWidget",
-			"ALSA Raw-MIDI (Advanced Linux Sound Architecture)" );
+	inline static QString name() {
+		return QT_TRANSLATE_NOOP("MidiSetupWidget", "ALSA Raw-MIDI (Advanced Linux Sound Architecture)");
 	}
 
-	inline static QString configSection()
-	{
-		return "MidiAlsaRaw";
-	}
-
+	inline static QString configSection() { return "MidiAlsaRaw"; }
 
 protected:
-	void sendByte( const unsigned char c ) override;
+	void sendByte(const unsigned char c) override;
 	void run() override;
 
-
 private:
-	snd_rawmidi_t * m_input, * * m_inputp;
-	snd_rawmidi_t * m_output, * * m_outputp;
+	snd_rawmidi_t *m_input, **m_inputp;
+	snd_rawmidi_t *m_output, **m_outputp;
 	int m_npfds;
-	pollfd * m_pfds;
+	pollfd* m_pfds;
 
 	volatile bool m_quit;
-
-} ;
+};
 
 #endif
 

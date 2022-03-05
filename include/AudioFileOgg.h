@@ -34,57 +34,35 @@
 
 #include "AudioFileDevice.h"
 
-
-class AudioFileOgg : public AudioFileDevice
-{
+class AudioFileOgg : public AudioFileDevice {
 public:
-	AudioFileOgg( OutputSettings const & outputSettings,
-			const ch_cnt_t _channels,
-			bool & _success_ful,
-			const QString & _file,
-			AudioEngine* audioEngine );
+	AudioFileOgg(OutputSettings const& outputSettings, const ch_cnt_t _channels, bool& _success_ful,
+		const QString& _file, AudioEngine* audioEngine);
 	virtual ~AudioFileOgg();
 
-	static AudioFileDevice * getInst( const QString & outputFilename,
-					  OutputSettings const & outputSettings,
-					  const ch_cnt_t channels,
-					  AudioEngine* audioEngine,
-					  bool & successful )
-	{
-		return new AudioFileOgg( outputSettings, channels, successful, outputFilename, audioEngine );
+	static AudioFileDevice* getInst(const QString& outputFilename, OutputSettings const& outputSettings,
+		const ch_cnt_t channels, AudioEngine* audioEngine, bool& successful) {
+		return new AudioFileOgg(outputSettings, channels, successful, outputFilename, audioEngine);
 	}
 
-
 private:
-	virtual void writeBuffer( const surroundSampleFrame * _ab,
-						const fpp_t _frames,
-						const float _master_gain ) override;
+	virtual void writeBuffer(const surroundSampleFrame* _ab, const fpp_t _frames, const float _master_gain) override;
 
 	bool startEncoding();
 	void finishEncoding();
 	inline int writePage();
 
-	inline bitrate_t nominalBitrate() const
-	{
-		return getOutputSettings().getBitRateSettings().getBitRate();
-	}
+	inline bitrate_t nominalBitrate() const { return getOutputSettings().getBitRateSettings().getBitRate(); }
 
-	inline bitrate_t minBitrate() const
-	{
-		if (nominalBitrate() > 64)
-		{
+	inline bitrate_t minBitrate() const {
+		if (nominalBitrate() > 64) {
 			return nominalBitrate() - 64;
-		}
-		else
-		{
+		} else {
 			return 64;
 		}
 	}
 
-	inline bitrate_t maxBitrate() const
-	{
-		return nominalBitrate() + 64;
-	}
+	inline bitrate_t maxBitrate() const { return nominalBitrate() + 64; }
 
 private:
 	bool m_ok;
@@ -93,19 +71,17 @@ private:
 
 	uint32_t m_serialNo;
 
-	vorbis_comment * m_comments;
+	vorbis_comment* m_comments;
 
 	// encoding setup - init by init_ogg_encoding
-	ogg_stream_state	m_os;
-	ogg_page 	 	m_og;
-	ogg_packet	 	m_op;
+	ogg_stream_state m_os;
+	ogg_page m_og;
+	ogg_packet m_op;
 
-	vorbis_dsp_state 	m_vd;
-	vorbis_block     	m_vb;
-	vorbis_info      	m_vi;
-
-} ;
-
+	vorbis_dsp_state m_vd;
+	vorbis_block m_vb;
+	vorbis_info m_vi;
+};
 
 #endif
 

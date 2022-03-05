@@ -22,53 +22,40 @@
  *
  */
 
+#include "DelayControls.h"
+
 #include <QDomElement>
 
-#include "DelayControls.h"
 #include "DelayEffect.h"
 #include "Engine.h"
 
-DelayControls::DelayControls( DelayEffect* effect ):
-	EffectControls( effect ),
-	m_effect ( effect ),
-	m_delayTimeModel( 0.5, 0.01, 5.0, 0.0001, 5000.0, this, tr( "Delay samples" )) ,
-	m_feedbackModel(0.0f,0.0f,1.0f,0.01f,this,tr( "Feedback" ) ),
-	m_lfoTimeModel(2.0, 0.01, 5.0, 0.0001, 20000.0, this, tr( "LFO frequency" ) ),
-	m_lfoAmountModel(0.0, 0.0, 0.5, 0.0001, 2000.0, this, tr ( "LFO amount" ) ),
-	m_outGainModel( 0.0, -60.0, 20.0, 0.01, this, tr( "Output gain" ) )
-{
-	connect( Engine::audioEngine(), SIGNAL( sampleRateChanged() ), this, SLOT( changeSampleRate() ) );
+DelayControls::DelayControls(DelayEffect* effect)
+	: EffectControls(effect)
+	, m_effect(effect)
+	, m_delayTimeModel(0.5, 0.01, 5.0, 0.0001, 5000.0, this, tr("Delay samples"))
+	, m_feedbackModel(0.0f, 0.0f, 1.0f, 0.01f, this, tr("Feedback"))
+	, m_lfoTimeModel(2.0, 0.01, 5.0, 0.0001, 20000.0, this, tr("LFO frequency"))
+	, m_lfoAmountModel(0.0, 0.0, 0.5, 0.0001, 2000.0, this, tr("LFO amount"))
+	, m_outGainModel(0.0, -60.0, 20.0, 0.01, this, tr("Output gain")) {
+	connect(Engine::audioEngine(), SIGNAL(sampleRateChanged()), this, SLOT(changeSampleRate()));
 	m_outPeakL = 0.0;
 	m_outPeakR = 0.0;
 }
 
-
-
-
-void DelayControls::loadSettings( const QDomElement &_this )
-{
-	m_delayTimeModel.loadSettings(_this, "DelayTimeSamples" );
-	m_feedbackModel.loadSettings( _this, "FeebackAmount" );
-	m_lfoTimeModel.loadSettings( _this , "LfoFrequency");
-	m_lfoAmountModel.loadSettings( _this, "LfoAmount");
-	m_outGainModel.loadSettings( _this, "OutGain" );
+void DelayControls::loadSettings(const QDomElement& _this) {
+	m_delayTimeModel.loadSettings(_this, "DelayTimeSamples");
+	m_feedbackModel.loadSettings(_this, "FeebackAmount");
+	m_lfoTimeModel.loadSettings(_this, "LfoFrequency");
+	m_lfoAmountModel.loadSettings(_this, "LfoAmount");
+	m_outGainModel.loadSettings(_this, "OutGain");
 }
 
-
-
-
-void DelayControls::saveSettings( QDomDocument& doc, QDomElement& _this )
-{
-	m_delayTimeModel.saveSettings( doc, _this, "DelayTimeSamples" );
-	m_feedbackModel.saveSettings( doc, _this ,"FeebackAmount" );
-	m_lfoTimeModel.saveSettings( doc, _this, "LfoFrequency" );
-	m_lfoAmountModel.saveSettings( doc, _this ,"LfoAmount" );
-	m_outGainModel.saveSettings( doc, _this, "OutGain" );
+void DelayControls::saveSettings(QDomDocument& doc, QDomElement& _this) {
+	m_delayTimeModel.saveSettings(doc, _this, "DelayTimeSamples");
+	m_feedbackModel.saveSettings(doc, _this, "FeebackAmount");
+	m_lfoTimeModel.saveSettings(doc, _this, "LfoFrequency");
+	m_lfoAmountModel.saveSettings(doc, _this, "LfoAmount");
+	m_outGainModel.saveSettings(doc, _this, "OutGain");
 }
 
-
-
-void DelayControls::changeSampleRate()
-{
-	m_effect->changeSampleRate();
-}
+void DelayControls::changeSampleRate() { m_effect->changeSampleRate(); }

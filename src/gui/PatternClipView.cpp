@@ -36,96 +36,65 @@
 #include "RenameDialog.h"
 #include "ToolTip.h"
 
-PatternClipView::PatternClipView(Clip* _clip, TrackView* _tv) :
-	ClipView( _clip, _tv ),
-	m_patternClip(dynamic_cast<PatternClip*>(_clip)),
-	m_paintPixmap()
-{
-	connect( _clip->getTrack(), SIGNAL( dataChanged() ), 
-			this, SLOT( update() ) );
+PatternClipView::PatternClipView(Clip* _clip, TrackView* _tv)
+	: ClipView(_clip, _tv)
+	, m_patternClip(dynamic_cast<PatternClip*>(_clip))
+	, m_paintPixmap() {
+	connect(_clip->getTrack(), SIGNAL(dataChanged()), this, SLOT(update()));
 
-	setStyle( QApplication::style() );
+	setStyle(QApplication::style());
 }
 
-void PatternClipView::constructContextMenu(QMenu* _cm)
-{
-	QAction* a = new QAction(embed::getIconPixmap("pattern_track"),
-					tr("Open in Pattern Editor"),
-					_cm );
-	_cm->insertAction( _cm->actions()[0], a );
-	connect( a, SIGNAL( triggered( bool ) ),
-			this, SLOT( openInPatternEditor() ) );
-	_cm->insertSeparator( _cm->actions()[1] );
+void PatternClipView::constructContextMenu(QMenu* _cm) {
+	QAction* a = new QAction(embed::getIconPixmap("pattern_track"), tr("Open in Pattern Editor"), _cm);
+	_cm->insertAction(_cm->actions()[0], a);
+	connect(a, SIGNAL(triggered(bool)), this, SLOT(openInPatternEditor()));
+	_cm->insertSeparator(_cm->actions()[1]);
 	_cm->addSeparator();
-	_cm->addAction( embed::getIconPixmap( "reload" ), tr( "Reset name" ),
-						this, SLOT( resetName() ) );
-	_cm->addAction( embed::getIconPixmap( "edit_rename" ),
-						tr( "Change name" ),
-						this, SLOT( changeName() ) );
+	_cm->addAction(embed::getIconPixmap("reload"), tr("Reset name"), this, SLOT(resetName()));
+	_cm->addAction(embed::getIconPixmap("edit_rename"), tr("Change name"), this, SLOT(changeName()));
 }
 
+void PatternClipView::mouseDoubleClickEvent(QMouseEvent*) { openInPatternEditor(); }
 
+void PatternClipView::paintEvent(QPaintEvent*) {
+	QPainter painter(this);
 
-
-void PatternClipView::mouseDoubleClickEvent(QMouseEvent*)
-{
-	openInPatternEditor();
-}
-
-
-
-
-void PatternClipView::paintEvent(QPaintEvent*)
-{
-	QPainter painter( this );
-
-	if( !needsUpdate() )
-	{
-		painter.drawPixmap( 0, 0, m_paintPixmap );
+	if (!needsUpdate()) {
+		painter.drawPixmap(0, 0, m_paintPixmap);
 		return;
 	}
 
-	setNeedsUpdate( false );
+	setNeedsUpdate(false);
 
-	if (m_paintPixmap.isNull() || m_paintPixmap.size() != size())
-	{
-		m_paintPixmap = QPixmap(size());
-	}
+	if (m_paintPixmap.isNull() || m_paintPixmap.size() != size()) { m_paintPixmap = QPixmap(size()); }
 
-	QPainter p( &m_paintPixmap );
+	QPainter p(&m_paintPixmap);
 
-	QLinearGradient lingrad( 0, 0, 0, height() );
-	QColor c = getColorForDisplay( painter.background().color() );
-	
-	lingrad.setColorAt( 0, c.lighter( 130 ) );
-	lingrad.setColorAt( 1, c.lighter( 70 ) );
+	QLinearGradient lingrad(0, 0, 0, height());
+	QColor c = getColorForDisplay(painter.background().color());
+
+	lingrad.setColorAt(0, c.lighter(130));
+	lingrad.setColorAt(1, c.lighter(70));
 
 	// paint a black rectangle under the clip to prevent glitches with transparent backgrounds
-	p.fillRect( rect(), QColor( 0, 0, 0 ) );
+	p.fillRect(rect(), QColor(0, 0, 0));
 
-	if( gradient() )
-	{
-		p.fillRect( rect(), lingrad );
+	if (gradient()) {
+		p.fillRect(rect(), lingrad);
+	} else {
+		p.fillRect(rect(), c);
 	}
-	else
-	{
-		p.fillRect( rect(), c );
-	}
-	
+
 	// bar lines
 	const int lineSize = 3;
-	p.setPen( c.darker( 200 ) );
+	p.setPen(c.darker(200));
 
 	bar_t t = Engine::patternStore()->lengthOfPattern(m_patternClip->patternIndex());
-	if (m_patternClip->length() > TimePos::ticksPerBar() && t > 0)
-	{
-		for( int x = static_cast<int>( t * pixelsPerBar() );
-								x < width() - 2;
-			x += static_cast<int>( t * pixelsPerBar() ) )
-		{
-			p.drawLine( x, BORDER_WIDTH, x, BORDER_WIDTH + lineSize );
-			p.drawLine( x, rect().bottom() - ( BORDER_WIDTH + lineSize ),
-			 	x, rect().bottom() - BORDER_WIDTH );
+	if (m_patternClip->length() > TimePos::ticksPerBar() && t > 0) {
+		for (int x = static_cast<int>(t * pixelsPerBar()); x < width() - 2; x += static_cast<int>(t * pixelsPerBar())) {
+			p.drawLine(x, BORDER_WIDTH, x, BORDER_WIDTH + lineSize);
+			p.drawLine(x, rect().bottom() - (BORDER_WIDTH + lineSize), x, rect().bottom() - BORDER_WIDTH);
 		}
 	}
 
@@ -133,58 +102,41 @@ void PatternClipView::paintEvent(QPaintEvent*)
 	paintTextLabel(m_patternClip->name(), p);
 
 	// inner border
-	p.setPen( c.lighter( 130 ) );
-	p.drawRect( 1, 1, rect().right() - BORDER_WIDTH,
-		rect().bottom() - BORDER_WIDTH );	
+	p.setPen(c.lighter(130));
+	p.drawRect(1, 1, rect().right() - BORDER_WIDTH, rect().bottom() - BORDER_WIDTH);
 
 	// outer border
-	p.setPen( c.darker( 300 ) );
-	p.drawRect( 0, 0, rect().right(), rect().bottom() );
-	
+	p.setPen(c.darker(300));
+	p.drawRect(0, 0, rect().right(), rect().bottom());
+
 	// draw the 'muted' pixmap only if the clip was manualy muted
-	if (m_patternClip->isMuted())
-	{
+	if (m_patternClip->isMuted()) {
 		const int spacing = BORDER_WIDTH;
 		const int size = 14;
-		p.drawPixmap( spacing, height() - ( size + spacing ),
-			embed::getIconPixmap( "muted", size, size ) );
+		p.drawPixmap(spacing, height() - (size + spacing), embed::getIconPixmap("muted", size, size));
 	}
-	
+
 	p.end();
-	
-	painter.drawPixmap( 0, 0, m_paintPixmap );
+
+	painter.drawPixmap(0, 0, m_paintPixmap);
 }
 
-
-
-
-void PatternClipView::openInPatternEditor()
-{
+void PatternClipView::openInPatternEditor() {
 	Engine::patternStore()->setCurrentPattern(m_patternClip->patternIndex());
 
 	getGUI()->mainWindow()->togglePatternEditorWin(true);
 }
 
-
-
-
 void PatternClipView::resetName() { m_patternClip->setName(""); }
 
-
-
-
-void PatternClipView::changeName()
-{
+void PatternClipView::changeName() {
 	QString s = m_patternClip->name();
-	RenameDialog rename_dlg( s );
+	RenameDialog rename_dlg(s);
 	rename_dlg.exec();
 	m_patternClip->setName(s);
 }
 
-
-
-void PatternClipView::update()
-{
+void PatternClipView::update() {
 	ToolTip::add(this, m_patternClip->name());
 
 	ClipView::update();

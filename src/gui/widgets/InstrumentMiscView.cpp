@@ -31,15 +31,13 @@
 
 #include "ComboBox.h"
 #include "GroupBox.h"
-#include "gui_templates.h"
 #include "InstrumentTrack.h"
 #include "LedCheckbox.h"
+#include "gui_templates.h"
 
-
-InstrumentMiscView::InstrumentMiscView(InstrumentTrack *it, QWidget *parent) :
-	QWidget(parent)
-{
-	QVBoxLayout *layout = new QVBoxLayout(this);
+InstrumentMiscView::InstrumentMiscView(InstrumentTrack* it, QWidget* parent)
+	: QWidget(parent) {
+	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setMargin(5);
 
 	// Master pitch toggle
@@ -47,10 +45,10 @@ InstrumentMiscView::InstrumentMiscView(InstrumentTrack *it, QWidget *parent) :
 	m_pitchGroupBox->setModel(&it->m_useMasterPitchModel);
 	layout->addWidget(m_pitchGroupBox);
 
-	QHBoxLayout *masterPitchLayout = new QHBoxLayout(m_pitchGroupBox);
+	QHBoxLayout* masterPitchLayout = new QHBoxLayout(m_pitchGroupBox);
 	masterPitchLayout->setContentsMargins(8, 18, 8, 8);
 
-	QLabel *tlabel = new QLabel(tr("Enables the use of master pitch"));
+	QLabel* tlabel = new QLabel(tr("Enables the use of master pitch"));
 	tlabel->setFont(pointSize<8>(tlabel->font()));
 	masterPitchLayout->addWidget(tlabel);
 
@@ -59,17 +57,17 @@ InstrumentMiscView::InstrumentMiscView(InstrumentTrack *it, QWidget *parent) :
 	m_microtunerGroupBox->setModel(it->m_microtuner.enabledModel());
 	layout->addWidget(m_microtunerGroupBox);
 
-	QVBoxLayout *microtunerLayout = new QVBoxLayout(m_microtunerGroupBox);
+	QVBoxLayout* microtunerLayout = new QVBoxLayout(m_microtunerGroupBox);
 	microtunerLayout->setContentsMargins(8, 18, 8, 8);
 
-	QLabel *scaleLabel = new QLabel(tr("Active scale:"));
+	QLabel* scaleLabel = new QLabel(tr("Active scale:"));
 	microtunerLayout->addWidget(scaleLabel);
 
 	m_scaleCombo = new ComboBox();
 	m_scaleCombo->setModel(it->m_microtuner.scaleModel());
 	microtunerLayout->addWidget(m_scaleCombo);
 
-	QLabel *keymapLabel = new QLabel(tr("Active keymap:"));
+	QLabel* keymapLabel = new QLabel(tr("Active keymap:"));
 	microtunerLayout->addWidget(keymapLabel);
 
 	m_keymapCombo = new ComboBox();
@@ -78,7 +76,8 @@ InstrumentMiscView::InstrumentMiscView(InstrumentTrack *it, QWidget *parent) :
 
 	m_rangeImportCheckbox = new LedCheckBox(tr("Import note ranges from keymap"), this);
 	m_rangeImportCheckbox->setModel(it->m_microtuner.keyRangeImportModel());
-	m_rangeImportCheckbox->setToolTip(tr("When enabled, the first, last and base notes of this instrument will be overwritten with values specified by the selected keymap."));
+	m_rangeImportCheckbox->setToolTip(tr("When enabled, the first, last and base notes of this instrument will be "
+										 "overwritten with values specified by the selected keymap."));
 	m_rangeImportCheckbox->setCheckable(true);
 	microtunerLayout->addWidget(m_rangeImportCheckbox);
 

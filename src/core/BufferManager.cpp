@@ -32,33 +32,18 @@
 
 static fpp_t framesPerPeriod;
 
-void BufferManager::init( fpp_t framesPerPeriod )
-{
-	::framesPerPeriod = framesPerPeriod;
-}
+void BufferManager::init(fpp_t framesPerPeriod) { ::framesPerPeriod = framesPerPeriod; }
 
+sampleFrame* BufferManager::acquire() { return MM_ALLOC<sampleFrame>(::framesPerPeriod); }
 
-sampleFrame * BufferManager::acquire()
-{
-	return MM_ALLOC<sampleFrame>( ::framesPerPeriod );
-}
-
-void BufferManager::clear( sampleFrame *ab, const f_cnt_t frames, const f_cnt_t offset )
-{
-	memset( ab + offset, 0, sizeof( *ab ) * frames );
+void BufferManager::clear(sampleFrame* ab, const f_cnt_t frames, const f_cnt_t offset) {
+	memset(ab + offset, 0, sizeof(*ab) * frames);
 }
 
 #ifndef LMMS_DISABLE_SURROUND
-void BufferManager::clear( surroundSampleFrame * ab, const f_cnt_t frames,
-							const f_cnt_t offset )
-{
-	memset( ab + offset, 0, sizeof( *ab ) * frames );
+void BufferManager::clear(surroundSampleFrame* ab, const f_cnt_t frames, const f_cnt_t offset) {
+	memset(ab + offset, 0, sizeof(*ab) * frames);
 }
 #endif
 
-
-void BufferManager::release( sampleFrame * buf )
-{
-	MM_FREE( buf );
-}
-
+void BufferManager::release(sampleFrame* buf) { MM_FREE(buf); }

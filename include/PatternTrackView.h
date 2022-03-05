@@ -22,19 +22,15 @@
  *
  */
 
-
 #ifndef PATTERN_TRACK_VIEW_H
 #define PATTERN_TRACK_VIEW_H
-
 
 #include "TrackView.h"
 
 class PatternTrack;
 class TrackLabelButton;
 
-
-class PatternTrackView : public TrackView
-{
+class PatternTrackView : public TrackView {
 	Q_OBJECT
 public:
 	PatternTrackView(PatternTrack* pt, TrackContainerView* tcv);
@@ -42,21 +38,14 @@ public:
 
 	bool close() override;
 
-	const PatternTrack* getPatternTrack() const
-	{
-		return (m_patternTrack);
-	}
-
+	const PatternTrack* getPatternTrack() const { return (m_patternTrack); }
 
 public slots:
 	void clickedTrackLabel();
 
-
 private:
 	PatternTrack* m_patternTrack;
-	TrackLabelButton * m_trackLabel;
-} ;
-
-
+	TrackLabelButton* m_trackLabel;
+};
 
 #endif

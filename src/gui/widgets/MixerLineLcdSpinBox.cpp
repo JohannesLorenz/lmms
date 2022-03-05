@@ -25,27 +25,22 @@
 #include "MixerLineLcdSpinBox.h"
 
 #include "CaptionMenu.h"
-#include "MixerView.h"
 #include "GuiApplication.h"
+#include "MixerView.h"
 #include "TrackView.h"
 
-void MixerLineLcdSpinBox::setTrackView(TrackView * tv)
-{
-	m_tv = tv;
-}
+void MixerLineLcdSpinBox::setTrackView(TrackView* tv) { m_tv = tv; }
 
-void MixerLineLcdSpinBox::mouseDoubleClickEvent(QMouseEvent* event)
-{
+void MixerLineLcdSpinBox::mouseDoubleClickEvent(QMouseEvent* event) {
 	getGUI()->mixerView()->setCurrentMixerLine(model()->value());
 
 	getGUI()->mixerView()->parentWidget()->show();
-	getGUI()->mixerView()->show();// show Mixer window
-	getGUI()->mixerView()->setFocus();// set focus to Mixer window
-	//engine::getMixerView()->raise();
+	getGUI()->mixerView()->show();	   // show Mixer window
+	getGUI()->mixerView()->setFocus(); // set focus to Mixer window
+									   // engine::getMixerView()->raise();
 }
 
-void MixerLineLcdSpinBox::contextMenuEvent(QContextMenuEvent* event)
-{
+void MixerLineLcdSpinBox::contextMenuEvent(QContextMenuEvent* event) {
 	// for the case, the user clicked right while pressing left mouse-
 	// button, the context-menu appears while mouse-cursor is still hidden
 	// and it isn't shown again until user does something which causes
@@ -54,9 +49,7 @@ void MixerLineLcdSpinBox::contextMenuEvent(QContextMenuEvent* event)
 
 	QPointer<CaptionMenu> contextMenu = new CaptionMenu(model()->displayName(), this);
 
-	if (QMenu *mixerMenu = m_tv->createMixerMenu(
-		tr("Assign to:"), tr("New Mixer Channel")))
-	{
+	if (QMenu* mixerMenu = m_tv->createMixerMenu(tr("Assign to:"), tr("New Mixer Channel"))) {
 		contextMenu->addMenu(mixerMenu);
 
 		contextMenu->addSeparator();

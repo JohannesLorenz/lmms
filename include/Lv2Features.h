@@ -31,6 +31,7 @@
 
 #include <map>
 #include <vector>
+
 #include "Lv2Manager.h"
 
 /**
@@ -46,11 +47,10 @@
 		lilv_plugin_instantiate
 	4. access the latter
 */
-class Lv2Features
-{
+class Lv2Features {
 public:
 	//! Return if a feature is supported by LMMS
-	static bool isFeatureSupported(const char *featName);
+	static bool isFeatureSupported(const char* featName);
 
 	Lv2Features();
 
@@ -61,10 +61,7 @@ public:
 	//! Fill m_features and m_featurePointers with all features
 	void createFeatureVectors();
 	//! Return LV2_Feature pointer vector, suited for lilv_plugin_instantiate
-	const LV2_Feature* const* featurePointers() const
-	{
-		return m_featurePointers.data();
-	}
+	const LV2_Feature* const* featurePointers() const { return m_featurePointers.data(); }
 
 private:
 	//! feature storage
