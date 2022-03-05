@@ -31,8 +31,8 @@
 #endif
 
 #ifdef USE_POSIX_TIME
-#include <unistd.h>
 #include <sys/times.h>
+#include <unistd.h>
 #endif
 
 PerfTime::PerfTime()
