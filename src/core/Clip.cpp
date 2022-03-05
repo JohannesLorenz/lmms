@@ -46,7 +46,8 @@ Clip::Clip(Track* track)
 	, m_mutedModel(false, this, tr("Mute"))
 	, m_selectViewOnCreate(false)
 	, m_color(128, 128, 128)
-	, m_useCustomClipColor(false) {
+	, m_useCustomClipColor(false)
+{
 	if (getTrack()) { getTrack()->addClip(this); }
 	setJournalling(false);
 	movePosition(0);
@@ -59,7 +60,8 @@ Clip::Clip(Track* track)
  *  Destroys the given clip.
  *
  */
-Clip::~Clip() {
+Clip::~Clip()
+{
 	emit destroyedClip();
 
 	if (getTrack()) { getTrack()->removeClip(this); }
@@ -72,7 +74,8 @@ Clip::~Clip() {
  *
  * \param _pos The new position of the clip.
  */
-void Clip::movePosition(const TimePos& pos) {
+void Clip::movePosition(const TimePos& pos)
+{
 	TimePos newPos = qMax(0, pos.getTicks());
 	if (m_startPosition != newPos) {
 		Engine::audioEngine()->requestChangeInModel();
@@ -90,7 +93,8 @@ void Clip::movePosition(const TimePos& pos) {
  *
  * \param _length The new length of the clip.
  */
-void Clip::changeLength(const TimePos& length) {
+void Clip::changeLength(const TimePos& length)
+{
 	m_length = length;
 	Engine::getSong()->updateLength();
 	emit lengthChanged();
@@ -102,7 +106,8 @@ bool Clip::comparePosition(const Clip* a, const Clip* b) { return a->startPositi
  *
  *  This method copies the state of a Clip to another Clip
  */
-void Clip::copyStateTo(Clip* src, Clip* dst) {
+void Clip::copyStateTo(Clip* src, Clip* dst)
+{
 	// If the node names match we copy the state
 	if (src->nodeName() == dst->nodeName()) {
 		QDomDocument doc;
@@ -126,7 +131,8 @@ void Clip::copyStateTo(Clip* src, Clip* dst) {
  *
  * \param _je The journal entry to undo
  */
-void Clip::toggleMute() {
+void Clip::toggleMute()
+{
 	m_mutedModel.setValue(!m_mutedModel.value());
 	emit dataChanged();
 }
@@ -135,7 +141,8 @@ TimePos Clip::startTimeOffset() const { return m_startTimeOffset; }
 
 void Clip::setStartTimeOffset(const TimePos& startTimeOffset) { m_startTimeOffset = startTimeOffset; }
 
-void Clip::useCustomClipColor(bool b) {
+void Clip::useCustomClipColor(bool b)
+{
 	if (b == m_useCustomClipColor) { return; }
 	m_useCustomClipColor = b;
 	emit colorChanged();

@@ -29,20 +29,25 @@
 #include "AutomationNode.h"
 #include "shared_object.h"
 
-class InlineAutomation : public FloatModel, public sharedObject {
+class InlineAutomation : public FloatModel, public sharedObject
+{
 public:
 	InlineAutomation()
 		: FloatModel()
 		, sharedObject()
-		, m_autoClip(nullptr) {}
+		, m_autoClip(nullptr)
+	{
+	}
 
-	virtual ~InlineAutomation() {
+	virtual ~InlineAutomation()
+	{
 		if (m_autoClip) { delete m_autoClip; }
 	}
 
 	virtual float defaultValue() const = 0;
 
-	bool hasAutomation() const {
+	bool hasAutomation() const
+	{
 		if (m_autoClip != nullptr && m_autoClip->getTimeMap().isEmpty() == false) {
 			// Prevent saving inline automation if there's just one node at the beginning of
 			// the clip, which has a InValue equal to the value of model (which is going
@@ -60,7 +65,8 @@ public:
 		return false;
 	}
 
-	AutomationClip* automationClip() {
+	AutomationClip* automationClip()
+	{
 		if (m_autoClip == nullptr) {
 			m_autoClip = new AutomationClip(nullptr);
 			m_autoClip->addObject(this);

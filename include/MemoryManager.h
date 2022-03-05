@@ -32,9 +32,11 @@
 
 #include "lmms_export.h"
 
-class LMMS_EXPORT MemoryManager {
+class LMMS_EXPORT MemoryManager
+{
 public:
-	struct ThreadGuard {
+	struct ThreadGuard
+	{
 		ThreadGuard();
 		~ThreadGuard();
 	};
@@ -43,9 +45,13 @@ public:
 	static void free(void* ptr);
 };
 
-template <typename T> struct MmAllocator {
+template <typename T> struct MmAllocator
+{
 	typedef T value_type;
-	template <class U> struct rebind { typedef MmAllocator<U> other; };
+	template <class U> struct rebind
+	{
+		typedef MmAllocator<U> other;
+	};
 
 	T* allocate(std::size_t n) { return reinterpret_cast<T*>(MemoryManager::alloc(sizeof(T) * n)); }
 
@@ -62,7 +68,8 @@ public: \
 	static void operator delete[](void* ptr) { MemoryManager::free(ptr); }
 
 // for use in cases where overriding new/delete isn't a possibility
-template <typename T> T* MM_ALLOC(size_t count) {
+template <typename T> T* MM_ALLOC(size_t count)
+{
 	return reinterpret_cast<T*>(MemoryManager::alloc(sizeof(T) * count));
 }
 

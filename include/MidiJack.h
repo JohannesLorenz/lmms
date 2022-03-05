@@ -44,7 +44,8 @@ constexpr size_t JACK_MIDI_BUFFER_MAX = 64; /* events */
 class AudioJack;
 class QLineEdit;
 
-class MidiJack : public QThread, public MidiClientRaw {
+class MidiJack : public QThread, public MidiClientRaw
+{
 	Q_OBJECT
 public:
 	MidiJack();

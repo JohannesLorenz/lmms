@@ -30,7 +30,8 @@
 
 #include "lmms_export.h"
 
-class LMMS_EXPORT LcdWidget : public QWidget {
+class LMMS_EXPORT LcdWidget : public QWidget
+{
 	Q_OBJECT
 
 	// theming qproperties
@@ -48,7 +49,8 @@ public:
 	void setValue(int value);
 	void setLabel(const QString& label);
 
-	void addTextForValue(int value, const QString& text) {
+	void addTextForValue(int value, const QString& text)
+	{
 		m_textForValue[value] = text;
 		update();
 	}
@@ -56,7 +58,8 @@ public:
 	Q_PROPERTY(int numDigits READ numDigits WRITE setNumDigits)
 
 	inline int numDigits() const { return m_numDigits; }
-	inline void setNumDigits(int n) {
+	inline void setNumDigits(int n)
+	{
 		m_numDigits = n;
 		updateSize();
 	}
@@ -69,7 +72,8 @@ public:
 
 	int cellHeight() const { return m_cellHeight; }
 
-	void setSeamless(bool left, bool right) {
+	void setSeamless(bool left, bool right)
+	{
 		m_seamlessLeft = left;
 		m_seamlessRight = right;
 		updateSize();

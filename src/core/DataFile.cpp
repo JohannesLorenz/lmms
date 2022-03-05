@@ -99,7 +99,8 @@ DataFile::DataFile(Type type)
 	, m_content()
 	, m_head()
 	, m_type(type)
-	, m_fileVersion(UPGRADE_METHODS.size()) {
+	, m_fileVersion(UPGRADE_METHODS.size())
+{
 	appendChild(createProcessingInstruction("xml", "version=\"1.0\""));
 	QDomElement root = createElement("lmms-project");
 	root.setAttribute("version", m_fileVersion);
@@ -120,7 +121,8 @@ DataFile::DataFile(const QString& _fileName)
 	, m_fileName(_fileName)
 	, m_content()
 	, m_head()
-	, m_fileVersion(UPGRADE_METHODS.size()) {
+	, m_fileVersion(UPGRADE_METHODS.size())
+{
 	QFile inFile(_fileName);
 	if (!inFile.open(QIODevice::ReadOnly)) {
 		if (getGUI() != nullptr) {
@@ -144,13 +146,15 @@ DataFile::DataFile(const QByteArray& _data)
 	, m_fileName("")
 	, m_content()
 	, m_head()
-	, m_fileVersion(UPGRADE_METHODS.size()) {
+	, m_fileVersion(UPGRADE_METHODS.size())
+{
 	loadData(_data, "<internal data>");
 }
 
 DataFile::~DataFile() {}
 
-bool DataFile::validate(QString extension) {
+bool DataFile::validate(QString extension)
+{
 	switch (m_type) {
 	case Type::SongProject:
 		if (extension == "mmp" || extension == "mmpz") { return true; }
@@ -186,7 +190,8 @@ bool DataFile::validate(QString extension) {
 	return false;
 }
 
-QString DataFile::nameWithExtension(const QString& _fn) const {
+QString DataFile::nameWithExtension(const QString& _fn) const
+{
 	const QString extension = _fn.section('.', -1);
 
 	switch (type()) {
@@ -207,7 +212,8 @@ QString DataFile::nameWithExtension(const QString& _fn) const {
 	return _fn;
 }
 
-void DataFile::write(QTextStream& _strm) {
+void DataFile::write(QTextStream& _strm)
+{
 	if (type() == SongProject || type() == SongProjectTemplate || type() == InstrumentTrackSettings) {
 		cleanMetaNodes(documentElement());
 	}
@@ -215,7 +221,8 @@ void DataFile::write(QTextStream& _strm) {
 	save(_strm, 2);
 }
 
-bool DataFile::writeFile(const QString& filename, bool withResources) {
+bool DataFile::writeFile(const QString& filename, bool withResources)
+{
 	// Small lambda function for displaying errors
 	auto showError = [this](QString title, QString body) {
 		if (getGUI() != nullptr) {
@@ -322,7 +329,8 @@ bool DataFile::writeFile(const QString& filename, bool withResources) {
 	return false;
 }
 
-bool DataFile::copyResources(const QString& resourcesDir) {
+bool DataFile::copyResources(const QString& resourcesDir)
+{
 	// List of filenames used so we can append a counter to any
 	// repeating filenames
 	std::list<QString> namesList;
@@ -405,7 +413,8 @@ bool DataFile::copyResources(const QString& resourcesDir) {
  *        method whether this is the first call. If it is it will use the
  *        root element as the parent.
  */
-bool DataFile::hasLocalPlugins(QDomElement parent /* = QDomElement()*/, bool firstCall /* = true*/) const {
+bool DataFile::hasLocalPlugins(QDomElement parent /* = QDomElement()*/, bool firstCall /* = true*/) const
+{
 	// If this is the first iteration of the recursion we use the root element
 	if (firstCall) { parent = documentElement(); }
 
@@ -447,7 +456,8 @@ bool DataFile::hasLocalPlugins(QDomElement parent /* = QDomElement()*/, bool fir
 	return false;
 }
 
-DataFile::Type DataFile::type(const QString& typeName) {
+DataFile::Type DataFile::type(const QString& typeName)
+{
 	for (int i = 0; i < TypeCount; ++i) {
 		if (s_types[i].m_name == typeName) { return static_cast<DataFile::Type>(i); }
 	}
@@ -458,13 +468,15 @@ DataFile::Type DataFile::type(const QString& typeName) {
 	return UnknownType;
 }
 
-QString DataFile::typeName(Type type) {
+QString DataFile::typeName(Type type)
+{
 	if (type >= UnknownType && type < TypeCount) { return s_types[type].m_name; }
 
 	return s_types[UnknownType].m_name;
 }
 
-void DataFile::cleanMetaNodes(QDomElement _de) {
+void DataFile::cleanMetaNodes(QDomElement _de)
+{
 	QDomNode node = _de.firstChild();
 	while (!node.isNull()) {
 		if (node.isElement()) {
@@ -480,7 +492,8 @@ void DataFile::cleanMetaNodes(QDomElement _de) {
 	}
 }
 
-void DataFile::upgrade_0_2_1_20070501() {
+void DataFile::upgrade_0_2_1_20070501()
+{
 	// Upgrade to version 0.2.1-20070501
 	QDomNodeList list = elementsByTagName("arpandchords");
 	for (int i = 0; !list.item(i).isNull(); ++i) {
@@ -559,7 +572,8 @@ void DataFile::upgrade_0_2_1_20070501() {
 	}
 }
 
-void DataFile::upgrade_0_2_1_20070508() {
+void DataFile::upgrade_0_2_1_20070508()
+{
 	// Upgrade to version 0.2.1-20070508 from some version greater than or equal to 0.2.1-20070501
 	QDomNodeList list = elementsByTagName("arpandchords");
 	for (int i = 0; !list.item(i).isNull(); ++i) {
@@ -598,7 +612,8 @@ void DataFile::upgrade_0_2_1_20070508() {
 	}
 }
 
-void DataFile::upgrade_0_3_0_rc2() {
+void DataFile::upgrade_0_3_0_rc2()
+{
 	// Upgrade to version 0.3.0-rc2 from some version greater than or equal to 0.2.1-20070508
 	QDomNodeList list = elementsByTagName("arpandchords");
 	for (int i = 0; !list.item(i).isNull(); ++i) {
@@ -607,7 +622,8 @@ void DataFile::upgrade_0_3_0_rc2() {
 	}
 }
 
-void DataFile::upgrade_0_3_0() {
+void DataFile::upgrade_0_3_0()
+{
 	// Upgrade to version 0.3.0 (final) from some version greater than or equal to 0.3.0-rc2
 	QDomNodeList list;
 	while (!(list = elementsByTagName("pluckedstringsynth")).isEmpty()) {
@@ -627,7 +643,8 @@ void DataFile::upgrade_0_3_0() {
 	}
 }
 
-void DataFile::upgrade_0_4_0_20080104() {
+void DataFile::upgrade_0_4_0_20080104()
+{
 	// Upgrade to version 0.4.0-20080104 from some version greater than or equal to 0.3.0 (final)
 	QDomNodeList list = elementsByTagName("fx");
 	for (int i = 0; !list.item(i).isNull(); ++i) {
@@ -636,7 +653,8 @@ void DataFile::upgrade_0_4_0_20080104() {
 	}
 }
 
-void DataFile::upgrade_0_4_0_20080118() {
+void DataFile::upgrade_0_4_0_20080118()
+{
 	// Upgrade to version 0.4.0-20080118 from some version greater than or equal to 0.4.0-20080104
 	QDomNodeList list;
 	while (!(list = elementsByTagName("fx")).isEmpty()) {
@@ -653,7 +671,8 @@ void DataFile::upgrade_0_4_0_20080118() {
 	}
 }
 
-void DataFile::upgrade_0_4_0_20080129() {
+void DataFile::upgrade_0_4_0_20080129()
+{
 	// Upgrade to version 0.4.0-20080129 from some version greater than or equal to 0.4.0-20080118
 	QDomNodeList list;
 	while (!(list = elementsByTagName("arpandchords")).isEmpty()) {
@@ -665,7 +684,8 @@ void DataFile::upgrade_0_4_0_20080129() {
 	}
 }
 
-void DataFile::upgrade_0_4_0_20080409() {
+void DataFile::upgrade_0_4_0_20080409()
+{
 	// Upgrade to version 0.4.0-20080409 from some version greater than or equal to 0.4.0-20080129
 	QStringList s;
 	s << "note"
@@ -689,7 +709,8 @@ void DataFile::upgrade_0_4_0_20080409() {
 	}
 }
 
-void DataFile::upgrade_0_4_0_20080607() {
+void DataFile::upgrade_0_4_0_20080607()
+{
 	// Upgrade to version 0.4.0-20080607 from some version greater than or equal to 0.3.0-20080409
 	QDomNodeList list;
 	while (!(list = elementsByTagName("midi")).isEmpty()) {
@@ -698,7 +719,8 @@ void DataFile::upgrade_0_4_0_20080607() {
 	}
 }
 
-void DataFile::upgrade_0_4_0_20080622() {
+void DataFile::upgrade_0_4_0_20080622()
+{
 	// Upgrade to version 0.4.0-20080622 from some version greater than or equal to 0.3.0-20080607
 	QDomNodeList list;
 	while (!(list = elementsByTagName("automation-pattern")).isEmpty()) {
@@ -715,7 +737,8 @@ void DataFile::upgrade_0_4_0_20080622() {
 	}
 }
 
-void DataFile::upgrade_0_4_0_beta1() {
+void DataFile::upgrade_0_4_0_beta1()
+{
 	// Upgrade to version 0.4.0-beta1 from some version greater than or equal to 0.4.0-20080622
 	// convert binary effect-key-blobs to XML
 	QDomNodeList list;
@@ -746,7 +769,8 @@ void DataFile::upgrade_0_4_0_beta1() {
 	}
 }
 
-void DataFile::upgrade_0_4_0_rc2() {
+void DataFile::upgrade_0_4_0_rc2()
+{
 	// Upgrade to version 0.4.0-rc2 from some version greater than or equal to 0.4.0-beta1
 	QDomNodeList list = elementsByTagName("audiofileprocessor");
 	for (int i = 0; !list.item(i).isNull(); ++i) {
@@ -766,7 +790,8 @@ void DataFile::upgrade_0_4_0_rc2() {
 	}
 }
 
-void DataFile::upgrade_1_0_99() {
+void DataFile::upgrade_1_0_99()
+{
 	jo_id_t last_assigned_id = 0;
 
 	QList<jo_id_t> idList;
@@ -796,7 +821,8 @@ void DataFile::upgrade_1_0_99() {
 	}
 }
 
-void DataFile::upgrade_1_1_0() {
+void DataFile::upgrade_1_1_0()
+{
 	QDomNodeList list = elementsByTagName("fxchannel");
 	for (int i = 1; !list.item(i).isNull(); ++i) {
 		QDomElement el = list.item(i).toElement();
@@ -807,7 +833,8 @@ void DataFile::upgrade_1_1_0() {
 	}
 }
 
-void DataFile::upgrade_1_1_91() {
+void DataFile::upgrade_1_1_91()
+{
 	// Upgrade to version 1.1.91 from some version less than 1.1.91
 	QDomNodeList list = elementsByTagName("audiofileprocessor");
 	for (int i = 0; !list.item(i).isNull(); ++i) {
@@ -847,7 +874,8 @@ void DataFile::upgrade_1_1_91() {
 	}
 }
 
-static void upgradeElement_1_2_0_rc2_42(QDomElement& el) {
+static void upgradeElement_1_2_0_rc2_42(QDomElement& el)
+{
 	if (el.hasAttribute("syncmode")) {
 		int syncmode = el.attribute("syncmode").toInt();
 		QStringList names;
@@ -868,7 +896,8 @@ static void upgradeElement_1_2_0_rc2_42(QDomElement& el) {
 	}
 }
 
-void DataFile::upgrade_1_2_0_rc3() {
+void DataFile::upgrade_1_2_0_rc3()
+{
 	// Upgrade from earlier bbtrack beat note behaviour of adding
 	// steps if a note is placed after the last step.
 	QDomNodeList bbtracks = elementsByTagName("bbtrack");
@@ -898,7 +927,8 @@ void DataFile::upgrade_1_2_0_rc3() {
  *  providing the functor with lists to add and remove DomElements. Helpful for
  *  patching port values from savefiles.
  */
-template <class Ftor> void iterate_ladspa_ports(QDomElement& effect, Ftor& ftor) {
+template <class Ftor> void iterate_ladspa_ports(QDomElement& effect, Ftor& ftor)
+{
 	// Head back up the DOM to upgrade ports
 	QDomNodeList ladspacontrols = effect.elementsByTagName("ladspacontrols");
 	for (int m = 0; !ladspacontrols.item(m).isNull(); ++m) {
@@ -936,7 +966,8 @@ template <class Ftor> void iterate_ladspa_ports(QDomElement& effect, Ftor& ftor)
 }
 
 // helper function if you need to print a QDomNode
-QDebug operator<<(QDebug dbg, const QDomNode& node) {
+QDebug operator<<(QDebug dbg, const QDomNode& node)
+{
 	QString s;
 	QTextStream str(&s, QIODevice::WriteOnly);
 	node.save(str, 2);
@@ -944,7 +975,8 @@ QDebug operator<<(QDebug dbg, const QDomNode& node) {
 	return dbg;
 }
 
-void DataFile::upgrade_1_3_0() {
+void DataFile::upgrade_1_3_0()
+{
 	QDomNodeList list = elementsByTagName("instrument");
 	for (int i = 0; !list.item(i).isNull(); ++i) {
 		QDomElement el = list.item(i).toElement();
@@ -1198,7 +1230,8 @@ void DataFile::upgrade_1_3_0() {
 	}
 }
 
-void DataFile::upgrade_noHiddenClipNames() {
+void DataFile::upgrade_noHiddenClipNames()
+{
 	QDomNodeList tracks = elementsByTagName("track");
 
 	auto clearDefaultNames = [](QDomNodeList clips, QString trackName) {
@@ -1223,7 +1256,8 @@ void DataFile::upgrade_noHiddenClipNames() {
 	}
 }
 
-void DataFile::upgrade_automationNodes() {
+void DataFile::upgrade_automationNodes()
+{
 	QDomNodeList autoPatterns = elementsByTagName("automationpattern");
 
 	// Go through all automation patterns
@@ -1251,7 +1285,8 @@ void DataFile::upgrade_automationNodes() {
  * The non-standard note range previously affected all MIDI-based instruments
  * except OpulenZ, and made them sound an octave lower than they should (#1857).
  */
-void DataFile::upgrade_extendedNoteRange() {
+void DataFile::upgrade_extendedNoteRange()
+{
 	auto affected = [](const QDomElement& instrument) {
 		return instrument.attribute("name") == "zynaddsubfx" || instrument.attribute("name") == "vestige"
 			|| instrument.attribute("name") == "lv2instrument" || instrument.attribute("name") == "carlapatchbay"
@@ -1311,7 +1346,8 @@ void DataFile::upgrade_extendedNoteRange() {
  * Older projects were made without this feature and would sound differently if loaded
  * with the new default setting. This upgrade routine preserves their old behavior.
  */
-void DataFile::upgrade_defaultTripleOscillatorHQ() {
+void DataFile::upgrade_defaultTripleOscillatorHQ()
+{
 	QDomNodeList tripleoscillators = elementsByTagName("tripleoscillator");
 	for (int i = 0; !tripleoscillators.item(i).isNull(); i++) {
 		for (int j = 1; j <= 3; j++) {
@@ -1324,7 +1360,8 @@ void DataFile::upgrade_defaultTripleOscillatorHQ() {
 }
 
 // Remove FX prefix from mixer and related nodes
-void DataFile::upgrade_mixerRename() {
+void DataFile::upgrade_mixerRename()
+{
 	// Change nodename <fxmixer> to <mixer>
 	QDomNodeList fxmixer = elementsByTagName("fxmixer");
 	for (int i = 0; !fxmixer.item(i).isNull(); ++i) {
@@ -1348,7 +1385,8 @@ void DataFile::upgrade_mixerRename() {
 }
 
 // Rename BB to pattern and TCO to clip
-void DataFile::upgrade_bbTcoRename() {
+void DataFile::upgrade_bbTcoRename()
+{
 	std::vector<std::pair<const char*, const char*>> names{
 		{"automationpattern", "automationclip"},
 		{"bbtco", "patternclip"},
@@ -1375,7 +1413,8 @@ void DataFile::upgrade_bbTcoRename() {
 	}
 }
 
-void DataFile::upgrade() {
+void DataFile::upgrade()
+{
 	// Runs all necessary upgrade methods
 	std::size_t max = std::min(static_cast<std::size_t>(m_fileVersion), UPGRADE_METHODS.size());
 	std::for_each(UPGRADE_METHODS.begin() + max, UPGRADE_METHODS.end(), [this](UpgradeMethod um) { (this->*um)(); });
@@ -1400,7 +1439,8 @@ void DataFile::upgrade() {
 	}
 }
 
-void DataFile::loadData(const QByteArray& _data, const QString& _sourceFile) {
+void DataFile::loadData(const QByteArray& _data, const QString& _sourceFile)
+{
 	QString errorMsg;
 	int line = -1, col = -1;
 	if (!setContent(_data, &errorMsg, &line, &col)) {
@@ -1457,7 +1497,8 @@ void DataFile::loadData(const QByteArray& _data, const QString& _sourceFile) {
 	m_content = root.elementsByTagName(typeName(m_type)).item(0).toElement();
 }
 
-void findIds(const QDomElement& elem, QList<jo_id_t>& idList) {
+void findIds(const QDomElement& elem, QList<jo_id_t>& idList)
+{
 	if (elem.hasAttribute("id")) { idList.append(elem.attribute("id").toInt()); }
 	QDomElement child = elem.firstChildElement();
 	while (!child.isNull()) {
@@ -1466,7 +1507,8 @@ void findIds(const QDomElement& elem, QList<jo_id_t>& idList) {
 	}
 }
 
-unsigned int DataFile::legacyFileVersion() {
+unsigned int DataFile::legacyFileVersion()
+{
 	// Version of LMMs that created this project
 	ProjectVersion creator = documentElement().attribute("creatorversion").replace("svn", "");
 

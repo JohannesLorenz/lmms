@@ -28,7 +28,8 @@
 #include "AutomatableModelView.h"
 #include "LcdWidget.h"
 
-class LMMS_EXPORT LcdSpinBox : public LcdWidget, public IntModelView {
+class LMMS_EXPORT LcdSpinBox : public LcdWidget, public IntModelView
+{
 	Q_OBJECT
 public:
 	LcdSpinBox(int numDigits, QWidget* parent, const QString& name = QString());
@@ -37,7 +38,8 @@ public:
 
 	virtual ~LcdSpinBox() = default;
 
-	void modelChanged() override {
+	void modelChanged() override
+	{
 		ModelView::modelChanged();
 		update();
 	}

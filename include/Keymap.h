@@ -31,7 +31,8 @@
 
 #include "SerializingObject.h"
 
-class Keymap : public QObject, public SerializingObject {
+class Keymap : public QObject, public SerializingObject
+{
 	Q_OBJECT
 public:
 	Keymap();

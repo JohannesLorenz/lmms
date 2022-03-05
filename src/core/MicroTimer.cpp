@@ -12,7 +12,8 @@ MicroTimer::~MicroTimer() {}
 
 void MicroTimer::reset() { begin = steady_clock::now(); }
 
-int MicroTimer::elapsed() const {
+int MicroTimer::elapsed() const
+{
 	auto now = steady_clock::now();
 	return std::chrono::duration_cast<std::chrono::duration<int, std::micro>>(now - begin).count();
 }

@@ -33,7 +33,8 @@ class TrackLabelButton;
 class TrackContainer;
 
 /*! Track type used in the Song (Editor) to reference a pattern in the PatternStore */
-class LMMS_EXPORT PatternTrack : public Track {
+class LMMS_EXPORT PatternTrack : public Track
+{
 	Q_OBJECT
 public:
 	PatternTrack(TrackContainer* tc);

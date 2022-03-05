@@ -6,7 +6,8 @@
 #include "lmms_export.h"
 
 namespace PathUtil {
-enum class Base {
+enum class Base
+{
 	Absolute,
 	ProjectDir,
 	FactorySample,

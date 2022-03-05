@@ -75,7 +75,8 @@ Fader::Fader(FloatModel* _model, const QString& _name, QWidget* _parent)
 	, m_startValue(0)
 	, m_peakGreen(0, 0, 0)
 	, m_peakRed(0, 0, 0)
-	, m_peakYellow(0, 0, 0) {
+	, m_peakYellow(0, 0, 0)
+{
 	if (s_textFloat == nullptr) { s_textFloat = new TextFloat; }
 	if (!s_back) { s_back = new QPixmap(embed::getIconPixmap("fader_background")); }
 	if (!s_leds) { s_leds = new QPixmap(embed::getIconPixmap("fader_leds")); }
@@ -103,7 +104,8 @@ Fader::Fader(FloatModel* model, const QString& name, QWidget* parent, QPixmap* b
 	, m_moveStartPoint(-1)
 	, m_startValue(0)
 	, m_peakGreen(0, 0, 0)
-	, m_peakRed(0, 0, 0) {
+	, m_peakRed(0, 0, 0)
+{
 	if (s_textFloat == nullptr) { s_textFloat = new TextFloat; }
 
 	m_back = back;
@@ -113,7 +115,8 @@ Fader::Fader(FloatModel* model, const QString& name, QWidget* parent, QPixmap* b
 	init(model, name);
 }
 
-void Fader::init(FloatModel* model, QString const& name) {
+void Fader::init(FloatModel* model, QString const& name)
+{
 	setWindowTitle(name);
 	setAttribute(Qt::WA_OpaquePaintEvent, false);
 	QSize backgroundSize = m_back->size();
@@ -124,14 +127,16 @@ void Fader::init(FloatModel* model, QString const& name) {
 	setHintText("Volume:", "%");
 }
 
-void Fader::contextMenuEvent(QContextMenuEvent* _ev) {
+void Fader::contextMenuEvent(QContextMenuEvent* _ev)
+{
 	CaptionMenu contextMenu(windowTitle());
 	addDefaultActions(&contextMenu);
 	contextMenu.exec(QCursor::pos());
 	_ev->accept();
 }
 
-void Fader::mouseMoveEvent(QMouseEvent* mouseEvent) {
+void Fader::mouseMoveEvent(QMouseEvent* mouseEvent)
+{
 	if (m_moveStartPoint >= 0) {
 		int dy = m_moveStartPoint - mouseEvent->globalY();
 
@@ -145,7 +150,8 @@ void Fader::mouseMoveEvent(QMouseEvent* mouseEvent) {
 	}
 }
 
-void Fader::mousePressEvent(QMouseEvent* mouseEvent) {
+void Fader::mousePressEvent(QMouseEvent* mouseEvent)
+{
 	if (mouseEvent->button() == Qt::LeftButton && !(mouseEvent->modifiers() & Qt::ControlModifier)) {
 		AutomatableModel* thisModel = model();
 		if (thisModel) {
@@ -169,7 +175,8 @@ void Fader::mousePressEvent(QMouseEvent* mouseEvent) {
 	}
 }
 
-void Fader::mouseDoubleClickEvent(QMouseEvent* mouseEvent) {
+void Fader::mouseDoubleClickEvent(QMouseEvent* mouseEvent)
+{
 	bool ok;
 	float newValue;
 	// TODO: dbV handling
@@ -184,7 +191,8 @@ void Fader::mouseDoubleClickEvent(QMouseEvent* mouseEvent) {
 	if (ok) { model()->setValue(newValue); }
 }
 
-void Fader::mouseReleaseEvent(QMouseEvent* mouseEvent) {
+void Fader::mouseReleaseEvent(QMouseEvent* mouseEvent)
+{
 	if (mouseEvent && mouseEvent->button() == Qt::LeftButton) {
 		AutomatableModel* thisModel = model();
 		if (thisModel) { thisModel->restoreJournallingState(); }
@@ -193,7 +201,8 @@ void Fader::mouseReleaseEvent(QMouseEvent* mouseEvent) {
 	s_textFloat->hide();
 }
 
-void Fader::wheelEvent(QWheelEvent* ev) {
+void Fader::wheelEvent(QWheelEvent* ev)
+{
 	ev->accept();
 
 	if (ev->angleDelta().y() > 0) {
@@ -208,7 +217,8 @@ void Fader::wheelEvent(QWheelEvent* ev) {
 ///
 /// Set peak value (0.0 .. 1.0)
 ///
-void Fader::setPeak(float fPeak, float& targetPeak, float& persistentPeak, QElapsedTimer& lastPeakTimer) {
+void Fader::setPeak(float fPeak, float& targetPeak, float& persistentPeak, QElapsedTimer& lastPeakTimer)
+{
 	if (fPeak < m_fMinPeak) {
 		fPeak = m_fMinPeak;
 	} else if (fPeak > m_fMaxPeak) {
@@ -235,7 +245,8 @@ void Fader::setPeak_L(float fPeak) { setPeak(fPeak, m_fPeakValue_L, m_persistent
 void Fader::setPeak_R(float fPeak) { setPeak(fPeak, m_fPeakValue_R, m_persistentPeak_R, m_lastPeakTimer_R); }
 
 // update tooltip showing value and adjust position while changing fader value
-void Fader::updateTextFloat() {
+void Fader::updateTextFloat()
+{
 	if (ConfigManager::inst()->value("app", "displaydbfs").toInt() && m_conversionFactor == 100.0) {
 		s_textFloat->setText(QString("Volume: %1 dBFS").arg(ampToDbfs(model()->value()), 3, 'f', 2));
 	} else {
@@ -245,13 +256,15 @@ void Fader::updateTextFloat() {
 	s_textFloat->moveGlobal(this, QPoint(width() - (*m_knob).width() - 5, knobPosY() - 46));
 }
 
-inline int Fader::calculateDisplayPeak(float fPeak) {
+inline int Fader::calculateDisplayPeak(float fPeak)
+{
 	int peak = (int)(m_back->height() - (fPeak / (m_fMaxPeak - m_fMinPeak)) * m_back->height());
 
 	return qMin(peak, m_back->height());
 }
 
-void Fader::paintEvent(QPaintEvent* ev) {
+void Fader::paintEvent(QPaintEvent* ev)
+{
 	QPainter painter(this);
 
 	// Draw the background
@@ -268,7 +281,8 @@ void Fader::paintEvent(QPaintEvent* ev) {
 	painter.drawPixmap(0, knobPosY() - m_knob->height(), *m_knob);
 }
 
-void Fader::paintDBFSLevels(QPaintEvent* ev, QPainter& painter) {
+void Fader::paintDBFSLevels(QPaintEvent* ev, QPainter& painter)
+{
 	int height = m_back->height();
 	int width = m_back->width() / 2;
 	int center = m_back->width() - width;
@@ -317,7 +331,8 @@ void Fader::paintDBFSLevels(QPaintEvent* ev, QPainter& painter) {
 	}
 }
 
-void Fader::paintLinearLevels(QPaintEvent* ev, QPainter& painter) {
+void Fader::paintLinearLevels(QPaintEvent* ev, QPainter& painter)
+{
 	// peak leds
 	// float fRange = abs( m_fMaxPeak ) + abs( m_fMinPeak );
 

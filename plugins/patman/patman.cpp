@@ -60,7 +60,8 @@ Plugin::Descriptor PLUGIN_EXPORT patman_plugin_descriptor = {
 };
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* m, void*) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* m, void*)
+{
 	return new patmanInstrument(static_cast<InstrumentTrack*>(m));
 }
 }
@@ -68,17 +69,21 @@ PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* m, void*) {
 patmanInstrument::patmanInstrument(InstrumentTrack* _instrument_track)
 	: Instrument(_instrument_track, &patman_plugin_descriptor)
 	, m_loopedModel(true, this)
-	, m_tunedModel(true, this) {}
+	, m_tunedModel(true, this)
+{
+}
 
 patmanInstrument::~patmanInstrument() { unloadCurrentPatch(); }
 
-void patmanInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void patmanInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	_this.setAttribute("src", m_patchFile);
 	m_loopedModel.saveSettings(_doc, _this, "looped");
 	m_tunedModel.saveSettings(_doc, _this, "tuned");
 }
 
-void patmanInstrument::loadSettings(const QDomElement& _this) {
+void patmanInstrument::loadSettings(const QDomElement& _this)
+{
 	setFile(_this.attribute("src"), false);
 	m_loopedModel.loadSettings(_this, "looped");
 	m_tunedModel.loadSettings(_this, "tuned");
@@ -88,7 +93,8 @@ void patmanInstrument::loadFile(const QString& _file) { setFile(_file); }
 
 QString patmanInstrument::nodeName(void) const { return (patman_plugin_descriptor.name); }
 
-void patmanInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer) {
+void patmanInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
+{
 	if (m_patchFile == "") { return; }
 
 	const fpp_t frames = _n->framesLeftForCurrentPeriod();
@@ -108,14 +114,16 @@ void patmanInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer
 	}
 }
 
-void patmanInstrument::deleteNotePluginData(NotePlayHandle* _n) {
+void patmanInstrument::deleteNotePluginData(NotePlayHandle* _n)
+{
 	handle_data* hdata = (handle_data*)_n->m_pluginData;
 	sharedObject::unref(hdata->sample);
 	delete hdata->state;
 	delete hdata;
 }
 
-void patmanInstrument::setFile(const QString& _patch_file, bool _rename) {
+void patmanInstrument::setFile(const QString& _patch_file, bool _rename)
+{
 	if (_patch_file.size() <= 0) {
 		m_patchFile = QString();
 		return;
@@ -136,7 +144,8 @@ void patmanInstrument::setFile(const QString& _patch_file, bool _rename) {
 	emit fileChanged();
 }
 
-patmanInstrument::LoadErrors patmanInstrument::loadPatch(const QString& _filename) {
+patmanInstrument::LoadErrors patmanInstrument::loadPatch(const QString& _filename)
+{
 	unloadCurrentPatch();
 
 	FILE* fd = fopen(_filename.toUtf8().constData(), "rb");
@@ -271,14 +280,16 @@ patmanInstrument::LoadErrors patmanInstrument::loadPatch(const QString& _filenam
 	return (LoadOK);
 }
 
-void patmanInstrument::unloadCurrentPatch(void) {
+void patmanInstrument::unloadCurrentPatch(void)
+{
 	while (!m_patchSamples.empty()) {
 		sharedObject::unref(m_patchSamples.back());
 		m_patchSamples.pop_back();
 	}
 }
 
-void patmanInstrument::selectSample(NotePlayHandle* _n) {
+void patmanInstrument::selectSample(NotePlayHandle* _n)
+{
 	const float freq = _n->frequency();
 
 	float min_dist = HUGE_VALF;
@@ -310,7 +321,8 @@ PluginView* patmanInstrument::instantiateView(QWidget* _parent) { return (new Pa
 
 PatmanView::PatmanView(Instrument* _instrument, QWidget* _parent)
 	: InstrumentViewFixedSize(_instrument, _parent)
-	, m_pi(nullptr) {
+	, m_pi(nullptr)
+{
 	setAutoFillBackground(true);
 	QPalette pal;
 	pal.setBrush(backgroundRole(), PLUGIN_NAME::getIconPixmap("artwork"));
@@ -348,7 +360,8 @@ PatmanView::PatmanView(Instrument* _instrument, QWidget* _parent)
 
 PatmanView::~PatmanView() {}
 
-void PatmanView::openFile(void) {
+void PatmanView::openFile(void)
+{
 	FileDialog ofd(nullptr, tr("Open patch file"));
 	ofd.setFileMode(FileDialog::ExistingFiles);
 
@@ -380,7 +393,8 @@ void PatmanView::openFile(void) {
 	}
 }
 
-void PatmanView::updateFilename(void) {
+void PatmanView::updateFilename(void)
+{
 	m_displayFilename = "";
 	int idx = m_pi->m_patchFile.length();
 
@@ -397,7 +411,8 @@ void PatmanView::updateFilename(void) {
 	update();
 }
 
-void PatmanView::dragEnterEvent(QDragEnterEvent* _dee) {
+void PatmanView::dragEnterEvent(QDragEnterEvent* _dee)
+{
 	// For mimeType() and MimeType enum class
 	using namespace Clipboard;
 
@@ -413,7 +428,8 @@ void PatmanView::dragEnterEvent(QDragEnterEvent* _dee) {
 	}
 }
 
-void PatmanView::dropEvent(QDropEvent* _de) {
+void PatmanView::dropEvent(QDropEvent* _de)
+{
 	QString type = StringPairDrag::decodeKey(_de);
 	QString value = StringPairDrag::decodeValue(_de);
 	if (type == "samplefile") {
@@ -425,14 +441,16 @@ void PatmanView::dropEvent(QDropEvent* _de) {
 	_de->ignore();
 }
 
-void PatmanView::paintEvent(QPaintEvent*) {
+void PatmanView::paintEvent(QPaintEvent*)
+{
 	QPainter p(this);
 
 	p.setFont(pointSize<8>(font()));
 	p.drawText(8, 116, 235, 16, Qt::AlignLeft | Qt::TextSingleLine | Qt::AlignVCenter, m_displayFilename);
 }
 
-void PatmanView::modelChanged(void) {
+void PatmanView::modelChanged(void)
+{
 	m_pi = castModel<patmanInstrument>();
 	m_loopButton->setModel(&m_pi->m_loopedModel);
 	m_tuneButton->setModel(&m_pi->m_tunedModel);

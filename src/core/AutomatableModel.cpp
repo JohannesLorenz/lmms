@@ -57,7 +57,8 @@ AutomatableModel::AutomatableModel(const float val, const float min, const float
 	setInitValue(val);
 }
 
-AutomatableModel::~AutomatableModel() {
+AutomatableModel::~AutomatableModel()
+{
 	while (m_linkedModels.empty() == false) {
 		m_linkedModels.last()->unlinkModel(this);
 		m_linkedModels.erase(m_linkedModels.end() - 1);
@@ -72,12 +73,14 @@ AutomatableModel::~AutomatableModel() {
 
 bool AutomatableModel::isAutomated() const { return AutomationClip::isAutomated(this); }
 
-bool AutomatableModel::mustQuoteName(const QString& name) {
+bool AutomatableModel::mustQuoteName(const QString& name)
+{
 	QRegExp reg("^[A-Za-z0-9._-]+$");
 	return !reg.exactMatch(name);
 }
 
-void AutomatableModel::saveSettings(QDomDocument& doc, QDomElement& element, const QString& name) {
+void AutomatableModel::saveSettings(QDomDocument& doc, QDomElement& element, const QString& name)
+{
 	bool mustQuote = mustQuoteName(name);
 
 	if (isAutomated() || m_scaleType != Linear) {
@@ -133,7 +136,8 @@ void AutomatableModel::saveSettings(QDomDocument& doc, QDomElement& element, con
 	}
 }
 
-void AutomatableModel::loadSettings(const QDomElement& element, const QString& name) {
+void AutomatableModel::loadSettings(const QDomElement& element, const QString& name)
+{
 	// compat code
 	QDomNode node = element.namedItem(AutomationClip::classNodeName());
 	if (node.isElement()) {
@@ -221,7 +225,8 @@ void AutomatableModel::loadSettings(const QDomElement& element, const QString& n
 	}
 }
 
-void AutomatableModel::setValue(const float value) {
+void AutomatableModel::setValue(const float value)
+{
 	m_oldValue = m_value;
 	++m_setValueDepth;
 	const float old_val = m_value;
@@ -247,26 +252,31 @@ void AutomatableModel::setValue(const float value) {
 	--m_setValueDepth;
 }
 
-template <class T> T AutomatableModel::logToLinearScale(T value) const {
+template <class T> T AutomatableModel::logToLinearScale(T value) const
+{
 	return castValue<T>(::logToLinearScale(minValue<float>(), maxValue<float>(), static_cast<float>(value)));
 }
 
-float AutomatableModel::scaledValue(float value) const {
+float AutomatableModel::scaledValue(float value) const
+{
 	return m_scaleType == Linear ? value : logToLinearScale<float>((value - minValue<float>()) / m_range);
 }
 
-float AutomatableModel::inverseScaledValue(float value) const {
+float AutomatableModel::inverseScaledValue(float value) const
+{
 	return m_scaleType == Linear ? value : ::linearToLogScale(minValue<float>(), maxValue<float>(), value);
 }
 
 //! @todo: this should be moved into a maths header
-template <class T> void roundAt(T& value, const T& where, const T& step_size) {
+template <class T> void roundAt(T& value, const T& where, const T& step_size)
+{
 	if (qAbs<float>(value - where) < typeInfo<float>::minEps() * qAbs<float>(step_size)) { value = where; }
 }
 
 template <class T> void AutomatableModel::roundAt(T& value, const T& where) const { ::roundAt(value, where, m_step); }
 
-void AutomatableModel::setAutomatedValue(const float value) {
+void AutomatableModel::setAutomatedValue(const float value)
+{
 	setUseControllerValue(false);
 
 	m_oldValue = m_value;
@@ -291,7 +301,8 @@ void AutomatableModel::setAutomatedValue(const float value) {
 	--m_setValueDepth;
 }
 
-void AutomatableModel::setRange(const float min, const float max, const float step) {
+void AutomatableModel::setRange(const float min, const float max, const float step)
+{
 	if ((m_maxValue != max) || (m_minValue != min)) {
 		m_minValue = min;
 		m_maxValue = max;
@@ -307,14 +318,16 @@ void AutomatableModel::setRange(const float min, const float max, const float st
 	}
 }
 
-void AutomatableModel::setStep(const float step) {
+void AutomatableModel::setStep(const float step)
+{
 	if (m_step != step) {
 		m_step = step;
 		emit propertiesChanged();
 	}
 }
 
-float AutomatableModel::fittedValue(float value) const {
+float AutomatableModel::fittedValue(float value) const
+{
 	value = qBound<float>(m_minValue, value, m_maxValue);
 
 	if (m_step != 0 && m_hasStrictStepSize) { value = nearbyintf(value / m_step) * m_step; }
@@ -332,7 +345,8 @@ float AutomatableModel::fittedValue(float value) const {
 	return value;
 }
 
-void AutomatableModel::linkModel(AutomatableModel* model) {
+void AutomatableModel::linkModel(AutomatableModel* model)
+{
 	if (!m_linkedModels.contains(model) && model != this) {
 		m_linkedModels.push_back(model);
 
@@ -342,12 +356,14 @@ void AutomatableModel::linkModel(AutomatableModel* model) {
 	}
 }
 
-void AutomatableModel::unlinkModel(AutomatableModel* model) {
+void AutomatableModel::unlinkModel(AutomatableModel* model)
+{
 	AutoModelVector::Iterator it = std::find(m_linkedModels.begin(), m_linkedModels.end(), model);
 	if (it != m_linkedModels.end()) { m_linkedModels.erase(it); }
 }
 
-void AutomatableModel::linkModels(AutomatableModel* model1, AutomatableModel* model2) {
+void AutomatableModel::linkModels(AutomatableModel* model1, AutomatableModel* model2)
+{
 	if (!model1->m_linkedModels.contains(model2) && model1 != model2) {
 		// copy data
 		model1->m_value = model2->m_value;
@@ -363,18 +379,21 @@ void AutomatableModel::linkModels(AutomatableModel* model1, AutomatableModel* mo
 	}
 }
 
-void AutomatableModel::unlinkModels(AutomatableModel* model1, AutomatableModel* model2) {
+void AutomatableModel::unlinkModels(AutomatableModel* model1, AutomatableModel* model2)
+{
 	model1->unlinkModel(model2);
 	model2->unlinkModel(model1);
 }
 
-void AutomatableModel::unlinkAllModels() {
+void AutomatableModel::unlinkAllModels()
+{
 	for (AutomatableModel* model : m_linkedModels) {
 		unlinkModels(this, model);
 	}
 }
 
-void AutomatableModel::setControllerConnection(ControllerConnection* c) {
+void AutomatableModel::setControllerConnection(ControllerConnection* c)
+{
 	m_controllerConnection = c;
 	if (c) {
 		QObject::connect(
@@ -385,7 +404,8 @@ void AutomatableModel::setControllerConnection(ControllerConnection* c) {
 	}
 }
 
-float AutomatableModel::controllerValue(int frameOffset) const {
+float AutomatableModel::controllerValue(int frameOffset) const
+{
 	if (m_controllerConnection) {
 		float v = 0;
 		switch (m_scaleType) {
@@ -408,7 +428,8 @@ float AutomatableModel::controllerValue(int frameOffset) const {
 	return fittedValue(lm->m_value);
 }
 
-ValueBuffer* AutomatableModel::valueBuffer() {
+ValueBuffer* AutomatableModel::valueBuffer()
+{
 	QMutexLocker m(&m_valueBufferMutex);
 	// if we've already calculated the valuebuffer this period, return the cached buffer
 	if (m_lastUpdatedPeriod == s_periodCounter) { return m_hasSampleExactData ? &m_valueBuffer : nullptr; }
@@ -475,13 +496,15 @@ ValueBuffer* AutomatableModel::valueBuffer() {
 	return nullptr;
 }
 
-void AutomatableModel::unlinkControllerConnection() {
+void AutomatableModel::unlinkControllerConnection()
+{
 	if (m_controllerConnection) { m_controllerConnection->disconnect(this); }
 
 	m_controllerConnection = nullptr;
 }
 
-void AutomatableModel::setInitValue(const float value) {
+void AutomatableModel::setInitValue(const float value)
+{
 	m_initValue = fittedValue(value);
 	bool journalling = testAndSetJournalling(false);
 	setValue(value);
@@ -492,7 +515,8 @@ void AutomatableModel::setInitValue(const float value) {
 
 void AutomatableModel::reset() { setValue(initValue<float>()); }
 
-float AutomatableModel::globalAutomationValueAt(const TimePos& time) {
+float AutomatableModel::globalAutomationValueAt(const TimePos& time)
+{
 	// get clips that connect to this model
 	QVector<AutomationClip*> clips = AutomationClip::clipsForModel(this);
 	if (clips.isEmpty()) {
@@ -541,7 +565,8 @@ float AutomatableModel::globalAutomationValueAt(const TimePos& time) {
 	}
 }
 
-void AutomatableModel::setUseControllerValue(bool b) {
+void AutomatableModel::setUseControllerValue(bool b)
+{
 	if (b) {
 		m_useControllerValue = true;
 		emit dataChanged();
@@ -553,7 +578,8 @@ void AutomatableModel::setUseControllerValue(bool b) {
 
 float FloatModel::getRoundedValue() const { return qRound(value() / step<float>()) * step<float>(); }
 
-int FloatModel::getDigitCount() const {
+int FloatModel::getDigitCount() const
+{
 	float steptemp = step<float>();
 	int digits = 0;
 	while (steptemp < 1) {

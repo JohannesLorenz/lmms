@@ -34,7 +34,8 @@ class AudioEngine;
 class AudioPort;
 class QThread;
 
-class AudioDevice {
+class AudioDevice
+{
 public:
 	AudioDevice(const ch_cnt_t _channels, AudioEngine* audioEngine);
 	virtual ~AudioDevice();
@@ -69,7 +70,9 @@ protected:
 	// subclasses can re-implement this for being used in conjunction with
 	// processNextBuffer()
 	virtual void writeBuffer(
-		const surroundSampleFrame* /* _buf*/, const fpp_t /*_frames*/, const float /*_master_gain*/) {}
+		const surroundSampleFrame* /* _buf*/, const fpp_t /*_frames*/, const float /*_master_gain*/)
+	{
+	}
 
 	// called by according driver for fetching new sound-data
 	fpp_t getNextBuffer(surroundSampleFrame* _ab);

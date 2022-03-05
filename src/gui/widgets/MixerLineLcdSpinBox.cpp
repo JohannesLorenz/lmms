@@ -31,7 +31,8 @@
 
 void MixerLineLcdSpinBox::setTrackView(TrackView* tv) { m_tv = tv; }
 
-void MixerLineLcdSpinBox::mouseDoubleClickEvent(QMouseEvent* event) {
+void MixerLineLcdSpinBox::mouseDoubleClickEvent(QMouseEvent* event)
+{
 	getGUI()->mixerView()->setCurrentMixerLine(model()->value());
 
 	getGUI()->mixerView()->parentWidget()->show();
@@ -40,7 +41,8 @@ void MixerLineLcdSpinBox::mouseDoubleClickEvent(QMouseEvent* event) {
 									   // engine::getMixerView()->raise();
 }
 
-void MixerLineLcdSpinBox::contextMenuEvent(QContextMenuEvent* event) {
+void MixerLineLcdSpinBox::contextMenuEvent(QContextMenuEvent* event)
+{
 	// for the case, the user clicked right while pressing left mouse-
 	// button, the context-menu appears while mouse-cursor is still hidden
 	// and it isn't shown again until user does something which causes

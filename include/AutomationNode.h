@@ -31,28 +31,33 @@ class AutomationClip;
 // Note: We use the default copy-assignment on the AutomationClip constructor. It's
 // fine for now as we don't have dynamic allocated members, but if any are added we should
 // have an user-defined one to perform a deep-copy.
-class AutomationNode {
+class AutomationNode
+{
 public:
 	AutomationNode(); // Dummy constructor for the QMap
 	AutomationNode(AutomationClip* clip, float value, int pos);
 	AutomationNode(AutomationClip* clip, float inValue, float outValue, int pos);
 
-	AutomationNode& operator+=(float f) {
+	AutomationNode& operator+=(float f)
+	{
 		m_inValue += f;
 		m_outValue += f;
 		return *this;
 	}
-	AutomationNode& operator-=(float f) {
+	AutomationNode& operator-=(float f)
+	{
 		m_inValue -= f;
 		m_outValue -= f;
 		return *this;
 	}
-	AutomationNode& operator*=(float f) {
+	AutomationNode& operator*=(float f)
+	{
 		m_inValue *= f;
 		m_outValue *= f;
 		return *this;
 	}
-	AutomationNode& operator/=(float f) {
+	AutomationNode& operator/=(float f)
+	{
 		m_inValue /= f;
 		m_outValue /= f;
 		return *this;

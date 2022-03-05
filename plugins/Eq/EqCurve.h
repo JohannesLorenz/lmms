@@ -27,10 +27,18 @@
 
 #include <QGraphicsObject>
 
-enum { highpass = 1, lowshelf, para, highshelf, lowpass };
+enum
+{
+	highpass = 1,
+	lowshelf,
+	para,
+	highshelf,
+	lowpass
+};
 
 // implements the Eq_Handle to control a band
-class EqHandle : public QGraphicsObject {
+class EqHandle : public QGraphicsObject
+{
 	Q_OBJECT
 public:
 	EqHandle(int num, int x, int y);
@@ -98,7 +106,8 @@ private:
 	QPixmap m_circlePixmap;
 };
 
-class EqCurve : public QGraphicsObject {
+class EqCurve : public QGraphicsObject
+{
 	Q_OBJECT
 public:
 	EqCurve(QList<EqHandle*>* handle, int x, int y);

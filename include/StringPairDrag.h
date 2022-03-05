@@ -35,7 +35,8 @@
 
 class QPixmap;
 
-class LMMS_EXPORT StringPairDrag : public QDrag {
+class LMMS_EXPORT StringPairDrag : public QDrag
+{
 public:
 	StringPairDrag(const QString& _key, const QString& _value, const QPixmap& _icon, QWidget* _w);
 	~StringPairDrag();

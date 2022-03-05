@@ -40,7 +40,8 @@
 LadspaControlDialog::LadspaControlDialog(LadspaControls* _ctl)
 	: EffectControlDialog(_ctl)
 	, m_effectLayout(nullptr)
-	, m_stereoLink(nullptr) {
+	, m_stereoLink(nullptr)
+{
 	QVBoxLayout* mainLay = new QVBoxLayout(this);
 
 	m_effectLayout = new QHBoxLayout();
@@ -60,7 +61,8 @@ LadspaControlDialog::LadspaControlDialog(LadspaControls* _ctl)
 
 LadspaControlDialog::~LadspaControlDialog() {}
 
-void LadspaControlDialog::updateEffectView(LadspaControls* _ctl) {
+void LadspaControlDialog::updateEffectView(LadspaControls* _ctl)
+{
 	QList<QGroupBox*> list = findChildren<QGroupBox*>();
 	for (QList<QGroupBox*>::iterator it = list.begin(); it != list.end(); ++it) {
 		delete *it;

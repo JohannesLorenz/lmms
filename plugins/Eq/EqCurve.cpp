@@ -37,7 +37,8 @@ EqHandle::EqHandle(int num, int x, int y)
 	, m_width(x)
 	, m_heigth(y)
 	, m_mousePressed(false)
-	, m_active(false) {
+	, m_active(false)
+{
 	setFlag(ItemIsMovable);
 	setFlag(ItemSendsGeometryChanges);
 	setAcceptHoverEvents(true);
@@ -46,32 +47,37 @@ EqHandle::EqHandle(int num, int x, int y)
 	setMouseHover(false);
 }
 
-QRectF EqHandle::boundingRect() const {
+QRectF EqHandle::boundingRect() const
+{
 	return QRectF(
 		-m_circlePixmap.width() / 2, -m_circlePixmap.height() / 2, m_circlePixmap.width(), m_circlePixmap.height());
 }
 
-float EqHandle::freqToXPixel(float freq, int w) {
+float EqHandle::freqToXPixel(float freq, int w)
+{
 	float min = log10f(20);
 	float max = log10f(20000);
 	float range = max - min;
 	return (log10f(freq) - min) / range * w;
 }
 
-float EqHandle::xPixelToFreq(float x, int w) {
+float EqHandle::xPixelToFreq(float x, int w)
+{
 	float min = log10f(20);
 	float max = log10f(20000);
 	float range = max - min;
 	return powf(10, x * (range / w) + min);
 }
 
-float EqHandle::gainToYPixel(float gain, int h, float pixelPerUnitHeight) {
+float EqHandle::gainToYPixel(float gain, int h, float pixelPerUnitHeight)
+{
 	return h * 0.5 - gain * pixelPerUnitHeight;
 }
 
 float EqHandle::yPixelToGain(float y, int h, float pixelPerUnitHeight) { return ((h * 0.5) - y) / pixelPerUnitHeight; }
 
-void EqHandle::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
+void EqHandle::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+{
 	painter->setRenderHint(QPainter::Antialiasing, true);
 	if (m_mousePressed) { emit positionChanged(); }
 
@@ -113,7 +119,8 @@ void EqHandle::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
 	}
 }
 
-QPainterPath EqHandle::getCurvePath() {
+QPainterPath EqHandle::getCurvePath()
+{
 	QPainterPath path;
 	float y = m_heigth * 0.5;
 	for (float x = 0; x < m_width; x++) {
@@ -128,7 +135,8 @@ QPainterPath EqHandle::getCurvePath() {
 	return path;
 }
 
-void EqHandle::loadPixmap() {
+void EqHandle::loadPixmap()
+{
 	QString fileName = "handle" + QString::number(m_numb + 1);
 	if (!isActiveHandle()) { fileName = fileName + "inactive"; }
 	m_circlePixmap = PLUGIN_NAME::getIconPixmap(fileName.toLatin1());
@@ -136,7 +144,8 @@ void EqHandle::loadPixmap() {
 
 bool EqHandle::mousePressed() const { return m_mousePressed; }
 
-float EqHandle::getPeakCurve(float x) {
+float EqHandle::getPeakCurve(float x)
+{
 	double freqZ = xPixelToFreq(EqHandle::x(), m_width);
 	const int SR = Engine::audioEngine()->processingSampleRate();
 	double w0 = 2 * LD_PI * freqZ / SR;
@@ -170,7 +179,8 @@ float EqHandle::getPeakCurve(float x) {
 	return y;
 }
 
-float EqHandle::getHighShelfCurve(float x) {
+float EqHandle::getHighShelfCurve(float x)
+{
 	double freqZ = xPixelToFreq(EqHandle::x(), m_width);
 	const int SR = Engine::audioEngine()->processingSampleRate();
 	double w0 = 2 * LD_PI * freqZ / SR;
@@ -202,7 +212,8 @@ float EqHandle::getHighShelfCurve(float x) {
 	return y;
 }
 
-float EqHandle::getLowShelfCurve(float x) {
+float EqHandle::getLowShelfCurve(float x)
+{
 	double freqZ = xPixelToFreq(EqHandle::x(), m_width);
 	const int SR = Engine::audioEngine()->processingSampleRate();
 	double w0 = 2 * LD_PI * freqZ / SR;
@@ -235,7 +246,8 @@ float EqHandle::getLowShelfCurve(float x) {
 	return y;
 }
 
-float EqHandle::getLowCutCurve(float x) {
+float EqHandle::getLowCutCurve(float x)
+{
 	double freqZ = xPixelToFreq(EqHandle::x(), m_width);
 	const int SR = Engine::audioEngine()->processingSampleRate();
 	double w0 = 2 * LD_PI * freqZ / SR;
@@ -269,7 +281,8 @@ float EqHandle::getLowCutCurve(float x) {
 	return y;
 }
 
-float EqHandle::getHighCutCurve(float x) {
+float EqHandle::getHighCutCurve(float x)
+{
 	double freqZ = xPixelToFreq(EqHandle::x(), m_width);
 	const int SR = Engine::audioEngine()->processingSampleRate();
 	double w0 = 2 * LD_PI * freqZ / SR;
@@ -321,44 +334,51 @@ bool EqHandle::isActiveHandle() { return m_active; }
 
 void EqHandle::setHandleActive(bool a) { EqHandle::m_active = a; }
 
-void EqHandle::sethp12() {
+void EqHandle::sethp12()
+{
 	m_hp12 = true;
 	m_hp24 = false;
 	m_hp48 = false;
 }
 
-void EqHandle::sethp24() {
+void EqHandle::sethp24()
+{
 	m_hp12 = false;
 	m_hp24 = true;
 	m_hp48 = false;
 }
 
-void EqHandle::sethp48() {
+void EqHandle::sethp48()
+{
 	m_hp12 = false;
 	m_hp24 = false;
 	m_hp48 = true;
 }
 
-void EqHandle::setlp12() {
+void EqHandle::setlp12()
+{
 	m_lp12 = true;
 	m_lp24 = false;
 	m_lp48 = false;
 }
 
-void EqHandle::setlp24() {
+void EqHandle::setlp24()
+{
 	m_lp12 = false;
 	m_lp24 = true;
 	m_lp48 = false;
 }
 
-void EqHandle::setlp48() {
+void EqHandle::setlp48()
+{
 	m_lp12 = false;
 	m_lp24 = false;
 	m_lp48 = true;
 }
 
 double EqHandle::calculateGain(
-	const double freq, const double a1, const double a2, const double b0, const double b1, const double b2) {
+	const double freq, const double a1, const double a2, const double b0, const double b1, const double b2)
+{
 	const int SR = Engine::audioEngine()->processingSampleRate();
 
 	const double w = 2 * LD_PI * freq / SR;
@@ -369,21 +389,24 @@ double EqHandle::calculateGain(
 	return gain;
 }
 
-void EqHandle::mousePressEvent(QGraphicsSceneMouseEvent* event) {
+void EqHandle::mousePressEvent(QGraphicsSceneMouseEvent* event)
+{
 	if (event->button() == Qt::LeftButton) {
 		m_mousePressed = true;
 		QGraphicsItem::mousePressEvent(event);
 	}
 }
 
-void EqHandle::mouseReleaseEvent(QGraphicsSceneMouseEvent* event) {
+void EqHandle::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+{
 	if (event->button() == Qt::LeftButton) {
 		m_mousePressed = false;
 		QGraphicsItem::mouseReleaseEvent(event);
 	}
 }
 
-void EqHandle::wheelEvent(QGraphicsSceneWheelEvent* wevent) {
+void EqHandle::wheelEvent(QGraphicsSceneWheelEvent* wevent)
+{
 	float highestBandwich;
 	if (m_type != para) {
 		highestBandwich = 10;
@@ -414,7 +437,8 @@ void EqHandle::hoverEnterEvent(QGraphicsSceneHoverEvent* hevent) { setMouseHover
 
 void EqHandle::hoverLeaveEvent(QGraphicsSceneHoverEvent* hevent) { setMouseHover(false); }
 
-QVariant EqHandle::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value) {
+QVariant EqHandle::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value)
+{
 	if (change == ItemPositionChange) {
 		// pass filter don't move in y direction
 		if (m_type == highpass || m_type == lowpass) {
@@ -450,11 +474,14 @@ EqCurve::EqCurve(QList<EqHandle*>* handle, int x, int y)
 	, m_width(x)
 	, m_heigth(y)
 	, m_alpha(0)
-	, m_modelChanged(false) {}
+	, m_modelChanged(false)
+{
+}
 
 QRectF EqCurve::boundingRect() const { return QRect(0, 0, m_width, m_heigth); }
 
-void EqCurve::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
+void EqCurve::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+{
 	painter->setRenderHint(QPainter::Antialiasing, true);
 	if (m_modelChanged) {
 		setModelChanged(false);

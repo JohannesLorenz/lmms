@@ -41,27 +41,32 @@ SamplePlayHandle::SamplePlayHandle(SampleBuffer* sampleBuffer, bool ownAudioPort
 	, m_defaultVolumeModel(DefaultVolume, MinVolume, MaxVolume, 1)
 	, m_volumeModel(&m_defaultVolumeModel)
 	, m_track(nullptr)
-	, m_patternTrack(nullptr) {
+	, m_patternTrack(nullptr)
+{
 	if (ownAudioPort) { setAudioPort(new AudioPort("SamplePlayHandle", false)); }
 }
 
 SamplePlayHandle::SamplePlayHandle(const QString& sampleFile)
-	: SamplePlayHandle(new SampleBuffer(sampleFile), true) {
+	: SamplePlayHandle(new SampleBuffer(sampleFile), true)
+{
 	sharedObject::unref(m_sampleBuffer);
 }
 
 SamplePlayHandle::SamplePlayHandle(SampleClip* clip)
-	: SamplePlayHandle(clip->sampleBuffer(), false) {
+	: SamplePlayHandle(clip->sampleBuffer(), false)
+{
 	m_track = clip->getTrack();
 	setAudioPort(((SampleTrack*)clip->getTrack())->audioPort());
 }
 
-SamplePlayHandle::~SamplePlayHandle() {
+SamplePlayHandle::~SamplePlayHandle()
+{
 	sharedObject::unref(m_sampleBuffer);
 	if (m_ownAudioPort) { delete audioPort(); }
 }
 
-void SamplePlayHandle::play(sampleFrame* buffer) {
+void SamplePlayHandle::play(sampleFrame* buffer)
+{
 	const fpp_t fpp = Engine::audioEngine()->framesPerPeriod();
 	// play( 0, _try_parallelizing );
 	if (framesDone() >= totalFrames()) {
@@ -97,7 +102,8 @@ bool SamplePlayHandle::isFinished() const { return framesDone() >= totalFrames()
 
 bool SamplePlayHandle::isFromTrack(const Track* _track) const { return m_track == _track || m_patternTrack == _track; }
 
-f_cnt_t SamplePlayHandle::totalFrames() const {
+f_cnt_t SamplePlayHandle::totalFrames() const
+{
 	return (m_sampleBuffer->endFrame() - m_sampleBuffer->startFrame())
 		* (Engine::audioEngine()->processingSampleRate() / m_sampleBuffer->sampleRate());
 }

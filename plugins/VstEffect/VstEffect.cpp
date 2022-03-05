@@ -44,7 +44,8 @@ VstEffect::VstEffect(Model* _parent, const Descriptor::SubPluginFeatures::Key* _
 	: Effect(&vsteffect_plugin_descriptor, _parent, _key)
 	, m_pluginMutex()
 	, m_key(*_key)
-	, m_vstControls(this) {
+	, m_vstControls(this)
+{
 	if (!m_key.attributes["file"].isEmpty()) { openPlugin(m_key.attributes["file"]); }
 	setDisplayName(m_key.attributes["file"].section(".dll", 0, 0).isEmpty()
 			? m_key.name
@@ -53,7 +54,8 @@ VstEffect::VstEffect(Model* _parent, const Descriptor::SubPluginFeatures::Key* _
 
 VstEffect::~VstEffect() {}
 
-bool VstEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames) {
+bool VstEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames)
+{
 	if (!isEnabled() || !isRunning()) { return false; }
 
 	if (m_plugin) {
@@ -87,7 +89,8 @@ bool VstEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames) {
 	return isRunning();
 }
 
-void VstEffect::openPlugin(const QString& _plugin) {
+void VstEffect::openPlugin(const QString& _plugin)
+{
 	TextFloat* tf = nullptr;
 	if (getGUI() != nullptr) {
 		tf = TextFloat::displayMessage(VstPlugin::tr("Loading plugin"),
@@ -112,7 +115,8 @@ void VstEffect::openPlugin(const QString& _plugin) {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data)
+{
 	return new VstEffect(_parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(_data));
 }
 }

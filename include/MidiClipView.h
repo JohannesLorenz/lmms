@@ -31,7 +31,8 @@
 
 class MidiClip;
 
-class MidiClipView : public ClipView {
+class MidiClipView : public ClipView
+{
 	Q_OBJECT
 
 public:

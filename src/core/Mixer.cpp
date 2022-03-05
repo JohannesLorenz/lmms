@@ -40,14 +40,16 @@ MixerRoute::MixerRoute(MixerChannel* from, MixerChannel* to, float amount)
 	: m_from(from)
 	, m_to(to)
 	, m_amount(amount, 0, 1, 0.001, nullptr,
-		  tr("Amount to send from channel %1 to channel %2").arg(m_from->m_channelIndex).arg(m_to->m_channelIndex)) {
+		  tr("Amount to send from channel %1 to channel %2").arg(m_from->m_channelIndex).arg(m_to->m_channelIndex))
+{
 	// qDebug( "created: %d to %d", m_from->m_channelIndex, m_to->m_channelIndex );
 	//  create send amount model
 }
 
 MixerRoute::~MixerRoute() {}
 
-void MixerRoute::updateName() {
+void MixerRoute::updateName()
+{
 	m_amount.setDisplayName(
 		tr("Amount to send from channel %1 to channel %2").arg(m_from->m_channelIndex).arg(m_to->m_channelIndex));
 }
@@ -67,19 +69,22 @@ MixerChannel::MixerChannel(int idx, Model* _parent)
 	, m_channelIndex(idx)
 	, m_queued(false)
 	, m_hasColor(false)
-	, m_dependenciesMet(0) {
+	, m_dependenciesMet(0)
+{
 	BufferManager::clear(m_buffer, Engine::audioEngine()->framesPerPeriod());
 }
 
 MixerChannel::~MixerChannel() { delete[] m_buffer; }
 
-inline void MixerChannel::processed() {
+inline void MixerChannel::processed()
+{
 	for (const MixerRoute* receiverRoute : m_sends) {
 		if (receiverRoute->receiver()->m_muted == false) { receiverRoute->receiver()->incrementDeps(); }
 	}
 }
 
-void MixerChannel::incrementDeps() {
+void MixerChannel::incrementDeps()
+{
 	int i = m_dependenciesMet++ + 1;
 	if (i >= m_receives.size() && !m_queued) {
 		m_queued = true;
@@ -87,12 +92,14 @@ void MixerChannel::incrementDeps() {
 	}
 }
 
-void MixerChannel::unmuteForSolo() {
+void MixerChannel::unmuteForSolo()
+{
 	// TODO: Recursively activate every channel, this channel sends to
 	m_muteModel.setValue(false);
 }
 
-void MixerChannel::doProcessing() {
+void MixerChannel::doProcessing()
+{
 	const fpp_t fpp = Engine::audioEngine()->framesPerPeriod();
 
 	if (m_muted == false) {
@@ -154,13 +161,15 @@ void MixerChannel::doProcessing() {
 Mixer::Mixer()
 	: Model(nullptr)
 	, JournallingObject()
-	, m_mixerChannels() {
+	, m_mixerChannels()
+{
 	// create master channel
 	createChannel();
 	m_lastSoloed = -1;
 }
 
-Mixer::~Mixer() {
+Mixer::~Mixer()
+{
 	while (!m_mixerRoutes.isEmpty()) {
 		deleteChannelSend(m_mixerRoutes.first());
 	}
@@ -171,7 +180,8 @@ Mixer::~Mixer() {
 	}
 }
 
-int Mixer::createChannel() {
+int Mixer::createChannel()
+{
 	const int index = m_mixerChannels.size();
 	// create new channel
 	m_mixerChannels.push_back(new MixerChannel(index, this));
@@ -182,20 +192,23 @@ int Mixer::createChannel() {
 	return index;
 }
 
-void Mixer::activateSolo() {
+void Mixer::activateSolo()
+{
 	for (int i = 1; i < m_mixerChannels.size(); ++i) {
 		m_mixerChannels[i]->m_muteBeforeSolo = m_mixerChannels[i]->m_muteModel.value();
 		m_mixerChannels[i]->m_muteModel.setValue(true);
 	}
 }
 
-void Mixer::deactivateSolo() {
+void Mixer::deactivateSolo()
+{
 	for (int i = 1; i < m_mixerChannels.size(); ++i) {
 		m_mixerChannels[i]->m_muteModel.setValue(m_mixerChannels[i]->m_muteBeforeSolo);
 	}
 }
 
-void Mixer::toggledSolo() {
+void Mixer::toggledSolo()
+{
 	int soloedChan = -1;
 	bool resetSolo = m_lastSoloed != -1;
 	// untoggle if lastsoloed is entered
@@ -220,7 +233,8 @@ void Mixer::toggledSolo() {
 	m_lastSoloed = soloedChan;
 }
 
-void Mixer::deleteChannel(int index) {
+void Mixer::deleteChannel(int index)
+{
 	// channel deletion is performed between mixer rounds
 	Engine::audioEngine()->requestChangeInModel();
 
@@ -296,7 +310,8 @@ void Mixer::deleteChannel(int index) {
 	Engine::audioEngine()->doneChangeInModel();
 }
 
-void Mixer::moveChannelLeft(int index) {
+void Mixer::moveChannelLeft(int index)
+{
 	// can't move master or first channel
 	if (index <= 1 || index >= m_mixerChannels.size()) { return; }
 	// channels to swap
@@ -347,7 +362,8 @@ void Mixer::moveChannelLeft(int index) {
 
 void Mixer::moveChannelRight(int index) { moveChannelLeft(index + 1); }
 
-MixerRoute* Mixer::createChannelSend(mix_ch_t fromChannel, mix_ch_t toChannel, float amount) {
+MixerRoute* Mixer::createChannelSend(mix_ch_t fromChannel, mix_ch_t toChannel, float amount)
+{
 	//	qDebug( "requested: %d to %d", fromChannel, toChannel );
 	// find the existing connection
 	MixerChannel* from = m_mixerChannels[fromChannel];
@@ -365,7 +381,8 @@ MixerRoute* Mixer::createChannelSend(mix_ch_t fromChannel, mix_ch_t toChannel, f
 	return createRoute(from, to, amount);
 }
 
-MixerRoute* Mixer::createRoute(MixerChannel* from, MixerChannel* to, float amount) {
+MixerRoute* Mixer::createRoute(MixerChannel* from, MixerChannel* to, float amount)
+{
 	if (from == to) { return nullptr; }
 	Engine::audioEngine()->requestChangeInModel();
 	MixerRoute* route = new MixerRoute(from, to, amount);
@@ -384,7 +401,8 @@ MixerRoute* Mixer::createRoute(MixerChannel* from, MixerChannel* to, float amoun
 }
 
 // delete the connection made by createChannelSend
-void Mixer::deleteChannelSend(mix_ch_t fromChannel, mix_ch_t toChannel) {
+void Mixer::deleteChannelSend(mix_ch_t fromChannel, mix_ch_t toChannel)
+{
 	// delete the send
 	MixerChannel* from = m_mixerChannels[fromChannel];
 	MixerChannel* to = m_mixerChannels[toChannel];
@@ -398,7 +416,8 @@ void Mixer::deleteChannelSend(mix_ch_t fromChannel, mix_ch_t toChannel) {
 	}
 }
 
-void Mixer::deleteChannelSend(MixerRoute* route) {
+void Mixer::deleteChannelSend(MixerRoute* route)
+{
 	Engine::audioEngine()->requestChangeInModel();
 	// remove us from from's sends
 	route->sender()->m_sends.remove(route->sender()->m_sends.indexOf(route));
@@ -410,7 +429,8 @@ void Mixer::deleteChannelSend(MixerRoute* route) {
 	Engine::audioEngine()->doneChangeInModel();
 }
 
-bool Mixer::isInfiniteLoop(mix_ch_t sendFrom, mix_ch_t sendTo) {
+bool Mixer::isInfiniteLoop(mix_ch_t sendFrom, mix_ch_t sendTo)
+{
 	if (sendFrom == sendTo) return true;
 	MixerChannel* from = m_mixerChannels[sendFrom];
 	MixerChannel* to = m_mixerChannels[sendTo];
@@ -418,7 +438,8 @@ bool Mixer::isInfiniteLoop(mix_ch_t sendFrom, mix_ch_t sendTo) {
 	return b;
 }
 
-bool Mixer::checkInfiniteLoop(MixerChannel* from, MixerChannel* to) {
+bool Mixer::checkInfiniteLoop(MixerChannel* from, MixerChannel* to)
+{
 	// can't send master to anything
 	if (from == m_mixerChannels[0]) { return true; }
 
@@ -435,7 +456,8 @@ bool Mixer::checkInfiniteLoop(MixerChannel* from, MixerChannel* to) {
 }
 
 // how much does fromChannel send its output to the input of toChannel?
-FloatModel* Mixer::channelSendModel(mix_ch_t fromChannel, mix_ch_t toChannel) {
+FloatModel* Mixer::channelSendModel(mix_ch_t fromChannel, mix_ch_t toChannel)
+{
 	if (fromChannel == toChannel) { return nullptr; }
 	const MixerChannel* from = m_mixerChannels[fromChannel];
 	const MixerChannel* to = m_mixerChannels[toChannel];
@@ -447,7 +469,8 @@ FloatModel* Mixer::channelSendModel(mix_ch_t fromChannel, mix_ch_t toChannel) {
 	return nullptr;
 }
 
-void Mixer::mixToChannel(const sampleFrame* _buf, mix_ch_t _ch) {
+void Mixer::mixToChannel(const sampleFrame* _buf, mix_ch_t _ch)
+{
 	if (m_mixerChannels[_ch]->m_muteModel.value() == false) {
 		m_mixerChannels[_ch]->m_lock.lock();
 		MixHelpers::add(m_mixerChannels[_ch]->m_buffer, _buf, Engine::audioEngine()->framesPerPeriod());
@@ -456,11 +479,13 @@ void Mixer::mixToChannel(const sampleFrame* _buf, mix_ch_t _ch) {
 	}
 }
 
-void Mixer::prepareMasterMix() {
+void Mixer::prepareMasterMix()
+{
 	BufferManager::clear(m_mixerChannels[0]->m_buffer, Engine::audioEngine()->framesPerPeriod());
 }
 
-void Mixer::masterMix(sampleFrame* _buf) {
+void Mixer::masterMix(sampleFrame* _buf)
+{
 	const int fpp = Engine::audioEngine()->framesPerPeriod();
 
 	// add the channels that have no dependencies (no incoming senders, ie.
@@ -520,7 +545,8 @@ void Mixer::masterMix(sampleFrame* _buf) {
 	}
 }
 
-void Mixer::clear() {
+void Mixer::clear()
+{
 	while (m_mixerChannels.size() > 1) {
 		deleteChannel(1);
 	}
@@ -528,7 +554,8 @@ void Mixer::clear() {
 	clearChannel(0);
 }
 
-void Mixer::clearChannel(mix_ch_t index) {
+void Mixer::clearChannel(mix_ch_t index)
+{
 	MixerChannel* ch = m_mixerChannels[index];
 	ch->m_fxChain.clear();
 	ch->m_volumeModel.setValue(1.0f);
@@ -556,7 +583,8 @@ void Mixer::clearChannel(mix_ch_t index) {
 	}
 }
 
-void Mixer::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void Mixer::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	// save channels
 	for (int i = 0; i < m_mixerChannels.size(); ++i) {
 		MixerChannel* ch = m_mixerChannels[i];
@@ -584,7 +612,8 @@ void Mixer::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 }
 
 // make sure we have at least num channels
-void Mixer::allocateChannelsTo(int num) {
+void Mixer::allocateChannelsTo(int num)
+{
 	while (num > m_mixerChannels.size() - 1) {
 		createChannel();
 
@@ -593,7 +622,8 @@ void Mixer::allocateChannelsTo(int num) {
 	}
 }
 
-void Mixer::loadSettings(const QDomElement& _this) {
+void Mixer::loadSettings(const QDomElement& _this)
+{
 	clear();
 	QDomNode node = _this.firstChild();
 
@@ -636,7 +666,8 @@ void Mixer::loadSettings(const QDomElement& _this) {
 	emit dataChanged();
 }
 
-void Mixer::validateChannelName(int index, int oldIndex) {
+void Mixer::validateChannelName(int index, int oldIndex)
+{
 	if (m_mixerChannels[index]->m_name == tr("Channel %1").arg(oldIndex)) {
 		m_mixerChannels[index]->m_name = tr("Channel %1").arg(index);
 	}

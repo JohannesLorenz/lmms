@@ -45,7 +45,8 @@ SampleTrack::SampleTrack(TrackContainer* tc)
 	, m_panningModel(DefaultPanning, PanningLeft, PanningRight, 0.1f, this, tr("Panning"))
 	, m_mixerChannelModel(0, 0, 0, this, tr("Mixer channel"))
 	, m_audioPort(tr("Sample track"), true, &m_volumeModel, &m_panningModel, &m_mutedModel)
-	, m_isPlaying(false) {
+	, m_isPlaying(false)
+{
 	setName(tr("Sample track"));
 	m_panningModel.setCenterValue(DefaultPanning);
 	m_mixerChannelModel.setRange(0, Engine::mixer()->numChannels() - 1, 1);
@@ -55,7 +56,8 @@ SampleTrack::SampleTrack(TrackContainer* tc)
 
 SampleTrack::~SampleTrack() { Engine::audioEngine()->removePlayHandlesOfTypes(this, PlayHandle::TypeSamplePlayHandle); }
 
-bool SampleTrack::play(const TimePos& _start, const fpp_t _frames, const f_cnt_t _offset, int _clip_num) {
+bool SampleTrack::play(const TimePos& _start, const fpp_t _frames, const f_cnt_t _offset, int _clip_num)
+{
 	m_audioPort.effects()->startRunning();
 	bool played_a_note = false; // will be return variable
 
@@ -130,13 +132,15 @@ bool SampleTrack::play(const TimePos& _start, const fpp_t _frames, const f_cnt_t
 
 TrackView* SampleTrack::createView(TrackContainerView* tcv) { return new SampleTrackView(this, tcv); }
 
-Clip* SampleTrack::createClip(const TimePos& pos) {
+Clip* SampleTrack::createClip(const TimePos& pos)
+{
 	SampleClip* sClip = new SampleClip(this);
 	sClip->movePosition(pos);
 	return sClip;
 }
 
-void SampleTrack::saveTrackSpecificSettings(QDomDocument& _doc, QDomElement& _this) {
+void SampleTrack::saveTrackSpecificSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	m_audioPort.effects()->saveState(_doc, _this);
 #if 0
 	_this.setAttribute( "icon", tlb->pixmapFile() );
@@ -146,7 +150,8 @@ void SampleTrack::saveTrackSpecificSettings(QDomDocument& _doc, QDomElement& _th
 	m_mixerChannelModel.saveSettings(_doc, _this, "mixch");
 }
 
-void SampleTrack::loadTrackSpecificSettings(const QDomElement& _this) {
+void SampleTrack::loadTrackSpecificSettings(const QDomElement& _this)
+{
 	QDomNode node = _this.firstChild();
 	m_audioPort.effects()->clear();
 	while (!node.isNull()) {
@@ -163,12 +168,14 @@ void SampleTrack::loadTrackSpecificSettings(const QDomElement& _this) {
 	m_mixerChannelModel.loadSettings(_this, "mixch");
 }
 
-void SampleTrack::updateClips() {
+void SampleTrack::updateClips()
+{
 	Engine::audioEngine()->removePlayHandlesOfTypes(this, PlayHandle::TypeSamplePlayHandle);
 	setPlayingClips(false);
 }
 
-void SampleTrack::setPlayingClips(bool isPlaying) {
+void SampleTrack::setPlayingClips(bool isPlaying)
+{
 	for (int i = 0; i < numOfClips(); ++i) {
 		Clip* clip = getClip(i);
 		SampleClip* sClip = dynamic_cast<SampleClip*>(clip);

@@ -46,7 +46,8 @@ Plugin::Descriptor PLUGIN_EXPORT compressor_plugin_descriptor = {
 
 CompressorEffect::CompressorEffect(Model* parent, const Descriptor::SubPluginFeatures::Key* key)
 	: Effect(&compressor_plugin_descriptor, parent, key)
-	, m_compressorControls(this) {
+	, m_compressorControls(this)
+{
 	m_sampleRate = Engine::audioEngine()->processingSampleRate();
 
 	m_yL[0] = m_yL[1] = COMP_NOISE_FLOOR;
@@ -100,12 +101,14 @@ CompressorEffect::CompressorEffect(Model* parent, const Descriptor::SubPluginFea
 
 CompressorEffect::~CompressorEffect() {}
 
-float CompressorEffect::msToCoeff(float ms) {
+float CompressorEffect::msToCoeff(float ms)
+{
 	// Convert time in milliseconds to applicable lowpass coefficient
 	return exp(m_coeffPrecalc / ms);
 }
 
-void CompressorEffect::calcAutoMakeup() {
+void CompressorEffect::calcAutoMakeup()
+{
 	// Formulas using the compressor's Threshold, Ratio, and Knee values to estimate a good makeup gain value
 
 	float tempGainResult;
@@ -130,48 +133,56 @@ void CompressorEffect::calcAutoAttack() { m_autoAttVal = m_compressorControls.m_
 
 void CompressorEffect::calcAutoRelease() { m_autoRelVal = m_compressorControls.m_autoReleaseModel.value() * 0.01f; }
 
-void CompressorEffect::calcHold() {
+void CompressorEffect::calcHold()
+{
 	m_holdLength = m_compressorControls.m_holdModel.value() * 0.001f * m_sampleRate;
 	m_holdTimer[0] = 0;
 	m_holdTimer[1] = 0;
 }
 
-void CompressorEffect::calcOutGain() {
+void CompressorEffect::calcOutGain()
+{
 	// 0.999 is needed to keep the values from crossing the threshold all the time
 	// (most commonly for limiters specifically), and is kept across all modes for consistency.
 	m_outGainVal = dbfsToAmp(m_compressorControls.m_outGainModel.value()) * 0.999;
 }
 
-void CompressorEffect::calcRatio() {
+void CompressorEffect::calcRatio()
+{
 	m_ratioVal = 1.f / m_compressorControls.m_ratioModel.value();
 	m_redrawKnee = true;
 }
 
-void CompressorEffect::calcRange() {
+void CompressorEffect::calcRange()
+{
 	// Range is inactive when turned all the way down
 	m_rangeVal = (m_compressorControls.m_rangeModel.value() > m_compressorControls.m_rangeModel.minValue())
 		? dbfsToAmp(m_compressorControls.m_rangeModel.value())
 		: 0;
 }
 
-void CompressorEffect::resizeRMS() {
+void CompressorEffect::resizeRMS()
+{
 	m_rmsTimeConst = exp(-1.f / (m_compressorControls.m_rmsModel.value() * 0.001f * m_sampleRate));
 }
 
-void CompressorEffect::calcLookaheadLength() {
+void CompressorEffect::calcLookaheadLength()
+{
 	m_lookaheadLength = qMax(m_compressorControls.m_lookaheadLengthModel.value() * 0.001f * m_sampleRate, 1.f);
 
 	m_preLookaheadLength = ceil(m_lookaheadDelayLength - m_lookaheadLength);
 }
 
-void CompressorEffect::calcThreshold() {
+void CompressorEffect::calcThreshold()
+{
 	m_thresholdVal = m_compressorControls.m_thresholdModel.value();
 	m_thresholdAmpVal = dbfsToAmp(m_thresholdVal);
 	m_redrawKnee = true;
 	m_redrawThreshold = true;
 }
 
-void CompressorEffect::calcKnee() {
+void CompressorEffect::calcKnee()
+{
 	m_kneeVal = m_compressorControls.m_kneeModel.value() * 0.5f;
 	m_redrawKnee = true;
 }
@@ -180,7 +191,8 @@ void CompressorEffect::calcInGain() { m_inGainVal = dbfsToAmp(m_compressorContro
 
 void CompressorEffect::redrawKnee() { m_redrawKnee = true; }
 
-void CompressorEffect::calcTiltCoeffs() {
+void CompressorEffect::calcTiltCoeffs()
+{
 	m_tiltVal = m_compressorControls.m_tiltModel.value();
 
 	const float amp = 6 / log(2);
@@ -200,7 +212,8 @@ void CompressorEffect::calcTiltCoeffs() {
 
 void CompressorEffect::calcMix() { m_mixVal = m_compressorControls.m_mixModel.value() * 0.01; }
 
-bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
+bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
+{
 	if (!isEnabled() || !isRunning()) {
 		// Clear lookahead buffers and other values when needed
 		if (!m_cleanedBuffers) {
@@ -518,12 +531,14 @@ inline int CompressorEffect::realmod(int k, int n) { return (k %= n) < 0 ? k + n
 // Regular fmod doesn't handle negative numbers correctly.  This does.
 inline float CompressorEffect::realfmod(float k, float n) { return (k = fmod(k, n)) < 0 ? k + n : k; }
 
-inline void CompressorEffect::calcTiltFilter(sample_t inputSample, sample_t& outputSample, int filtNum) {
+inline void CompressorEffect::calcTiltFilter(sample_t inputSample, sample_t& outputSample, int filtNum)
+{
 	m_tiltOut[filtNum] = m_a0 * inputSample + m_b1 * m_tiltOut[filtNum];
 	outputSample = inputSample + m_lgain * m_tiltOut[filtNum] + m_hgain * (inputSample - m_tiltOut[filtNum]);
 }
 
-void CompressorEffect::changeSampleRate() {
+void CompressorEffect::changeSampleRate()
+{
 	m_sampleRate = Engine::audioEngine()->processingSampleRate();
 
 	m_coeffPrecalc = COMP_LOG / (m_sampleRate * 0.001f);
@@ -562,7 +577,8 @@ void CompressorEffect::changeSampleRate() {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data)
+{
 	return new CompressorEffect(parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(data));
 }
 }

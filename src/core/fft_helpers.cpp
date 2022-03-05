@@ -33,7 +33,8 @@
  *
  * return -1 on error, otherwise the maximum value
  */
-float maximum(const float* abs_spectrum, unsigned int spec_size) {
+float maximum(const float* abs_spectrum, unsigned int spec_size)
+{
 	if (abs_spectrum == nullptr) { return -1; }
 	if (spec_size == 0) { return -1; }
 
@@ -52,7 +53,8 @@ float maximum(const std::vector<float>& abs_spectrum) { return maximum(abs_spect
  *
  * return -1 on error, 0 on success
  */
-int normalize(const float* abs_spectrum, float* norm_spectrum, unsigned int bin_count, unsigned int block_size) {
+int normalize(const float* abs_spectrum, float* norm_spectrum, unsigned int bin_count, unsigned int block_size)
+{
 	if (abs_spectrum == nullptr || norm_spectrum == nullptr) { return -1; }
 	if (bin_count == 0 || block_size == 0) { return -1; }
 
@@ -63,7 +65,8 @@ int normalize(const float* abs_spectrum, float* norm_spectrum, unsigned int bin_
 	return 0;
 }
 
-int normalize(const std::vector<float>& abs_spectrum, std::vector<float>& norm_spectrum, unsigned int block_size) {
+int normalize(const std::vector<float>& abs_spectrum, std::vector<float>& norm_spectrum, unsigned int block_size)
+{
 	if (abs_spectrum.size() != norm_spectrum.size()) { return -1; }
 
 	return normalize(abs_spectrum.data(), norm_spectrum.data(), abs_spectrum.size(), block_size);
@@ -74,7 +77,8 @@ int normalize(const std::vector<float>& abs_spectrum, std::vector<float>& norm_s
  * return 1 if spectrum contains any non-zero value
  * return 0 otherwise
  */
-int notEmpty(const std::vector<float>& spectrum) {
+int notEmpty(const std::vector<float>& spectrum)
+{
 	for (float s : spectrum) {
 		if (s != 0) { return 1; }
 	}
@@ -85,7 +89,8 @@ int notEmpty(const std::vector<float>& spectrum) {
  *
  * return -1 on error
  */
-int precomputeWindow(float* window, unsigned int length, FFT_WINDOWS type, bool normalized) {
+int precomputeWindow(float* window, unsigned int length, FFT_WINDOWS type, bool normalized)
+{
 	if (window == nullptr) { return -1; }
 
 	float gain = 0;
@@ -146,7 +151,8 @@ int precomputeWindow(float* window, unsigned int length, FFT_WINDOWS type, bool 
  *
  * return 0 on success, else -1
  */
-int absspec(const fftwf_complex* complex_buffer, float* absspec_buffer, unsigned int compl_length) {
+int absspec(const fftwf_complex* complex_buffer, float* absspec_buffer, unsigned int compl_length)
+{
 	if (complex_buffer == nullptr || absspec_buffer == nullptr) { return -1; }
 	if (compl_length == 0) { return -1; }
 
@@ -164,7 +170,8 @@ int absspec(const fftwf_complex* complex_buffer, float* absspec_buffer, unsigned
  *
  * return 0 on success, else -1
  */
-int compressbands(const float* absspec_buffer, float* compressedband, int num_old, int num_new, int bottom, int top) {
+int compressbands(const float* absspec_buffer, float* compressedband, int num_old, int num_new, int bottom, int top)
+{
 	if (absspec_buffer == nullptr || compressedband == nullptr) { return -1; }
 	if (num_old < num_new) { return -1; }
 	if (num_old <= 0 || num_new <= 0) { return -1; }

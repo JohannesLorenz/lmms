@@ -54,7 +54,8 @@ Plugin::Descriptor PLUGIN_EXPORT nes_plugin_descriptor = {
 NesObject::NesObject(NesInstrument* nes, const sample_rate_t samplerate, NotePlayHandle* nph)
 	: m_parent(nes)
 	, m_samplerate(samplerate)
-	, m_nph(nph) {
+	, m_nph(nph)
+{
 	m_pitchUpdateCounter = 0;
 	m_pitchUpdateFreq = wavelength(60.0f);
 
@@ -94,7 +95,8 @@ NesObject::NesObject(NesInstrument* nes, const sample_rate_t samplerate, NotePla
 
 NesObject::~NesObject() {}
 
-void NesObject::renderOutput(sampleFrame* buf, fpp_t frames) {
+void NesObject::renderOutput(sampleFrame* buf, fpp_t frames)
+{
 	////////////////////////////////
 	//	                          //
 	//  variables for processing  //
@@ -352,7 +354,8 @@ void NesObject::renderOutput(sampleFrame* buf, fpp_t frames) {
 	} // end framebuffer loop
 }
 
-void NesObject::updateVibrato(float* freq) {
+void NesObject::updateVibrato(float* freq)
+{
 	float vibratoAmt = floorf(m_parent->m_vibrato.value()) / 15.0f;
 	m_vibratoPhase++;
 	m_vibratoPhase %= 32;
@@ -360,7 +363,8 @@ void NesObject::updateVibrato(float* freq) {
 	*freq *= vibratoRatio;
 }
 
-void NesObject::updatePitch() {
+void NesObject::updatePitch()
+{
 	float freq = m_nph->frequency();
 	// if vibrato is active, update vibrato
 	if (m_parent->m_vibrato.value() > 0) { updateVibrato(&freq); }
@@ -452,7 +456,8 @@ NesInstrument::NesInstrument(InstrumentTrack* instrumentTrack)
 
 	// master
 	m_masterVol(1.0f, 0.0f, 2.0f, 0.01f, this, tr("Master volume"))
-	, m_vibrato(0.0f, 0.0f, 15.0f, 1.0f, this, tr("Vibrato")) {
+	, m_vibrato(0.0f, 0.0f, 15.0f, 1.0f, this, tr("Vibrato"))
+{
 	connect(&m_ch1Crs, SIGNAL(dataChanged()), this, SLOT(updateFreq1()), Qt::DirectConnection);
 	connect(&m_ch2Crs, SIGNAL(dataChanged()), this, SLOT(updateFreq2()), Qt::DirectConnection);
 	connect(&m_ch3Crs, SIGNAL(dataChanged()), this, SLOT(updateFreq3()), Qt::DirectConnection);
@@ -464,7 +469,8 @@ NesInstrument::NesInstrument(InstrumentTrack* instrumentTrack)
 
 NesInstrument::~NesInstrument() {}
 
-void NesInstrument::playNote(NotePlayHandle* n, sampleFrame* workingBuffer) {
+void NesInstrument::playNote(NotePlayHandle* n, sampleFrame* workingBuffer)
+{
 	const fpp_t frames = n->framesLeftForCurrentPeriod();
 	const f_cnt_t offset = n->noteOffset();
 
@@ -484,7 +490,8 @@ void NesInstrument::playNote(NotePlayHandle* n, sampleFrame* workingBuffer) {
 
 void NesInstrument::deleteNotePluginData(NotePlayHandle* n) { delete static_cast<NesObject*>(n->m_pluginData); }
 
-void NesInstrument::saveSettings(QDomDocument& doc, QDomElement& element) {
+void NesInstrument::saveSettings(QDomDocument& doc, QDomElement& element)
+{
 	m_ch1Enabled.saveSettings(doc, element, "on1");
 	m_ch1Crs.saveSettings(doc, element, "crs1");
 	m_ch1Volume.saveSettings(doc, element, "vol1");
@@ -539,7 +546,8 @@ void NesInstrument::saveSettings(QDomDocument& doc, QDomElement& element) {
 	m_vibrato.saveSettings(doc, element, "vibr");
 }
 
-void NesInstrument::loadSettings(const QDomElement& element) {
+void NesInstrument::loadSettings(const QDomElement& element)
+{
 	m_ch1Enabled.loadSettings(element, "on1");
 	m_ch1Crs.loadSettings(element, "crs1");
 	m_ch1Volume.loadSettings(element, "vol1");
@@ -607,7 +615,8 @@ void NesInstrument::updateFreq3() { m_freq3 = powf(2, m_ch3Crs.value() / 12.0f);
 QPixmap* NesInstrumentView::s_artwork = nullptr;
 
 NesInstrumentView::NesInstrumentView(Instrument* instrument, QWidget* parent)
-	: InstrumentViewFixedSize(instrument, parent) {
+	: InstrumentViewFixedSize(instrument, parent)
+{
 	setAutoFillBackground(true);
 	QPalette pal;
 
@@ -713,7 +722,8 @@ NesInstrumentView::NesInstrumentView(Instrument* instrument, QWidget* parent)
 
 NesInstrumentView::~NesInstrumentView() {}
 
-void NesInstrumentView::modelChanged() {
+void NesInstrumentView::modelChanged()
+{
 	NesInstrument* nes = castModel<NesInstrument>();
 
 	m_ch1EnabledBtn->setModel(&nes->m_ch1Enabled);
@@ -773,7 +783,8 @@ void NesInstrumentView::modelChanged() {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* m, void* _data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* m, void* _data)
+{
 	return (new NesInstrument(static_cast<InstrumentTrack*>(m)));
 }
 }

@@ -34,7 +34,8 @@
 
 #include "MidiClient.h"
 
-class MidiOss : public QThread, public MidiClientRaw {
+class MidiOss : public QThread, public MidiClientRaw
+{
 	Q_OBJECT
 public:
 	MidiOss();

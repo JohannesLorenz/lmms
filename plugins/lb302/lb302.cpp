@@ -97,7 +97,8 @@ lb302Filter::lb302Filter(lb302FilterKnobState* p_fs)
 	, vcf_e0(0)
 	, vcf_e1(0){};
 
-void lb302Filter::recalc() {
+void lb302Filter::recalc()
+{
 	vcf_e1 = exp(6.109 + 1.5876 * (fs->envmod) + 2.1553 * (fs->cutoff) - 1.2 * (1.0 - (fs->reso)));
 	vcf_e0 = exp(5.613 - 0.8 * (fs->envmod) + 2.1553 * (fs->cutoff) - 0.7696 * (1.0 - (fs->reso)));
 	vcf_e0 *= M_PI / Engine::audioEngine()->processingSampleRate();
@@ -107,7 +108,8 @@ void lb302Filter::recalc() {
 	vcf_rescoeff = exp(-1.20 + 3.455 * (fs->reso));
 };
 
-void lb302Filter::envRecalc() {
+void lb302Filter::envRecalc()
+{
 	vcf_c0 *= fs->envdecay; // Filter Decay. vcf_decay is adjusted for Hz and ENVINC
 							// vcf_rescoeff = exp(-1.20 + 3.455*(fs->reso)); moved above
 };
@@ -124,20 +126,23 @@ lb302FilterIIR2::lb302FilterIIR2(lb302FilterKnobState* p_fs)
 	, vcf_d2(0)
 	, vcf_a(0)
 	, vcf_b(0)
-	, vcf_c(1) {
+	, vcf_c(1)
+{
 
 	m_dist = new DspEffectLibrary::Distortion(1.0, 1.0f);
 };
 
 lb302FilterIIR2::~lb302FilterIIR2() { delete m_dist; }
 
-void lb302FilterIIR2::recalc() {
+void lb302FilterIIR2::recalc()
+{
 	lb302Filter::recalc();
 	// m_dist->setThreshold(0.5+(fs->dist*2.0));
 	m_dist->setThreshold(fs->dist * 75.0);
 };
 
-void lb302FilterIIR2::envRecalc() {
+void lb302FilterIIR2::envRecalc()
+{
 	float k, w;
 
 	lb302Filter::envRecalc();
@@ -150,7 +155,8 @@ void lb302FilterIIR2::envRecalc() {
 	vcf_c = 1.0 - vcf_a - vcf_b;
 }
 
-float lb302FilterIIR2::process(const float& samp) {
+float lb302FilterIIR2::process(const float& samp)
+{
 	float ret = vcf_a * vcf_d1 + vcf_b * vcf_d2 + vcf_c * samp;
 	// Delayed samples for filter
 	vcf_d2 = vcf_d1;
@@ -173,14 +179,16 @@ lb302Filter3Pole::lb302Filter3Pole(lb302FilterKnobState* p_fs)
 	, aout(0)
 	, lastin(0){};
 
-void lb302Filter3Pole::recalc() {
+void lb302Filter3Pole::recalc()
+{
 	// DO NOT CALL BASE CLASS
 	vcf_e0 = 0.000001;
 	vcf_e1 = 1.0;
 }
 
 // TODO: Try using k instead of vcf_reso
-void lb302Filter3Pole::envRecalc() {
+void lb302Filter3Pole::envRecalc()
+{
 	float w, k;
 	float kfco;
 
@@ -216,7 +224,8 @@ void lb302Filter3Pole::envRecalc() {
 	value = 1.0 + ((fs->dist) * (1.5 + 2.0 * kres * (1.0 - kfcn))); // ENVMOD was DIST
 }
 
-float lb302Filter3Pole::process(const float& samp) {
+float lb302Filter3Pole::process(const float& samp)
+{
 	float ax1 = lastin;
 	float ay11 = ay1;
 	float ay31 = ay2;
@@ -249,7 +258,8 @@ lb302Synth::lb302Synth(InstrumentTrack* _instrumentTrack)
 	, vca_decay(0.99897516)
 	, vca_a0(0.5)
 	, vca_a(0.)
-	, vca_mode(never_played) {
+	, vca_mode(never_played)
+{
 
 	connect(Engine::audioEngine(), SIGNAL(sampleRateChanged()), this, SLOT(filterChanged()));
 
@@ -304,13 +314,15 @@ lb302Synth::lb302Synth(InstrumentTrack* _instrumentTrack)
 	Engine::audioEngine()->addPlayHandle(iph);
 }
 
-lb302Synth::~lb302Synth() {
+lb302Synth::~lb302Synth()
+{
 	for (int i = 0; i < NUM_FILTERS; ++i) {
 		delete vcfs[i];
 	}
 }
 
-void lb302Synth::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void lb302Synth::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	vcf_cut_knob.saveSettings(_doc, _this, "vcf_cut");
 	vcf_res_knob.saveSettings(_doc, _this, "vcf_res");
 	vcf_mod_knob.saveSettings(_doc, _this, "vcf_mod");
@@ -325,7 +337,8 @@ void lb302Synth::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 	db24Toggle.saveSettings(_doc, _this, "db24");
 }
 
-void lb302Synth::loadSettings(const QDomElement& _this) {
+void lb302Synth::loadSettings(const QDomElement& _this)
+{
 	vcf_cut_knob.loadSettings(_this, "vcf_cut");
 	vcf_res_knob.loadSettings(_this, "vcf_res");
 	vcf_mod_knob.loadSettings(_this, "vcf_mod");
@@ -344,7 +357,8 @@ void lb302Synth::loadSettings(const QDomElement& _this) {
 
 // TODO: Split into one function per knob.  envdecay doesn't require
 // recalcFilter.
-void lb302Synth::filterChanged() {
+void lb302Synth::filterChanged()
+{
 	fs.cutoff = vcf_cut_knob.value();
 	fs.reso = vcf_res_knob.value();
 	fs.envmod = vcf_mod_knob.value();
@@ -359,7 +373,8 @@ void lb302Synth::filterChanged() {
 	recalcFilter();
 }
 
-void lb302Synth::db24Toggled() {
+void lb302Synth::db24Toggled()
+{
 	vcf = vcfs[db24Toggle.value()];
 	// These recalcFilter calls might suck
 	recalcFilter();
@@ -368,7 +383,8 @@ void lb302Synth::db24Toggled() {
 QString lb302Synth::nodeName() const { return (lb302_plugin_descriptor.name); }
 
 // OBSOLETE. Break apart once we get Q_OBJECT to work. >:[
-void lb302Synth::recalcFilter() {
+void lb302Synth::recalcFilter()
+{
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 	vcf.loadRelaxed()->recalc();
 #else
@@ -387,11 +403,13 @@ void lb302Synth::recalcFilter() {
 	vcf_envpos = ENVINC; // Trigger filter update in process()
 }
 
-inline float GET_INC(float freq) {
+inline float GET_INC(float freq)
+{
 	return freq / Engine::audioEngine()->processingSampleRate(); // TODO: Use actual sampling rate.
 }
 
-int lb302Synth::process(sampleFrame* outbuf, const int size) {
+int lb302Synth::process(sampleFrame* outbuf, const int size)
+{
 	const float sampleRatio = 44100.f / Engine::audioEngine()->processingSampleRate();
 	float w;
 	float samp;
@@ -571,7 +589,8 @@ int lb302Synth::process(sampleFrame* outbuf, const int size) {
  *  to be called from process() when a prior edge-to-edge note is done releasing.
  */
 
-void lb302Synth::initNote(lb302Note* n) {
+void lb302Synth::initNote(lb302Note* n)
+{
 	catch_decay = 0;
 
 	vco_inc = n->vco_inc;
@@ -613,7 +632,8 @@ void lb302Synth::initNote(lb302Note* n) {
 	}
 }
 
-void lb302Synth::initSlide() {
+void lb302Synth::initSlide()
+{
 	// Initiate Slide
 	if (vco_slideinc) {
 		// printf("    sliding\n");
@@ -625,7 +645,8 @@ void lb302Synth::initSlide() {
 	}
 }
 
-void lb302Synth::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer) {
+void lb302Synth::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
+{
 	if (_n->isMasterNote() || (_n->hasParent() && _n->isReleased())) { return; }
 
 	// sort notes: new notes to the end
@@ -640,7 +661,8 @@ void lb302Synth::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer) {
 	release_frame = qMax(release_frame, _n->framesLeft() + _n->offset());
 }
 
-void lb302Synth::processNote(NotePlayHandle* _n) {
+void lb302Synth::processNote(NotePlayHandle* _n)
+{
 	/// Start a new note.
 	if (_n->m_pluginData != this) {
 		m_playingNote = _n;
@@ -665,7 +687,8 @@ void lb302Synth::processNote(NotePlayHandle* _n) {
 	}
 }
 
-void lb302Synth::play(sampleFrame* _working_buffer) {
+void lb302Synth::play(sampleFrame* _working_buffer)
+{
 	m_notesMutex.lock();
 	while (!m_notes.isEmpty()) {
 		processNote(m_notes.takeFirst());
@@ -679,7 +702,8 @@ void lb302Synth::play(sampleFrame* _working_buffer) {
 	//	release_frame = 0; //removed for issue # 1432
 }
 
-void lb302Synth::deleteNotePluginData(NotePlayHandle* _n) {
+void lb302Synth::deleteNotePluginData(NotePlayHandle* _n)
+{
 	// printf("GONE\n");
 	if (m_playingNote == _n) { m_playingNote = nullptr; }
 }
@@ -687,7 +711,8 @@ void lb302Synth::deleteNotePluginData(NotePlayHandle* _n) {
 PluginView* lb302Synth::instantiateView(QWidget* _parent) { return (new lb302SynthView(this, _parent)); }
 
 lb302SynthView::lb302SynthView(Instrument* _instrument, QWidget* _parent)
-	: InstrumentViewFixedSize(_instrument, _parent) {
+	: InstrumentViewFixedSize(_instrument, _parent)
+{
 	// GUI
 	m_vcfCutKnob = new Knob(knobBright_26, this);
 	m_vcfCutKnob->move(75, 130);
@@ -831,7 +856,8 @@ lb302SynthView::lb302SynthView(Instrument* _instrument, QWidget* _parent)
 
 lb302SynthView::~lb302SynthView() {}
 
-void lb302SynthView::modelChanged() {
+void lb302SynthView::modelChanged()
+{
 	lb302Synth* syn = castModel<lb302Synth>();
 
 	m_vcfCutKnob->setModel(&syn->vcf_cut_knob);

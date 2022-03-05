@@ -75,7 +75,8 @@
 
 #if !defined(LMMS_BUILD_WIN32) && !defined(LMMS_BUILD_APPLE) && !defined(LMMS_BUILD_HAIKU)
 // Work around an issue on KDE5 as per https://bugs.kde.org/show_bug.cgi?id=337491#c21
-void disableAutoKeyAccelerators(QWidget* mainWindow) {
+void disableAutoKeyAccelerators(QWidget* mainWindow)
+{
 	using DisablerFunc = void (*)(QWidget*);
 	QLibrary kf5WidgetsAddon("KF5WidgetsAddons", 5);
 	DisablerFunc setNoAccelerators
@@ -91,7 +92,8 @@ MainWindow::MainWindow()
 	, m_autoSaveTimer(this)
 	, m_viewMenu(nullptr)
 	, m_metronomeToggle(0)
-	, m_session(Normal) {
+	, m_session(Normal)
+{
 #if !defined(LMMS_BUILD_WIN32) && !defined(LMMS_BUILD_APPLE) && !defined(LMMS_BUILD_HAIKU)
 	disableAutoKeyAccelerators(this);
 #endif
@@ -221,7 +223,8 @@ MainWindow::MainWindow()
 	new QShortcut(QKeySequence(Qt::Key_F11), this, SLOT(toggleFullscreen()));
 }
 
-MainWindow::~MainWindow() {
+MainWindow::~MainWindow()
+{
 	for (PluginView* view : m_tools) {
 		delete view->model();
 		delete view;
@@ -236,7 +239,8 @@ MainWindow::~MainWindow() {
 	Engine::destroy();
 }
 
-void MainWindow::finalize() {
+void MainWindow::finalize()
+{
 	resetWindowTitle();
 	setWindowIcon(embed::getIconPixmap("icon_small"));
 
@@ -451,7 +455,8 @@ void MainWindow::finalize() {
 	}
 }
 
-int MainWindow::addWidgetToToolBar(QWidget* _w, int _row, int _col) {
+int MainWindow::addWidgetToToolBar(QWidget* _w, int _row, int _col)
+{
 	int col = (_col == -1) ? m_toolBarLayout->columnCount() + 7 : _col;
 	if (_w->height() > 32 || _row == -1) {
 		m_toolBarLayout->addWidget(_w, 0, col, 2, 1);
@@ -461,11 +466,13 @@ int MainWindow::addWidgetToToolBar(QWidget* _w, int _row, int _col) {
 	return (col);
 }
 
-void MainWindow::addSpacingToToolBar(int _size) {
+void MainWindow::addSpacingToToolBar(int _size)
+{
 	m_toolBarLayout->setColumnMinimumWidth(m_toolBarLayout->columnCount() + 7, _size);
 }
 
-SubWindow* MainWindow::addWindowedWidget(QWidget* w, Qt::WindowFlags windowFlags) {
+SubWindow* MainWindow::addWindowedWidget(QWidget* w, Qt::WindowFlags windowFlags)
+{
 	// wrap the widget in our own *custom* window that patches some errors in QMdiSubWindow
 	SubWindow* win = new SubWindow(m_workspace->viewport(), windowFlags);
 	win->setAttribute(Qt::WA_DeleteOnClose);
@@ -475,7 +482,8 @@ SubWindow* MainWindow::addWindowedWidget(QWidget* w, Qt::WindowFlags windowFlags
 	return win;
 }
 
-void MainWindow::resetWindowTitle() {
+void MainWindow::resetWindowTitle()
+{
 	QString title(tr("Untitled"));
 
 	if (Engine::getSong()->projectFileName() != "") {
@@ -489,7 +497,8 @@ void MainWindow::resetWindowTitle() {
 	setWindowTitle(title + " - " + tr("LMMS %1").arg(LMMS_VERSION));
 }
 
-bool MainWindow::mayChangeProject(bool stopPlayback) {
+bool MainWindow::mayChangeProject(bool stopPlayback)
+{
 	if (stopPlayback) { Engine::getSong()->stop(); }
 
 	if (!Engine::getSong()->isModified() && getSession() != Recover) { return (true); }
@@ -521,13 +530,15 @@ bool MainWindow::mayChangeProject(bool stopPlayback) {
 	return (false);
 }
 
-void MainWindow::clearKeyModifiers() {
+void MainWindow::clearKeyModifiers()
+{
 	m_keyMods.m_ctrl = false;
 	m_keyMods.m_shift = false;
 	m_keyMods.m_alt = false;
 }
 
-void MainWindow::saveWidgetState(QWidget* _w, QDomElement& _de) {
+void MainWindow::saveWidgetState(QWidget* _w, QDomElement& _de)
+{
 	// If our widget is the main content of a window (e.g. piano roll, Mixer, etc),
 	// we really care about the position of the *window* - not the position of the widget within its window
 	if (_w->parentWidget() != nullptr && _w->parentWidget()->inherits("QMdiSubWindow")) { _w = _w->parentWidget(); }
@@ -550,7 +561,8 @@ void MainWindow::saveWidgetState(QWidget* _w, QDomElement& _de) {
 	_de.setAttribute("height", sizeToStore.height());
 }
 
-void MainWindow::restoreWidgetState(QWidget* _w, const QDomElement& _de) {
+void MainWindow::restoreWidgetState(QWidget* _w, const QDomElement& _de)
+{
 	QRect r(qMax(1, _de.attribute("x").toInt()), qMax(1, _de.attribute("y").toInt()),
 		qMax(_w->sizeHint().width(), _de.attribute("width").toInt()),
 		qMax(_w->minimumHeight(), _de.attribute("height").toInt()));
@@ -577,11 +589,13 @@ void MainWindow::restoreWidgetState(QWidget* _w, const QDomElement& _de) {
 
 void MainWindow::emptySlot() {}
 
-void MainWindow::createNewProject() {
+void MainWindow::createNewProject()
+{
 	if (mayChangeProject(true)) { Engine::getSong()->createNewProject(); }
 }
 
-void MainWindow::openProject() {
+void MainWindow::openProject()
+{
 	if (mayChangeProject(false)) {
 		FileDialog ofd(this, tr("Open Project"), "", tr("LMMS (*.mmp *.mmpz)"));
 
@@ -598,7 +612,8 @@ void MainWindow::openProject() {
 	}
 }
 
-bool MainWindow::saveProject() {
+bool MainWindow::saveProject()
+{
 	if (Engine::getSong()->projectFileName() == "") {
 		return (saveProjectAs());
 	} else if (this->guiSaveProject()) {
@@ -608,7 +623,8 @@ bool MainWindow::saveProject() {
 	return false;
 }
 
-bool MainWindow::saveProjectAs() {
+bool MainWindow::saveProjectAs()
+{
 	auto optionsWidget = new SaveOptionsWidget(Engine::getSong()->getSaveOptions());
 	VersionedSaveDialog sfd(this, optionsWidget, tr("Save Project"), "",
 		tr("LMMS Project") + " (*.mmpz *.mmp);;" + tr("LMMS Project Template") + " (*.mpt)");
@@ -643,7 +659,8 @@ bool MainWindow::saveProjectAs() {
 	return false;
 }
 
-bool MainWindow::saveProjectAsNewVersion() {
+bool MainWindow::saveProjectAsNewVersion()
+{
 	QString fileName = Engine::getSong()->projectFileName();
 	if (fileName == "") {
 		return saveProjectAs();
@@ -656,7 +673,8 @@ bool MainWindow::saveProjectAsNewVersion() {
 	}
 }
 
-void MainWindow::saveProjectAsDefaultTemplate() {
+void MainWindow::saveProjectAsDefaultTemplate()
+{
 	QString defaultTemplate = ConfigManager::inst()->userTemplateDir() + "default.mpt";
 
 	QFileInfo fileInfo(defaultTemplate);
@@ -671,14 +689,16 @@ void MainWindow::saveProjectAsDefaultTemplate() {
 	Engine::getSong()->saveProjectFile(defaultTemplate);
 }
 
-void MainWindow::showSettingsDialog() {
+void MainWindow::showSettingsDialog()
+{
 	SetupDialog sd;
 	sd.exec();
 }
 
 void MainWindow::aboutLMMS() { AboutDialog(this).exec(); }
 
-void MainWindow::help() {
+void MainWindow::help()
+{
 	QMessageBox::information(this, tr("Help not available"),
 		tr("Currently there's no help "
 		   "available in LMMS.\n"
@@ -688,7 +708,8 @@ void MainWindow::help() {
 		QMessageBox::Ok);
 }
 
-void MainWindow::toggleWindow(QWidget* window, bool forceShow) {
+void MainWindow::toggleWindow(QWidget* window, bool forceShow)
+{
 	QWidget* parent = window->parentWidget();
 
 	if (forceShow || m_workspace->activeSubWindow() != parent || parent->isHidden()) {
@@ -707,7 +728,8 @@ void MainWindow::toggleWindow(QWidget* window, bool forceShow) {
 	m_workspace->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 }
 
-void MainWindow::toggleFullscreen() {
+void MainWindow::toggleFullscreen()
+{
 	if (!isFullScreen()) {
 		maximized = isMaximized();
 		showFullScreen();
@@ -721,7 +743,8 @@ void MainWindow::toggleFullscreen() {
  * to the next visible editor window, or if none are visible, set focus
  * to the parent window.
  */
-void MainWindow::refocus() {
+void MainWindow::refocus()
+{
 	QList<QWidget*> editors;
 	editors << getGUI()->songEditor()->parentWidget() << getGUI()->patternEditor()->parentWidget()
 			<< getGUI()->pianoRoll()->parentWidget() << getGUI()->automationEditor()->parentWidget();
@@ -753,7 +776,8 @@ void MainWindow::toggleMixerWin() { toggleWindow(getGUI()->mixerView()); }
 
 void MainWindow::toggleMicrotunerWin() { toggleWindow(getGUI()->getMicrotunerConfig()); }
 
-void MainWindow::updateViewMenu() {
+void MainWindow::updateViewMenu()
+{
 	m_viewMenu->clear();
 	// TODO: get current visibility for these and indicate in menu?
 	// Not that it's straight visible <-> invisible, more like
@@ -820,7 +844,8 @@ void MainWindow::updateViewMenu() {
 	m_viewMenu->addAction(qa);
 }
 
-void MainWindow::updateConfig(QAction* _who) {
+void MainWindow::updateConfig(QAction* _who)
+{
 	QString tag = _who->data().toString();
 	bool checked = _who->isChecked();
 
@@ -841,7 +866,8 @@ void MainWindow::onToggleMetronome() { Engine::audioEngine()->setMetronomeActive
 
 void MainWindow::toggleControllerRack() { toggleWindow(getGUI()->getControllerRackView()); }
 
-void MainWindow::updatePlayPauseIcons() {
+void MainWindow::updatePlayPauseIcons()
+{
 	getGUI()->songEditor()->setPauseIcon(false);
 	getGUI()->automationEditor()->setPauseIcon(false);
 	getGUI()->patternEditor()->setPauseIcon(false);
@@ -862,7 +888,8 @@ void MainWindow::updatePlayPauseIcons() {
 	}
 }
 
-void MainWindow::updateUndoRedoButtons() {
+void MainWindow::updateUndoRedoButtons()
+{
 	// when the edit menu is shown, grey out the undo/redo buttons if there's nothing to undo/redo
 	// else, un-grey them
 	m_undoAction->setEnabled(Engine::projectJournal()->canUndo());
@@ -873,7 +900,8 @@ void MainWindow::undo() { Engine::projectJournal()->undo(); }
 
 void MainWindow::redo() { Engine::projectJournal()->redo(); }
 
-void MainWindow::closeEvent(QCloseEvent* _ce) {
+void MainWindow::closeEvent(QCloseEvent* _ce)
+{
 	if (mayChangeProject(true)) {
 		// delete recovery file
 		if (ConfigManager::inst()->value("ui", "enableautosave").toInt()) {
@@ -885,13 +913,15 @@ void MainWindow::closeEvent(QCloseEvent* _ce) {
 	}
 }
 
-void MainWindow::sessionCleanup() {
+void MainWindow::sessionCleanup()
+{
 	// delete recover session files
 	QFile::remove(ConfigManager::inst()->recoveryFile());
 	setSession(Normal);
 }
 
-void MainWindow::focusOutEvent(QFocusEvent* _fe) {
+void MainWindow::focusOutEvent(QFocusEvent* _fe)
+{
 	// TODO Remove this function, since it is apparently never actually called!
 	// when loosing focus we do not receive key-(release!)-events anymore,
 	// so we might miss release-events of one the modifiers we're watching!
@@ -899,7 +929,8 @@ void MainWindow::focusOutEvent(QFocusEvent* _fe) {
 	QMainWindow::leaveEvent(_fe);
 }
 
-void MainWindow::keyPressEvent(QKeyEvent* _ke) {
+void MainWindow::keyPressEvent(QKeyEvent* _ke)
+{
 	switch (_ke->key()) {
 	case Qt::Key_Control: m_keyMods.m_ctrl = true; break;
 	case Qt::Key_Shift: m_keyMods.m_shift = true; break;
@@ -912,7 +943,8 @@ void MainWindow::keyPressEvent(QKeyEvent* _ke) {
 	}
 }
 
-void MainWindow::keyReleaseEvent(QKeyEvent* _ke) {
+void MainWindow::keyReleaseEvent(QKeyEvent* _ke)
+{
 	switch (_ke->key()) {
 	case Qt::Key_Control: m_keyMods.m_ctrl = false; break;
 	case Qt::Key_Shift: m_keyMods.m_shift = false; break;
@@ -927,21 +959,24 @@ void MainWindow::keyReleaseEvent(QKeyEvent* _ke) {
 
 void MainWindow::timerEvent(QTimerEvent* _te) { emit periodicUpdate(); }
 
-void MainWindow::showTool(QAction* _idx) {
+void MainWindow::showTool(QAction* _idx)
+{
 	PluginView* p = m_tools[m_toolsMenu->actions().indexOf(_idx)];
 	p->show();
 	p->parentWidget()->show();
 	p->setFocus();
 }
 
-void MainWindow::browseHelp() {
+void MainWindow::browseHelp()
+{
 	// file:// alternative for offline help
 	QString url = "https://lmms.io/documentation/";
 	QDesktopServices::openUrl(url);
 	// TODO: Handle error
 }
 
-void MainWindow::autoSave() {
+void MainWindow::autoSave()
+{
 	if (!Engine::getSong()->isExporting() && !Engine::getSong()->isLoadingProject()
 		&& !RemotePluginBase::isMainThreadWaiting() && !QApplication::mouseButtons()
 		&& (ConfigManager::inst()->value("ui", "enablerunningautosave").toInt() || !Engine::getSong()->isPlaying())) {
@@ -953,7 +988,8 @@ void MainWindow::autoSave() {
 	}
 }
 
-void MainWindow::onExportProjectMidi() {
+void MainWindow::onExportProjectMidi()
+{
 	FileDialog efd(this);
 
 	efd.setFileMode(FileDialog::AnyFile);
@@ -986,7 +1022,8 @@ void MainWindow::onExportProjectMidi() {
 	}
 }
 
-void MainWindow::exportProject(bool multiExport) {
+void MainWindow::exportProject(bool multiExport)
+{
 	QString const& projectFileName = Engine::getSong()->projectFileName();
 
 	FileDialog efd(getGUI()->mainWindow());
@@ -1052,7 +1089,8 @@ void MainWindow::exportProject(bool multiExport) {
 	}
 }
 
-void MainWindow::handleSaveResult(QString const& filename, bool songSavedSuccessfully) {
+void MainWindow::handleSaveResult(QString const& filename, bool songSavedSuccessfully)
+{
 	if (songSavedSuccessfully) {
 		TextFloat::displayMessage(tr("Project saved"), tr("The project %1 is now saved.").arg(filename),
 			embed::getIconPixmap("project_save", 24, 24), 2000);
@@ -1064,7 +1102,8 @@ void MainWindow::handleSaveResult(QString const& filename, bool songSavedSuccess
 	}
 }
 
-bool MainWindow::guiSaveProject() {
+bool MainWindow::guiSaveProject()
+{
 	Song* song = Engine::getSong();
 	bool const songSaveResult = song->guiSaveProject();
 	handleSaveResult(song->projectFileName(), songSaveResult);
@@ -1072,7 +1111,8 @@ bool MainWindow::guiSaveProject() {
 	return songSaveResult;
 }
 
-bool MainWindow::guiSaveProjectAs(const QString& filename) {
+bool MainWindow::guiSaveProjectAs(const QString& filename)
+{
 	Song* song = Engine::getSong();
 	bool const songSaveResult = song->guiSaveProjectAs(filename);
 	handleSaveResult(filename, songSaveResult);
@@ -1084,7 +1124,8 @@ void MainWindow::onExportProject() { this->exportProject(); }
 
 void MainWindow::onExportProjectTracks() { this->exportProject(true); }
 
-void MainWindow::onImportProject() {
+void MainWindow::onImportProject()
+{
 	Song* song = Engine::getSong();
 
 	if (song) {
@@ -1101,7 +1142,8 @@ void MainWindow::onImportProject() {
 	}
 }
 
-void MainWindow::onSongStopped() {
+void MainWindow::onSongStopped()
+{
 	Song* song = Engine::getSong();
 	Song::PlayPos const& playPos = song->getPlayPos();
 
@@ -1130,7 +1172,8 @@ void MainWindow::onSongStopped() {
 	}
 }
 
-void MainWindow::onSongModified() {
+void MainWindow::onSongModified()
+{
 	// Only update the window title if the code is executed from the GUI main thread.
 	// The assumption seems to be that the Song can also be set as modified from other
 	// threads. This is not a good design! Copied from the original implementation of

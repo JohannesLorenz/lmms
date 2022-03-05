@@ -65,7 +65,8 @@ bSynth::bSynth(
 	, sample_realindex(0)
 	, nph(_nph)
 	, sample_rate(_sample_rate)
-	, interpolation(_interpolation) {
+	, interpolation(_interpolation)
+{
 	sample_shape = new float[wavetableSize];
 	for (int i = 0; i < wavetableSize; ++i) {
 		float buf = _shape[i] * _factor;
@@ -81,7 +82,8 @@ bSynth::bSynth(
 
 bSynth::~bSynth() { delete[] sample_shape; }
 
-sample_t bSynth::nextStringSample(float sample_length) {
+sample_t bSynth::nextStringSample(float sample_length)
+{
 	float sample_step = static_cast<float>(sample_length / (sample_rate / nph->frequency()));
 
 	// check overflow
@@ -132,7 +134,8 @@ bitInvader::bitInvader(InstrumentTrack* _instrument_track)
 	, m_sampleLength(wavetableSize, 4, wavetableSize, 1, this, tr("Sample length"))
 	, m_graph(-1.0f, 1.0f, wavetableSize, this)
 	, m_interpolation(false, this)
-	, m_normalize(false, this) {
+	, m_normalize(false, this)
+{
 	m_graph.setWaveToSine();
 	lengthChanged();
 
@@ -143,7 +146,8 @@ bitInvader::bitInvader(InstrumentTrack* _instrument_track)
 
 bitInvader::~bitInvader() {}
 
-void bitInvader::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void bitInvader::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 
 	// Save plugin version
 	_this.setAttribute("version", "0.1");
@@ -163,7 +167,8 @@ void bitInvader::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 	m_normalize.saveSettings(_doc, _this, "normalize");
 }
 
-void bitInvader::loadSettings(const QDomElement& _this) {
+void bitInvader::loadSettings(const QDomElement& _this)
+{
 	// Clear wavetable before loading a new
 	m_graph.clear();
 
@@ -188,18 +193,21 @@ void bitInvader::loadSettings(const QDomElement& _this) {
 	m_normalize.loadSettings(_this, "normalize");
 }
 
-void bitInvader::lengthChanged() {
+void bitInvader::lengthChanged()
+{
 	m_graph.setLength((int)m_sampleLength.value());
 
 	normalize();
 }
 
-void bitInvader::samplesChanged(int _begin, int _end) {
+void bitInvader::samplesChanged(int _begin, int _end)
+{
 	normalize();
 	// engine::getSongEditor()->setModified();
 }
 
-void bitInvader::normalize() {
+void bitInvader::normalize()
+{
 	// analyze
 	float max = std::numeric_limits<float>::epsilon();
 	const float* samples = m_graph.samples();
@@ -212,7 +220,8 @@ void bitInvader::normalize() {
 
 QString bitInvader::nodeName() const { return (bitinvader_plugin_descriptor.name); }
 
-void bitInvader::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer) {
+void bitInvader::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
+{
 	if (_n->totalFramesPlayed() == 0 || _n->m_pluginData == nullptr) {
 
 		float factor;
@@ -247,7 +256,8 @@ void bitInvader::deleteNotePluginData(NotePlayHandle* _n) { delete static_cast<b
 PluginView* bitInvader::instantiateView(QWidget* _parent) { return (new bitInvaderView(this, _parent)); }
 
 bitInvaderView::bitInvaderView(Instrument* _instrument, QWidget* _parent)
-	: InstrumentViewFixedSize(_instrument, _parent) {
+	: InstrumentViewFixedSize(_instrument, _parent)
+{
 	setAutoFillBackground(true);
 	QPalette pal;
 
@@ -333,7 +343,8 @@ bitInvaderView::bitInvaderView(Instrument* _instrument, QWidget* _parent)
 	connect(m_normalizeToggle, SIGNAL(toggled(bool)), this, SLOT(normalizeToggled(bool)));
 }
 
-void bitInvaderView::modelChanged() {
+void bitInvaderView::modelChanged()
+{
 	bitInvader* b = castModel<bitInvader>();
 
 	m_graph->setModel(&b->m_graph);
@@ -342,37 +353,43 @@ void bitInvaderView::modelChanged() {
 	m_normalizeToggle->setModel(&b->m_normalize);
 }
 
-void bitInvaderView::sinWaveClicked() {
+void bitInvaderView::sinWaveClicked()
+{
 	m_graph->model()->clearInvisible();
 	m_graph->model()->setWaveToSine();
 	Engine::getSong()->setModified();
 }
 
-void bitInvaderView::triangleWaveClicked() {
+void bitInvaderView::triangleWaveClicked()
+{
 	m_graph->model()->clearInvisible();
 	m_graph->model()->setWaveToTriangle();
 	Engine::getSong()->setModified();
 }
 
-void bitInvaderView::sawWaveClicked() {
+void bitInvaderView::sawWaveClicked()
+{
 	m_graph->model()->clearInvisible();
 	m_graph->model()->setWaveToSaw();
 	Engine::getSong()->setModified();
 }
 
-void bitInvaderView::sqrWaveClicked() {
+void bitInvaderView::sqrWaveClicked()
+{
 	m_graph->model()->clearInvisible();
 	m_graph->model()->setWaveToSquare();
 	Engine::getSong()->setModified();
 }
 
-void bitInvaderView::noiseWaveClicked() {
+void bitInvaderView::noiseWaveClicked()
+{
 	m_graph->model()->clearInvisible();
 	m_graph->model()->setWaveToNoise();
 	Engine::getSong()->setModified();
 }
 
-void bitInvaderView::usrWaveClicked() {
+void bitInvaderView::usrWaveClicked()
+{
 	QString fileName = m_graph->model()->setWaveToUser();
 	if (!fileName.isEmpty()) {
 		ToolTip::add(m_usrWaveBtn, fileName);
@@ -381,12 +398,14 @@ void bitInvaderView::usrWaveClicked() {
 	}
 }
 
-void bitInvaderView::smoothClicked() {
+void bitInvaderView::smoothClicked()
+{
 	m_graph->model()->smooth();
 	Engine::getSong()->setModified();
 }
 
-void bitInvaderView::interpolationToggled(bool value) {
+void bitInvaderView::interpolationToggled(bool value)
+{
 	m_graph->setGraphStyle(value ? Graph::LinearStyle : Graph::NearestStyle);
 	Engine::getSong()->setModified();
 }

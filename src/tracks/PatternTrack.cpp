@@ -35,7 +35,8 @@
 PatternTrack::infoMap PatternTrack::s_infoMap;
 
 PatternTrack::PatternTrack(TrackContainer* tc)
-	: Track(Track::PatternTrack, tc) {
+	: Track(Track::PatternTrack, tc)
+{
 	int patternNum = s_infoMap.size();
 	s_infoMap[this] = patternNum;
 
@@ -47,7 +48,8 @@ PatternTrack::PatternTrack(TrackContainer* tc)
 	connect(this, SIGNAL(nameChanged()), Engine::patternStore(), SLOT(updateComboBox()));
 }
 
-PatternTrack::~PatternTrack() {
+PatternTrack::~PatternTrack()
+{
 	Engine::audioEngine()->removePlayHandlesOfTypes(
 		this, PlayHandle::TypeNotePlayHandle | PlayHandle::TypeInstrumentPlayHandle | PlayHandle::TypeSamplePlayHandle);
 
@@ -64,7 +66,8 @@ PatternTrack::~PatternTrack() {
 }
 
 // play _frames frames of given Clip within starting with _start
-bool PatternTrack::play(const TimePos& _start, const fpp_t _frames, const f_cnt_t _offset, int _clip_num) {
+bool PatternTrack::play(const TimePos& _start, const fpp_t _frames, const f_cnt_t _offset, int _clip_num)
+{
 	if (isMuted()) { return false; }
 
 	if (_clip_num >= 0) { return Engine::patternStore()->play(_start, _frames, _offset, s_infoMap[this]); }
@@ -91,13 +94,15 @@ bool PatternTrack::play(const TimePos& _start, const fpp_t _frames, const f_cnt_
 
 TrackView* PatternTrack::createView(TrackContainerView* tcv) { return new PatternTrackView(this, tcv); }
 
-Clip* PatternTrack::createClip(const TimePos& pos) {
+Clip* PatternTrack::createClip(const TimePos& pos)
+{
 	PatternClip* pc = new PatternClip(this);
 	pc->movePosition(pos);
 	return pc;
 }
 
-void PatternTrack::saveTrackSpecificSettings(QDomDocument& doc, QDomElement& _this) {
+void PatternTrack::saveTrackSpecificSettings(QDomDocument& doc, QDomElement& _this)
+{
 	//	_this.setAttribute( "icon", m_trackLabel->pixmapFile() );
 	/*	_this.setAttribute( "current", s_infoMap[this] ==
 						engine::getPatternEditor()->currentPattern() );*/
@@ -111,7 +116,8 @@ void PatternTrack::saveTrackSpecificSettings(QDomDocument& doc, QDomElement& _th
 	}
 }
 
-void PatternTrack::loadTrackSpecificSettings(const QDomElement& _this) {
+void PatternTrack::loadTrackSpecificSettings(const QDomElement& _this)
+{
 	/*	if( _this.attribute( "icon" ) != "" )
 		{
 			m_trackLabel->setPixmapFile( _this.attribute( "icon" ) );
@@ -143,14 +149,16 @@ void PatternTrack::loadTrackSpecificSettings(const QDomElement& _this) {
 }
 
 // return pointer to PatternTrack specified by pattern_num
-PatternTrack* PatternTrack::findPatternTrack(int pattern_num) {
+PatternTrack* PatternTrack::findPatternTrack(int pattern_num)
+{
 	for (infoMap::iterator it = s_infoMap.begin(); it != s_infoMap.end(); ++it) {
 		if (it.value() == pattern_num) { return it.key(); }
 	}
 	return nullptr;
 }
 
-void PatternTrack::swapPatternTracks(Track* track1, Track* track2) {
+void PatternTrack::swapPatternTracks(Track* track1, Track* track2)
+{
 	PatternTrack* t1 = dynamic_cast<PatternTrack*>(track1);
 	PatternTrack* t2 = dynamic_cast<PatternTrack*>(track2);
 	if (t1 != nullptr && t2 != nullptr) {

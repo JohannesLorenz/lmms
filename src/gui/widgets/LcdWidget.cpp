@@ -33,10 +33,14 @@
 #include "gui_templates.h"
 
 LcdWidget::LcdWidget(QWidget* parent, const QString& name, bool leadingZero)
-	: LcdWidget(1, parent, name, leadingZero) {}
+	: LcdWidget(1, parent, name, leadingZero)
+{
+}
 
 LcdWidget::LcdWidget(int numDigits, QWidget* parent, const QString& name, bool leadingZero)
-	: LcdWidget(numDigits, QString("19green"), parent, name, leadingZero) {}
+	: LcdWidget(numDigits, QString("19green"), parent, name, leadingZero)
+{
+}
 
 LcdWidget::LcdWidget(int numDigits, const QString& style, QWidget* parent, const QString& name, bool leadingZero)
 	: QWidget(parent)
@@ -46,13 +50,15 @@ LcdWidget::LcdWidget(int numDigits, const QString& style, QWidget* parent, const
 	, m_numDigits(numDigits)
 	, m_seamlessLeft(false)
 	, m_seamlessRight(false)
-	, m_leadingZero(leadingZero) {
+	, m_leadingZero(leadingZero)
+{
 	initUi(name, style);
 }
 
 LcdWidget::~LcdWidget() { delete m_lcdPixmap; }
 
-void LcdWidget::setValue(int value) {
+void LcdWidget::setValue(int value)
+{
 	QString s = m_textForValue[value];
 	if (s.isEmpty()) {
 		s = QString::number(value);
@@ -72,7 +78,8 @@ QColor LcdWidget::textShadowColor() const { return m_textShadowColor; }
 
 void LcdWidget::setTextShadowColor(const QColor& c) { m_textShadowColor = c; }
 
-void LcdWidget::paintEvent(QPaintEvent*) {
+void LcdWidget::paintEvent(QPaintEvent*)
+{
 	QPainter p(this);
 
 	QSize cellSize(m_cellWidth, m_cellHeight);
@@ -147,18 +154,21 @@ void LcdWidget::paintEvent(QPaintEvent*) {
 	}
 }
 
-void LcdWidget::setLabel(const QString& label) {
+void LcdWidget::setLabel(const QString& label)
+{
 	m_label = label;
 	updateSize();
 }
 
-void LcdWidget::setMarginWidth(int width) {
+void LcdWidget::setMarginWidth(int width)
+{
 	m_marginWidth = width;
 
 	updateSize();
 }
 
-void LcdWidget::updateSize() {
+void LcdWidget::updateSize()
+{
 	const int marginX1 = m_seamlessLeft ? 0 : 1 + m_marginWidth;
 	const int marginX2 = m_seamlessRight ? 0 : 1 + m_marginWidth;
 	const int marginY = 1;
@@ -173,7 +183,8 @@ void LcdWidget::updateSize() {
 	update();
 }
 
-void LcdWidget::initUi(const QString& name, const QString& style) {
+void LcdWidget::initUi(const QString& name, const QString& style)
+{
 	setEnabled(true);
 
 	setWindowTitle(name);

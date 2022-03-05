@@ -26,7 +26,8 @@
 
 #include <QDomElement>
 
-void InlineAutomation::saveSettings(QDomDocument& _doc, QDomElement& _parent) {
+void InlineAutomation::saveSettings(QDomDocument& _doc, QDomElement& _parent)
+{
 	if (hasAutomation()) {
 		QDomElement ap = _doc.createElement(AutomationClip::classNodeName());
 		QDomElement v = _doc.createElement(nodeName());
@@ -36,7 +37,8 @@ void InlineAutomation::saveSettings(QDomDocument& _doc, QDomElement& _parent) {
 	}
 }
 
-void InlineAutomation::loadSettings(const QDomElement& _this) {
+void InlineAutomation::loadSettings(const QDomElement& _this)
+{
 	QDomNode node = _this.namedItem(AutomationClip::classNodeName());
 	if (node.isElement()) {
 		node = node.namedItem(nodeName());

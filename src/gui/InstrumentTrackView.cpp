@@ -50,7 +50,8 @@
 InstrumentTrackView::InstrumentTrackView(InstrumentTrack* _it, TrackContainerView* tcv)
 	: TrackView(_it, tcv)
 	, m_window(nullptr)
-	, m_lastPos(-1, -1) {
+	, m_lastPos(-1, -1)
+{
 	setAcceptDrops(true);
 	setFixedHeight(32);
 
@@ -130,7 +131,8 @@ InstrumentTrackView::InstrumentTrackView(InstrumentTrack* _it, TrackContainerVie
 	setModel(_it);
 }
 
-InstrumentTrackView::~InstrumentTrackView() {
+InstrumentTrackView::~InstrumentTrackView()
+{
 	delete m_window;
 	m_window = nullptr;
 
@@ -138,7 +140,8 @@ InstrumentTrackView::~InstrumentTrackView() {
 	delete model()->m_midiPort.m_writablePortsMenu;
 }
 
-void InstrumentTrackView::toggleMidiCCRack() {
+void InstrumentTrackView::toggleMidiCCRack()
+{
 	// Lazy creation: midiCCRackView is only created when accessed the first time.
 	// this->model() returns pointer to the InstrumentTrack who owns this InstrumentTrackView.
 	if (!m_midiCCRackView) { m_midiCCRackView = std::unique_ptr<MidiCCRackView>(new MidiCCRackView(this->model())); }
@@ -151,7 +154,8 @@ void InstrumentTrackView::toggleMidiCCRack() {
 	}
 }
 
-InstrumentTrackWindow* InstrumentTrackView::topLevelInstrumentTrackWindow() {
+InstrumentTrackWindow* InstrumentTrackView::topLevelInstrumentTrackWindow()
+{
 	InstrumentTrackWindow* w = nullptr;
 	for (const QMdiSubWindow* sw :
 		getGUI()->mainWindow()->workspace()->subWindowList(QMdiArea::ActivationHistoryOrder)) {
@@ -164,7 +168,8 @@ InstrumentTrackWindow* InstrumentTrackView::topLevelInstrumentTrackWindow() {
 }
 
 /*! \brief Create and assign a new mixer Channel for this track */
-void InstrumentTrackView::createMixerLine() {
+void InstrumentTrackView::createMixerLine()
+{
 	int channelIndex = getGUI()->mixerView()->addNewChannel();
 	auto channel = Engine::mixer()->mixerChannel(channelIndex);
 
@@ -175,19 +180,22 @@ void InstrumentTrackView::createMixerLine() {
 }
 
 /*! \brief Assign a specific mixer Channel for this track */
-void InstrumentTrackView::assignMixerLine(int channelIndex) {
+void InstrumentTrackView::assignMixerLine(int channelIndex)
+{
 	model()->mixerChannelModel()->setValue(channelIndex);
 
 	getGUI()->mixerView()->setCurrentMixerLine(channelIndex);
 }
 
-InstrumentTrackWindow* InstrumentTrackView::getInstrumentTrackWindow() {
+InstrumentTrackWindow* InstrumentTrackView::getInstrumentTrackWindow()
+{
 	if (!m_window) { m_window = new InstrumentTrackWindow(this); }
 
 	return m_window;
 }
 
-void InstrumentTrackView::handleConfigChange(QString cls, QString attr, QString value) {
+void InstrumentTrackView::handleConfigChange(QString cls, QString attr, QString value)
+{
 	// When one instrument track window mode is turned on,
 	// close windows except last opened one.
 	if (cls == "ui" && attr == "oneinstrumenttrackwindow" && value.toInt()) {
@@ -195,17 +203,20 @@ void InstrumentTrackView::handleConfigChange(QString cls, QString attr, QString 
 	}
 }
 
-void InstrumentTrackView::dragEnterEvent(QDragEnterEvent* _dee) {
+void InstrumentTrackView::dragEnterEvent(QDragEnterEvent* _dee)
+{
 	InstrumentTrackWindow::dragEnterEventGeneric(_dee);
 	if (!_dee->isAccepted()) { TrackView::dragEnterEvent(_dee); }
 }
 
-void InstrumentTrackView::dropEvent(QDropEvent* _de) {
+void InstrumentTrackView::dropEvent(QDropEvent* _de)
+{
 	getInstrumentTrackWindow()->dropEvent(_de);
 	TrackView::dropEvent(_de);
 }
 
-void InstrumentTrackView::toggleInstrumentWindow(bool _on) {
+void InstrumentTrackView::toggleInstrumentWindow(bool _on)
+{
 	if (_on && ConfigManager::inst()->value("ui", "oneinstrumenttrackwindow").toInt()) {
 		if (topLevelInstrumentTrackWindow()) { topLevelInstrumentTrackWindow()->m_itv->m_tlb->setChecked(false); }
 	}
@@ -213,29 +224,35 @@ void InstrumentTrackView::toggleInstrumentWindow(bool _on) {
 	getInstrumentTrackWindow()->toggleVisibility(_on);
 }
 
-void InstrumentTrackView::activityIndicatorPressed() {
+void InstrumentTrackView::activityIndicatorPressed()
+{
 	model()->processInEvent(MidiEvent(MidiNoteOn, 0, DefaultKey, MidiDefaultVelocity));
 }
 
-void InstrumentTrackView::activityIndicatorReleased() {
+void InstrumentTrackView::activityIndicatorReleased()
+{
 	model()->processInEvent(MidiEvent(MidiNoteOff, 0, DefaultKey, 0));
 }
 
-void InstrumentTrackView::midiInSelected() {
+void InstrumentTrackView::midiInSelected()
+{
 	if (model()) { model()->m_midiPort.setReadable(m_midiInputAction->isChecked()); }
 }
 
-void InstrumentTrackView::midiOutSelected() {
+void InstrumentTrackView::midiOutSelected()
+{
 	if (model()) { model()->m_midiPort.setWritable(m_midiOutputAction->isChecked()); }
 }
 
-void InstrumentTrackView::midiConfigChanged() {
+void InstrumentTrackView::midiConfigChanged()
+{
 	m_midiInputAction->setChecked(model()->m_midiPort.isReadable());
 	m_midiOutputAction->setChecked(model()->m_midiPort.isWritable());
 }
 
 // FIXME: This is identical to SampleTrackView::createMixerMenu
-QMenu* InstrumentTrackView::createMixerMenu(QString title, QString newMixerLabel) {
+QMenu* InstrumentTrackView::createMixerMenu(QString title, QString newMixerLabel)
+{
 	int channelIndex = model()->mixerChannelModel()->value();
 
 	MixerChannel* mixerChannel = Engine::mixer()->mixerChannel(channelIndex);

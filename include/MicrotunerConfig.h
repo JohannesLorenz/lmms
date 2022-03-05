@@ -34,7 +34,8 @@
 class QLineEdit;
 class QPlainTextEdit;
 
-class LMMS_EXPORT MicrotunerConfig : public QWidget, public SerializingObject {
+class LMMS_EXPORT MicrotunerConfig : public QWidget, public SerializingObject
+{
 	Q_OBJECT
 public:
 	MicrotunerConfig();

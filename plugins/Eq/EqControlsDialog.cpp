@@ -38,7 +38,8 @@
 
 EqControlsDialog::EqControlsDialog(EqControls* controls)
 	: EffectControlDialog(controls)
-	, m_controls(controls) {
+	, m_controls(controls)
+{
 	setAutoFillBackground(true);
 	QPalette pal;
 	pal.setBrush(backgroundRole(), PLUGIN_NAME::getIconPixmap("artwork"));
@@ -230,7 +231,8 @@ EqControlsDialog::EqControlsDialog(EqControls* controls)
 	hpBtnGrp->setModel(&m_controls->m_hpTypeModel);
 }
 
-void EqControlsDialog::mouseDoubleClickEvent(QMouseEvent* event) {
+void EqControlsDialog::mouseDoubleClickEvent(QMouseEvent* event)
+{
 	m_originalHeight = parentWidget()->height() == 283 ? m_originalHeight : parentWidget()->height();
 	parentWidget()->setFixedHeight(parentWidget()->height() == m_originalHeight ? 283 : m_originalHeight);
 	update();
@@ -238,7 +240,8 @@ void EqControlsDialog::mouseDoubleClickEvent(QMouseEvent* event) {
 
 EqBand* EqControlsDialog::setBand(int index, BoolModel* active, FloatModel* freq, FloatModel* res, FloatModel* gain,
 	QColor color, QString name, float* peakL, float* peakR, BoolModel* hp12, BoolModel* hp24, BoolModel* hp48,
-	BoolModel* lp12, BoolModel* lp24, BoolModel* lp48) {
+	BoolModel* lp12, BoolModel* lp24, BoolModel* lp48)
+{
 	EqBand* filterModels = m_parameterWidget->getBandModels(index);
 	filterModels->active = active;
 	filterModels->freq = freq;

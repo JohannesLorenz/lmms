@@ -41,10 +41,12 @@
 class QButtonGroup;
 class MixerLine;
 
-class LMMS_EXPORT MixerView : public QWidget, public ModelView, public SerializingObjectHook {
+class LMMS_EXPORT MixerView : public QWidget, public ModelView, public SerializingObjectHook
+{
 	Q_OBJECT
 public:
-	class MixerChannelView {
+	class MixerChannelView
+	{
 	public:
 		MixerChannelView(QWidget* _parent, MixerView* _mv, int _chIndex);
 

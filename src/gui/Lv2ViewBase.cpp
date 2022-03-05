@@ -47,13 +47,16 @@
 #include "gui_templates.h"
 
 Lv2ViewProc::Lv2ViewProc(QWidget* parent, Lv2Proc* ctrlBase, int colNum)
-	: LinkedModelGroupView(parent, ctrlBase, colNum) {
-	class SetupWidget : public Lv2Ports::ConstVisitor {
+	: LinkedModelGroupView(parent, ctrlBase, colNum)
+{
+	class SetupWidget : public Lv2Ports::ConstVisitor
+	{
 	public:
 		QWidget* m_par;				  // input
 		const LilvNode* m_commentUri; // input
 		Control* m_control = nullptr; // output
-		void visit(const Lv2Ports::Control& port) override {
+		void visit(const Lv2Ports::Control& port) override
+		{
 			if (port.m_flow == Lv2Ports::Flow::Input) {
 				using PortVis = Lv2Ports::Vis;
 
@@ -70,7 +73,8 @@ Lv2ViewProc::Lv2ViewProc(QWidget* parent, Lv2Proc* ctrlBase, int colNum)
 				m_control->setText(port.name());
 
 				AutoLilvNodes props(lilv_port_get_value(port.m_plugin, port.m_port, m_commentUri));
-				LILV_FOREACH(nodes, itr, props.get()) {
+				LILV_FOREACH(nodes, itr, props.get())
+				{
 					const LilvNode* nod = lilv_nodes_get(props.get(), itr);
 					m_control->topWidget()->setToolTip(lilv_node_as_string(nod));
 					break;
@@ -99,7 +103,8 @@ Lv2ViewProc::~Lv2ViewProc() {}
 
 AutoLilvNode Lv2ViewProc::uri(const char* uriStr) { return Engine::getLv2Manager()->uri(uriStr); }
 
-Lv2ViewBase::Lv2ViewBase(QWidget* meAsWidget, Lv2ControlBase* ctrlBase) {
+Lv2ViewBase::Lv2ViewBase(QWidget* meAsWidget, Lv2ControlBase* ctrlBase)
+{
 	QGridLayout* grid = new QGridLayout(meAsWidget);
 
 	QHBoxLayout* btnBox = new QHBoxLayout();
@@ -125,7 +130,8 @@ Lv2ViewBase::Lv2ViewBase(QWidget* meAsWidget, Lv2ControlBase* ctrlBase) {
 	// expression syntax tree, so the AutoLilvNode gets freed after the function
 	// has been called
 	AutoLilvNodes props(lilv_plugin_get_value(ctrlBase->getPlugin(), uri(LILV_NS_RDFS "comment").get()));
-	LILV_FOREACH(nodes, itr, props.get()) {
+	LILV_FOREACH(nodes, itr, props.get())
+	{
 		const LilvNode* node = lilv_nodes_get(props.get(), itr);
 		QLabel* infoLabel = new QLabel(lilv_node_as_string(node));
 		infoLabel->setWordWrap(true);
@@ -153,13 +159,15 @@ Lv2ViewBase::Lv2ViewBase(QWidget* meAsWidget, Lv2ControlBase* ctrlBase) {
 	grid->addWidget(m_procView, Rows::ProcRow, 0);
 }
 
-Lv2ViewBase::~Lv2ViewBase() {
+Lv2ViewBase::~Lv2ViewBase()
+{
 	// TODO: hide UI if required
 }
 
 void Lv2ViewBase::toggleUI() {}
 
-void Lv2ViewBase::toggleHelp(bool visible) {
+void Lv2ViewBase::toggleHelp(bool visible)
+{
 	if (m_helpWindow) {
 		if (visible) {
 			m_helpWindow->show();
@@ -170,7 +178,8 @@ void Lv2ViewBase::toggleHelp(bool visible) {
 	}
 }
 
-void Lv2ViewBase::modelChanged(Lv2ControlBase* ctrlBase) {
+void Lv2ViewBase::modelChanged(Lv2ControlBase* ctrlBase)
+{
 	// reconnect models
 	if (m_toggleUIButton) { m_toggleUIButton->setChecked(ctrlBase->hasGui()); }
 

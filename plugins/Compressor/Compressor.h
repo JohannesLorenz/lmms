@@ -30,7 +30,8 @@
 
 constexpr float COMP_LOG = -2.2;
 
-class CompressorEffect : public Effect {
+class CompressorEffect : public Effect
+{
 	Q_OBJECT
 public:
 	CompressorEffect(Model* parent, const Descriptor::SubPluginFeatures::Key* key);
@@ -68,7 +69,14 @@ private:
 	inline int realmod(int k, int n);
 	inline float realfmod(float k, float n);
 
-	enum StereoLinkModes { Unlinked, Maximum, Average, Minimum, Blend };
+	enum StereoLinkModes
+	{
+		Unlinked,
+		Maximum,
+		Average,
+		Minimum,
+		Blend
+	};
 
 	std::vector<float> m_preLookaheadBuf[2];
 	int m_preLookaheadBufLoc[2] = {0};

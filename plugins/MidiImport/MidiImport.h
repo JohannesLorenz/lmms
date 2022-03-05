@@ -32,7 +32,8 @@
 #include "ImportFilter.h"
 #include "MidiEvent.h"
 
-class MidiImport : public ImportFilter {
+class MidiImport : public ImportFilter
+{
 	Q_OBJECT
 public:
 	MidiImport(const QString& _file);
@@ -49,7 +50,8 @@ private:
 
 	void error(void);
 
-	inline int readInt(int _bytes) {
+	inline int readInt(int _bytes)
+	{
 		int c, value = 0;
 		do {
 			c = readByte();
@@ -58,14 +60,16 @@ private:
 		} while (--_bytes);
 		return (value);
 	}
-	inline int read32LE() {
+	inline int read32LE()
+	{
 		int value = readByte();
 		value |= readByte() << 8;
 		value |= readByte() << 16;
 		value |= readByte() << 24;
 		return value;
 	}
-	inline int readVar() {
+	inline int readVar()
+	{
 		int c = readByte();
 		int value = c & 0x7f;
 		if (c & 0x80) {
@@ -85,7 +89,8 @@ private:
 	}
 
 	inline int readID() { return read32LE(); }
-	inline void skip(int _bytes) {
+	inline void skip(int _bytes)
+	{
 		while (_bytes > 0) {
 			readByte();
 			--_bytes;

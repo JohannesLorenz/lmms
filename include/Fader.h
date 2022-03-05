@@ -55,7 +55,8 @@
 
 class TextFloat;
 
-class LMMS_EXPORT Fader : public QWidget, public FloatModelView {
+class LMMS_EXPORT Fader : public QWidget, public FloatModelView
+{
 	Q_OBJECT
 public:
 	Q_PROPERTY(QColor peakGreen READ peakGreen WRITE setPeakGreen)
@@ -95,7 +96,8 @@ public:
 
 	void setDisplayConversion(bool b) { m_conversionFactor = b ? 100.0 : 1.0; }
 
-	inline void setHintText(const QString& _txt_before, const QString& _txt_after) {
+	inline void setHintText(const QString& _txt_before, const QString& _txt_after)
+	{
 		setDescription(_txt_before);
 		setUnit(_txt_after);
 	}
@@ -114,7 +116,8 @@ private:
 	void paintDBFSLevels(QPaintEvent* ev, QPainter& painter);
 	void paintLinearLevels(QPaintEvent* ev, QPainter& painter);
 
-	int knobPosY() const {
+	int knobPosY() const
+	{
 		float fRange = model()->maxValue() - model()->minValue();
 		float realVal = model()->value() - model()->minValue();
 

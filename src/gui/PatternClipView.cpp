@@ -39,13 +39,15 @@
 PatternClipView::PatternClipView(Clip* _clip, TrackView* _tv)
 	: ClipView(_clip, _tv)
 	, m_patternClip(dynamic_cast<PatternClip*>(_clip))
-	, m_paintPixmap() {
+	, m_paintPixmap()
+{
 	connect(_clip->getTrack(), SIGNAL(dataChanged()), this, SLOT(update()));
 
 	setStyle(QApplication::style());
 }
 
-void PatternClipView::constructContextMenu(QMenu* _cm) {
+void PatternClipView::constructContextMenu(QMenu* _cm)
+{
 	QAction* a = new QAction(embed::getIconPixmap("pattern_track"), tr("Open in Pattern Editor"), _cm);
 	_cm->insertAction(_cm->actions()[0], a);
 	connect(a, SIGNAL(triggered(bool)), this, SLOT(openInPatternEditor()));
@@ -57,7 +59,8 @@ void PatternClipView::constructContextMenu(QMenu* _cm) {
 
 void PatternClipView::mouseDoubleClickEvent(QMouseEvent*) { openInPatternEditor(); }
 
-void PatternClipView::paintEvent(QPaintEvent*) {
+void PatternClipView::paintEvent(QPaintEvent*)
+{
 	QPainter painter(this);
 
 	if (!needsUpdate()) {
@@ -121,7 +124,8 @@ void PatternClipView::paintEvent(QPaintEvent*) {
 	painter.drawPixmap(0, 0, m_paintPixmap);
 }
 
-void PatternClipView::openInPatternEditor() {
+void PatternClipView::openInPatternEditor()
+{
 	Engine::patternStore()->setCurrentPattern(m_patternClip->patternIndex());
 
 	getGUI()->mainWindow()->togglePatternEditorWin(true);
@@ -129,14 +133,16 @@ void PatternClipView::openInPatternEditor() {
 
 void PatternClipView::resetName() { m_patternClip->setName(""); }
 
-void PatternClipView::changeName() {
+void PatternClipView::changeName()
+{
 	QString s = m_patternClip->name();
 	RenameDialog rename_dlg(s);
 	rename_dlg.exec();
 	m_patternClip->setName(s);
 }
 
-void PatternClipView::update() {
+void PatternClipView::update()
+{
 	ToolTip::add(this, m_patternClip->name());
 
 	ClipView::update();

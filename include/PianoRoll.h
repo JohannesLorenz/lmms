@@ -54,7 +54,8 @@ class PositionLine;
 class TextFloat;
 class TimeLineWidget;
 
-class PianoRoll : public QWidget {
+class PianoRoll : public QWidget
+{
 	Q_OBJECT
 	Q_PROPERTY(QColor barLineColor MEMBER m_barLineColor)
 	Q_PROPERTY(QColor beatLineColor MEMBER m_beatLineColor)
@@ -92,7 +93,14 @@ class PianoRoll : public QWidget {
 	Q_PROPERTY(QBrush blackKeyActiveBackground MEMBER m_blackKeyActiveBackground)
 	Q_PROPERTY(QBrush blackKeyDisabledBackground MEMBER m_blackKeyDisabledBackground)
 public:
-	enum EditModes { ModeDraw, ModeErase, ModeSelect, ModeEditDetuning, ModeEditKnife };
+	enum EditModes
+	{
+		ModeDraw,
+		ModeErase,
+		ModeSelect,
+		ModeEditDetuning,
+		ModeEditKnife
+	};
 
 	/*! \brief Resets settings to default when e.g. creating a new project */
 	void reset();
@@ -122,7 +130,12 @@ public:
 	int quantization() const;
 
 protected:
-	enum QuantizeActions { QuantizeBoth, QuantizePos, QuantizeLength };
+	enum QuantizeActions
+	{
+		QuantizeBoth,
+		QuantizePos,
+		QuantizeLength
+	};
 
 	void keyPressEvent(QKeyEvent* ke) override;
 	void keyReleaseEvent(QKeyEvent* ke) override;
@@ -204,7 +217,8 @@ signals:
 	void semiToneMarkerMenuChordSetEnabled(bool);
 
 private:
-	enum Actions {
+	enum Actions
+	{
 		ActionNone,
 		ActionMoveNote,
 		ActionResizeNote,
@@ -214,13 +228,15 @@ private:
 		ActionKnife
 	};
 
-	enum NoteEditMode {
+	enum NoteEditMode
+	{
 		NoteEditVolume,
 		NoteEditPanning,
 		NoteEditCount // make sure this one is always last
 	};
 
-	enum SemiToneMarkerAction {
+	enum SemiToneMarkerAction
+	{
 		stmaUnmarkAll,
 		stmaMarkCurrentSemiTone,
 		stmaMarkAllOctaveSemiTones,
@@ -229,9 +245,15 @@ private:
 		stmaCopyAllNotesOnKey
 	};
 
-	enum PianoRollKeyTypes { PR_WHITE_KEY_SMALL, PR_WHITE_KEY_BIG, PR_BLACK_KEY };
+	enum PianoRollKeyTypes
+	{
+		PR_WHITE_KEY_SMALL,
+		PR_WHITE_KEY_BIG,
+		PR_BLACK_KEY
+	};
 
-	enum GridMode {
+	enum GridMode
+	{
 		gridNudge,
 		gridSnap
 		//	gridFree
@@ -444,7 +466,8 @@ signals:
 	void positionChanged(const TimePos&);
 };
 
-class PianoRollWindow : public Editor, SerializingObject {
+class PianoRollWindow : public Editor, SerializingObject
+{
 	Q_OBJECT
 public:
 	PianoRollWindow();

@@ -45,11 +45,14 @@ Plugin::Descriptor PLUGIN_EXPORT amplifier_plugin_descriptor = {
 
 AmplifierEffect::AmplifierEffect(Model* parent, const Descriptor::SubPluginFeatures::Key* key)
 	: Effect(&amplifier_plugin_descriptor, parent, key)
-	, m_ampControls(this) {}
+	, m_ampControls(this)
+{
+}
 
 AmplifierEffect::~AmplifierEffect() {}
 
-bool AmplifierEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
+bool AmplifierEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
+{
 	if (!isEnabled() || !isRunning()) { return (false); }
 
 	double outSum = 0.0;
@@ -100,7 +103,8 @@ bool AmplifierEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data)
+{
 	return new AmplifierEffect(parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(data));
 }
 }

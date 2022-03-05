@@ -78,7 +78,8 @@ const int MIN_WLEN = 4;
 class Knob;
 class NesInstrument;
 
-class NesObject {
+class NesObject
+{
 	MM_OPERATORS
 public:
 	NesObject(NesInstrument* nes, const sample_rate_t samplerate, NotePlayHandle* nph);
@@ -88,7 +89,8 @@ public:
 	void updateVibrato(float* freq);
 	void updatePitch();
 
-	void updateLFSR(bool mode) {
+	void updateLFSR(bool mode)
+	{
 		uint16_t LFSRx;
 		if (mode) {
 			LFSRx = m_LFSR & (1 << 8); // get bit 13
@@ -117,7 +119,8 @@ public:
 
 	inline float signedPow(float f, float e) { return f < 0 ? powf(qAbs(f), e) * -1.0f : powf(f, e); }
 
-	inline int nearestNoiseFreq(float f) {
+	inline int nearestNoiseFreq(float f)
+	{
 		int n = 15;
 		for (int i = 15; i >= 0; i--) {
 			if (f >= NOISE_FREQS[i]) { n = i; }
@@ -172,7 +175,8 @@ private:
 	int m_vibratoPhase;
 };
 
-class NesInstrument : public Instrument {
+class NesInstrument : public Instrument
+{
 	Q_OBJECT
 public:
 	NesInstrument(InstrumentTrack* instrumentTrack);
@@ -260,7 +264,8 @@ private:
 	friend class NesInstrumentView;
 };
 
-class NesInstrumentView : public InstrumentViewFixedSize {
+class NesInstrumentView : public InstrumentViewFixedSize
+{
 	Q_OBJECT
 public:
 	NesInstrumentView(Instrument* instrument, QWidget* parent);

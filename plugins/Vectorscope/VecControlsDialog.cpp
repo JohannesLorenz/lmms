@@ -36,7 +36,8 @@
 // The entire GUI layout is built here.
 VecControlsDialog::VecControlsDialog(VecControls* controls)
 	: EffectControlDialog(controls)
-	, m_controls(controls) {
+	, m_controls(controls)
+{
 	QVBoxLayout* master_layout = new QVBoxLayout;
 	master_layout->setContentsMargins(0, 2, 0, 0);
 	setLayout(master_layout);

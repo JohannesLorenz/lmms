@@ -53,7 +53,8 @@ Plugin::Descriptor PLUGIN_EXPORT monstro_plugin_descriptor = {
 
 MonstroSynth::MonstroSynth(MonstroInstrument* _i, NotePlayHandle* _nph)
 	: m_parent(_i)
-	, m_nph(_nph) {
+	, m_nph(_nph)
+{
 	m_osc1l_phase = 0.0f;
 	m_osc1r_phase = 0.0f;
 	m_osc2l_phase = 0.0f;
@@ -98,7 +99,8 @@ MonstroSynth::MonstroSynth(MonstroInstrument* _i, NotePlayHandle* _nph)
 
 MonstroSynth::~MonstroSynth() {}
 
-void MonstroSynth::renderOutput(fpp_t _frames, sampleFrame* _buf) {
+void MonstroSynth::renderOutput(fpp_t _frames, sampleFrame* _buf)
+{
 	float modtmp; // temp variable for freq modulation
 // macros for modulating with env/lfos
 #define modulatefreq(car, mod) \
@@ -629,7 +631,8 @@ void MonstroSynth::renderOutput(fpp_t _frames, sampleFrame* _buf) {
 	m_lfo_phase[1] = absFraction(m_lfo_phase[1] - lfo2_po);
 }
 
-inline void MonstroSynth::updateModulators(float* env1, float* env2, float* lfo1, float* lfo2, int frames) {
+inline void MonstroSynth::updateModulators(float* env1, float* env2, float* lfo1, float* lfo2, int frames)
+{
 	// frames played before
 	const f_cnt_t tfp = m_nph->totalFramesPlayed();
 
@@ -774,7 +777,8 @@ inline void MonstroSynth::updateModulators(float* env1, float* env2, float* lfo1
 	}
 }
 
-inline sample_t MonstroSynth::calcSlope(int slope, sample_t s) {
+inline sample_t MonstroSynth::calcSlope(int slope, sample_t s)
+{
 	if (m_parent->m_slope[slope] == 1.0f) return s;
 	if (s == 0.0f) return s;
 	return fastPow(s, m_parent->m_slope[slope]);
@@ -997,7 +1001,8 @@ MonstroInstrument::MonstroInstrument(InstrumentTrack* _instrument_track)
 
 MonstroInstrument::~MonstroInstrument() {}
 
-void MonstroInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer) {
+void MonstroInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
+{
 	const fpp_t frames = _n->framesLeftForCurrentPeriod();
 	const f_cnt_t offset = _n->noteOffset();
 
@@ -1012,11 +1017,13 @@ void MonstroInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffe
 	instrumentTrack()->processAudioBuffer(_working_buffer, frames + offset, _n);
 }
 
-void MonstroInstrument::deleteNotePluginData(NotePlayHandle* _n) {
+void MonstroInstrument::deleteNotePluginData(NotePlayHandle* _n)
+{
 	delete static_cast<MonstroSynth*>(_n->m_pluginData);
 }
 
-void MonstroInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void MonstroInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	m_osc1Vol.saveSettings(_doc, _this, "o1vol");
 	m_osc1Pan.saveSettings(_doc, _this, "o1pan");
 	m_osc1Crs.saveSettings(_doc, _this, "o1crs");
@@ -1131,7 +1138,8 @@ void MonstroInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 	m_sub3lfo2.saveSettings(_doc, _this, "s3l2");
 }
 
-void MonstroInstrument::loadSettings(const QDomElement& _this) {
+void MonstroInstrument::loadSettings(const QDomElement& _this)
+{
 	m_osc1Vol.loadSettings(_this, "o1vol");
 	m_osc1Pan.loadSettings(_this, "o1pan");
 	m_osc1Crs.loadSettings(_this, "o1crs");
@@ -1252,49 +1260,58 @@ f_cnt_t MonstroInstrument::desiredReleaseFrames() const { return qMax(64, qMax(m
 
 PluginView* MonstroInstrument::instantiateView(QWidget* _parent) { return (new MonstroView(this, _parent)); }
 
-void MonstroInstrument::updateVolume1() {
+void MonstroInstrument::updateVolume1()
+{
 	m_osc1l_vol = leftCh(m_osc1Vol.value(), m_osc1Pan.value());
 	m_osc1r_vol = rightCh(m_osc1Vol.value(), m_osc1Pan.value());
 }
 
-void MonstroInstrument::updateVolume2() {
+void MonstroInstrument::updateVolume2()
+{
 	m_osc2l_vol = leftCh(m_osc2Vol.value(), m_osc2Pan.value());
 	m_osc2r_vol = rightCh(m_osc2Vol.value(), m_osc2Pan.value());
 }
 
-void MonstroInstrument::updateVolume3() {
+void MonstroInstrument::updateVolume3()
+{
 	m_osc3l_vol = leftCh(m_osc3Vol.value(), m_osc3Pan.value());
 	m_osc3r_vol = rightCh(m_osc3Vol.value(), m_osc3Pan.value());
 }
 
-void MonstroInstrument::updateFreq1() {
+void MonstroInstrument::updateFreq1()
+{
 	m_osc1l_freq = powf(2.0f, m_osc1Crs.value() / 12.0f) * powf(2.0f, m_osc1Ftl.value() / 1200.0f);
 	m_osc1r_freq = powf(2.0f, m_osc1Crs.value() / 12.0f) * powf(2.0f, m_osc1Ftr.value() / 1200.0f);
 }
 
-void MonstroInstrument::updateFreq2() {
+void MonstroInstrument::updateFreq2()
+{
 	m_osc2l_freq = powf(2.0f, m_osc2Crs.value() / 12.0f) * powf(2.0f, m_osc2Ftl.value() / 1200.0f);
 	m_osc2r_freq = powf(2.0f, m_osc2Crs.value() / 12.0f) * powf(2.0f, m_osc2Ftr.value() / 1200.0f);
 }
 
 void MonstroInstrument::updateFreq3() { m_osc3_freq = powf(2.0f, m_osc3Crs.value() / 12.0f); }
 
-void MonstroInstrument::updatePO1() {
+void MonstroInstrument::updatePO1()
+{
 	m_osc1l_po = m_osc1Spo.value() / 720.0f;
 	m_osc1r_po = (m_osc1Spo.value() * -1.0) / 720.0f;
 }
 
-void MonstroInstrument::updatePO2() {
+void MonstroInstrument::updatePO2()
+{
 	m_osc2l_po = m_osc2Spo.value() / 720.0f;
 	m_osc2r_po = (m_osc2Spo.value() * -1.0) / 720.0f;
 }
 
-void MonstroInstrument::updatePO3() {
+void MonstroInstrument::updatePO3()
+{
 	m_osc3l_po = m_osc3Spo.value() / 720.0f;
 	m_osc3r_po = (m_osc3Spo.value() * -1.0) / 720.0f;
 }
 
-void MonstroInstrument::updateEnvelope1() {
+void MonstroInstrument::updateEnvelope1()
+{
 	if (m_env1Pre.value() == 0.0f) m_env1_pre = 1.0;
 	else
 		m_env1_pre = 1.0f / (m_env1Pre.value() / 1000.0f) / m_samplerate;
@@ -1315,7 +1332,8 @@ void MonstroInstrument::updateEnvelope1() {
 		= (m_env1Pre.value() + m_env1Att.value() + m_env1Hold.value() + m_env1Dec.value()) * m_samplerate / 1000.0f;
 	m_env1_relF = m_env1Rel.value() * m_samplerate / 1000.0f;
 }
-void MonstroInstrument::updateEnvelope2() {
+void MonstroInstrument::updateEnvelope2()
+{
 	if (m_env2Pre.value() == 0.0f) m_env2_pre = 1.0;
 	else
 		m_env2_pre = 1.0f / (m_env2Pre.value() / 1000.0f) / m_samplerate;
@@ -1337,12 +1355,14 @@ void MonstroInstrument::updateEnvelope2() {
 	m_env2_relF = m_env2Rel.value() * m_samplerate / 1000.0f;
 }
 
-void MonstroInstrument::updateLFOAtts() {
+void MonstroInstrument::updateLFOAtts()
+{
 	m_lfo1_att = m_lfo1Att.value() * m_samplerate / 1000.0f;
 	m_lfo2_att = m_lfo2Att.value() * m_samplerate / 1000.0f;
 }
 
-void MonstroInstrument::updateSamplerate() {
+void MonstroInstrument::updateSamplerate()
+{
 	m_samplerate = Engine::audioEngine()->processingSampleRate();
 
 	m_integrator = 0.5f - (0.5f - INTEGRATOR) * 44100.0f / m_samplerate;
@@ -1354,18 +1374,21 @@ void MonstroInstrument::updateSamplerate() {
 	updateLFOAtts();
 }
 
-void MonstroInstrument::updateSlope1() {
+void MonstroInstrument::updateSlope1()
+{
 	const float slope = m_env1Slope.value();
 	m_slope[0] = std::pow(10.f, slope * -1.0f);
 }
 
-void MonstroInstrument::updateSlope2() {
+void MonstroInstrument::updateSlope2()
+{
 	const float slope = m_env2Slope.value();
 	m_slope[1] = std::pow(10.f, slope * -1.0f);
 }
 
 MonstroView::MonstroView(Instrument* _instrument, QWidget* _parent)
-	: InstrumentViewFixedSize(_instrument, _parent) {
+	: InstrumentViewFixedSize(_instrument, _parent)
+{
 	m_operatorsView = setupOperatorsView(this);
 	setWidgetBackground(m_operatorsView, "artwork_op");
 	m_operatorsView->show();
@@ -1400,7 +1423,8 @@ MonstroView::MonstroView(Instrument* _instrument, QWidget* _parent)
 
 MonstroView::~MonstroView() {}
 
-void MonstroView::updateLayout() {
+void MonstroView::updateLayout()
+{
 	switch (m_selectedViewGroup->model()->value()) {
 	case OPVIEW:
 		m_operatorsView->show();
@@ -1413,7 +1437,8 @@ void MonstroView::updateLayout() {
 	}
 }
 
-void MonstroView::modelChanged() {
+void MonstroView::modelChanged()
+{
 	MonstroInstrument* m = castModel<MonstroInstrument>();
 
 	m_osc1VolKnob->setModel(&m->m_osc1Vol);
@@ -1531,14 +1556,16 @@ void MonstroView::modelChanged() {
 	m_sub3lfo2Knob->setModel(&m->m_sub3lfo2);
 }
 
-void MonstroView::setWidgetBackground(QWidget* _widget, const QString& _pic) {
+void MonstroView::setWidgetBackground(QWidget* _widget, const QString& _pic)
+{
 	_widget->setAutoFillBackground(true);
 	QPalette pal;
 	pal.setBrush(_widget->backgroundRole(), PLUGIN_NAME::getIconPixmap(_pic.toLatin1().constData()));
 	_widget->setPalette(pal);
 }
 
-QWidget* MonstroView::setupOperatorsView(QWidget* _parent) {
+QWidget* MonstroView::setupOperatorsView(QWidget* _parent)
+{
 	// operators view
 
 	QWidget* view = new QWidget(_parent);
@@ -1660,7 +1687,8 @@ QWidget* MonstroView::setupOperatorsView(QWidget* _parent) {
 	return (view);
 }
 
-QWidget* MonstroView::setupMatrixView(QWidget* _parent) {
+QWidget* MonstroView::setupMatrixView(QWidget* _parent)
+{
 	// matrix view
 
 	QWidget* view = new QWidget(_parent);
@@ -1735,7 +1763,8 @@ QWidget* MonstroView::setupMatrixView(QWidget* _parent) {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* m, void*) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* m, void*)
+{
 	return new MonstroInstrument(static_cast<InstrumentTrack*>(m));
 }
 }

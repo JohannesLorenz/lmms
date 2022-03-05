@@ -29,7 +29,8 @@
 
 class RowDelegate;
 
-class RowTableView : public QTableView {
+class RowTableView : public QTableView
+{
 	Q_OBJECT
 public:
 	RowTableView(QWidget* parent = 0);

@@ -41,7 +41,8 @@ MultitapEchoControls::MultitapEchoControls(MultitapEchoEffect* eff)
 	, m_swapInputs(false, this, "Swap inputs")
 	, m_stages(1.0f, 1.0f, 4.0f, 1.0f, this, "Lowpass stages")
 	, m_ampGraph(-60.0f, 0.0f, 16, this)
-	, m_lpGraph(0.0f, 3.0f, 16, this) {
+	, m_lpGraph(0.0f, 3.0f, 16, this)
+{
 	m_stages.setStrictStepSize(true);
 	connect(&m_ampGraph, SIGNAL(samplesChanged(int, int)), this, SLOT(ampSamplesChanged(int, int)));
 	connect(&m_lpGraph, SIGNAL(samplesChanged(int, int)), this, SLOT(lpSamplesChanged(int, int)));
@@ -55,7 +56,8 @@ MultitapEchoControls::MultitapEchoControls(MultitapEchoEffect* eff)
 
 MultitapEchoControls::~MultitapEchoControls() {}
 
-void MultitapEchoControls::saveSettings(QDomDocument& doc, QDomElement& parent) {
+void MultitapEchoControls::saveSettings(QDomDocument& doc, QDomElement& parent)
+{
 	m_steps.saveSettings(doc, parent, "steps");
 	m_stepLength.saveSettings(doc, parent, "steplength");
 	m_dryGain.saveSettings(doc, parent, "drygain");
@@ -71,7 +73,8 @@ void MultitapEchoControls::saveSettings(QDomDocument& doc, QDomElement& parent) 
 	parent.setAttribute("lpsteps", lpString);
 }
 
-void MultitapEchoControls::loadSettings(const QDomElement& elem) {
+void MultitapEchoControls::loadSettings(const QDomElement& elem)
+{
 	m_steps.loadSettings(elem, "steps");
 	m_stepLength.loadSettings(elem, "steplength");
 	m_dryGain.loadSettings(elem, "drygain");
@@ -90,7 +93,8 @@ void MultitapEchoControls::loadSettings(const QDomElement& elem) {
 	delete[] dst;
 }
 
-void MultitapEchoControls::setDefaultAmpShape() {
+void MultitapEchoControls::setDefaultAmpShape()
+{
 	const int length = m_steps.value();
 
 	QVarLengthArray<float> samples(length);
@@ -101,7 +105,8 @@ void MultitapEchoControls::setDefaultAmpShape() {
 	m_ampGraph.setSamples(&samples[0]);
 }
 
-void MultitapEchoControls::setDefaultLpShape() {
+void MultitapEchoControls::setDefaultLpShape()
+{
 	const int length = m_steps.value();
 
 	QVarLengthArray<float> samples(length);
@@ -112,7 +117,8 @@ void MultitapEchoControls::setDefaultLpShape() {
 	m_lpGraph.setSamples(&samples[0]);
 }
 
-void MultitapEchoControls::ampSamplesChanged(int begin, int end) {
+void MultitapEchoControls::ampSamplesChanged(int begin, int end)
+{
 	const float* samples = m_ampGraph.samples();
 	for (int i = begin; i <= end; ++i) {
 		m_effect->m_amp[i] = dbfsToAmp(samples[i]);
@@ -121,7 +127,8 @@ void MultitapEchoControls::ampSamplesChanged(int begin, int end) {
 
 void MultitapEchoControls::ampResetClicked() { setDefaultAmpShape(); }
 
-void MultitapEchoControls::lpSamplesChanged(int begin, int end) {
+void MultitapEchoControls::lpSamplesChanged(int begin, int end)
+{
 	// qDebug( "b/e %d - %d", begin, end );
 	const float* samples = m_lpGraph.samples();
 	for (int i = begin; i <= end; ++i) {
@@ -132,7 +139,8 @@ void MultitapEchoControls::lpSamplesChanged(int begin, int end) {
 
 void MultitapEchoControls::lpResetClicked() { setDefaultLpShape(); }
 
-void MultitapEchoControls::lengthChanged() {
+void MultitapEchoControls::lengthChanged()
+{
 	const int len = m_steps.value();
 	m_ampGraph.setLength(len);
 	ampSamplesChanged(0, len - 1);
@@ -141,7 +149,8 @@ void MultitapEchoControls::lengthChanged() {
 	m_effect->updateFilters(0, len - 1);
 }
 
-void MultitapEchoControls::sampleRateChanged() {
+void MultitapEchoControls::sampleRateChanged()
+{
 	m_effect->m_sampleRate = Engine::audioEngine()->processingSampleRate();
 	m_effect->m_sampleRatio = 1.0f / m_effect->m_sampleRate;
 	m_effect->updateFilters(0, 19);

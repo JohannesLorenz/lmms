@@ -120,7 +120,8 @@ TextFloat* PianoRoll::s_textFloat = nullptr;
 
 static QString s_noteStrings[12] = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 
-static QString getNoteString(int key) {
+static QString getNoteString(int key)
+{
 	return s_noteStrings[key % 12] + QString::number(static_cast<int>(FirstOctave + key / KeysPerOctave));
 }
 
@@ -199,7 +200,8 @@ PianoRoll::PianoRoll()
 	, m_ghostNoteBorders(true)
 	, m_backgroundShade(0, 0, 0)
 	, m_whiteKeyWidth(WHITE_KEY_WIDTH)
-	, m_blackKeyWidth(BLACK_KEY_WIDTH) {
+	, m_blackKeyWidth(BLACK_KEY_WIDTH)
+{
 	// gui names of edit modes
 	m_nemStr.push_back(tr("Note Velocity"));
 	m_nemStr.push_back(tr("Note Panning"));
@@ -388,13 +390,15 @@ PianoRoll::PianoRoll()
 	connect(Engine::getSong(), SIGNAL(keymapListChanged(int)), this, SLOT(update()));
 }
 
-void PianoRoll::reset() {
+void PianoRoll::reset()
+{
 	m_lastNoteVolume = DefaultVolume;
 	m_lastNotePanning = DefaultPanning;
 	clearGhostClip();
 }
 
-void PianoRoll::showTextFloat(const QString& text, const QPoint& pos, int timeout) {
+void PianoRoll::showTextFloat(const QString& text, const QPoint& pos, int timeout)
+{
 	s_textFloat->setText(text);
 	// show the float, offset slightly so as to not obscure anything
 	s_textFloat->moveGlobal(this, pos + QPoint(4, 16));
@@ -405,13 +409,15 @@ void PianoRoll::showTextFloat(const QString& text, const QPoint& pos, int timeou
 	}
 }
 
-void PianoRoll::showVolTextFloat(volume_t vol, const QPoint& pos, int timeout) {
+void PianoRoll::showVolTextFloat(volume_t vol, const QPoint& pos, int timeout)
+{
 	//! \todo display velocity for MIDI-based instruments
 	// possibly dBFS values too? not sure if it makes sense for note volumes...
 	showTextFloat(tr("Velocity: %1%").arg(vol), pos, timeout);
 }
 
-void PianoRoll::showPanTextFloat(panning_t pan, const QPoint& pos, int timeout) {
+void PianoRoll::showPanTextFloat(panning_t pan, const QPoint& pos, int timeout)
+{
 	QString text;
 	if (pan < 0) {
 		text = tr("Panning: %1% left").arg(qAbs(pan));
@@ -423,12 +429,14 @@ void PianoRoll::showPanTextFloat(panning_t pan, const QPoint& pos, int timeout) 
 	showTextFloat(text, pos, timeout);
 }
 
-void PianoRoll::changeNoteEditMode(int i) {
+void PianoRoll::changeNoteEditMode(int i)
+{
 	m_noteEditMode = (NoteEditMode)i;
 	repaint();
 }
 
-void PianoRoll::markSemiTone(int i, bool fromMenu) {
+void PianoRoll::markSemiTone(int i, bool fromMenu)
+{
 	const int key = fromMenu ? getKey(mapFromGlobal(m_semiToneMarkerMenu->pos()).y()) : m_keyModel.value() - 1;
 	const InstrumentFunctionNoteStacking::Chord* chord = nullptr;
 
@@ -503,7 +511,8 @@ void PianoRoll::markSemiTone(int i, bool fromMenu) {
 
 PianoRoll::~PianoRoll() {}
 
-void PianoRoll::setGhostMidiClip(MidiClip* newMidiClip) {
+void PianoRoll::setGhostMidiClip(MidiClip* newMidiClip)
+{
 	// Expects a pointer to a MIDI clip or nullptr.
 	m_ghostNotes.clear();
 	if (newMidiClip != nullptr) {
@@ -515,7 +524,8 @@ void PianoRoll::setGhostMidiClip(MidiClip* newMidiClip) {
 	}
 }
 
-void PianoRoll::loadGhostNotes(const QDomElement& de) {
+void PianoRoll::loadGhostNotes(const QDomElement& de)
+{
 	// Load ghost notes from DOM element.
 	if (de.isElement()) {
 		QDomNode node = de.firstChild();
@@ -530,13 +540,15 @@ void PianoRoll::loadGhostNotes(const QDomElement& de) {
 	}
 }
 
-void PianoRoll::clearGhostClip() {
+void PianoRoll::clearGhostClip()
+{
 	setGhostMidiClip(nullptr);
 	emit ghostClipSet(false);
 	update();
 }
 
-void PianoRoll::glueNotes() {
+void PianoRoll::glueNotes()
+{
 	if (hasValidMidiClip()) {
 		NoteVector selectedNotes = getSelectedNotes();
 		if (selectedNotes.empty()) {
@@ -586,7 +598,8 @@ void PianoRoll::glueNotes() {
 	}
 }
 
-void PianoRoll::fitNoteLengths(bool fill) {
+void PianoRoll::fitNoteLengths(bool fill)
+{
 	if (!hasValidMidiClip()) { return; }
 	m_midiClip->addJournalCheckPoint();
 
@@ -627,7 +640,8 @@ void PianoRoll::fitNoteLengths(bool fill) {
 	Engine::getSong()->setModified();
 }
 
-void PianoRoll::constrainNoteLengths(bool constrainMax) {
+void PianoRoll::constrainNoteLengths(bool constrainMax)
+{
 	if (!hasValidMidiClip()) { return; }
 	m_midiClip->addJournalCheckPoint();
 
@@ -644,7 +658,8 @@ void PianoRoll::constrainNoteLengths(bool constrainMax) {
 	Engine::getSong()->setModified();
 }
 
-void PianoRoll::loadMarkedSemiTones(const QDomElement& de) {
+void PianoRoll::loadMarkedSemiTones(const QDomElement& de)
+{
 	// clear marked semitones to prevent leftover marks
 	m_markedSemiTones.clear();
 	if (de.isElement()) {
@@ -662,7 +677,8 @@ void PianoRoll::loadMarkedSemiTones(const QDomElement& de) {
 	m_markedSemiTones.erase(new_end, m_markedSemiTones.end());
 }
 
-void PianoRoll::setCurrentMidiClip(MidiClip* newMidiClip) {
+void PianoRoll::setCurrentMidiClip(MidiClip* newMidiClip)
+{
 	if (hasValidMidiClip()) {
 		m_midiClip->instrumentTrack()->pianoModel()->disconnect(this);
 		m_midiClip->instrumentTrack()->firstKeyModel()->disconnect(this);
@@ -735,11 +751,13 @@ void PianoRoll::setCurrentMidiClip(MidiClip* newMidiClip) {
 	emit currentMidiClipChanged();
 }
 
-void PianoRoll::hideMidiClip(MidiClip* clip) {
+void PianoRoll::hideMidiClip(MidiClip* clip)
+{
 	if (m_midiClip == clip) { setCurrentMidiClip(nullptr); }
 }
 
-void PianoRoll::selectRegionFromPixels(int xStart, int xEnd) {
+void PianoRoll::selectRegionFromPixels(int xStart, int xEnd)
+{
 
 	xStart -= m_whiteKeyWidth;
 	xEnd -= m_whiteKeyWidth;
@@ -766,7 +784,8 @@ void PianoRoll::selectRegionFromPixels(int xStart, int xEnd) {
 }
 
 void PianoRoll::drawNoteRect(QPainter& p, int x, int y, int width, const Note* n, const QColor& noteCol,
-	const QColor& noteTextColor, const QColor& selCol, const int noteOpc, const bool borders, bool drawNoteName) {
+	const QColor& noteTextColor, const QColor& selCol, const int noteOpc, const bool borders, bool drawNoteName)
+{
 	++x;
 	++y;
 	width -= 2;
@@ -855,7 +874,8 @@ void PianoRoll::drawNoteRect(QPainter& p, int x, int y, int width, const Note* n
 	}
 }
 
-void PianoRoll::drawDetuningInfo(QPainter& _p, const Note* _n, int _x, int _y) const {
+void PianoRoll::drawDetuningInfo(QPainter& _p, const Note* _n, int _x, int _y) const
+{
 	int middle_y = _y + m_keyLineHeight / 2;
 	_p.setPen(m_noteColor);
 	_p.setClipRect(m_whiteKeyWidth, PR_TOP_MARGIN, width() - m_whiteKeyWidth, keyAreaBottom() - PR_TOP_MARGIN);
@@ -917,14 +937,16 @@ void PianoRoll::drawDetuningInfo(QPainter& _p, const Note* _n, int _x, int _y) c
 	}
 }
 
-void PianoRoll::removeSelection() {
+void PianoRoll::removeSelection()
+{
 	m_selectStartTick = 0;
 	m_selectedTick = 0;
 	m_selectStartKey = 0;
 	m_selectedKeys = 0;
 }
 
-void PianoRoll::clearSelectedNotes() {
+void PianoRoll::clearSelectedNotes()
+{
 	if (m_midiClip != nullptr) {
 		for (Note* note : m_midiClip->notes()) {
 			note->setSelected(false);
@@ -945,7 +967,8 @@ void PianoRoll::shiftSemiTone(int amount) // Shift notes by amount semitones
 	}
 }
 
-void PianoRoll::shiftSemiTone(NoteVector notes, int amount) {
+void PianoRoll::shiftSemiTone(NoteVector notes, int amount)
+{
 	m_midiClip->addJournalCheckPoint();
 	for (Note* note : notes) {
 		note->setKey(note->key() + amount);
@@ -971,7 +994,8 @@ void PianoRoll::shiftPos(int amount) // Shift notes pos by amount
 	}
 }
 
-void PianoRoll::shiftPos(NoteVector notes, int amount) {
+void PianoRoll::shiftPos(NoteVector notes, int amount)
+{
 	m_midiClip->addJournalCheckPoint();
 
 	if (notes.isEmpty()) { return; }
@@ -1007,7 +1031,8 @@ int PianoRoll::selectionCount() const // how many notes are selected?
 	return getSelectedNotes().size();
 }
 
-void PianoRoll::keyPressEvent(QKeyEvent* ke) {
+void PianoRoll::keyPressEvent(QKeyEvent* ke)
+{
 	if (m_stepRecorder.isRecording()) {
 		bool handled = m_stepRecorder.keyPressEvent(ke);
 		if (handled) {
@@ -1167,7 +1192,8 @@ void PianoRoll::keyPressEvent(QKeyEvent* ke) {
 	update();
 }
 
-void PianoRoll::keyReleaseEvent(QKeyEvent* ke) {
+void PianoRoll::keyReleaseEvent(QKeyEvent* ke)
+{
 	if (hasValidMidiClip() && ke->modifiers() == Qt::NoModifier) {
 		const int key_num = PianoView::getKeyFromKeyEvent(ke) + (DefaultOctave - 1) * KeysPerOctave;
 		if (!ke->isAutoRepeat() && key_num > -1) {
@@ -1196,7 +1222,8 @@ void PianoRoll::keyReleaseEvent(QKeyEvent* ke) {
 	update();
 }
 
-void PianoRoll::leaveEvent(QEvent* e) {
+void PianoRoll::leaveEvent(QEvent* e)
+{
 	QWidget::leaveEvent(e);
 	s_textFloat->hide();
 	update(); // cleaning inner mouse-related graphics
@@ -1214,7 +1241,8 @@ int PianoRoll::keyAreaTop() const { return PR_TOP_MARGIN; }
 
 int PianoRoll::keyAreaBottom() const { return height() - PR_BOTTOM_MARGIN - m_notesEditHeight; }
 
-void PianoRoll::mousePressEvent(QMouseEvent* me) {
+void PianoRoll::mousePressEvent(QMouseEvent* me)
+{
 	m_startedWithShift = me->modifiers() & Qt::ShiftModifier;
 
 	if (!hasValidMidiClip()) { return; }
@@ -1515,7 +1543,8 @@ void PianoRoll::mousePressEvent(QMouseEvent* me) {
 	}
 }
 
-void PianoRoll::mouseDoubleClickEvent(QMouseEvent* me) {
+void PianoRoll::mouseDoubleClickEvent(QMouseEvent* me)
+{
 	if (!hasValidMidiClip()) { return; }
 
 	// if they clicked in the note edit area, enter value for the volume bar
@@ -1566,7 +1595,8 @@ void PianoRoll::mouseDoubleClickEvent(QMouseEvent* me) {
 	}
 }
 
-void PianoRoll::testPlayNote(Note* n) {
+void PianoRoll::testPlayNote(Note* n)
+{
 	m_lastKey = n->key();
 
 	if (!n->isPlaying() && !m_recording && !m_stepRecorder.isRecording()) {
@@ -1587,7 +1617,8 @@ void PianoRoll::testPlayNote(Note* n) {
 	}
 }
 
-void PianoRoll::pauseTestNotes(bool pause) {
+void PianoRoll::pauseTestNotes(bool pause)
+{
 	for (Note* note : m_midiClip->notes()) {
 		if (note->isPlaying()) {
 			if (pause) {
@@ -1605,7 +1636,8 @@ void PianoRoll::pauseTestNotes(bool pause) {
 	}
 }
 
-void PianoRoll::playChordNotes(int key, int velocity) {
+void PianoRoll::playChordNotes(int key, int velocity)
+{
 	// if a chord is set, play the chords notes beside the base note.
 	Piano* pianoModel = m_midiClip->instrumentTrack()->pianoModel();
 	const InstrumentFunctionNoteStacking::Chord& chord
@@ -1617,7 +1649,8 @@ void PianoRoll::playChordNotes(int key, int velocity) {
 	}
 }
 
-void PianoRoll::pauseChordNotes(int key) {
+void PianoRoll::pauseChordNotes(int key)
+{
 	// if a chord was set, stop the chords notes beside the base note.
 	Piano* pianoModel = m_midiClip->instrumentTrack()->pianoModel();
 	const InstrumentFunctionNoteStacking::Chord& chord
@@ -1629,7 +1662,8 @@ void PianoRoll::pauseChordNotes(int key) {
 	}
 }
 
-void PianoRoll::setKnifeAction() {
+void PianoRoll::setKnifeAction()
+{
 	if (m_editMode != ModeEditKnife) {
 		m_knifeMode = m_editMode;
 		m_editMode = ModeEditKnife;
@@ -1639,13 +1673,15 @@ void PianoRoll::setKnifeAction() {
 	}
 }
 
-void PianoRoll::cancelKnifeAction() {
+void PianoRoll::cancelKnifeAction()
+{
 	m_editMode = m_knifeMode;
 	m_action = ActionNone;
 	update();
 }
 
-void PianoRoll::testPlayKey(int key, int velocity, int pan) {
+void PianoRoll::testPlayKey(int key, int velocity, int pan)
+{
 	Piano* pianoModel = m_midiClip->instrumentTrack()->pianoModel();
 	// turn off old key
 	pianoModel->handleKeyRelease(m_lastKey);
@@ -1661,7 +1697,8 @@ void PianoRoll::testPlayKey(int key, int velocity, int pan) {
 	playChordNotes(key, velocity);
 }
 
-void PianoRoll::computeSelectedNotes(bool shift) {
+void PianoRoll::computeSelectedNotes(bool shift)
+{
 	if (m_selectStartTick == 0 && m_selectedTick == 0 && m_selectStartKey == 0 && m_selectedKeys == 0) {
 		// don't bother, there's no selection
 		return;
@@ -1708,7 +1745,8 @@ void PianoRoll::computeSelectedNotes(bool shift) {
 	update();
 }
 
-void PianoRoll::mouseReleaseEvent(QMouseEvent* me) {
+void PianoRoll::mouseReleaseEvent(QMouseEvent* me)
+{
 	bool mustRepaint = false;
 
 	s_textFloat->hide();
@@ -1766,7 +1804,8 @@ void PianoRoll::mouseReleaseEvent(QMouseEvent* me) {
 	if (mustRepaint) { repaint(); }
 }
 
-void PianoRoll::mouseMoveEvent(QMouseEvent* me) {
+void PianoRoll::mouseMoveEvent(QMouseEvent* me)
+{
 	if (!hasValidMidiClip()) {
 		update();
 		return;
@@ -2056,7 +2095,8 @@ void PianoRoll::mouseMoveEvent(QMouseEvent* me) {
 	update();
 }
 
-void PianoRoll::updateKnifePos(QMouseEvent* me) {
+void PianoRoll::updateKnifePos(QMouseEvent* me)
+{
 	// Calculate the TimePos from the mouse
 	int mouseViewportPos = me->x() - m_whiteKeyWidth;
 	int mouseTickPos = mouseViewportPos * TimePos::ticksPerBar() / m_ppb + m_currentPosition;
@@ -2069,7 +2109,8 @@ void PianoRoll::updateKnifePos(QMouseEvent* me) {
 	m_knifeTickPos = mouseTickPos;
 }
 
-void PianoRoll::dragNotes(int x, int y, bool alt, bool shift, bool ctrl) {
+void PianoRoll::dragNotes(int x, int y, bool alt, bool shift, bool ctrl)
+{
 	// dragging one or more notes around
 
 	// convert pixels to ticks and keys
@@ -2245,7 +2286,8 @@ void PianoRoll::dragNotes(int x, int y, bool alt, bool shift, bool ctrl) {
 	Engine::getSong()->setModified();
 }
 
-void PianoRoll::paintEvent(QPaintEvent* pe) {
+void PianoRoll::paintEvent(QPaintEvent* pe)
+{
 	bool drawNoteNames = ConfigManager::inst()->value("ui", "printnotelabels").toInt();
 
 	QStyleOption opt;
@@ -2771,7 +2813,8 @@ void PianoRoll::paintEvent(QPaintEvent* pe) {
 	}
 }
 
-void PianoRoll::updateScrollbars() {
+void PianoRoll::updateScrollbars()
+{
 	m_leftRightScroll->setGeometry(
 		m_whiteKeyWidth, height() - SCROLLBAR_SIZE, width() - m_whiteKeyWidth, SCROLLBAR_SIZE);
 	m_topBottomScroll->setGeometry(
@@ -2785,14 +2828,16 @@ void PianoRoll::updateScrollbars() {
 }
 
 // responsible for moving/resizing scrollbars after window-resizing
-void PianoRoll::resizeEvent(QResizeEvent* re) {
+void PianoRoll::resizeEvent(QResizeEvent* re)
+{
 	updatePositionLineHeight();
 	updateScrollbars();
 	Engine::getSong()->getPlayPos(Song::Mode_PlayMidiClip).m_timeLine->setFixedWidth(width());
 	update();
 }
 
-void PianoRoll::wheelEvent(QWheelEvent* we) {
+void PianoRoll::wheelEvent(QWheelEvent* we)
+{
 	we->accept();
 	// handle wheel events for note edit area - for editing note vol/pan with mousewheel
 	if (position(we).x() > noteEditLeft() && position(we).x() < noteEditRight() && position(we).y() > noteEditTop()
@@ -2894,7 +2939,8 @@ void PianoRoll::wheelEvent(QWheelEvent* we) {
 	}
 }
 
-void PianoRoll::focusOutEvent(QFocusEvent*) {
+void PianoRoll::focusOutEvent(QFocusEvent*)
+{
 	if (hasValidMidiClip()) {
 		for (int i = 0; i < NumKeys; ++i) {
 			m_midiClip->instrumentTrack()->pianoModel()->midiEventProcessor()->processInEvent(
@@ -2911,7 +2957,8 @@ void PianoRoll::focusOutEvent(QFocusEvent*) {
 	update();
 }
 
-void PianoRoll::focusInEvent(QFocusEvent* ev) {
+void PianoRoll::focusInEvent(QFocusEvent* ev)
+{
 	if (hasValidMidiClip()) {
 		// Assign midi device
 		m_midiClip->instrumentTrack()->autoAssignMidiDevice(true);
@@ -2919,7 +2966,8 @@ void PianoRoll::focusInEvent(QFocusEvent* ev) {
 	QWidget::focusInEvent(ev);
 }
 
-int PianoRoll::getKey(int y) const {
+int PianoRoll::getKey(int y) const
+{
 	// handle case that very top pixel maps to next key above
 	if (y - keyAreaTop() <= 1) { y = keyAreaTop() + 2; }
 	int key_num = qBound(0,
@@ -2928,7 +2976,8 @@ int PianoRoll::getKey(int y) const {
 	return key_num;
 }
 
-QList<int> PianoRoll::getAllOctavesForKey(int keyToMirror) const {
+QList<int> PianoRoll::getAllOctavesForKey(int keyToMirror) const
+{
 	QList<int> keys;
 
 	for (int i = keyToMirror % KeysPerOctave; i < NumKeys; i += KeysPerOctave) {
@@ -2938,12 +2987,14 @@ QList<int> PianoRoll::getAllOctavesForKey(int keyToMirror) const {
 	return keys;
 }
 
-Song::PlayModes PianoRoll::desiredPlayModeForAccompany() const {
+Song::PlayModes PianoRoll::desiredPlayModeForAccompany() const
+{
 	if (m_midiClip->getTrack()->trackContainer() == Engine::patternStore()) { return Song::Mode_PlayPattern; }
 	return Song::Mode_PlaySong;
 }
 
-void PianoRoll::play() {
+void PianoRoll::play()
+{
 	if (!hasValidMidiClip()) { return; }
 
 	if (Engine::getSong()->playMode() != Song::Mode_PlayMidiClip) {
@@ -2953,7 +3004,8 @@ void PianoRoll::play() {
 	}
 }
 
-void PianoRoll::record() {
+void PianoRoll::record()
+{
 	if (Engine::getSong()->isPlaying()) { stop(); }
 	if (m_recording || !hasValidMidiClip()) { return; }
 
@@ -2963,7 +3015,8 @@ void PianoRoll::record() {
 	Engine::getSong()->playMidiClip(m_midiClip, false);
 }
 
-void PianoRoll::recordAccompany() {
+void PianoRoll::recordAccompany()
+{
 	if (Engine::getSong()->isPlaying()) { stop(); }
 	if (m_recording || !hasValidMidiClip()) { return; }
 
@@ -2977,7 +3030,8 @@ void PianoRoll::recordAccompany() {
 	}
 }
 
-bool PianoRoll::toggleStepRecording() {
+bool PianoRoll::toggleStepRecording()
+{
 	if (m_stepRecorder.isRecording()) {
 		m_stepRecorder.stop();
 	} else {
@@ -2994,13 +3048,15 @@ bool PianoRoll::toggleStepRecording() {
 	;
 }
 
-void PianoRoll::stop() {
+void PianoRoll::stop()
+{
 	Engine::getSong()->stop();
 	m_recording = false;
 	m_scrollBack = (m_timeLine->autoScroll() == TimeLineWidget::AutoScrollEnabled);
 }
 
-void PianoRoll::startRecordNote(const Note& n) {
+void PianoRoll::startRecordNote(const Note& n)
+{
 	if (hasValidMidiClip()) {
 		if (m_recording && Engine::getSong()->isPlaying()
 			&& (Engine::getSong()->playMode() == desiredPlayModeForAccompany()
@@ -3016,7 +3072,8 @@ void PianoRoll::startRecordNote(const Note& n) {
 	}
 }
 
-void PianoRoll::finishRecordNote(const Note& n) {
+void PianoRoll::finishRecordNote(const Note& n)
+{
 	if (hasValidMidiClip()) {
 		if (m_recording && Engine::getSong()->isPlaying()
 			&& (Engine::getSong()->playMode() == desiredPlayModeForAccompany()
@@ -3037,14 +3094,16 @@ void PianoRoll::finishRecordNote(const Note& n) {
 	}
 }
 
-void PianoRoll::horScrolled(int new_pos) {
+void PianoRoll::horScrolled(int new_pos)
+{
 	m_currentPosition = new_pos;
 	m_stepRecorderWidget.setCurrentPosition(m_currentPosition);
 	emit positionChanged(m_currentPosition);
 	update();
 }
 
-void PianoRoll::verScrolled(int new_pos) {
+void PianoRoll::verScrolled(int new_pos)
+{
 	// revert value
 	m_startKey = qMax(0, m_totalKeysToScroll - new_pos);
 
@@ -3053,7 +3112,8 @@ void PianoRoll::verScrolled(int new_pos) {
 
 void PianoRoll::setEditMode(int mode) { m_ctrlMode = m_editMode = (EditModes)mode; }
 
-void PianoRoll::selectAll() {
+void PianoRoll::selectAll()
+{
 	if (!hasValidMidiClip()) { return; }
 
 	// if first_time = true, we HAVE to set the vars for select
@@ -3083,7 +3143,8 @@ void PianoRoll::selectAll() {
 }
 
 // returns vector with pointers to all selected notes
-NoteVector PianoRoll::getSelectedNotes() const {
+NoteVector PianoRoll::getSelectedNotes() const
+{
 	NoteVector selectedNotes;
 
 	if (hasValidMidiClip()) {
@@ -3095,7 +3156,8 @@ NoteVector PianoRoll::getSelectedNotes() const {
 }
 
 // selects all notess associated with m_lastKey
-void PianoRoll::selectNotesOnKey() {
+void PianoRoll::selectNotesOnKey()
+{
 	if (hasValidMidiClip()) {
 		for (Note* note : m_midiClip->notes()) {
 			if (note->key() == m_lastKey) { note->setSelected(true); }
@@ -3103,7 +3165,8 @@ void PianoRoll::selectNotesOnKey() {
 	}
 }
 
-void PianoRoll::enterValue(NoteVector* nv) {
+void PianoRoll::enterValue(NoteVector* nv)
+{
 
 	if (m_noteEditMode == NoteEditVolume) {
 		bool ok;
@@ -3134,7 +3197,8 @@ void PianoRoll::enterValue(NoteVector* nv) {
 	}
 }
 
-void PianoRoll::updateYScroll() {
+void PianoRoll::updateYScroll()
+{
 	m_topBottomScroll->setGeometry(
 		width() - SCROLLBAR_SIZE, PR_TOP_MARGIN, SCROLLBAR_SIZE, height() - PR_TOP_MARGIN - SCROLLBAR_SIZE);
 
@@ -3147,7 +3211,8 @@ void PianoRoll::updateYScroll() {
 	m_topBottomScroll->setValue(m_totalKeysToScroll - m_startKey);
 }
 
-void PianoRoll::copyToClipboard(const NoteVector& notes) const {
+void PianoRoll::copyToClipboard(const NoteVector& notes) const
+{
 	// For copyString() and MimeType enum class
 	using namespace Clipboard;
 
@@ -3165,13 +3230,15 @@ void PianoRoll::copyToClipboard(const NoteVector& notes) const {
 	copyString(dataFile.toString(), MimeType::Default);
 }
 
-void PianoRoll::copySelectedNotes() {
+void PianoRoll::copySelectedNotes()
+{
 	NoteVector selected_notes = getSelectedNotes();
 
 	if (!selected_notes.empty()) { copyToClipboard(selected_notes); }
 }
 
-void PianoRoll::cutSelectedNotes() {
+void PianoRoll::cutSelectedNotes()
+{
 	if (!hasValidMidiClip()) { return; }
 
 	NoteVector selected_notes = getSelectedNotes();
@@ -3194,7 +3261,8 @@ void PianoRoll::cutSelectedNotes() {
 	getGUI()->songEditor()->update();
 }
 
-void PianoRoll::pasteNotes() {
+void PianoRoll::pasteNotes()
+{
 	// For getString() and MimeType enum class
 	using namespace Clipboard;
 
@@ -3234,7 +3302,8 @@ void PianoRoll::pasteNotes() {
 }
 
 // Return false if no notes are deleted
-bool PianoRoll::deleteSelectedNotes() {
+bool PianoRoll::deleteSelectedNotes()
+{
 	if (!hasValidMidiClip()) { return false; }
 
 	auto selectedNotes = getSelectedNotes();
@@ -3252,7 +3321,8 @@ bool PianoRoll::deleteSelectedNotes() {
 	return true;
 }
 
-void PianoRoll::autoScroll(const TimePos& t) {
+void PianoRoll::autoScroll(const TimePos& t)
+{
 	const int w = width() - m_whiteKeyWidth;
 	if (t > m_currentPosition + w * TimePos::ticksPerBar() / m_ppb) {
 		m_leftRightScroll->setValue(t.getBar() * TimePos::ticksPerBar());
@@ -3263,7 +3333,8 @@ void PianoRoll::autoScroll(const TimePos& t) {
 	m_scrollBack = false;
 }
 
-void PianoRoll::updatePosition(const TimePos& t) {
+void PianoRoll::updatePosition(const TimePos& t)
+{
 	if ((Engine::getSong()->isPlaying() && Engine::getSong()->playMode() == Song::Mode_PlayMidiClip
 			&& m_timeLine->autoScroll() == TimeLineWidget::AutoScrollEnabled)
 		|| m_scrollBack) {
@@ -3285,7 +3356,8 @@ void PianoRoll::updatePosition(const TimePos& t) {
 
 void PianoRoll::updatePositionLineHeight() { m_positionLine->setFixedHeight(keyAreaBottom() - keyAreaTop()); }
 
-void PianoRoll::updatePositionAccompany(const TimePos& t) {
+void PianoRoll::updatePositionAccompany(const TimePos& t)
+{
 	Song* s = Engine::getSong();
 
 	if (m_recording && hasValidMidiClip() && s->playMode() != Song::Mode_PlayMidiClip) {
@@ -3298,11 +3370,13 @@ void PianoRoll::updatePositionAccompany(const TimePos& t) {
 	}
 }
 
-void PianoRoll::updatePositionStepRecording(const TimePos& t) {
+void PianoRoll::updatePositionStepRecording(const TimePos& t)
+{
 	if (m_stepRecorder.isRecording()) { autoScroll(t); }
 }
 
-void PianoRoll::zoomingChanged() {
+void PianoRoll::zoomingChanged()
+{
 	m_ppb = m_zoomLevels[m_zoomingModel.value()] * DEFAULT_PR_PPB;
 
 	assert(m_ppb > 0);
@@ -3314,7 +3388,8 @@ void PianoRoll::zoomingChanged() {
 	update();
 }
 
-void PianoRoll::zoomingYChanged() {
+void PianoRoll::zoomingYChanged()
+{
 	m_keyLineHeight = m_zoomYLevels[m_zoomingYModel.value()] * DEFAULT_KEY_LINE_HEIGHT;
 	m_whiteKeySmallHeight = qFloor(m_keyLineHeight * 1.5);
 	m_whiteKeyBigHeight = m_keyLineHeight * 2;
@@ -3326,14 +3401,16 @@ void PianoRoll::zoomingYChanged() {
 
 void PianoRoll::quantizeChanged() { update(); }
 
-void PianoRoll::noteLengthChanged() {
+void PianoRoll::noteLengthChanged()
+{
 	m_stepRecorder.setStepsLength(newNoteLen());
 	update();
 }
 
 void PianoRoll::keyChanged() { markSemiTone(stmaMarkCurrentScale, false); }
 
-int PianoRoll::quantization() const {
+int PianoRoll::quantization() const
+{
 	if (m_quantizeModel.value() == 0) {
 		if (m_noteLenModel.value() > 0) {
 			return newNoteLen();
@@ -3345,7 +3422,8 @@ int PianoRoll::quantization() const {
 	return DefaultTicksPerBar / Quantizations[m_quantizeModel.value() - 1];
 }
 
-void PianoRoll::quantizeNotes(QuantizeActions mode) {
+void PianoRoll::quantizeNotes(QuantizeActions mode)
+{
 	if (!hasValidMidiClip()) { return; }
 
 	m_midiClip->addJournalCheckPoint();
@@ -3373,7 +3451,8 @@ void PianoRoll::quantizeNotes(QuantizeActions mode) {
 	Engine::getSong()->setModified();
 }
 
-void PianoRoll::updateSemiToneMarkerMenu() {
+void PianoRoll::updateSemiToneMarkerMenu()
+{
 	const InstrumentFunctionNoteStacking::ChordTable& chord_table
 		= InstrumentFunctionNoteStacking::ChordTable::getInstance();
 	const InstrumentFunctionNoteStacking::Chord& scale = chord_table.getScaleByName(m_scaleModel.currentText());
@@ -3383,7 +3462,8 @@ void PianoRoll::updateSemiToneMarkerMenu() {
 	emit semiToneMarkerMenuChordSetEnabled(!chord.isEmpty());
 }
 
-TimePos PianoRoll::newNoteLen() const {
+TimePos PianoRoll::newNoteLen() const
+{
 	if (m_noteLenModel.value() == 0) { return m_lenOfNewNotes; }
 
 	QString text = m_noteLenModel.currentText();
@@ -3392,7 +3472,8 @@ TimePos PianoRoll::newNoteLen() const {
 
 bool PianoRoll::mouseOverNote() { return hasValidMidiClip() && noteUnderMouse() != nullptr; }
 
-Note* PianoRoll::noteUnderMouse() {
+Note* PianoRoll::noteUnderMouse()
+{
 	QPoint pos = mapFromGlobal(QCursor::pos());
 
 	if (pos.x() <= m_whiteKeyWidth || pos.x() > width() - SCROLLBAR_SIZE || pos.y() < PR_TOP_MARGIN
@@ -3415,7 +3496,8 @@ Note* PianoRoll::noteUnderMouse() {
 	return nullptr;
 }
 
-void PianoRoll::changeSnapMode() {
+void PianoRoll::changeSnapMode()
+{
 	//	gridNudge,
 	//	gridSnap,
 	//	gridFree - to be implemented
@@ -3425,7 +3507,8 @@ void PianoRoll::changeSnapMode() {
 
 PianoRollWindow::PianoRollWindow()
 	: Editor(true, true)
-	, m_editor(new PianoRoll()) {
+	, m_editor(new PianoRoll())
+{
 	setCentralWidget(m_editor);
 
 	m_playAction->setToolTip(tr("Play/pause current clip (Space)"));
@@ -3725,7 +3808,8 @@ const MidiClip* PianoRollWindow::currentMidiClip() const { return m_editor->curr
 
 void PianoRollWindow::setGhostMidiClip(MidiClip* clip) { m_editor->setGhostMidiClip(clip); }
 
-void PianoRollWindow::setCurrentMidiClip(MidiClip* clip) {
+void PianoRollWindow::setCurrentMidiClip(MidiClip* clip)
+{
 	m_editor->setCurrentMidiClip(clip);
 
 	if (clip) {
@@ -3747,19 +3831,22 @@ void PianoRollWindow::play() { m_editor->play(); }
 
 void PianoRollWindow::stop() { m_editor->stop(); }
 
-void PianoRollWindow::record() {
+void PianoRollWindow::record()
+{
 	stopStepRecording(); // step recording mode is mutually exclusive with other record modes
 
 	m_editor->record();
 }
 
-void PianoRollWindow::recordAccompany() {
+void PianoRollWindow::recordAccompany()
+{
 	stopStepRecording(); // step recording mode is mutually exclusive with other record modes
 
 	m_editor->recordAccompany();
 }
 
-void PianoRollWindow::toggleStepRecording() {
+void PianoRollWindow::toggleStepRecording()
+{
 	if (isRecording()) {
 		// step recording mode is mutually exclusive with other record modes
 		// stop them before starting step recording
@@ -3775,7 +3862,8 @@ void PianoRollWindow::stopRecording() { m_editor->stopRecording(); }
 
 void PianoRollWindow::reset() { m_editor->reset(); }
 
-void PianoRollWindow::saveSettings(QDomDocument& doc, QDomElement& de) {
+void PianoRollWindow::saveSettings(QDomDocument& doc, QDomElement& de)
+{
 	if (!m_editor->ghostNotes().empty()) {
 		QDomElement ghostNotesRoot = doc.createElement("ghostnotes");
 		for (Note* note : m_editor->ghostNotes()) {
@@ -3802,7 +3890,8 @@ void PianoRollWindow::saveSettings(QDomDocument& doc, QDomElement& de) {
 	MainWindow::saveWidgetState(this, de);
 }
 
-void PianoRollWindow::loadSettings(const QDomElement& de) {
+void PianoRollWindow::loadSettings(const QDomElement& de)
+{
 	m_editor->loadGhostNotes(de.firstChildElement("ghostnotes"));
 	m_editor->loadMarkedSemiTones(de.firstChildElement("markedSemiTones"));
 
@@ -3821,12 +3910,14 @@ QSize PianoRollWindow::sizeHint() const { return {INITIAL_PIANOROLL_WIDTH, INITI
 
 bool PianoRollWindow::hasFocus() const { return m_editor->hasFocus(); }
 
-void PianoRollWindow::updateAfterMidiClipChange() {
+void PianoRollWindow::updateAfterMidiClipChange()
+{
 	clipRenamed();
 	updateStepRecordingIcon(); // MIDI clip change turn step recording OFF - update icon accordingly
 }
 
-void PianoRollWindow::clipRenamed() {
+void PianoRollWindow::clipRenamed()
+{
 	if (currentMidiClip()) {
 		setWindowTitle(tr("Piano-Roll - %1").arg(currentMidiClip()->name()));
 		m_fileToolsButton->setEnabled(true);
@@ -3838,7 +3929,8 @@ void PianoRollWindow::clipRenamed() {
 
 void PianoRollWindow::ghostClipSet(bool state) { m_clearGhostButton->setEnabled(state); }
 
-void PianoRollWindow::exportMidiClip() {
+void PianoRollWindow::exportMidiClip()
+{
 	FileDialog exportDialog(this, tr("Export clip"), "", tr("XML clip file (*.xpt *.xptz)"));
 
 	exportDialog.setAcceptMode(FileDialog::AcceptSave);
@@ -3859,7 +3951,8 @@ void PianoRollWindow::exportMidiClip() {
 	}
 }
 
-void PianoRollWindow::importMidiClip() {
+void PianoRollWindow::importMidiClip()
+{
 	// Overwrite confirmation.
 	if (!m_editor->m_midiClip->empty()
 		&& QMessageBox::warning(nullptr, tr("Import clip."),
@@ -3890,19 +3983,22 @@ void PianoRollWindow::importMidiClip() {
 	}
 }
 
-void PianoRollWindow::focusInEvent(QFocusEvent* event) {
+void PianoRollWindow::focusInEvent(QFocusEvent* event)
+{
 	// when the window is given focus, also give focus to the actual piano roll
 	m_editor->setFocus(event->reason());
 }
 
-void PianoRollWindow::stopStepRecording() {
+void PianoRollWindow::stopStepRecording()
+{
 	if (m_editor->isStepRecording()) {
 		m_editor->toggleStepRecording();
 		updateStepRecordingIcon();
 	}
 }
 
-void PianoRollWindow::updateStepRecordingIcon() {
+void PianoRollWindow::updateStepRecordingIcon()
+{
 	if (m_editor->isStepRecording()) {
 		m_toggleStepRecordingAction->setIcon(embed::getIconPixmap("record_step_on"));
 	} else {

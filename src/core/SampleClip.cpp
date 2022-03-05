@@ -34,7 +34,8 @@
 SampleClip::SampleClip(Track* _track)
 	: Clip(_track)
 	, m_sampleBuffer(new SampleBuffer)
-	, m_isPlaying(false) {
+	, m_isPlaying(false)
+{
 	saveJournallingState(false);
 	setSampleFile("");
 	restoreJournallingState();
@@ -72,7 +73,8 @@ SampleClip::SampleClip(Track* _track)
 }
 
 SampleClip::SampleClip(const SampleClip& orig)
-	: SampleClip(orig.getTrack()) {
+	: SampleClip(orig.getTrack())
+{
 	// TODO: This creates a new SampleBuffer for the new Clip, eating up memory
 	// & eventually causing performance issues. Letting tracks share buffers
 	// when they're identical would fix this, but isn't possible right now.
@@ -80,7 +82,8 @@ SampleClip::SampleClip(const SampleClip& orig)
 	m_isPlaying = orig.m_isPlaying;
 }
 
-SampleClip::~SampleClip() {
+SampleClip::~SampleClip()
+{
 	SampleTrack* sampletrack = dynamic_cast<SampleTrack*>(getTrack());
 	if (sampletrack) { sampletrack->updateClips(); }
 	Engine::audioEngine()->requestChangeInModel();
@@ -92,7 +95,8 @@ void SampleClip::changeLength(const TimePos& _length) { Clip::changeLength(qMax(
 
 const QString& SampleClip::sampleFile() const { return m_sampleBuffer->audioFile(); }
 
-void SampleClip::setSampleBuffer(SampleBuffer* sb) {
+void SampleClip::setSampleBuffer(SampleBuffer* sb)
+{
 	Engine::audioEngine()->requestChangeInModel();
 	sharedObject::unref(m_sampleBuffer);
 	Engine::audioEngine()->doneChangeInModel();
@@ -102,7 +106,8 @@ void SampleClip::setSampleBuffer(SampleBuffer* sb) {
 	emit sampleChanged();
 }
 
-void SampleClip::setSampleFile(const QString& _sf) {
+void SampleClip::setSampleFile(const QString& _sf)
+{
 	int length;
 	if (_sf.isEmpty()) { // When creating an empty sample clip make it a bar long
 		float nom = Engine::getSong()->getTimeSigModel().getNumerator();
@@ -120,18 +125,21 @@ void SampleClip::setSampleFile(const QString& _sf) {
 	emit playbackPositionChanged();
 }
 
-void SampleClip::toggleRecord() {
+void SampleClip::toggleRecord()
+{
 	m_recordModel.setValue(!m_recordModel.value());
 	emit dataChanged();
 }
 
-void SampleClip::playbackPositionChanged() {
+void SampleClip::playbackPositionChanged()
+{
 	Engine::audioEngine()->removePlayHandlesOfTypes(getTrack(), PlayHandle::TypeSamplePlayHandle);
 	SampleTrack* st = dynamic_cast<SampleTrack*>(getTrack());
 	st->setPlayingClips(false);
 }
 
-void SampleClip::updateTrackClips() {
+void SampleClip::updateTrackClips()
+{
 	SampleTrack* sampletrack = dynamic_cast<SampleTrack*>(getTrack());
 	if (sampletrack) { sampletrack->updateClips(); }
 }
@@ -148,7 +156,8 @@ void SampleClip::setSampleStartFrame(f_cnt_t startFrame) { m_sampleBuffer->setSt
 
 void SampleClip::setSamplePlayLength(f_cnt_t length) { m_sampleBuffer->setEndFrame(length); }
 
-void SampleClip::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void SampleClip::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	if (_this.parentNode().nodeName() == "clipboard") {
 		_this.setAttribute("pos", -1);
 	} else {
@@ -169,7 +178,8 @@ void SampleClip::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 	// TODO: start- and end-frame
 }
 
-void SampleClip::loadSettings(const QDomElement& _this) {
+void SampleClip::loadSettings(const QDomElement& _this)
+{
 	if (_this.attribute("pos").toInt() >= 0) { movePosition(_this.attribute("pos").toInt()); }
 	setSampleFile(_this.attribute("src"));
 	if (sampleFile().isEmpty() && _this.hasAttribute("data")) {

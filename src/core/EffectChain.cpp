@@ -34,11 +34,14 @@
 EffectChain::EffectChain(Model* _parent)
 	: Model(_parent)
 	, SerializingObject()
-	, m_enabledModel(false, nullptr, tr("Effects enabled")) {}
+	, m_enabledModel(false, nullptr, tr("Effects enabled"))
+{
+}
 
 EffectChain::~EffectChain() { clear(); }
 
-void EffectChain::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void EffectChain::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	m_enabledModel.saveSettings(_doc, _this, "enabled");
 	_this.setAttribute("numofeffects", m_effects.count());
 
@@ -53,7 +56,8 @@ void EffectChain::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 	}
 }
 
-void EffectChain::loadSettings(const QDomElement& _this) {
+void EffectChain::loadSettings(const QDomElement& _this)
+{
 	clear();
 
 	// TODO This method should probably also lock the audio engine
@@ -89,7 +93,8 @@ void EffectChain::loadSettings(const QDomElement& _this) {
 	emit dataChanged();
 }
 
-void EffectChain::appendEffect(Effect* _effect) {
+void EffectChain::appendEffect(Effect* _effect)
+{
 	Engine::audioEngine()->requestChangeInModel();
 	m_effects.append(_effect);
 	Engine::audioEngine()->doneChangeInModel();
@@ -99,7 +104,8 @@ void EffectChain::appendEffect(Effect* _effect) {
 	emit dataChanged();
 }
 
-void EffectChain::removeEffect(Effect* _effect) {
+void EffectChain::removeEffect(Effect* _effect)
+{
 	Engine::audioEngine()->requestChangeInModel();
 
 	Effect** found = std::find(m_effects.begin(), m_effects.end(), _effect);
@@ -116,21 +122,24 @@ void EffectChain::removeEffect(Effect* _effect) {
 	emit dataChanged();
 }
 
-void EffectChain::moveDown(Effect* _effect) {
+void EffectChain::moveDown(Effect* _effect)
+{
 	if (_effect != m_effects.last()) {
 		int i = m_effects.indexOf(_effect);
 		std::swap(m_effects[i + 1], m_effects[i]);
 	}
 }
 
-void EffectChain::moveUp(Effect* _effect) {
+void EffectChain::moveUp(Effect* _effect)
+{
 	if (_effect != m_effects.first()) {
 		int i = m_effects.indexOf(_effect);
 		std::swap(m_effects[i - 1], m_effects[i]);
 	}
 }
 
-bool EffectChain::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames, bool hasInputNoise) {
+bool EffectChain::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames, bool hasInputNoise)
+{
 	if (m_enabledModel.value() == false) { return false; }
 
 	MixHelpers::sanitize(_buf, _frames);
@@ -146,7 +155,8 @@ bool EffectChain::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames, boo
 	return moreEffects;
 }
 
-void EffectChain::startRunning() {
+void EffectChain::startRunning()
+{
 	if (m_enabledModel.value() == false) { return; }
 
 	for (EffectList::Iterator it = m_effects.begin(); it != m_effects.end(); it++) {
@@ -154,7 +164,8 @@ void EffectChain::startRunning() {
 	}
 }
 
-void EffectChain::clear() {
+void EffectChain::clear()
+{
 	emit aboutToClear();
 
 	Engine::audioEngine()->requestChangeInModel();

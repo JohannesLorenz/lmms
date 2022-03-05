@@ -50,7 +50,8 @@ const QString WAVEFORM_NAMES[6]
 
 const float CENT = 1.0f / 1200.0f;
 
-class OscillatorObject : public Model {
+class OscillatorObject : public Model
+{
 	Q_OBJECT
 	MM_OPERATORS
 private:
@@ -83,7 +84,8 @@ private slots:
 	void updateDetuning();
 };
 
-class organicInstrument : public Instrument {
+class organicInstrument : public Instrument
+{
 	Q_OBJECT
 public:
 	organicInstrument(InstrumentTrack* _instrument_track);
@@ -114,7 +116,8 @@ private:
 
 	OscillatorObject** m_osc;
 
-	struct oscPtr {
+	struct oscPtr
+	{
 		MM_OPERATORS
 		Oscillator* oscLeft;
 		Oscillator* oscRight;
@@ -135,7 +138,8 @@ private slots:
 	friend class organicInstrumentView;
 };
 
-class organicInstrumentView : public InstrumentViewFixedSize {
+class organicInstrumentView : public InstrumentViewFixedSize
+{
 	Q_OBJECT
 public:
 	organicInstrumentView(Instrument* _instrument, QWidget* _parent);
@@ -144,14 +148,17 @@ public:
 private:
 	virtual void modelChanged();
 
-	struct OscillatorKnobs {
+	struct OscillatorKnobs
+	{
 		MM_OPERATORS
 		OscillatorKnobs(Knob* h, Knob* v, Knob* o, Knob* p, Knob* dt)
 			: m_harmKnob(h)
 			, m_volKnob(v)
 			, m_oscKnob(o)
 			, m_panKnob(p)
-			, m_detuneKnob(dt) {}
+			, m_detuneKnob(dt)
+		{
+		}
 		OscillatorKnobs() {}
 
 		Knob* m_harmKnob;

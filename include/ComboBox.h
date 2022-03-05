@@ -31,7 +31,8 @@
 #include "AutomatableModelView.h"
 #include "ComboBoxModel.h"
 
-class LMMS_EXPORT ComboBox : public QWidget, public IntModelView {
+class LMMS_EXPORT ComboBox : public QWidget, public IntModelView
+{
 	Q_OBJECT
 public:
 	ComboBox(QWidget* parent = nullptr, const QString& name = QString());

@@ -40,7 +40,8 @@
 const std::vector<ConfigManager::UpgradeMethod> ConfigManager::UPGRADE_METHODS
 	= {&ConfigManager::upgrade_1_1_90, &ConfigManager::upgrade_1_1_91, &ConfigManager::upgrade_1_2_2};
 
-static inline QString ensureTrailingSlash(const QString& s) {
+static inline QString ensureTrailingSlash(const QString& s)
+{
 	if (!s.isEmpty() && !s.endsWith('/') && !s.endsWith('\\')) { return s + '/'; }
 	return s;
 }
@@ -49,7 +50,8 @@ ConfigManager* ConfigManager::s_instanceOfMe = nullptr;
 
 ConfigManager::ConfigManager()
 	: m_version(defaultVersion())
-	, m_configVersion(UPGRADE_METHODS.size()) {
+	, m_configVersion(UPGRADE_METHODS.size())
+{
 	if (QFileInfo::exists(qApp->applicationDirPath() + PORTABLE_MODE_FILE)) {
 		initPortableWorkingDir();
 	} else {
@@ -74,7 +76,8 @@ ConfigManager::ConfigManager()
 
 ConfigManager::~ConfigManager() { saveConfigFile(); }
 
-void ConfigManager::upgrade_1_1_90() {
+void ConfigManager::upgrade_1_1_90()
+{
 	// Remove trailing " (bad latency!)" string which was once saved with PulseAudio
 	if (value("mixer", "audiodev").startsWith("PulseAudio (")) { setValue("mixer", "audiodev", "PulseAudio"); }
 
@@ -91,7 +94,8 @@ void ConfigManager::upgrade_1_1_90() {
 	}
 }
 
-void ConfigManager::upgrade_1_1_91() {
+void ConfigManager::upgrade_1_1_91()
+{
 	// rename displaydbv to displaydbfs
 	if (!value("app", "displaydbv").isNull()) {
 		setValue("app", "displaydbfs", value("app", "displaydbv"));
@@ -99,7 +103,8 @@ void ConfigManager::upgrade_1_1_91() {
 	}
 }
 
-void ConfigManager::upgrade_1_2_2() {
+void ConfigManager::upgrade_1_2_2()
+{
 	// Since mixer has been renamed to audioengine, we need to transfer the
 	// attributes from the old element to the new one
 	std::vector<QString> attrs = {"audiodev", "mididev", "framesperaudiobuffer", "hqaudio", "samplerate"};
@@ -114,7 +119,8 @@ void ConfigManager::upgrade_1_2_2() {
 	m_settings.remove("mixer");
 }
 
-void ConfigManager::upgrade() {
+void ConfigManager::upgrade()
+{
 	// Skip the upgrade if versions match
 	if (m_version == LMMS_VERSION) { return; }
 
@@ -134,7 +140,8 @@ void ConfigManager::upgrade() {
 
 QString ConfigManager::defaultVersion() const { return LMMS_VERSION; }
 
-QStringList ConfigManager::availableVstEmbedMethods() {
+QStringList ConfigManager::availableVstEmbedMethods()
+{
 	QStringList methods;
 	methods.append("none");
 #if QT_VERSION >= 0x050100
@@ -149,7 +156,8 @@ QStringList ConfigManager::availableVstEmbedMethods() {
 	return methods;
 }
 
-QString ConfigManager::vstEmbedMethod() const {
+QString ConfigManager::vstEmbedMethod() const
+{
 	QStringList methods = availableVstEmbedMethods();
 	QString defaultMethod = *(methods.end() - 1);
 	QString currentMethod = value("ui", "vstembedmethod", defaultMethod);
@@ -158,7 +166,8 @@ QString ConfigManager::vstEmbedMethod() const {
 
 bool ConfigManager::hasWorkingDir() const { return QDir(m_workingDir).exists(); }
 
-void ConfigManager::setWorkingDir(const QString& workingDir) {
+void ConfigManager::setWorkingDir(const QString& workingDir)
+{
 	m_workingDir = ensureTrailingSlash(QDir::cleanPath(workingDir));
 }
 
@@ -166,7 +175,8 @@ void ConfigManager::setVSTDir(const QString& vstDir) { m_vstDir = ensureTrailing
 
 void ConfigManager::setLADSPADir(const QString& ladspaDir) { m_ladspaDir = ladspaDir; }
 
-void ConfigManager::setSTKDir(const QString& stkDir) {
+void ConfigManager::setSTKDir(const QString& stkDir)
+{
 #ifdef LMMS_HAVE_STK
 	m_stkDir = ensureTrailingSlash(stkDir);
 #endif
@@ -174,7 +184,8 @@ void ConfigManager::setSTKDir(const QString& stkDir) {
 
 void ConfigManager::setSF2Dir(const QString& sf2Dir) { m_sf2Dir = sf2Dir; }
 
-void ConfigManager::setSF2File(const QString& sf2File) {
+void ConfigManager::setSF2File(const QString& sf2File)
+{
 #ifdef LMMS_HAVE_FLUIDSYNTH
 	m_sf2File = sf2File;
 #endif
@@ -186,7 +197,8 @@ void ConfigManager::setThemeDir(const QString& themeDir) { m_themeDir = ensureTr
 
 void ConfigManager::setBackgroundPicFile(const QString& backgroundPicFile) { m_backgroundPicFile = backgroundPicFile; }
 
-void ConfigManager::createWorkingDir() {
+void ConfigManager::createWorkingDir()
+{
 	QDir().mkpath(m_workingDir);
 
 	QDir().mkpath(userProjectsDir());
@@ -199,7 +211,8 @@ void ConfigManager::createWorkingDir() {
 	QDir().mkpath(userLadspaDir());
 }
 
-void ConfigManager::addRecentlyOpenedProject(const QString& file) {
+void ConfigManager::addRecentlyOpenedProject(const QString& file)
+{
 	QFileInfo recentFile(file);
 	if (recentFile.suffix().toLower() == "mmp" || recentFile.suffix().toLower() == "mmpz"
 		|| recentFile.suffix().toLower() == "mpt") {
@@ -210,7 +223,8 @@ void ConfigManager::addRecentlyOpenedProject(const QString& file) {
 	}
 }
 
-const QString& ConfigManager::value(const QString& cls, const QString& attribute) const {
+const QString& ConfigManager::value(const QString& cls, const QString& attribute) const
+{
 	if (m_settings.contains(cls)) {
 		for (stringPairVector::const_iterator it = m_settings[cls].begin(); it != m_settings[cls].end(); ++it) {
 			if ((*it).first == attribute) { return (*it).second; }
@@ -220,12 +234,14 @@ const QString& ConfigManager::value(const QString& cls, const QString& attribute
 	return empty;
 }
 
-const QString& ConfigManager::value(const QString& cls, const QString& attribute, const QString& defaultVal) const {
+const QString& ConfigManager::value(const QString& cls, const QString& attribute, const QString& defaultVal) const
+{
 	const QString& val = value(cls, attribute);
 	return val.isEmpty() ? defaultVal : val;
 }
 
-void ConfigManager::setValue(const QString& cls, const QString& attribute, const QString& value) {
+void ConfigManager::setValue(const QString& cls, const QString& attribute, const QString& value)
+{
 	if (m_settings.contains(cls)) {
 		for (QPair<QString, QString>& pair : m_settings[cls]) {
 			if (pair.first == attribute) {
@@ -241,7 +257,8 @@ void ConfigManager::setValue(const QString& cls, const QString& attribute, const
 	m_settings[cls].push_back(qMakePair(attribute, value));
 }
 
-void ConfigManager::deleteValue(const QString& cls, const QString& attribute) {
+void ConfigManager::deleteValue(const QString& cls, const QString& attribute)
+{
 	if (m_settings.contains(cls)) {
 		for (stringPairVector::iterator it = m_settings[cls].begin(); it != m_settings[cls].end(); ++it) {
 			if ((*it).first == attribute) {
@@ -252,7 +269,8 @@ void ConfigManager::deleteValue(const QString& cls, const QString& attribute) {
 	}
 }
 
-void ConfigManager::loadConfigFile(const QString& configFile) {
+void ConfigManager::loadConfigFile(const QString& configFile)
+{
 	// read the XML file and create DOM tree
 	// Allow configuration file override through --config commandline option
 	if (!configFile.isEmpty()) { m_lmmsRcFile = configFile; }
@@ -380,7 +398,8 @@ void ConfigManager::loadConfigFile(const QString& configFile) {
 	if (hasWorkingDir()) { createWorkingDir(); }
 }
 
-void ConfigManager::saveConfigFile() {
+void ConfigManager::saveConfigFile()
+{
 	setValue("paths", "theme", m_themeDir);
 	setValue("paths", "workingdir", m_workingDir);
 	setValue("paths", "vstdir", m_vstDir);
@@ -442,13 +461,15 @@ void ConfigManager::saveConfigFile() {
 	outfile.close();
 }
 
-void ConfigManager::initPortableWorkingDir() {
+void ConfigManager::initPortableWorkingDir()
+{
 	QString applicationPath = qApp->applicationDirPath();
 	m_workingDir = applicationPath + "/lmms-workspace/";
 	m_lmmsRcFile = applicationPath + "/.lmmsrc.xml";
 }
 
-void ConfigManager::initInstalledWorkingDir() {
+void ConfigManager::initInstalledWorkingDir()
+{
 	m_workingDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/lmms/";
 	m_lmmsRcFile = QDir::home().absolutePath() + "/.lmmsrc.xml";
 	// Detect < 1.2.0 working directory as a courtesy
@@ -456,7 +477,8 @@ void ConfigManager::initInstalledWorkingDir() {
 		m_workingDir = QDir::home().absolutePath() + "/lmms/";
 }
 
-void ConfigManager::initDevelopmentWorkingDir() {
+void ConfigManager::initDevelopmentWorkingDir()
+{
 	// If we're in development (lmms is not installed) let's get the source and
 	// binary directories by reading the CMake Cache
 	QDir appPath = qApp->applicationDirPath();
@@ -491,7 +513,8 @@ void ConfigManager::initDevelopmentWorkingDir() {
 
 // If configversion is not present, we will convert the LMMS version to the appropriate
 // configuration file version for backwards compatibility.
-unsigned int ConfigManager::legacyConfigVersion() {
+unsigned int ConfigManager::legacyConfigVersion()
+{
 	ProjectVersion createdWith = m_version;
 
 	createdWith.setCompareType(ProjectVersion::Build);

@@ -49,7 +49,8 @@ MultitapEchoEffect::MultitapEchoEffect(Model* parent, const Descriptor::SubPlugi
 	, m_controls(this)
 	, m_buffer(16100.0f)
 	, m_sampleRate(Engine::audioEngine()->processingSampleRate())
-	, m_sampleRatio(1.0f / m_sampleRate) {
+	, m_sampleRatio(1.0f / m_sampleRate)
+{
 	m_work = MM_ALLOC<sampleFrame>(Engine::audioEngine()->framesPerPeriod());
 	m_buffer.reset();
 	m_stages = static_cast<int>(m_controls.m_stages.value());
@@ -58,7 +59,8 @@ MultitapEchoEffect::MultitapEchoEffect(Model* parent, const Descriptor::SubPlugi
 
 MultitapEchoEffect::~MultitapEchoEffect() { MM_FREE(m_work); }
 
-void MultitapEchoEffect::updateFilters(int begin, int end) {
+void MultitapEchoEffect::updateFilters(int begin, int end)
+{
 	for (int i = begin; i <= end; ++i) {
 		for (int s = 0; s < m_stages; ++s) {
 			setFilterFreq(m_lpFreq[i] * m_sampleRatio, m_filter[i][s]);
@@ -66,14 +68,16 @@ void MultitapEchoEffect::updateFilters(int begin, int end) {
 	}
 }
 
-void MultitapEchoEffect::runFilter(sampleFrame* dst, sampleFrame* src, StereoOnePole& filter, const fpp_t frames) {
+void MultitapEchoEffect::runFilter(sampleFrame* dst, sampleFrame* src, StereoOnePole& filter, const fpp_t frames)
+{
 	for (int f = 0; f < frames; ++f) {
 		dst[f][0] = filter.update(src[f][0], 0);
 		dst[f][1] = filter.update(src[f][1], 1);
 	}
 }
 
-bool MultitapEchoEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
+bool MultitapEchoEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
+{
 	if (!isEnabled() || !isRunning()) { return (false); }
 
 	double outSum = 0.0;
@@ -135,7 +139,8 @@ bool MultitapEchoEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data)
+{
 	return new MultitapEchoEffect(parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(data));
 }
 }

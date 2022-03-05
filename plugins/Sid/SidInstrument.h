@@ -36,11 +36,19 @@ class NotePlayHandle;
 class automatableButtonGroup;
 class PixmapButton;
 
-class voiceObject : public Model {
+class voiceObject : public Model
+{
 	Q_OBJECT
 	MM_OPERATORS
 public:
-	enum WaveForm { SquareWave = 0, TriangleWave, SawWave, NoiseWave, NumWaveShapes };
+	enum WaveForm
+	{
+		SquareWave = 0,
+		TriangleWave,
+		SawWave,
+		NoiseWave,
+		NumWaveShapes
+	};
 	voiceObject(Model* _parent, int _idx);
 	virtual ~voiceObject();
 
@@ -61,12 +69,24 @@ private:
 	friend class SidInstrumentView;
 };
 
-class SidInstrument : public Instrument {
+class SidInstrument : public Instrument
+{
 	Q_OBJECT
 public:
-	enum FilerType { HighPass = 0, BandPass, LowPass, NumFilterTypes };
+	enum FilerType
+	{
+		HighPass = 0,
+		BandPass,
+		LowPass,
+		NumFilterTypes
+	};
 
-	enum ChipModel { sidMOS6581 = 0, sidMOS8580, NumChipModels };
+	enum ChipModel
+	{
+		sidMOS6581 = 0,
+		sidMOS8580,
+		NumChipModels
+	};
 
 	SidInstrument(InstrumentTrack* _instrument_track);
 	virtual ~SidInstrument();
@@ -105,7 +125,8 @@ private:
 	friend class SidInstrumentView;
 };
 
-class SidInstrumentView : public InstrumentViewFixedSize {
+class SidInstrumentView : public InstrumentViewFixedSize
+{
 	Q_OBJECT
 public:
 	SidInstrumentView(Instrument* _instrument, QWidget* _parent);
@@ -117,7 +138,8 @@ private:
 	automatableButtonGroup* m_passBtnGrp;
 	automatableButtonGroup* m_sidTypeBtnGrp;
 
-	struct voiceKnobs {
+	struct voiceKnobs
+	{
 		voiceKnobs(Knob* a, Knob* d, Knob* s, Knob* r, Knob* pw, Knob* crs, automatableButtonGroup* wfbg,
 			PixmapButton* syncb, PixmapButton* ringb, PixmapButton* filterb, PixmapButton* testb)
 			: m_attKnob(a)
@@ -130,7 +152,9 @@ private:
 			, m_syncButton(syncb)
 			, m_ringModButton(ringb)
 			, m_filterButton(filterb)
-			, m_testButton(testb) {}
+			, m_testButton(testb)
+		{
+		}
 		voiceKnobs() {}
 		Knob* m_attKnob;
 		Knob* m_decKnob;

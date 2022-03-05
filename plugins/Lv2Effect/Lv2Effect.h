@@ -28,7 +28,8 @@
 #include "Effect.h"
 #include "Lv2FxControls.h"
 
-class Lv2Effect : public Effect {
+class Lv2Effect : public Effect
+{
 	Q_OBJECT
 
 public:

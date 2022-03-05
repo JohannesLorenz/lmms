@@ -39,7 +39,8 @@
 SampleClipView::SampleClipView(SampleClip* _clip, TrackView* _tv)
 	: ClipView(_clip, _tv)
 	, m_clip(_clip)
-	, m_paintPixmap() {
+	, m_paintPixmap()
+{
 	// update UI and tooltip
 	updateSample();
 
@@ -51,7 +52,8 @@ SampleClipView::SampleClipView(SampleClip* _clip, TrackView* _tv)
 	setStyle(QApplication::style());
 }
 
-void SampleClipView::updateSample() {
+void SampleClipView::updateSample()
+{
 	update();
 	// set tooltip to filename so that user can see what sample this
 	// sample-clip contains
@@ -60,7 +62,8 @@ void SampleClipView::updateSample() {
 													: tr("Double-click to open sample"));
 }
 
-void SampleClipView::constructContextMenu(QMenu* cm) {
+void SampleClipView::constructContextMenu(QMenu* cm)
+{
 	cm->addSeparator();
 
 	/*contextMenu.addAction( embed::getIconPixmap( "record" ),
@@ -70,13 +73,15 @@ void SampleClipView::constructContextMenu(QMenu* cm) {
 	cm->addAction(embed::getIconPixmap("flip_x"), tr("Reverse sample"), this, SLOT(reverseSample()));
 }
 
-void SampleClipView::dragEnterEvent(QDragEnterEvent* _dee) {
+void SampleClipView::dragEnterEvent(QDragEnterEvent* _dee)
+{
 	if (StringPairDrag::processDragEnterEvent(_dee, "samplefile,sampledata") == false) {
 		ClipView::dragEnterEvent(_dee);
 	}
 }
 
-void SampleClipView::dropEvent(QDropEvent* _de) {
+void SampleClipView::dropEvent(QDropEvent* _de)
+{
 	if (StringPairDrag::decodeKey(_de) == "samplefile") {
 		m_clip->setSampleFile(StringPairDrag::decodeValue(_de));
 		_de->accept();
@@ -91,7 +96,8 @@ void SampleClipView::dropEvent(QDropEvent* _de) {
 	}
 }
 
-void SampleClipView::mousePressEvent(QMouseEvent* _me) {
+void SampleClipView::mousePressEvent(QMouseEvent* _me)
+{
 	if (_me->button() == Qt::LeftButton && _me->modifiers() & Qt::ControlModifier
 		&& _me->modifiers() & Qt::ShiftModifier) {
 		m_clip->toggleRecord();
@@ -104,7 +110,8 @@ void SampleClipView::mousePressEvent(QMouseEvent* _me) {
 	}
 }
 
-void SampleClipView::mouseReleaseEvent(QMouseEvent* _me) {
+void SampleClipView::mouseReleaseEvent(QMouseEvent* _me)
+{
 	if (_me->button() == Qt::MiddleButton && !_me->modifiers()) {
 		SampleClip* sClip = dynamic_cast<SampleClip*>(getClip());
 		if (sClip) { sClip->playbackPositionChanged(); }
@@ -112,7 +119,8 @@ void SampleClipView::mouseReleaseEvent(QMouseEvent* _me) {
 	ClipView::mouseReleaseEvent(_me);
 }
 
-void SampleClipView::mouseDoubleClickEvent(QMouseEvent*) {
+void SampleClipView::mouseDoubleClickEvent(QMouseEvent*)
+{
 	QString af = m_clip->m_sampleBuffer->openAudioFile();
 
 	if (af.isEmpty()) {
@@ -126,7 +134,8 @@ void SampleClipView::mouseDoubleClickEvent(QMouseEvent*) {
 	}
 }
 
-void SampleClipView::paintEvent(QPaintEvent* pe) {
+void SampleClipView::paintEvent(QPaintEvent* pe)
+{
 	QPainter painter(this);
 
 	if (!needsUpdate()) {
@@ -228,7 +237,8 @@ void SampleClipView::paintEvent(QPaintEvent* pe) {
 	painter.drawPixmap(0, 0, m_paintPixmap);
 }
 
-void SampleClipView::reverseSample() {
+void SampleClipView::reverseSample()
+{
 	m_clip->sampleBuffer()->setReversed(!m_clip->sampleBuffer()->reversed());
 	Engine::getSong()->setModified();
 	update();
@@ -236,7 +246,8 @@ void SampleClipView::reverseSample() {
 
 //! Split this Clip.
 /*! \param pos the position of the split, relative to the start of the clip */
-bool SampleClipView::splitClip(const TimePos pos) {
+bool SampleClipView::splitClip(const TimePos pos)
+{
 	setMarkerEnabled(false);
 
 	const TimePos splitPos = m_initialClipPos + pos;

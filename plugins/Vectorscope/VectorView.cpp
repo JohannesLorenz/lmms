@@ -45,7 +45,8 @@ VectorView::VectorView(
 	, m_zoomTimestamp(0)
 	, m_oldHQ(m_controls->m_highQualityModel.value())
 	, m_oldX(m_displaySize / 2)
-	, m_oldY(m_displaySize / 2) {
+	, m_oldY(m_displaySize / 2)
+{
 	setMinimumSize(200, 200);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -59,7 +60,8 @@ VectorView::VectorView(
 }
 
 // Compose and draw all the content; called by Qt.
-void VectorView::paintEvent(QPaintEvent* event) {
+void VectorView::paintEvent(QPaintEvent* event)
+{
 #ifdef VEC_DEBUG
 	unsigned int drawTime = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 #endif
@@ -267,20 +269,23 @@ void VectorView::paintEvent(QPaintEvent* event) {
 }
 
 // Periodically trigger repaint and check if the widget is visible
-void VectorView::periodicUpdate() {
+void VectorView::periodicUpdate()
+{
 	m_visible = isVisible();
 	if (m_visible) { update(); }
 }
 
 // Allow to change color on double-click.
 // More of an Easter egg, to avoid cluttering the interface with non-essential functionality.
-void VectorView::mouseDoubleClickEvent(QMouseEvent* event) {
+void VectorView::mouseDoubleClickEvent(QMouseEvent* event)
+{
 	ColorChooser* colorDialog = new ColorChooser(m_controls->m_colorFG, this);
 	if (colorDialog->exec()) { m_controls->m_colorFG = colorDialog->currentColor(); }
 }
 
 // Change zoom level using the mouse wheel
-void VectorView::wheelEvent(QWheelEvent* event) {
+void VectorView::wheelEvent(QWheelEvent* event)
+{
 	// Go through integers to avoid accumulating errors
 	const unsigned short old_zoom = round(100 * m_zoom);
 	// Min-max bounds are 20 and 1000 %, step for 15°-increment mouse wheel is 20 %

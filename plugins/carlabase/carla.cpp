@@ -80,22 +80,26 @@ static bool host_is_offline(NativeHostHandle handle) { return handlePtr->handleI
 
 static const NativeTimeInfo* host_get_time_info(NativeHostHandle handle) { return handlePtr->handleGetTimeInfo(); }
 
-static bool host_write_midi_event(NativeHostHandle, const NativeMidiEvent*) {
+static bool host_write_midi_event(NativeHostHandle, const NativeMidiEvent*)
+{
 	return false; // unsupported?
 }
 
-static void host_ui_parameter_changed(NativeHostHandle handle, uint32_t index, float value) {
+static void host_ui_parameter_changed(NativeHostHandle handle, uint32_t index, float value)
+{
 	handlePtr->handleUiParameterChanged(index, value);
 }
 
-static void host_ui_custom_data_changed(NativeHostHandle handle, const char* key, const char* value) {
+static void host_ui_custom_data_changed(NativeHostHandle handle, const char* key, const char* value)
+{
 	// unused
 }
 
 static void host_ui_closed(NativeHostHandle handle) { handlePtr->handleUiClosed(); }
 
 static intptr_t host_dispatcher(
-	NativeHostHandle handle, NativeHostDispatcherOpcode opcode, int32_t index, intptr_t value, void* ptr, float opt) {
+	NativeHostHandle handle, NativeHostDispatcherOpcode opcode, int32_t index, intptr_t value, void* ptr, float opt)
+{
 	return handlePtr->handleDispatcher(opcode, index, value, ptr, opt);
 }
 
@@ -103,7 +107,8 @@ static intptr_t host_dispatcher(
 
 // -----------------------------------------------------------------------
 
-static const char* host_ui_open_file(NativeHostHandle, bool isDir, const char* title, const char* filter) {
+static const char* host_ui_open_file(NativeHostHandle, bool isDir, const char* title, const char* filter)
+{
 	static QByteArray retStr;
 	const QFileDialog::Options options(isDir ? QFileDialog::ShowDirsOnly : 0x0);
 
@@ -112,7 +117,8 @@ static const char* host_ui_open_file(NativeHostHandle, bool isDir, const char* t
 	return retStr.isEmpty() ? nullptr : retStr.constData();
 }
 
-static const char* host_ui_save_file(NativeHostHandle, bool isDir, const char* title, const char* filter) {
+static const char* host_ui_save_file(NativeHostHandle, bool isDir, const char* title, const char* filter)
+{
 	static QByteArray retStr;
 	const QFileDialog::Options options(isDir ? QFileDialog::ShowDirsOnly : 0x0);
 
@@ -130,7 +136,8 @@ CarlaInstrument::CarlaInstrument(
 	, fHandle(nullptr)
 	, fDescriptor(isPatchbay ? carla_get_native_patchbay_plugin() : carla_get_native_rack_plugin())
 	, fMidiEventCount(0)
-	, m_paramModels() {
+	, m_paramModels()
+{
 	fHost.handle = this;
 	fHost.uiName = nullptr;
 	fHost.uiParentId = 0;
@@ -191,7 +198,8 @@ CarlaInstrument::CarlaInstrument(
 	connect(Engine::audioEngine(), SIGNAL(sampleRateChanged()), this, SLOT(sampleRateChanged()));
 }
 
-CarlaInstrument::~CarlaInstrument() {
+CarlaInstrument::~CarlaInstrument()
+{
 	Engine::audioEngine()->removePlayHandlesOfTypes(
 		instrumentTrack(), PlayHandle::TypeNotePlayHandle | PlayHandle::TypeInstrumentPlayHandle);
 
@@ -224,20 +232,23 @@ uint32_t CarlaInstrument::handleGetBufferSize() const { return Engine::audioEngi
 
 double CarlaInstrument::handleGetSampleRate() const { return Engine::audioEngine()->processingSampleRate(); }
 
-bool CarlaInstrument::handleIsOffline() const {
+bool CarlaInstrument::handleIsOffline() const
+{
 	return false; // TODO
 }
 
 const NativeTimeInfo* CarlaInstrument::handleGetTimeInfo() const { return &fTimeInfo; }
 
-void CarlaInstrument::handleUiParameterChanged(const uint32_t index, const float value) const {
+void CarlaInstrument::handleUiParameterChanged(const uint32_t index, const float value) const
+{
 	if (m_paramModels.count() > index) { m_paramModels[index]->setValue(value); }
 }
 
 void CarlaInstrument::handleUiClosed() { emit uiClosed(); }
 
 intptr_t CarlaInstrument::handleDispatcher(const NativeHostDispatcherOpcode opcode, const int32_t index,
-	const intptr_t value, void* const ptr, const float opt) {
+	const intptr_t value, void* const ptr, const float opt)
+{
 	intptr_t ret = 0;
 
 	// source/includes/CarlaNative.h
@@ -283,7 +294,8 @@ Instrument::Flags CarlaInstrument::flags() const { return IsSingleStreamed | IsM
 
 QString CarlaInstrument::nodeName() const { return descriptor()->name; }
 
-void CarlaInstrument::saveSettings(QDomDocument& doc, QDomElement& parent) {
+void CarlaInstrument::saveSettings(QDomDocument& doc, QDomElement& parent)
+{
 	if (fHandle == nullptr || fDescriptor->get_state == nullptr) return;
 
 	char* const state = fDescriptor->get_state(fHandle);
@@ -307,7 +319,8 @@ void CarlaInstrument::saveSettings(QDomDocument& doc, QDomElement& parent) {
 #endif
 }
 
-void CarlaInstrument::refreshParams(bool init) {
+void CarlaInstrument::refreshParams(bool init)
+{
 	m_paramGroupCount = 0;
 	if (fDescriptor->get_parameter_count != nullptr && fDescriptor->get_parameter_info != nullptr
 		&& fDescriptor->get_parameter_value != nullptr && fDescriptor->set_parameter_value != nullptr) {
@@ -353,7 +366,8 @@ void CarlaInstrument::refreshParams(bool init) {
 	emit paramsUpdated();
 }
 
-void CarlaInstrument::clearParamModels() {
+void CarlaInstrument::clearParamModels()
+{
 	// Delete the models, this also disconnects all connections (automation and controller connections)
 	for (uint32_t index = 0; index < m_paramModels.count(); ++index) {
 		delete m_paramModels[index];
@@ -365,7 +379,8 @@ void CarlaInstrument::clearParamModels() {
 	m_paramGroupCount = 0;
 }
 
-void CarlaInstrument::paramModelChanged(uint32_t index) { // Update Carla param (LMMS -> Carla)
+void CarlaInstrument::paramModelChanged(uint32_t index)
+{ // Update Carla param (LMMS -> Carla)
 	if (!m_paramModels[index]->isOutput()) {
 		if (fDescriptor->set_parameter_value != nullptr) {
 			fDescriptor->set_parameter_value(fHandle, index, m_paramModels[index]->value());
@@ -378,13 +393,15 @@ void CarlaInstrument::paramModelChanged(uint32_t index) { // Update Carla param 
 	}
 }
 
-void CarlaInstrument::updateParamModel(uint32_t index) { // Called on param changed (Carla -> LMMS)
+void CarlaInstrument::updateParamModel(uint32_t index)
+{ // Called on param changed (Carla -> LMMS)
 	if (fDescriptor->get_parameter_value != nullptr) {
 		m_paramModels[index]->setValue(fDescriptor->get_parameter_value(fHandle, index));
 	}
 }
 
-void CarlaInstrument::loadSettings(const QDomElement& elem) {
+void CarlaInstrument::loadSettings(const QDomElement& elem)
+{
 	if (fHandle == nullptr || fDescriptor->set_state == nullptr) return;
 
 	QDomDocument carlaDoc("carla");
@@ -399,7 +416,8 @@ void CarlaInstrument::loadSettings(const QDomElement& elem) {
 #endif
 }
 
-void CarlaInstrument::play(sampleFrame* workingBuffer) {
+void CarlaInstrument::play(sampleFrame* workingBuffer)
+{
 	const uint bufsize = Engine::audioEngine()->framesPerPeriod();
 
 	std::memset(workingBuffer, 0, sizeof(sample_t) * bufsize * DEFAULT_CHANNELS);
@@ -456,7 +474,8 @@ void CarlaInstrument::play(sampleFrame* workingBuffer) {
 	instrumentTrack()->processAudioBuffer(workingBuffer, bufsize, nullptr);
 }
 
-bool CarlaInstrument::handleMidiEvent(const MidiEvent& event, const TimePos&, f_cnt_t offset) {
+bool CarlaInstrument::handleMidiEvent(const MidiEvent& event, const TimePos&, f_cnt_t offset)
+{
 	const QMutexLocker ml(&fMutex);
 
 	if (fMidiEventCount >= kMaxMidiEvents) return false;
@@ -476,7 +495,8 @@ bool CarlaInstrument::handleMidiEvent(const MidiEvent& event, const TimePos&, f_
 	return true;
 }
 
-PluginView* CarlaInstrument::instantiateView(QWidget* parent) {
+PluginView* CarlaInstrument::instantiateView(QWidget* parent)
+{
 // Disable plugin focus per https://bugreports.qt.io/browse/QTBUG-30181
 #ifndef CARLA_OS_MAC
 	if (QWidget* const window = parent->window())
@@ -495,7 +515,8 @@ PluginView* CarlaInstrument::instantiateView(QWidget* parent) {
 	return new CarlaInstrumentView(this, parent);
 }
 
-void CarlaInstrument::sampleRateChanged() {
+void CarlaInstrument::sampleRateChanged()
+{
 	fDescriptor->dispatcher(fHandle, NATIVE_PLUGIN_OPCODE_SAMPLE_RATE_CHANGED, 0, 0, nullptr, handleGetSampleRate());
 }
 
@@ -509,7 +530,8 @@ CarlaInstrumentView::CarlaInstrumentView(CarlaInstrument* const instrument, QWid
 	, m_carlaInstrument(instrument)
 	, m_parent(parent)
 	, m_paramsSubWindow(nullptr)
-	, m_paramsView(nullptr) {
+	, m_paramsView(nullptr)
+{
 	setAutoFillBackground(true);
 
 	QPalette pal;
@@ -554,7 +576,8 @@ CarlaInstrumentView::CarlaInstrumentView(CarlaInstrument* const instrument, QWid
 	connect(instrument, SIGNAL(uiClosed()), this, SLOT(uiClosed()));
 }
 
-CarlaInstrumentView::~CarlaInstrumentView() {
+CarlaInstrumentView::~CarlaInstrumentView()
+{
 	if (m_toggleUIButton->isChecked()) { toggleUI(false); }
 
 #if CARLA_VERSION_HEX >= CARLA_MIN_PARAM_VERSION
@@ -565,7 +588,8 @@ CarlaInstrumentView::~CarlaInstrumentView() {
 #endif
 }
 
-void CarlaInstrumentView::toggleUI(bool visible) {
+void CarlaInstrumentView::toggleUI(bool visible)
+{
 	if (fHandle != nullptr && fDescriptor->ui_show != nullptr) {
 // TODO: remove when fixed upstream
 // change working path to location of carla.dll to avoid conflict with lmms
@@ -586,13 +610,15 @@ void CarlaInstrumentView::uiClosed() { m_toggleUIButton->setChecked(false); }
 
 void CarlaInstrumentView::modelChanged() {}
 
-void CarlaInstrumentView::timerEvent(QTimerEvent* event) {
+void CarlaInstrumentView::timerEvent(QTimerEvent* event)
+{
 	if (event->timerId() == fTimerId) fDescriptor->ui_idle(fHandle);
 
 	InstrumentView::timerEvent(event);
 }
 
-void CarlaInstrumentView::toggleParamsWindow() {
+void CarlaInstrumentView::toggleParamsWindow()
+{
 	if (!m_paramsSubWindow) {
 		m_paramsView = new CarlaParamsView(this, m_parent);
 		connect(m_paramsSubWindow, SIGNAL(uiClosed()), this, SLOT(paramsUiClosed()));
@@ -617,7 +643,8 @@ CarlaParamsView::CarlaParamsView(CarlaInstrumentView* const instrumentView, QWid
 	, m_curColumn(0)
 	, m_curRow(0)
 	, m_curOutColumn(0)
-	, m_curOutRow(0) {
+	, m_curOutRow(0)
+{
 	QWidget* centralWidget = new QWidget(this);
 	QVBoxLayout* verticalLayout = new QVBoxLayout(centralWidget);
 
@@ -748,7 +775,8 @@ CarlaParamsView::CarlaParamsView(CarlaInstrumentView* const instrumentView, QWid
 	refreshKnobs(); // Will trigger filterKnobs() due m_groupFilterCombo->setCurrentIndex(0)
 }
 
-CarlaParamsView::~CarlaParamsView() {
+CarlaParamsView::~CarlaParamsView()
+{
 	// Close and delete m_paramsSubWindow
 	if (m_carlaInstrumentView->m_paramsSubWindow) {
 		m_carlaInstrumentView->m_paramsSubWindow->setAttribute(Qt::WA_DeleteOnClose);
@@ -766,7 +794,8 @@ CarlaParamsView::~CarlaParamsView() {
 
 void CarlaParamsView::clearFilterText() { m_paramsFilterLineEdit->setText(""); }
 
-void CarlaParamsView::filterKnobs() {
+void CarlaParamsView::filterKnobs()
+{
 	clearKnobs(); // Remove all knobs from the layout.
 
 	if (!m_carlaInstrument->m_paramGroupCount) { return; }
@@ -806,7 +835,8 @@ void CarlaParamsView::filterKnobs() {
 	m_inputScrollAreaLayout->addItem(verticalSpacer, m_curRow + 1, 0, 1, 1);
 }
 
-void CarlaParamsView::refreshKnobs() {
+void CarlaParamsView::refreshKnobs()
+{
 	// Make sure all the knobs are deleted.
 	for (uint32_t i = 0; i < m_knobs.count(); ++i) {
 		delete m_knobs[i]; // Delete knob widgets itself.
@@ -870,7 +900,8 @@ void CarlaParamsView::refreshKnobs() {
 
 void CarlaParamsView::windowResized() { filterKnobs(); }
 
-void CarlaParamsView::addKnob(uint32_t index) {
+void CarlaParamsView::addKnob(uint32_t index)
+{
 	bool output = m_carlaInstrument->m_paramModels[index]->isOutput();
 	if (output) {
 		m_outputScrollAreaLayout->addWidget(
@@ -900,7 +931,8 @@ void CarlaParamsView::addKnob(uint32_t index) {
 		}
 	}
 }
-void CarlaParamsView::clearKnobs() {
+void CarlaParamsView::clearKnobs()
+{
 	// Remove knobs from layout.
 	for (uint16_t i = 0; i < m_knobs.count(); ++i) {
 		m_knobs[i]->close();

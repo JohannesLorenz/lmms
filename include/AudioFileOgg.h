@@ -34,14 +34,16 @@
 
 #include "AudioFileDevice.h"
 
-class AudioFileOgg : public AudioFileDevice {
+class AudioFileOgg : public AudioFileDevice
+{
 public:
 	AudioFileOgg(OutputSettings const& outputSettings, const ch_cnt_t _channels, bool& _success_ful,
 		const QString& _file, AudioEngine* audioEngine);
 	virtual ~AudioFileOgg();
 
 	static AudioFileDevice* getInst(const QString& outputFilename, OutputSettings const& outputSettings,
-		const ch_cnt_t channels, AudioEngine* audioEngine, bool& successful) {
+		const ch_cnt_t channels, AudioEngine* audioEngine, bool& successful)
+	{
 		return new AudioFileOgg(outputSettings, channels, successful, outputFilename, audioEngine);
 	}
 
@@ -54,7 +56,8 @@ private:
 
 	inline bitrate_t nominalBitrate() const { return getOutputSettings().getBitRateSettings().getBitRate(); }
 
-	inline bitrate_t minBitrate() const {
+	inline bitrate_t minBitrate() const
+	{
 		if (nominalBitrate() > 64) {
 			return nominalBitrate() - 64;
 		} else {

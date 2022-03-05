@@ -42,7 +42,8 @@ InstrumentFunctionNoteStackingView::InstrumentFunctionNoteStackingView(
 	, m_cc(cc)
 	, m_chordsGroupBox(new GroupBox(tr("STACKING")))
 	, m_chordsComboBox(new ComboBox())
-	, m_chordRangeKnob(new Knob(knobBright_26)) {
+	, m_chordRangeKnob(new Knob(knobBright_26))
+{
 	QHBoxLayout* topLayout = new QHBoxLayout(this);
 	topLayout->setMargin(0);
 	topLayout->addWidget(m_chordsGroupBox);
@@ -66,7 +67,8 @@ InstrumentFunctionNoteStackingView::InstrumentFunctionNoteStackingView(
 
 InstrumentFunctionNoteStackingView::~InstrumentFunctionNoteStackingView() { delete m_chordsGroupBox; }
 
-void InstrumentFunctionNoteStackingView::modelChanged() {
+void InstrumentFunctionNoteStackingView::modelChanged()
+{
 	m_cc = castModel<InstrumentFunctionNoteStacking>();
 	m_chordsGroupBox->setModel(&m_cc->m_chordsEnabledModel);
 	m_chordsComboBox->setModel(&m_cc->m_chordsModel);
@@ -87,7 +89,8 @@ InstrumentFunctionArpeggioView::InstrumentFunctionArpeggioView(InstrumentFunctio
 	, m_arpTimeKnob(new TempoSyncKnob(knobBright_26))
 	, m_arpGateKnob(new Knob(knobBright_26))
 	, m_arpDirectionComboBox(new ComboBox())
-	, m_arpModeComboBox(new ComboBox()) {
+	, m_arpModeComboBox(new ComboBox())
+{
 	QHBoxLayout* topLayout = new QHBoxLayout(this);
 	topLayout->setMargin(0);
 	topLayout->addWidget(m_arpGroupBox);
@@ -149,7 +152,8 @@ InstrumentFunctionArpeggioView::InstrumentFunctionArpeggioView(InstrumentFunctio
 
 InstrumentFunctionArpeggioView::~InstrumentFunctionArpeggioView() { delete m_arpGroupBox; }
 
-void InstrumentFunctionArpeggioView::modelChanged() {
+void InstrumentFunctionArpeggioView::modelChanged()
+{
 	m_a = castModel<InstrumentFunctionArpeggio>();
 	m_arpGroupBox->setModel(&m_a->m_arpEnabledModel);
 	m_arpComboBox->setModel(&m_a->m_arpModel);

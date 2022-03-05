@@ -29,7 +29,8 @@
 
 class ReverbSCControls;
 
-class ReverbSCControlDialog : public EffectControlDialog {
+class ReverbSCControlDialog : public EffectControlDialog
+{
 	Q_OBJECT
 public:
 	ReverbSCControlDialog(ReverbSCControls* controls);

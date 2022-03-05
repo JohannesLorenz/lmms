@@ -46,7 +46,8 @@ Plugin::Descriptor PLUGIN_EXPORT dualfilter_plugin_descriptor = {
 
 DualFilterEffect::DualFilterEffect(Model* parent, const Descriptor::SubPluginFeatures::Key* key)
 	: Effect(&dualfilter_plugin_descriptor, parent, key)
-	, m_dfControls(this) {
+	, m_dfControls(this)
+{
 	m_filter1 = new BasicFilters<2>(Engine::audioEngine()->processingSampleRate());
 	m_filter2 = new BasicFilters<2>(Engine::audioEngine()->processingSampleRate());
 
@@ -55,12 +56,14 @@ DualFilterEffect::DualFilterEffect(Model* parent, const Descriptor::SubPluginFea
 	m_filter2changed = true;
 }
 
-DualFilterEffect::~DualFilterEffect() {
+DualFilterEffect::~DualFilterEffect()
+{
 	delete m_filter1;
 	delete m_filter2;
 }
 
-bool DualFilterEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
+bool DualFilterEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
+{
 	if (!isEnabled() || !isRunning()) { return (false); }
 
 	double outSum = 0.0;
@@ -189,7 +192,8 @@ bool DualFilterEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) 
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data)
+{
 	return new DualFilterEffect(parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(data));
 }
 }

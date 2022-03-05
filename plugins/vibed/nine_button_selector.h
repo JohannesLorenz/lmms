@@ -33,7 +33,8 @@ class Knob;
 class PixmapButton;
 class graphModel;
 
-class nineButtonSelector : public QWidget, public IntModelView {
+class nineButtonSelector : public QWidget, public IntModelView
+{
 	Q_OBJECT
 
 public:

@@ -50,7 +50,8 @@ class QLineEdit;
 class QWidget;
 class TabWidget;
 
-class InstrumentTrackWindow : public QWidget, public ModelView, public SerializingObjectHook {
+class InstrumentTrackWindow : public QWidget, public ModelView, public SerializingObjectHook
+{
 	Q_OBJECT
 public:
 	InstrumentTrackWindow(InstrumentTrackView* _tv);

@@ -35,7 +35,8 @@
 #define VST_CALL_CONV
 #endif
 
-template <typename T> constexpr int32_t CCONST(T a, T b, T c, T d) {
+template <typename T> constexpr int32_t CCONST(T a, T b, T c, T d)
+{
 	static_assert(std::is_convertible<T, int32_t>::value, "int32 compatibility required.");
 	return (static_cast<int32_t>(a) << 24 | static_cast<int32_t>(b) << 16 | static_cast<int32_t>(c) << 8
 		| static_cast<int32_t>(d) << 0);
@@ -152,7 +153,8 @@ constexpr int kVstSmpte249fps = 11;
 constexpr int kVstSmpte599fps = 12;
 constexpr int kVstSmpte60fps = 13;
 
-class VstMidiEvent {
+class VstMidiEvent
+{
 public:
 	// 00
 	int32_t type;
@@ -178,11 +180,13 @@ public:
 	char reserved2;
 };
 
-class VstEvent {
+class VstEvent
+{
 	char dump[sizeof(VstMidiEvent)];
 };
 
-class VstEvents {
+class VstEvents
+{
 public:
 	// 00
 	int32_t numEvents;
@@ -192,7 +196,8 @@ public:
 	VstEvent* events[1];
 };
 
-class AEffect {
+class AEffect
+{
 public:
 	// Never use virtual functions!!!
 	// 00-03
@@ -234,7 +239,8 @@ public:
 	void(VST_CALL_CONV* processReplacing)(AEffect*, float**, float**, int);
 };
 
-class VstTimeInfo {
+class VstTimeInfo
+{
 public:
 	// 00
 	double samplePos;

@@ -58,7 +58,8 @@ MicrotunerConfig::MicrotunerConfig()
 	, m_lastKeyModel(NumKeys - 1, 0, NumKeys - 1, nullptr, tr("Last key"))
 	, m_middleKeyModel(DefaultMiddleKey, 0, NumKeys - 1, nullptr, tr("Middle key"))
 	, m_baseKeyModel(DefaultBaseKey, 0, NumKeys - 1, nullptr, tr("Base key"))
-	, m_baseFreqModel(DefaultBaseFreq, 0.1f, 9999.999f, 0.001f, nullptr, tr("Base note frequency")) {
+	, m_baseFreqModel(DefaultBaseFreq, 0.1f, 9999.999f, 0.001f, nullptr, tr("Base note frequency"))
+{
 	setWindowIcon(embed::getIconPixmap("microtuner"));
 	setWindowTitle(tr("Microtuner"));
 
@@ -208,7 +209,8 @@ MicrotunerConfig::MicrotunerConfig()
  * \brief Update list of available scales.
  * \param index Index of the scale to update; update all scales if -1 or out of range.
  */
-void MicrotunerConfig::updateScaleList(int index) {
+void MicrotunerConfig::updateScaleList(int index)
+{
 	if (index >= 0 && index < MaxScaleCount) {
 		m_scaleComboModel.replaceItem(
 			index, QString::number(index) + ": " + Engine::getSong()->getScale(index)->getDescription());
@@ -224,7 +226,8 @@ void MicrotunerConfig::updateScaleList(int index) {
  * \brief Update list of available keymaps.
  * \param index Index of the keymap to update; update all keymaps if -1 or out of range.
  */
-void MicrotunerConfig::updateKeymapList(int index) {
+void MicrotunerConfig::updateKeymapList(int index)
+{
 	if (index >= 0 && index < MaxKeymapCount) {
 		m_keymapComboModel.replaceItem(
 			index, QString::number(index) + ": " + Engine::getSong()->getKeymap(index)->getDescription());
@@ -239,7 +242,8 @@ void MicrotunerConfig::updateKeymapList(int index) {
 /**
  * \brief Fill all the scale-related values based on currently selected scale
  */
-void MicrotunerConfig::updateScaleForm() {
+void MicrotunerConfig::updateScaleForm()
+{
 	Song* song = Engine::getSong();
 	if (song == nullptr) { return; }
 
@@ -262,7 +266,8 @@ void MicrotunerConfig::updateScaleForm() {
 /**
  * \brief Fill all the keymap-related values based on currently selected keymap
  */
-void MicrotunerConfig::updateKeymapForm() {
+void MicrotunerConfig::updateKeymapForm()
+{
 	Song* song = Engine::getSong();
 	if (song == nullptr) { return; }
 
@@ -294,7 +299,8 @@ void MicrotunerConfig::updateKeymapForm() {
  * \brief Validate the scale name and entered interval definitions
  * \return true if input is valid, false if problems were detected
  */
-bool MicrotunerConfig::validateScaleForm() {
+bool MicrotunerConfig::validateScaleForm()
+{
 	auto fail = [=](QString message) { QMessageBox::critical(this, tr("Scale parsing error"), message); };
 
 	// check name
@@ -351,7 +357,8 @@ bool MicrotunerConfig::validateScaleForm() {
  * \brief Validate the entered key mapping and other values
  * \return true if input is valid, false if problems were detected
  */
-bool MicrotunerConfig::validateKeymapForm() {
+bool MicrotunerConfig::validateKeymapForm()
+{
 	auto fail = [=](QString message) { QMessageBox::critical(this, tr("Keymap parsing error"), message); };
 
 	// check name
@@ -393,7 +400,8 @@ bool MicrotunerConfig::validateKeymapForm() {
  * \brief Parse and apply the entered scale definition
  * \return true if input is valid, false if problems were detected
  */
-bool MicrotunerConfig::applyScale() {
+bool MicrotunerConfig::applyScale()
+{
 	if (!validateScaleForm()) { return false; };
 
 	std::vector<Interval> newIntervals;
@@ -431,7 +439,8 @@ bool MicrotunerConfig::applyScale() {
  * \brief Parse and apply the entered keymap definition
  * \return true if input is valid, false if problems were detected
  */
-bool MicrotunerConfig::applyKeymap() {
+bool MicrotunerConfig::applyKeymap()
+{
 	if (!validateKeymapForm()) { return false; }
 
 	std::vector<int> newMap;
@@ -468,7 +477,8 @@ bool MicrotunerConfig::applyKeymap() {
  * \brief Parse an .scl file and apply the loaded scale if it is valid
  * \return true if input is valid, false if problems were detected
  */
-bool MicrotunerConfig::loadScaleFromFile() {
+bool MicrotunerConfig::loadScaleFromFile()
+{
 	QString fileName = FileDialog::getOpenFileName(this, tr("Open scale"), "", tr("Scala scale definition (*.scl)"));
 	if (fileName == "") { return false; }
 	QFile file(fileName);
@@ -499,7 +509,8 @@ bool MicrotunerConfig::loadScaleFromFile() {
  * \brief Parse a .kbm file and apply the loaded keymap if it is valid
  * \return true if input is valid, false if problems were detected
  */
-bool MicrotunerConfig::loadKeymapFromFile() {
+bool MicrotunerConfig::loadKeymapFromFile()
+{
 	QString fileName = FileDialog::getOpenFileName(this, tr("Open keymap"), "", tr("Scala keymap definition (*.kbm)"));
 	if (fileName == "") { return false; }
 	QFile file(fileName);
@@ -542,7 +553,8 @@ bool MicrotunerConfig::loadKeymapFromFile() {
  * \brief Save currently entered scale definition as .scl file
  * \return true if input is valid, false if problems were detected
  */
-bool MicrotunerConfig::saveScaleToFile() {
+bool MicrotunerConfig::saveScaleToFile()
+{
 	if (!applyScale()) { return false; }
 	QString fileName = FileDialog::getSaveFileName(this, tr("Save scale"), "", tr("Scala scale definition (*.scl)"));
 	if (fileName == "") { return false; }
@@ -575,7 +587,8 @@ bool MicrotunerConfig::saveScaleToFile() {
  * \brief Save currently entered keymap definition as .kbm file
  * \return true if input is valid, false if problems were detected
  */
-bool MicrotunerConfig::saveKeymapToFile() {
+bool MicrotunerConfig::saveKeymapToFile()
+{
 	if (!applyKeymap()) { return false; }
 	QString fileName = FileDialog::getSaveFileName(this, tr("Save keymap"), "", tr("Scala keymap definition (*.kbm)"));
 	if (fileName == "") { return false; }
@@ -617,13 +630,15 @@ bool MicrotunerConfig::saveKeymapToFile() {
 	return true;
 }
 
-void MicrotunerConfig::saveSettings(QDomDocument& document, QDomElement& element) {
+void MicrotunerConfig::saveSettings(QDomDocument& document, QDomElement& element)
+{
 	MainWindow::saveWidgetState(this, element);
 }
 
 void MicrotunerConfig::loadSettings(const QDomElement& element) { MainWindow::restoreWidgetState(this, element); }
 
-void MicrotunerConfig::closeEvent(QCloseEvent* ce) {
+void MicrotunerConfig::closeEvent(QCloseEvent* ce)
+{
 	if (parentWidget()) {
 		parentWidget()->hide();
 	} else {

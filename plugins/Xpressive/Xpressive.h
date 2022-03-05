@@ -46,7 +46,8 @@ class ExprFront;
 class SubWindow;
 class QPlainTextEdit;
 
-class Xpressive : public Instrument {
+class Xpressive : public Instrument
+{
 	Q_OBJECT
 public:
 	Xpressive(InstrumentTrack* instrument_track);
@@ -125,7 +126,8 @@ private:
 	BoolModel m_exprValid;
 };
 
-class XpressiveView : public InstrumentViewFixedSize {
+class XpressiveView : public InstrumentViewFixedSize
+{
 	Q_OBJECT
 public:
 	XpressiveView(Instrument* _instrument, QWidget* _parent);
@@ -183,10 +185,12 @@ private:
 	bool m_wave_expr;
 };
 
-class XpressiveHelpView : public QTextEdit {
+class XpressiveHelpView : public QTextEdit
+{
 	Q_OBJECT
 public:
-	static XpressiveHelpView* getInstance() {
+	static XpressiveHelpView* getInstance()
+	{
 		static XpressiveHelpView instance;
 		return &instance;
 	}

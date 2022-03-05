@@ -49,7 +49,8 @@ Lv2Manager* LmmsCore::s_lv2Manager = nullptr;
 Ladspa2LMMS* LmmsCore::s_ladspaManager = nullptr;
 void* LmmsCore::s_dndPluginKey = nullptr;
 
-void LmmsCore::init(bool renderOnly) {
+void LmmsCore::init(bool renderOnly)
+{
 	LmmsCore* engine = inst();
 
 	emit engine->initProgress(tr("Generating wavetables"));
@@ -82,7 +83,8 @@ void LmmsCore::init(bool renderOnly) {
 	s_audioEngine->startProcessing();
 }
 
-void LmmsCore::destroy() {
+void LmmsCore::destroy()
+{
 	s_projectJournal->stopAllJournalling();
 	s_audioEngine->stopProcessing();
 
@@ -112,20 +114,24 @@ void LmmsCore::destroy() {
 	Oscillator::destroyFFTPlans();
 }
 
-bool LmmsCore::ignorePluginBlacklist() {
+bool LmmsCore::ignorePluginBlacklist()
+{
 	const char* envVar = getenv("LMMS_IGNORE_BLACKLIST");
 	return (envVar && *envVar);
 }
 
-float LmmsCore::framesPerTick(sample_rate_t sampleRate) {
+float LmmsCore::framesPerTick(sample_rate_t sampleRate)
+{
 	return sampleRate * 60.0f * 4 / DefaultTicksPerBar / s_song->getTempo();
 }
 
-void LmmsCore::updateFramesPerTick() {
+void LmmsCore::updateFramesPerTick()
+{
 	s_framesPerTick = s_audioEngine->processingSampleRate() * 60.0f * 4 / DefaultTicksPerBar / s_song->getTempo();
 }
 
-void LmmsCore::setDndPluginKey(void* newKey) {
+void LmmsCore::setDndPluginKey(void* newKey)
+{
 	Q_ASSERT(static_cast<Plugin::Descriptor::SubPluginFeatures::Key*>(newKey));
 	s_dndPluginKey = newKey;
 }

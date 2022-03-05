@@ -47,16 +47,19 @@ constexpr int MAXTLEN = 3 << MAXLEN;
 const int TLENS[MAXTBL + 1] = {2 << 0, 3 << 0, 2 << 1, 3 << 1, 2 << 2, 3 << 2, 2 << 3, 3 << 3, 2 << 4, 3 << 4, 2 << 5,
 	3 << 5, 2 << 6, 3 << 6, 2 << 7, 3 << 7, 2 << 8, 3 << 8, 2 << 9, 3 << 9, 2 << 10, 3 << 10, 2 << 11, 3 << 11};
 
-typedef struct {
+typedef struct
+{
 public:
-	inline sample_t sampleAt(int table, int ph) {
+	inline sample_t sampleAt(int table, int ph)
+	{
 		if (table % 2 == 0) {
 			return m_data[TLENS[table] + ph];
 		} else {
 			return m_data3[TLENS[table] + ph];
 		}
 	}
-	inline void setSampleAt(int table, int ph, sample_t sample) {
+	inline void setSampleAt(int table, int ph, sample_t sample)
+	{
 		if (table % 2 == 0) {
 			m_data[TLENS[table] + ph] = sample;
 		} else {
@@ -74,9 +77,17 @@ QDataStream& operator<<(QDataStream& out, WaveMipMap& waveMipMap);
 
 QDataStream& operator>>(QDataStream& in, WaveMipMap& waveMipMap);
 
-class LMMS_EXPORT BandLimitedWave {
+class LMMS_EXPORT BandLimitedWave
+{
 public:
-	enum Waveforms { BLSaw, BLSquare, BLTriangle, BLMoog, NumBLWaveforms };
+	enum Waveforms
+	{
+		BLSaw,
+		BLSquare,
+		BLTriangle,
+		BLMoog,
+		NumBLWaveforms
+	};
 
 	BandLimitedWave(){};
 	virtual ~BandLimitedWave(){};
@@ -99,7 +110,8 @@ public:
 	 * measured in sample frames \param _wave The wanted waveform. Options currently are saw, triangle, square and moog
 	 * saw.
 	 */
-	static inline sample_t oscillate(float _ph, float _wavelen, Waveforms _wave) {
+	static inline sample_t oscillate(float _ph, float _wavelen, Waveforms _wave)
+	{
 		// get the next higher tlen
 		int t = 0;
 		while (t < MAXTBL && _wavelen >= TLENS[t + 1]) {

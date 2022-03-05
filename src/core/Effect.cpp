@@ -44,20 +44,23 @@ Effect::Effect(const Plugin::Descriptor* _desc, Model* _parent, const Descriptor
 	, m_wetDryModel(1.0f, -1.0f, 1.0f, 0.01f, this, tr("Wet/Dry mix"))
 	, m_gateModel(0.0f, 0.0f, 1.0f, 0.01f, this, tr("Gate"))
 	, m_autoQuitModel(1.0f, 1.0f, 8000.0f, 100.0f, 1.0f, this, tr("Decay"))
-	, m_autoQuitDisabled(false) {
+	, m_autoQuitDisabled(false)
+{
 	m_srcState[0] = m_srcState[1] = nullptr;
 	reinitSRC();
 
 	if (ConfigManager::inst()->value("ui", "disableautoquit").toInt()) { m_autoQuitDisabled = true; }
 }
 
-Effect::~Effect() {
+Effect::~Effect()
+{
 	for (int i = 0; i < 2; ++i) {
 		if (m_srcState[i] != nullptr) { src_delete(m_srcState[i]); }
 	}
 }
 
-void Effect::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void Effect::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	m_enabledModel.saveSettings(_doc, _this, "on");
 	m_wetDryModel.saveSettings(_doc, _this, "wet");
 	m_autoQuitModel.saveSettings(_doc, _this, "autoquit");
@@ -65,7 +68,8 @@ void Effect::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 	controls()->saveState(_doc, _this);
 }
 
-void Effect::loadSettings(const QDomElement& _this) {
+void Effect::loadSettings(const QDomElement& _this)
+{
 	m_enabledModel.loadSettings(_this, "on");
 	m_wetDryModel.loadSettings(_this, "wet");
 	m_autoQuitModel.loadSettings(_this, "autoquit");
@@ -80,7 +84,8 @@ void Effect::loadSettings(const QDomElement& _this) {
 	}
 }
 
-Effect* Effect::instantiate(const QString& pluginName, Model* _parent, Descriptor::SubPluginFeatures::Key* _key) {
+Effect* Effect::instantiate(const QString& pluginName, Model* _parent, Descriptor::SubPluginFeatures::Key* _key)
+{
 	Plugin* p = Plugin::instantiateWithKey(pluginName, _parent, _key);
 	// check whether instantiated plugin is an effect
 	if (dynamic_cast<Effect*>(p) != nullptr) {
@@ -96,7 +101,8 @@ Effect* Effect::instantiate(const QString& pluginName, Model* _parent, Descripto
 	return nullptr;
 }
 
-void Effect::checkGate(double _out_sum) {
+void Effect::checkGate(double _out_sum)
+{
 	if (m_autoQuitDisabled) { return; }
 
 	// Check whether we need to continue processing input.  Restart the
@@ -114,7 +120,8 @@ void Effect::checkGate(double _out_sum) {
 
 PluginView* Effect::instantiateView(QWidget* _parent) { return new EffectView(this, _parent); }
 
-void Effect::reinitSRC() {
+void Effect::reinitSRC()
+{
 	for (int i = 0; i < 2; ++i) {
 		if (m_srcState[i] != nullptr) { src_delete(m_srcState[i]); }
 		int error;
@@ -127,7 +134,8 @@ void Effect::reinitSRC() {
 }
 
 void Effect::resample(int _i, const sampleFrame* _src_buf, sample_rate_t _src_sr, sampleFrame* _dst_buf,
-	sample_rate_t _dst_sr, f_cnt_t _frames) {
+	sample_rate_t _dst_sr, f_cnt_t _frames)
+{
 	if (m_srcState[_i] == nullptr) { return; }
 	m_srcData[_i].input_frames = _frames;
 	m_srcData[_i].output_frames = Engine::audioEngine()->framesPerPeriod();

@@ -30,7 +30,8 @@
 #include "lmms_basics.h"
 
 const int MAX_BANDS = 2048;
-class EqAnalyser {
+class EqAnalyser
+{
 public:
 	EqAnalyser();
 	virtual ~EqAnalyser();
@@ -60,7 +61,8 @@ private:
 	float m_fftWindow[FFT_BUFFER_SIZE];
 };
 
-class EqSpectrumView : public QWidget {
+class EqSpectrumView : public QWidget
+{
 	Q_OBJECT
 public:
 	explicit EqSpectrumView(EqAnalyser* b, QWidget* _parent = 0);

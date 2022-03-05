@@ -42,18 +42,21 @@ AudioPort::AudioPort(const QString& _name, bool _has_effect_chain, FloatModel* v
 	, m_effects(_has_effect_chain ? new EffectChain(nullptr) : nullptr)
 	, m_volumeModel(volumeModel)
 	, m_panningModel(panningModel)
-	, m_mutedModel(mutedModel) {
+	, m_mutedModel(mutedModel)
+{
 	Engine::audioEngine()->addAudioPort(this);
 	setExtOutputEnabled(true);
 }
 
-AudioPort::~AudioPort() {
+AudioPort::~AudioPort()
+{
 	setExtOutputEnabled(false);
 	Engine::audioEngine()->removeAudioPort(this);
 	BufferManager::release(m_portBuffer);
 }
 
-void AudioPort::setExtOutputEnabled(bool _enabled) {
+void AudioPort::setExtOutputEnabled(bool _enabled)
+{
 	if (_enabled != m_extOutputEnabled) {
 		m_extOutputEnabled = _enabled;
 		if (m_extOutputEnabled) {
@@ -64,12 +67,14 @@ void AudioPort::setExtOutputEnabled(bool _enabled) {
 	}
 }
 
-void AudioPort::setName(const QString& _name) {
+void AudioPort::setName(const QString& _name)
+{
 	m_name = _name;
 	Engine::audioEngine()->audioDev()->renamePort(this);
 }
 
-bool AudioPort::processEffects() {
+bool AudioPort::processEffects()
+{
 	if (m_effects) {
 		bool more
 			= m_effects->processAudioBuffer(m_portBuffer, Engine::audioEngine()->framesPerPeriod(), m_bufferUsage);
@@ -78,7 +83,8 @@ bool AudioPort::processEffects() {
 	return false;
 }
 
-void AudioPort::doProcessing() {
+void AudioPort::doProcessing()
+{
 	if (m_mutedModel && m_mutedModel->value()) { return; }
 
 	const fpp_t fpp = Engine::audioEngine()->framesPerPeriod();
@@ -182,13 +188,15 @@ void AudioPort::doProcessing() {
 	}
 }
 
-void AudioPort::addPlayHandle(PlayHandle* handle) {
+void AudioPort::addPlayHandle(PlayHandle* handle)
+{
 	m_playHandleLock.lock();
 	m_playHandles.append(handle);
 	m_playHandleLock.unlock();
 }
 
-void AudioPort::removePlayHandle(PlayHandle* handle) {
+void AudioPort::removePlayHandle(PlayHandle* handle)
+{
 	m_playHandleLock.lock();
 	PlayHandleList::Iterator it = std::find(m_playHandles.begin(), m_playHandles.end(), handle);
 	if (it != m_playHandles.end()) { m_playHandles.erase(it); }

@@ -30,11 +30,13 @@
 #include "AudioEngine.h"
 #include "MicroTimer.h"
 
-class AudioDummy : public QThread, public AudioDevice {
+class AudioDummy : public QThread, public AudioDevice
+{
 	Q_OBJECT
 public:
 	AudioDummy(bool& _success_ful, AudioEngine* audioEngine)
-		: AudioDevice(DEFAULT_CHANNELS, audioEngine) {
+		: AudioDevice(DEFAULT_CHANNELS, audioEngine)
+	{
 		_success_ful = true;
 	}
 
@@ -42,16 +44,20 @@ public:
 
 	inline static QString name() { return QT_TRANSLATE_NOOP("AudioDeviceSetupWidget", "Dummy (no sound output)"); }
 
-	class setupWidget : public AudioDeviceSetupWidget {
+	class setupWidget : public AudioDeviceSetupWidget
+	{
 	public:
 		setupWidget(QWidget* _parent)
-			: AudioDeviceSetupWidget(AudioDummy::name(), _parent) {}
+			: AudioDeviceSetupWidget(AudioDummy::name(), _parent)
+		{
+		}
 
 		virtual ~setupWidget() {}
 
 		void saveSettings() override {}
 
-		void show() override {
+		void show() override
+		{
 			parentWidget()->hide();
 			QWidget::show();
 		}
@@ -62,7 +68,8 @@ private:
 
 	void stopProcessing() override { stopProcessingThread(this); }
 
-	void run() override {
+	void run() override
+	{
 		MicroTimer timer;
 		while (true) {
 			timer.reset();

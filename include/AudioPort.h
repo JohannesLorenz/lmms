@@ -36,7 +36,8 @@ class EffectChain;
 class FloatModel;
 class BoolModel;
 
-class AudioPort : public ThreadableJob {
+class AudioPort : public ThreadableJob
+{
 	MM_OPERATORS
 public:
 	AudioPort(const QString& _name, bool _has_effect_chain = true, FloatModel* volumeModel = nullptr,

@@ -53,25 +53,40 @@ const float OUTPUT_SAMPLE_MULTIPLIER = 32767.0f;
 
 class AudioEngineWorkerThread;
 
-class LMMS_EXPORT AudioEngine : public QObject {
+class LMMS_EXPORT AudioEngine : public QObject
+{
 	Q_OBJECT
 public:
-	struct qualitySettings {
-		enum Mode { Mode_Draft, Mode_HighQuality, Mode_FinalMix };
+	struct qualitySettings
+	{
+		enum Mode
+		{
+			Mode_Draft,
+			Mode_HighQuality,
+			Mode_FinalMix
+		};
 
-		enum Interpolation {
+		enum Interpolation
+		{
 			Interpolation_Linear,
 			Interpolation_SincFastest,
 			Interpolation_SincMedium,
 			Interpolation_SincBest
 		};
 
-		enum Oversampling { Oversampling_None, Oversampling_2x, Oversampling_4x, Oversampling_8x };
+		enum Oversampling
+		{
+			Oversampling_None,
+			Oversampling_2x,
+			Oversampling_4x,
+			Oversampling_8x
+		};
 
 		Interpolation interpolation;
 		Oversampling oversampling;
 
-		qualitySettings(Mode m) {
+		qualitySettings(Mode m)
+		{
 			switch (m) {
 			case Mode_Draft:
 				interpolation = Interpolation_Linear;
@@ -90,9 +105,12 @@ public:
 
 		qualitySettings(Interpolation i, Oversampling o)
 			: interpolation(i)
-			, oversampling(o) {}
+			, oversampling(o)
+		{
+		}
 
-		int sampleRateMultiplier() const {
+		int sampleRateMultiplier() const
+		{
 			switch (oversampling) {
 			case Oversampling_None: return 1;
 			case Oversampling_2x: return 2;
@@ -102,7 +120,8 @@ public:
 			return 1;
 		}
 
-		int libsrcInterpolation() const {
+		int libsrcInterpolation() const
+		{
 			switch (interpolation) {
 			case Interpolation_Linear: return SRC_ZERO_ORDER_HOLD;
 			case Interpolation_SincFastest: return SRC_SINC_FASTEST;
@@ -132,7 +151,8 @@ public:
 	inline AudioDevice* audioDev() { return m_audioDev; }
 
 	// audio-port-stuff
-	inline void addAudioPort(AudioPort* port) {
+	inline void addAudioPort(AudioPort* port)
+	{
 		requestChangeInModel();
 		m_audioPorts.push_back(port);
 		doneChangeInModel();
@@ -172,7 +192,8 @@ public:
 
 	inline void setMasterGain(const float mo) { m_masterGain = mo; }
 
-	static inline sample_t clip(const sample_t s) {
+	static inline sample_t clip(const sample_t s)
+	{
 		if (s > 1.0f) {
 			return 1.0f;
 		} else if (s < -1.0f) {
@@ -181,10 +202,13 @@ public:
 		return s;
 	}
 
-	struct StereoSample {
+	struct StereoSample
+	{
 		StereoSample(sample_t _left, sample_t _right)
 			: left(_left)
-			, right(_right) {}
+			, right(_right)
+		{
+		}
 		sample_t left;
 		sample_t right;
 	};
@@ -222,7 +246,8 @@ signals:
 private:
 	typedef FifoBuffer<surroundSampleFrame*> Fifo;
 
-	class fifoWriter : public QThread {
+	class fifoWriter : public QThread
+	{
 	public:
 		fifoWriter(AudioEngine* audioEngine, Fifo* fifo);
 

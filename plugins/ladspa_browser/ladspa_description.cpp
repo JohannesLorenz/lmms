@@ -36,7 +36,8 @@
 #include "Ladspa2LMMS.h"
 
 ladspaDescription::ladspaDescription(QWidget* _parent, ladspaPluginType _type)
-	: QWidget(_parent) {
+	: QWidget(_parent)
+{
 	Ladspa2LMMS* manager = Engine::getLADSPAManager();
 
 	l_sortable_plugin_t plugins;
@@ -87,7 +88,8 @@ ladspaDescription::ladspaDescription(QWidget* _parent, ladspaPluginType _type)
 
 ladspaDescription::~ladspaDescription() {}
 
-void ladspaDescription::update(const ladspa_key_t& _key) {
+void ladspaDescription::update(const ladspa_key_t& _key)
+{
 	QWidget* description = new QWidget;
 	m_scrollArea->setWidget(description);
 
@@ -156,7 +158,8 @@ void ladspaDescription::update(const ladspa_key_t& _key) {
 	layout->addWidget(channelsOut);
 }
 
-void ladspaDescription::rowChanged(int _pluginIndex) {
+void ladspaDescription::rowChanged(int _pluginIndex)
+{
 	m_currentSelection = m_pluginKeys[_pluginIndex];
 	update(m_currentSelection);
 }

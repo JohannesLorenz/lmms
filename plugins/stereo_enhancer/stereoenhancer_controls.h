@@ -30,7 +30,8 @@
 
 class stereoEnhancerEffect;
 
-class stereoEnhancerControls : public EffectControls {
+class stereoEnhancerControls : public EffectControls
+{
 	Q_OBJECT
 public:
 	stereoEnhancerControls(stereoEnhancerEffect(*_eff));

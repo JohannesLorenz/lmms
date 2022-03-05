@@ -32,7 +32,8 @@
 #include "embed.h"
 
 PeakControllerDialog::PeakControllerDialog(Controller* _model, QWidget* _parent)
-	: ControllerDialog(_model, _parent) {
+	: ControllerDialog(_model, _parent)
+{
 	setWindowTitle(tr("PEAK"));
 	setWindowIcon(embed::getIconPixmap("controller"));
 	setFixedSize(256, 64);

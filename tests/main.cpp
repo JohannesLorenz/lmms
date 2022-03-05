@@ -4,7 +4,8 @@
 #include "Engine.h"
 #include "QTestSuite.h"
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
 	new QCoreApplication(argc, argv);
 	Engine::init(true);
 

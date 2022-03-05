@@ -64,7 +64,8 @@ SaControls::SaControls(Analyzer* effect)
 	, m_waterfallHeightModel(300.0f, 50.0f, 1000.0f, 50.0f, this, tr("Waterfall history size"))
 	, m_waterfallGammaModel(0.30f, 0.10f, 1.00f, 0.05f, this, tr("Waterfall gamma correction"))
 	, m_windowOverlapModel(2.0f, 1.0f, 4.0f, 1.0f, this, tr("FFT window overlap"))
-	, m_zeroPaddingModel(2.0f, 0.0f, 4.0f, 1.0f, this, tr("FFT zero padding")) {
+	, m_zeroPaddingModel(2.0f, 0.0f, 4.0f, 1.0f, this, tr("FFT zero padding"))
+{
 	// Frequency and amplitude ranges; order must match
 	// FREQUENCY_RANGES and AMPLITUDE_RANGES defined in SaControls.h
 	m_freqRangeModel.addItem(tr("Full (auto)"));
@@ -119,7 +120,8 @@ SaControls::SaControls(Analyzer* effect)
 // Create the SaControlDialog widget which handles display of GUI elements.
 EffectControlDialog* SaControls::createView() { return new SaControlsDialog(this, m_effect->getProcessor()); }
 
-void SaControls::loadSettings(const QDomElement& _this) {
+void SaControls::loadSettings(const QDomElement& _this)
+{
 	m_waterfallModel.loadSettings(_this, "Waterfall");
 	m_smoothModel.loadSettings(_this, "Smooth");
 	m_stereoModel.loadSettings(_this, "Stereo");
@@ -141,7 +143,8 @@ void SaControls::loadSettings(const QDomElement& _this) {
 	m_zeroPaddingModel.loadSettings(_this, "ZeroPadding");
 }
 
-void SaControls::saveSettings(QDomDocument& doc, QDomElement& parent) {
+void SaControls::saveSettings(QDomDocument& doc, QDomElement& parent)
+{
 	m_waterfallModel.saveSettings(doc, parent, "Waterfall");
 	m_smoothModel.saveSettings(doc, parent, "Smooth");
 	m_stereoModel.saveSettings(doc, parent, "Stereo");

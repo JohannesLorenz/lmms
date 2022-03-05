@@ -31,7 +31,11 @@
 class QMimeData;
 
 namespace Clipboard {
-enum class MimeType { StringPair, Default };
+enum class MimeType
+{
+	StringPair,
+	Default
+};
 
 // Convenience Methods
 const QMimeData* getMimeData();
@@ -46,7 +50,8 @@ void copyStringPair(const QString& key, const QString& value);
 QString decodeKey(const QMimeData* mimeData);
 QString decodeValue(const QMimeData* mimeData);
 
-inline const char* mimeType(MimeType type) {
+inline const char* mimeType(MimeType type)
+{
 	switch (type) {
 	case MimeType::StringPair: return "application/x-lmms-stringpair"; break;
 	case MimeType::Default:

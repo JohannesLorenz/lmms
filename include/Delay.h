@@ -58,7 +58,8 @@
 
 // update runs the fx for one frame - takes as arguments input and number of channel to run, returns output
 
-template <ch_cnt_t CHANNELS> class CombFeedback {
+template <ch_cnt_t CHANNELS> class CombFeedback
+{
 public:
 	typedef double frame[CHANNELS];
 
@@ -67,13 +68,15 @@ public:
 		, m_position(0)
 		, m_feedBack(0.0)
 		, m_delay(0)
-		, m_fraction(0.0) {
+		, m_fraction(0.0)
+	{
 		m_buffer = MM_ALLOC<frame>(maxDelay);
 		memset(m_buffer, 0, sizeof(frame) * maxDelay);
 	}
 	virtual ~CombFeedback() { MM_FREE(m_buffer); }
 
-	inline void setMaxDelay(int maxDelay) {
+	inline void setMaxDelay(int maxDelay)
+	{
 		if (maxDelay > m_size) {
 			MM_FREE(m_buffer);
 			m_buffer = MM_ALLOC<frame>(maxDelay);
@@ -85,14 +88,16 @@ public:
 
 	inline void clearHistory() { memset(m_buffer, 0, sizeof(frame) * m_size); }
 
-	inline void setDelay(double delay) {
+	inline void setDelay(double delay)
+	{
 		m_delay = static_cast<int>(ceil(delay));
 		m_fraction = 1.0 - (delay - floor(delay));
 	}
 
 	inline void setGain(double gain) { m_gain = gain; }
 
-	inline double update(double in, ch_cnt_t ch) {
+	inline double update(double in, ch_cnt_t ch)
+	{
 		int readPos = m_position - m_delay;
 		if (readPos < 0) { readPos += m_size; }
 
@@ -113,7 +118,8 @@ private:
 	double m_fraction;
 };
 
-template <ch_cnt_t CHANNELS> class CombFeedfwd {
+template <ch_cnt_t CHANNELS> class CombFeedfwd
+{
 	typedef double frame[CHANNELS];
 
 	CombFeedfwd(int maxDelay)
@@ -121,13 +127,15 @@ template <ch_cnt_t CHANNELS> class CombFeedfwd {
 		, m_position(0)
 		, m_feedBack(0.0)
 		, m_delay(0)
-		, m_fraction(0.0) {
+		, m_fraction(0.0)
+	{
 		m_buffer = MM_ALLOC<frame>(maxDelay);
 		memset(m_buffer, 0, sizeof(frame) * maxDelay);
 	}
 	virtual ~CombFeedfwd() { MM_FREE(m_buffer); }
 
-	inline void setMaxDelay(int maxDelay) {
+	inline void setMaxDelay(int maxDelay)
+	{
 		if (maxDelay > m_size) {
 			MM_FREE(m_buffer);
 			m_buffer = MM_ALLOC<frame>(maxDelay);
@@ -139,14 +147,16 @@ template <ch_cnt_t CHANNELS> class CombFeedfwd {
 
 	inline void clearHistory() { memset(m_buffer, 0, sizeof(frame) * m_size); }
 
-	inline void setDelay(double delay) {
+	inline void setDelay(double delay)
+	{
 		m_delay = static_cast<int>(ceil(delay));
 		m_fraction = 1.0 - (delay - floor(delay));
 	}
 
 	inline void setGain(double gain) { m_gain = gain; }
 
-	inline double update(double in, ch_cnt_t ch) {
+	inline double update(double in, ch_cnt_t ch)
+	{
 		int readPos = m_position - m_delay;
 		if (readPos < 0) { readPos += m_size; }
 
@@ -168,7 +178,8 @@ private:
 	double m_fraction;
 };
 
-template <ch_cnt_t CHANNELS> class CombFeedbackDualtap {
+template <ch_cnt_t CHANNELS> class CombFeedbackDualtap
+{
 	typedef double frame[CHANNELS];
 
 	CombFeedbackDualtap(int maxDelay)
@@ -176,13 +187,15 @@ template <ch_cnt_t CHANNELS> class CombFeedbackDualtap {
 		, m_position(0)
 		, m_feedBack(0.0)
 		, m_delay(0)
-		, m_fraction(0.0) {
+		, m_fraction(0.0)
+	{
 		m_buffer = MM_ALLOC<frame>(maxDelay);
 		memset(m_buffer, 0, sizeof(frame) * maxDelay);
 	}
 	virtual ~CombFeedbackDualtap() { MM_FREE(m_buffer); }
 
-	inline void setMaxDelay(int maxDelay) {
+	inline void setMaxDelay(int maxDelay)
+	{
 		if (maxDelay > m_size) {
 			MM_FREE(m_buffer);
 			m_buffer = MM_ALLOC<frame>(maxDelay);
@@ -194,7 +207,8 @@ template <ch_cnt_t CHANNELS> class CombFeedbackDualtap {
 
 	inline void clearHistory() { memset(m_buffer, 0, sizeof(frame) * m_size); }
 
-	inline void setDelays(double delay1, double delay2) {
+	inline void setDelays(double delay1, double delay2)
+	{
 		m_delay1 = static_cast<int>(ceil(delay1));
 		m_fraction1 = 1.0 - (delay1 - floor(delay1));
 
@@ -204,7 +218,8 @@ template <ch_cnt_t CHANNELS> class CombFeedbackDualtap {
 
 	inline void setGain(double gain) { m_gain = gain; }
 
-	inline double update(double in, ch_cnt_t ch) {
+	inline double update(double in, ch_cnt_t ch)
+	{
 		int readPos1 = m_position - m_delay1;
 		if (readPos1 < 0) { readPos1 += m_size; }
 
@@ -231,7 +246,8 @@ private:
 	double m_fraction2;
 };
 
-template <ch_cnt_t CHANNELS> class AllpassDelay {
+template <ch_cnt_t CHANNELS> class AllpassDelay
+{
 public:
 	typedef double frame[CHANNELS];
 
@@ -240,13 +256,15 @@ public:
 		, m_position(0)
 		, m_feedBack(0.0)
 		, m_delay(0)
-		, m_fraction(0.0) {
+		, m_fraction(0.0)
+	{
 		m_buffer = MM_ALLOC<frame>(maxDelay);
 		memset(m_buffer, 0, sizeof(frame) * maxDelay);
 	}
 	virtual ~AllpassDelay() { MM_FREE(m_buffer); }
 
-	inline void setMaxDelay(int maxDelay) {
+	inline void setMaxDelay(int maxDelay)
+	{
 		if (maxDelay > m_size) {
 			MM_FREE(m_buffer);
 			m_buffer = MM_ALLOC<frame>(maxDelay);
@@ -258,14 +276,16 @@ public:
 
 	inline void clearHistory() { memset(m_buffer, 0, sizeof(frame) * m_size); }
 
-	inline void setDelay(double delay) {
+	inline void setDelay(double delay)
+	{
 		m_delay = static_cast<int>(ceil(delay));
 		m_fraction = 1.0 - (delay - floor(delay));
 	}
 
 	inline void setGain(double gain) { m_gain = gain; }
 
-	inline double update(double in, ch_cnt_t ch) {
+	inline double update(double in, ch_cnt_t ch)
+	{
 		int readPos = m_position - m_delay;
 		if (readPos < 0) { readPos += m_size; }
 

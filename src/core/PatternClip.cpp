@@ -32,7 +32,8 @@
 #include "PatternTrack.h"
 
 PatternClip::PatternClip(Track* track)
-	: Clip(track) {
+	: Clip(track)
+{
 	bar_t t = Engine::patternStore()->lengthOfPattern(patternIndex());
 	if (t > 0) {
 		saveJournallingState(false);
@@ -42,7 +43,8 @@ PatternClip::PatternClip(Track* track)
 	setAutoResize(false);
 }
 
-void PatternClip::saveSettings(QDomDocument& doc, QDomElement& element) {
+void PatternClip::saveSettings(QDomDocument& doc, QDomElement& element)
+{
 	element.setAttribute("name", name());
 	if (element.parentNode().nodeName() == "clipboard") {
 		element.setAttribute("pos", -1);
@@ -54,7 +56,8 @@ void PatternClip::saveSettings(QDomDocument& doc, QDomElement& element) {
 	if (usesCustomClipColor()) { element.setAttribute("color", color().name()); }
 }
 
-void PatternClip::loadSettings(const QDomElement& element) {
+void PatternClip::loadSettings(const QDomElement& element)
+{
 	setName(element.attribute("name"));
 	if (element.attribute("pos").toInt() >= 0) { movePosition(element.attribute("pos").toInt()); }
 	changeLength(element.attribute("len").toInt());

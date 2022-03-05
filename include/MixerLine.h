@@ -35,7 +35,8 @@ class LcdWidget;
 class MixerView;
 class SendButtonIndicator;
 
-class MixerLine : public QWidget {
+class MixerLine : public QWidget
+{
 	Q_OBJECT
 public:
 	Q_PROPERTY(QBrush backgroundActive READ backgroundActive WRITE setBackgroundActive)

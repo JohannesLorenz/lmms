@@ -56,14 +56,17 @@ PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data) { return new
 }
 
 ladspaBrowser::ladspaBrowser()
-	: ToolPlugin(&ladspabrowser_plugin_descriptor, nullptr) {}
+	: ToolPlugin(&ladspabrowser_plugin_descriptor, nullptr)
+{
+}
 
 ladspaBrowser::~ladspaBrowser() {}
 
 QString ladspaBrowser::nodeName() const { return ladspabrowser_plugin_descriptor.name; }
 
 ladspaBrowserView::ladspaBrowserView(ToolPlugin* _tool)
-	: ToolPluginView(_tool) {
+	: ToolPluginView(_tool)
+{
 	QHBoxLayout* hlayout = new QHBoxLayout(this);
 	hlayout->setSpacing(0);
 	hlayout->setMargin(0);
@@ -110,7 +113,8 @@ ladspaBrowserView::ladspaBrowserView(ToolPlugin* _tool)
 
 ladspaBrowserView::~ladspaBrowserView() {}
 
-QWidget* ladspaBrowserView::createTab(QWidget* _parent, const QString& _txt, ladspaPluginType _type) {
+QWidget* ladspaBrowserView::createTab(QWidget* _parent, const QString& _txt, ladspaPluginType _type)
+{
 	QWidget* tab = new QWidget(_parent);
 	tab->setFixedSize(500, 400);
 	QVBoxLayout* layout = new QVBoxLayout(tab);
@@ -134,7 +138,8 @@ QWidget* ladspaBrowserView::createTab(QWidget* _parent, const QString& _txt, lad
 	return tab;
 }
 
-void ladspaBrowserView::showPorts(const ladspa_key_t& _key) {
+void ladspaBrowserView::showPorts(const ladspa_key_t& _key)
+{
 	ladspaPortDialog ports(_key);
 	ports.exec();
 }

@@ -27,7 +27,8 @@
 
 #include "TimePos.h"
 
-class StepRecorderWidget : public QWidget {
+class StepRecorderWidget : public QWidget
+{
 	Q_OBJECT
 
 public:

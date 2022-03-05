@@ -47,9 +47,12 @@
 ProcessWatcher::ProcessWatcher(RemotePlugin* _p)
 	: QThread()
 	, m_plugin(_p)
-	, m_quit(false) {}
+	, m_quit(false)
+{
+}
 
-void ProcessWatcher::run() {
+void ProcessWatcher::run()
+{
 	m_plugin->m_process.start(m_plugin->m_exec, m_plugin->m_args);
 	exec();
 	m_plugin->m_process.moveToThread(m_plugin->thread());
@@ -88,7 +91,8 @@ RemotePlugin::RemotePlugin()
 	m_shmSize(0)
 	, m_shm(nullptr)
 	, m_inputCount(DEFAULT_CHANNELS)
-	, m_outputCount(DEFAULT_CHANNELS) {
+	, m_outputCount(DEFAULT_CHANNELS)
+{
 #ifndef SYNC_WITH_SHM_FIFO
 	struct sockaddr_un sa;
 	sa.sun_family = AF_LOCAL;
@@ -117,7 +121,8 @@ RemotePlugin::RemotePlugin()
 	connect(&m_process, SIGNAL(finished(int, QProcess::ExitStatus)), &m_watcher, SLOT(quit()), Qt::DirectConnection);
 }
 
-RemotePlugin::~RemotePlugin() {
+RemotePlugin::~RemotePlugin()
+{
 	m_watcher.stop();
 	m_watcher.wait();
 
@@ -146,7 +151,8 @@ RemotePlugin::~RemotePlugin() {
 #endif
 }
 
-bool RemotePlugin::init(const QString& pluginExecutable, bool waitForInitDoneMsg, QStringList extraArgs) {
+bool RemotePlugin::init(const QString& pluginExecutable, bool waitForInitDoneMsg, QStringList extraArgs)
+{
 	lock();
 	if (m_failed) {
 #ifdef SYNC_WITH_SHM_FIFO
@@ -222,7 +228,8 @@ bool RemotePlugin::init(const QString& pluginExecutable, bool waitForInitDoneMsg
 	return failed();
 }
 
-bool RemotePlugin::process(const sampleFrame* _in_buf, sampleFrame* _out_buf) {
+bool RemotePlugin::process(const sampleFrame* _in_buf, sampleFrame* _out_buf)
+{
 	const fpp_t frames = Engine::audioEngine()->framesPerPeriod();
 
 	if (m_failed || !isRunning()) {
@@ -302,7 +309,8 @@ bool RemotePlugin::process(const sampleFrame* _in_buf, sampleFrame* _out_buf) {
 	return true;
 }
 
-void RemotePlugin::processMidiEvent(const MidiEvent& _e, const f_cnt_t _offset) {
+void RemotePlugin::processMidiEvent(const MidiEvent& _e, const f_cnt_t _offset)
+{
 	message m(IdMidiEvent);
 	m.addInt(_e.type());
 	m.addInt(_e.channel());
@@ -314,19 +322,22 @@ void RemotePlugin::processMidiEvent(const MidiEvent& _e, const f_cnt_t _offset) 
 	unlock();
 }
 
-void RemotePlugin::showUI() {
+void RemotePlugin::showUI()
+{
 	lock();
 	sendMessage(IdShowUI);
 	unlock();
 }
 
-void RemotePlugin::hideUI() {
+void RemotePlugin::hideUI()
+{
 	lock();
 	sendMessage(IdHideUI);
 	unlock();
 }
 
-void RemotePlugin::resizeSharedProcessingMemory() {
+void RemotePlugin::resizeSharedProcessingMemory()
+{
 	const size_t s = (m_inputCount + m_outputCount) * Engine::audioEngine()->framesPerPeriod() * sizeof(float);
 	if (m_shm != nullptr) {
 #ifdef USE_QT_SHMEM
@@ -354,7 +365,8 @@ void RemotePlugin::resizeSharedProcessingMemory() {
 	sendMessage(message(IdChangeSharedMemoryKey).addInt(shm_key).addInt(m_shmSize));
 }
 
-void RemotePlugin::processFinished(int exitCode, QProcess::ExitStatus exitStatus) {
+void RemotePlugin::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
+{
 	if (exitStatus == QProcess::CrashExit) {
 		qCritical() << "Remote plugin crashed";
 	} else if (exitCode) {
@@ -367,7 +379,8 @@ void RemotePlugin::processFinished(int exitCode, QProcess::ExitStatus exitStatus
 
 void RemotePlugin::processErrored(QProcess::ProcessError err) { qCritical() << "Process error: " << err; }
 
-bool RemotePlugin::processMessage(const message& _m) {
+bool RemotePlugin::processMessage(const message& _m)
+{
 	lock();
 	message reply_message(_m.id);
 	bool reply = false;

@@ -30,7 +30,8 @@
 
 Lv2FxControlDialog::Lv2FxControlDialog(Lv2FxControls* controls)
 	: EffectControlDialog(controls)
-	, Lv2ViewBase(this, controls) {
+	, Lv2ViewBase(this, controls)
+{
 	if (m_reloadPluginButton) {
 		connect(m_reloadPluginButton, &QPushButton::clicked, this, [this]() { lv2Controls()->reloadPlugin(); });
 	}

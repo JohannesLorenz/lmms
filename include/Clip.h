@@ -34,7 +34,8 @@ class ClipView;
 class TrackContainer;
 class TrackView;
 
-class LMMS_EXPORT Clip : public Model, public JournallingObject {
+class LMMS_EXPORT Clip : public Model, public JournallingObject
+{
 	Q_OBJECT
 	MM_OPERATORS
 	mapPropertyFromModel(bool, isMuted, setMuted, m_mutedModel);
@@ -48,7 +49,8 @@ public:
 
 	inline const QString& name() const { return m_name; }
 
-	inline void setName(const QString& name) {
+	inline void setName(const QString& name)
+	{
 		m_name = name;
 		emit dataChanged();
 	}
@@ -57,7 +59,8 @@ public:
 
 	inline const TimePos& startPosition() const { return m_startPosition; }
 
-	inline TimePos endPosition() const {
+	inline TimePos endPosition() const
+	{
 		const int sp = m_startPosition;
 		return sp + m_length;
 	}
@@ -106,7 +109,12 @@ signals:
 	void colorChanged();
 
 private:
-	enum Actions { NoAction, Move, Resize };
+	enum Actions
+	{
+		NoAction,
+		Move,
+		Resize
+	};
 
 	Track* m_track;
 	QString m_name;

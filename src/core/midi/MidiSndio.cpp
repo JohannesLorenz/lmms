@@ -35,7 +35,8 @@
 
 MidiSndio::MidiSndio(void)
 	: MidiClientRaw()
-	, m_quit(false) {
+	, m_quit(false)
+{
 	QString dev = probeDevice();
 
 	if (dev == "") {
@@ -52,7 +53,8 @@ MidiSndio::MidiSndio(void)
 	start(QThread::LowPriority);
 }
 
-MidiSndio::~MidiSndio() {
+MidiSndio::~MidiSndio()
+{
 	if (isRunning()) {
 		m_quit = true;
 		wait(1000);
@@ -60,7 +62,8 @@ MidiSndio::~MidiSndio() {
 	}
 }
 
-QString MidiSndio::probeDevice(void) {
+QString MidiSndio::probeDevice(void)
+{
 	QString dev = ConfigManager::inst()->value("MidiSndio", "device");
 
 	return dev;
@@ -68,7 +71,8 @@ QString MidiSndio::probeDevice(void) {
 
 void MidiSndio::sendByte(const unsigned char c) { mio_write(m_hdl, &c, 1); }
 
-void MidiSndio::run(void) {
+void MidiSndio::run(void)
+{
 	struct pollfd pfd;
 	nfds_t nfds;
 	char buf[0x100], *p;

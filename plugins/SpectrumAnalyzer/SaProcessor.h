@@ -40,7 +40,8 @@ template <class T> class LocklessRingBuffer;
 class SaControls;
 
 //! Receives audio data, runs FFT analysis and stores the result.
-class SaProcessor {
+class SaProcessor
+{
 public:
 	explicit SaProcessor(const SaControls* controls);
 	virtual ~SaProcessor();

@@ -35,7 +35,8 @@
 #include "LcdSpinBox.h"
 #include "gui_templates.h"
 
-static void stream_write_callback(pa_stream* s, size_t length, void* userdata) {
+static void stream_write_callback(pa_stream* s, size_t length, void* userdata)
+{
 	static_cast<AudioPulseAudio*>(userdata)->streamWriteCallback(s, length);
 }
 
@@ -45,7 +46,8 @@ AudioPulseAudio::AudioPulseAudio(bool& _success_ful, AudioEngine* _audioEngine)
 		_audioEngine)
 	, m_s(nullptr)
 	, m_quit(false)
-	, m_convertEndian(false) {
+	, m_convertEndian(false)
+{
 	_success_ful = false;
 
 	m_sampleSpec.format = PA_SAMPLE_S16LE;
@@ -57,7 +59,8 @@ AudioPulseAudio::AudioPulseAudio(bool& _success_ful, AudioEngine* _audioEngine)
 
 AudioPulseAudio::~AudioPulseAudio() { stopProcessing(); }
 
-QString AudioPulseAudio::probeDevice() {
+QString AudioPulseAudio::probeDevice()
+{
 	QString dev = ConfigManager::inst()->value("audiopa", "device");
 	if (dev.isEmpty()) {
 		if (getenv("AUDIODEV") != nullptr) { return getenv("AUDIODEV"); }
@@ -66,16 +69,19 @@ QString AudioPulseAudio::probeDevice() {
 	return dev;
 }
 
-void AudioPulseAudio::startProcessing() {
+void AudioPulseAudio::startProcessing()
+{
 	if (!isRunning()) { start(QThread::HighPriority); }
 }
 
-void AudioPulseAudio::stopProcessing() {
+void AudioPulseAudio::stopProcessing()
+{
 	m_quit = true;
 	stopProcessingThread(this);
 }
 
-void AudioPulseAudio::applyQualitySettings() {
+void AudioPulseAudio::applyQualitySettings()
+{
 	if (hqAudio()) {
 		//		setSampleRate( engine::audioEngine()->processingSampleRate() );
 	}
@@ -84,7 +90,8 @@ void AudioPulseAudio::applyQualitySettings() {
 }
 
 /* This routine is called whenever the stream state changes */
-static void stream_state_callback(pa_stream* s, void* userdata) {
+static void stream_state_callback(pa_stream* s, void* userdata)
+{
 	switch (pa_stream_get_state(s)) {
 	case PA_STREAM_CREATING:
 	case PA_STREAM_TERMINATED: break;
@@ -97,7 +104,8 @@ static void stream_state_callback(pa_stream* s, void* userdata) {
 }
 
 /* This is called whenever the context status changes */
-static void context_state_callback(pa_context* c, void* userdata) {
+static void context_state_callback(pa_context* c, void* userdata)
+{
 	AudioPulseAudio* _this = static_cast<AudioPulseAudio*>(userdata);
 	switch (pa_context_get_state(c)) {
 	case PA_CONTEXT_CONNECTING:
@@ -139,7 +147,8 @@ static void context_state_callback(pa_context* c, void* userdata) {
 	}
 }
 
-void AudioPulseAudio::run() {
+void AudioPulseAudio::run()
+{
 	pa_mainloop* mainLoop = pa_mainloop_new();
 	if (!mainLoop) {
 		qCritical("pa_mainloop_new() failed.\n");
@@ -184,7 +193,8 @@ void AudioPulseAudio::run() {
 	pa_mainloop_free(mainLoop);
 }
 
-void AudioPulseAudio::streamWriteCallback(pa_stream* s, size_t length) {
+void AudioPulseAudio::streamWriteCallback(pa_stream* s, size_t length)
+{
 	const fpp_t fpp = audioEngine()->framesPerPeriod();
 	surroundSampleFrame* temp = new surroundSampleFrame[fpp];
 	int_sample_t* pcmbuf = (int_sample_t*)pa_xmalloc(fpp * channels() * sizeof(int_sample_t));
@@ -205,7 +215,8 @@ void AudioPulseAudio::streamWriteCallback(pa_stream* s, size_t length) {
 	delete[] temp;
 }
 
-void AudioPulseAudio::signalConnected(bool connected) {
+void AudioPulseAudio::signalConnected(bool connected)
+{
 	if (!m_connected) {
 		m_connected = connected;
 		m_connectedSemaphore.release();
@@ -213,7 +224,8 @@ void AudioPulseAudio::signalConnected(bool connected) {
 }
 
 AudioPulseAudio::setupWidget::setupWidget(QWidget* _parent)
-	: AudioDeviceSetupWidget(AudioPulseAudio::name(), _parent) {
+	: AudioDeviceSetupWidget(AudioPulseAudio::name(), _parent)
+{
 	m_device = new QLineEdit(AudioPulseAudio::probeDevice(), this);
 	m_device->setGeometry(10, 20, 160, 20);
 
@@ -234,7 +246,8 @@ AudioPulseAudio::setupWidget::setupWidget(QWidget* _parent)
 
 AudioPulseAudio::setupWidget::~setupWidget() { delete m_channels->model(); }
 
-void AudioPulseAudio::setupWidget::saveSettings() {
+void AudioPulseAudio::setupWidget::saveSettings()
+{
 	ConfigManager::inst()->setValue("audiopa", "device", m_device->text());
 	ConfigManager::inst()->setValue("audiopa", "channels", QString::number(m_channels->value<int>()));
 }

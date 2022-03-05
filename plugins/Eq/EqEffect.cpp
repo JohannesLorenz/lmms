@@ -48,11 +48,14 @@ EqEffect::EqEffect(Model* parent, const Plugin::Descriptor::SubPluginFeatures::K
 	: Effect(&eq_plugin_descriptor, parent, key)
 	, m_eqControls(this)
 	, m_inGain(1.0)
-	, m_outGain(1.0) {}
+	, m_outGain(1.0)
+{
+}
 
 EqEffect::~EqEffect() {}
 
-bool EqEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
+bool EqEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
+{
 	const int sampleRate = Engine::audioEngine()->processingSampleRate();
 
 	// wet/dry controls
@@ -237,7 +240,8 @@ bool EqEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
 	return isRunning();
 }
 
-float EqEffect::peakBand(float minF, float maxF, EqAnalyser* fft, int sr) {
+float EqEffect::peakBand(float minF, float maxF, EqAnalyser* fft, int sr)
+{
 	float peak = -60;
 	float* b = fft->m_bands;
 	float h = 0;
@@ -251,7 +255,8 @@ float EqEffect::peakBand(float minF, float maxF, EqAnalyser* fft, int sr) {
 	return (peak + 60) / 100;
 }
 
-void EqEffect::setBandPeaks(EqAnalyser* fft, int samplerate) {
+void EqEffect::setBandPeaks(EqAnalyser* fft, int samplerate)
+{
 	m_eqControls.m_lowShelfPeakR = m_eqControls.m_lowShelfPeakL
 		= peakBand(m_eqControls.m_lowShelfFreqModel.value() * (1 - m_eqControls.m_lowShelfResModel.value() * 0.5),
 			m_eqControls.m_lowShelfFreqModel.value(), fft, samplerate);
@@ -280,7 +285,8 @@ void EqEffect::setBandPeaks(EqAnalyser* fft, int samplerate) {
 extern "C" {
 
 // needed for getting plugin out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data)
+{
 	return new EqEffect(parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(data));
 }
 }

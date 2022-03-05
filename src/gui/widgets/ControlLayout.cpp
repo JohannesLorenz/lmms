@@ -85,7 +85,8 @@ ControlLayout::ControlLayout(QWidget* parent, int margin, int hSpacing, int vSpa
 	: QLayout(parent)
 	, m_hSpace(hSpacing)
 	, m_vSpace(vSpacing)
-	, m_searchBar(new QLineEdit(parent)) {
+	, m_searchBar(new QLineEdit(parent))
+{
 	setContentsMargins(margin, margin, margin, margin);
 	m_searchBar->setPlaceholderText("filter");
 	m_searchBar->setObjectName(s_searchBarName);
@@ -94,26 +95,30 @@ ControlLayout::ControlLayout(QWidget* parent, int margin, int hSpacing, int vSpa
 	m_searchBar->setHidden(true); // nothing to filter yet
 }
 
-ControlLayout::~ControlLayout() {
+ControlLayout::~ControlLayout()
+{
 	QLayoutItem* item;
 	while ((item = takeAt(0))) {
 		delete item;
 	}
 }
 
-void ControlLayout::onTextChanged(const QString&) {
+void ControlLayout::onTextChanged(const QString&)
+{
 	invalidate();
 	update();
 }
 
-void ControlLayout::addItem(QLayoutItem* item) {
+void ControlLayout::addItem(QLayoutItem* item)
+{
 	QWidget* widget = item->widget();
 	const QString str = widget ? widget->objectName() : QString("unnamed");
 	m_itemMap.insert(str, item);
 	invalidate();
 }
 
-int ControlLayout::horizontalSpacing() const {
+int ControlLayout::horizontalSpacing() const
+{
 	if (m_hSpace >= 0) {
 		return m_hSpace;
 	} else {
@@ -121,7 +126,8 @@ int ControlLayout::horizontalSpacing() const {
 	}
 }
 
-int ControlLayout::verticalSpacing() const {
+int ControlLayout::verticalSpacing() const
+{
 	if (m_vSpace >= 0) {
 		return m_vSpace;
 	} else {
@@ -131,7 +137,8 @@ int ControlLayout::verticalSpacing() const {
 
 int ControlLayout::count() const { return m_itemMap.size() - 1; }
 
-QMap<QString, QLayoutItem*>::const_iterator ControlLayout::pairAt(int index) const {
+QMap<QString, QLayoutItem*>::const_iterator ControlLayout::pairAt(int index) const
+{
 	if (index < 0) { return m_itemMap.cend(); }
 
 	auto skip = [&](QLayoutItem* item) -> bool { return item->widget()->objectName() == s_searchBarName; };
@@ -144,18 +151,21 @@ QMap<QString, QLayoutItem*>::const_iterator ControlLayout::pairAt(int index) con
 }
 
 // linear time :-(
-QLayoutItem* ControlLayout::itemAt(int index) const {
+QLayoutItem* ControlLayout::itemAt(int index) const
+{
 	auto itr = pairAt(index);
 	return (itr == m_itemMap.end()) ? nullptr : itr.value();
 }
 
-QLayoutItem* ControlLayout::itemByString(const QString& key) const {
+QLayoutItem* ControlLayout::itemByString(const QString& key) const
+{
 	auto itr = m_itemMap.find(key);
 	return (itr == m_itemMap.end()) ? nullptr : *itr;
 }
 
 // linear time :-(
-QLayoutItem* ControlLayout::takeAt(int index) {
+QLayoutItem* ControlLayout::takeAt(int index)
+{
 	auto itr = pairAt(index);
 	return (itr == m_itemMap.end()) ? nullptr : m_itemMap.take(itr.key());
 }
@@ -166,19 +176,22 @@ Qt::Orientations ControlLayout::expandingDirections() const { return Qt::Orienta
 
 bool ControlLayout::hasHeightForWidth() const { return true; }
 
-int ControlLayout::heightForWidth(int width) const {
+int ControlLayout::heightForWidth(int width) const
+{
 	int height = doLayout(QRect(0, 0, width, 0), true);
 	return height;
 }
 
-void ControlLayout::setGeometry(const QRect& rect) {
+void ControlLayout::setGeometry(const QRect& rect)
+{
 	QLayout::setGeometry(rect);
 	doLayout(rect, false);
 }
 
 QSize ControlLayout::sizeHint() const { return minimumSize(); }
 
-QSize ControlLayout::minimumSize() const {
+QSize ControlLayout::minimumSize() const
+{
 	// original formula from Qt's FlowLayout example:
 	// get maximum height and width for all children.
 	// as Qt will later call heightForWidth, only the width here really matters
@@ -195,7 +208,8 @@ QSize ControlLayout::minimumSize() const {
 	return size;
 }
 
-int ControlLayout::doLayout(const QRect& rect, bool testOnly) const {
+int ControlLayout::doLayout(const QRect& rect, bool testOnly) const
+{
 	int left, top, right, bottom;
 	getContentsMargins(&left, &top, &right, &bottom);
 	QRect effectiveRect = rect.adjusted(+left, +top, -right, -bottom);
@@ -258,7 +272,8 @@ int ControlLayout::doLayout(const QRect& rect, bool testOnly) const {
 	return y + lineHeight - rect.y() + bottom;
 }
 
-int ControlLayout::smartSpacing(QStyle::PixelMetric pm) const {
+int ControlLayout::smartSpacing(QStyle::PixelMetric pm) const
+{
 	QObject* parent = this->parent();
 	if (!parent) {
 		return -1;

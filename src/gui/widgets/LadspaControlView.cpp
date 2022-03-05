@@ -36,7 +36,8 @@
 LadspaControlView::LadspaControlView(QWidget* _parent, LadspaControl* _ctl)
 	: QWidget(_parent)
 	, ModelView(_ctl, this)
-	, m_ctl(_ctl) {
+	, m_ctl(_ctl)
+{
 	QHBoxLayout* layout = new QHBoxLayout(this);
 	layout->setMargin(0);
 	layout->setSpacing(0);

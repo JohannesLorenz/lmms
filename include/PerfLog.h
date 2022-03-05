@@ -32,7 +32,8 @@
 ///
 /// Represents a point in CPU time (not wall-clock time) intended for measuring
 /// performance.
-class PerfTime {
+class PerfTime
+{
 public:
 	PerfTime();
 	bool valid() const;
@@ -56,7 +57,8 @@ private:
 ///
 /// Measures time between construction and destruction and prints the result to
 /// stderr, along with \p name. Alternatively, call begin() and end() explicitly.
-class PerfLogTimer {
+class PerfLogTimer
+{
 public:
 	PerfLogTimer(const QString& name);
 	~PerfLogTimer();

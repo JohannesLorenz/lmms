@@ -44,7 +44,8 @@
 SaControlsDialog::SaControlsDialog(SaControls* controls, SaProcessor* processor)
 	: EffectControlDialog(controls)
 	, m_controls(controls)
-	, m_processor(processor) {
+	, m_processor(processor)
+{
 	// Top level placement of sections is handled by QSplitter widget.
 	QHBoxLayout* master_layout = new QHBoxLayout;
 	QSplitter* display_splitter = new QSplitter(Qt::Vertical);
@@ -336,7 +337,8 @@ SaControlsDialog::SaControlsDialog(SaControls* controls, SaProcessor* processor)
 }
 
 // Suggest the best current widget size.
-QSize SaControlsDialog::sizeHint() const {
+QSize SaControlsDialog::sizeHint() const
+{
 	// Best width is determined by spectrum display sizeHint.
 	// Best height depends on whether waterfall is visible and
 	// consists of heights of the config section, spectrum, waterfall

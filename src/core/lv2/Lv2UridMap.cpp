@@ -26,24 +26,28 @@
 
 #ifdef LMMS_HAVE_LV2
 
-static LV2_URID staticMap(LV2_URID_Map_Handle handle, const char* uri) {
+static LV2_URID staticMap(LV2_URID_Map_Handle handle, const char* uri)
+{
 	UridMap* map = static_cast<UridMap*>(handle);
 	return map->map(uri);
 }
 
-static const char* staticUnmap(LV2_URID_Unmap_Handle handle, LV2_URID urid) {
+static const char* staticUnmap(LV2_URID_Unmap_Handle handle, LV2_URID urid)
+{
 	UridMap* map = static_cast<UridMap*>(handle);
 	return map->unmap(urid);
 }
 
-UridMap::UridMap() {
+UridMap::UridMap()
+{
 	m_mapFeature.handle = static_cast<LV2_URID_Map_Handle>(this);
 	m_mapFeature.map = staticMap;
 	m_unmapFeature.handle = static_cast<LV2_URID_Unmap_Handle>(this);
 	m_unmapFeature.unmap = staticUnmap;
 }
 
-LV2_URID UridMap::map(const char* uri) {
+LV2_URID UridMap::map(const char* uri)
+{
 	LV2_URID result = 0u;
 
 	// the Lv2 docs say that 0 should be returned in any case
@@ -80,7 +84,8 @@ LV2_URID UridMap::map(const char* uri) {
 	return result;
 }
 
-const char* UridMap::unmap(LV2_URID urid) {
+const char* UridMap::unmap(LV2_URID urid)
+{
 	std::size_t idx = static_cast<std::size_t>(urid) - 1;
 
 	std::lock_guard<std::mutex> guard(m_MapMutex);

@@ -46,7 +46,8 @@ Plugin::Descriptor PLUGIN_EXPORT reverbsc_plugin_descriptor = {
 
 ReverbSCEffect::ReverbSCEffect(Model* parent, const Descriptor::SubPluginFeatures::Key* key)
 	: Effect(&reverbsc_plugin_descriptor, parent, key)
-	, m_reverbSCControls(this) {
+	, m_reverbSCControls(this)
+{
 	sp_create(&sp);
 	sp->sr = Engine::audioEngine()->processingSampleRate();
 
@@ -60,14 +61,16 @@ ReverbSCEffect::ReverbSCEffect(Model* parent, const Descriptor::SubPluginFeature
 	sp_dcblock_init(sp, dcblk[1], Engine::audioEngine()->currentQualitySettings().sampleRateMultiplier());
 }
 
-ReverbSCEffect::~ReverbSCEffect() {
+ReverbSCEffect::~ReverbSCEffect()
+{
 	sp_revsc_destroy(&revsc);
 	sp_dcblock_destroy(&dcblk[0]);
 	sp_dcblock_destroy(&dcblk[1]);
 	sp_destroy(&sp);
 }
 
-bool ReverbSCEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
+bool ReverbSCEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
+{
 	if (!isEnabled() || !isRunning()) { return (false); }
 
 	double outSum = 0.0;
@@ -110,7 +113,8 @@ bool ReverbSCEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
 	return isRunning();
 }
 
-void ReverbSCEffect::changeSampleRate() {
+void ReverbSCEffect::changeSampleRate()
+{
 	// Change sr variable in Soundpipe. does not need to be destroyed
 	sp->sr = Engine::audioEngine()->processingSampleRate();
 
@@ -133,7 +137,8 @@ void ReverbSCEffect::changeSampleRate() {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data)
+{
 	return new ReverbSCEffect(parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(data));
 }
 }

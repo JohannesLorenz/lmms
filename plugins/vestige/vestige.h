@@ -41,7 +41,8 @@ class QGridLayout;
 class PixmapButton;
 class VstPlugin;
 
-class vestigeInstrument : public Instrument {
+class vestigeInstrument : public Instrument
+{
 	Q_OBJECT
 public:
 	vestigeInstrument(InstrumentTrack* _instrument_track);
@@ -84,7 +85,8 @@ private:
 	friend class manageVestigeInstrumentView;
 };
 
-class manageVestigeInstrumentView : public InstrumentViewFixedSize {
+class manageVestigeInstrumentView : public InstrumentViewFixedSize
+{
 	Q_OBJECT
 public:
 	manageVestigeInstrumentView(Instrument* _instrument, QWidget* _parent, vestigeInstrument* m_vi2);
@@ -115,7 +117,8 @@ private:
 	CustomTextKnob** vstKnobs;
 };
 
-class VestigeInstrumentView : public InstrumentViewFixedSize {
+class VestigeInstrumentView : public InstrumentViewFixedSize
+{
 	Q_OBJECT
 public:
 	VestigeInstrumentView(Instrument* _instrument, QWidget* _parent);

@@ -32,7 +32,8 @@
 
 class QString;
 
-class DrumSynth {
+class DrumSynth
+{
 public:
 	DrumSynth(){};
 	int GetDSFileSamples(QString dsfile, int16_t*& wave, int channels, sample_rate_t Fs);

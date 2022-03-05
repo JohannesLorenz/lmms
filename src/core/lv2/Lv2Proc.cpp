@@ -45,15 +45,22 @@
 #include "MidiEventToByteSeq.h"
 
 // container for everything required to store MIDI events going to the plugin
-struct MidiInputEvent {
+struct MidiInputEvent
+{
 	MidiEvent ev;
 	TimePos time;
 	f_cnt_t offset;
 };
 
-Plugin::PluginTypes Lv2Proc::check(const LilvPlugin* plugin, std::vector<PluginIssue>& issues) {
+Plugin::PluginTypes Lv2Proc::check(const LilvPlugin* plugin, std::vector<PluginIssue>& issues)
+{
 	unsigned maxPorts = lilv_plugin_get_num_ports(plugin);
-	enum { inCount, outCount, maxCount };
+	enum
+	{
+		inCount,
+		outCount,
+		maxCount
+	};
 	unsigned audioChannels[maxCount] = {0, 0}; // audio input and output count
 	unsigned midiChannels[maxCount] = {0, 0};  // MIDI input and output count
 
@@ -93,7 +100,8 @@ Plugin::PluginTypes Lv2Proc::check(const LilvPlugin* plugin, std::vector<PluginI
 		issues.emplace_back(tooManyMidiOutputChannels, std::to_string(midiChannels[outCount]));
 
 	AutoLilvNodes reqFeats(lilv_plugin_get_required_features(plugin));
-	LILV_FOREACH(nodes, itr, reqFeats.get()) {
+	LILV_FOREACH(nodes, itr, reqFeats.get())
+	{
 		const char* reqFeatName = lilv_node_as_string(lilv_nodes_get(reqFeats.get(), itr));
 		if (!Lv2Features::isFeatureSupported(reqFeatName)) { issues.emplace_back(featureNotSupported, reqFeatName); }
 	}
@@ -102,7 +110,8 @@ Plugin::PluginTypes Lv2Proc::check(const LilvPlugin* plugin, std::vector<PluginI
 	AutoLilvNode requiredOptionNode(mgr->uri(LV2_OPTIONS__requiredOption));
 	AutoLilvNodes requiredOptions = mgr->findNodes(lilv_plugin_get_uri(plugin), requiredOptionNode.get(), nullptr);
 	if (requiredOptions) {
-		LILV_FOREACH(nodes, i, requiredOptions.get()) {
+		LILV_FOREACH(nodes, i, requiredOptions.get())
+		{
 			const char* ro = lilv_node_as_uri(lilv_nodes_get(requiredOptions.get(), i));
 			if (!Lv2Options::isOptionSupported(mgr->uridMap().map(ro))) {
 				// yes, this is not a Lv2 feature,
@@ -121,13 +130,15 @@ Lv2Proc::Lv2Proc(const LilvPlugin* plugin, Model* parent)
 	: LinkedModelGroup(parent)
 	, m_plugin(plugin)
 	, m_midiInputBuf(m_maxMidiInputEvents)
-	, m_midiInputReader(m_midiInputBuf) {
+	, m_midiInputReader(m_midiInputBuf)
+{
 	initPlugin();
 }
 
 Lv2Proc::~Lv2Proc() { shutdownPlugin(); }
 
-void Lv2Proc::dumpPorts() {
+void Lv2Proc::dumpPorts()
+{
 	std::size_t num = 0;
 	for (const std::unique_ptr<Lv2Ports::PortBase>& port : m_ports) {
 		(void)port;
@@ -135,8 +146,10 @@ void Lv2Proc::dumpPorts() {
 	}
 }
 
-void Lv2Proc::copyModelsFromCore() {
-	struct FloatFromModelVisitor : public ConstModelVisitor {
+void Lv2Proc::copyModelsFromCore()
+{
+	struct FloatFromModelVisitor : public ConstModelVisitor
+	{
 		const std::vector<float>* m_scalePointMap; // in
 		float m_res;							   // out
 		void visit(const FloatModel& m) override { m_res = m.value(); }
@@ -145,14 +158,17 @@ void Lv2Proc::copyModelsFromCore() {
 		void visit(const ComboBoxModel& m) override { m_res = (*m_scalePointMap)[static_cast<std::size_t>(m.value())]; }
 	};
 
-	struct Copy : public Lv2Ports::Visitor {
-		void visit(Lv2Ports::Control& ctrl) override {
+	struct Copy : public Lv2Ports::Visitor
+	{
+		void visit(Lv2Ports::Control& ctrl) override
+		{
 			FloatFromModelVisitor ffm;
 			ffm.m_scalePointMap = &ctrl.m_scalePointMap;
 			ctrl.m_connectedModel->accept(ffm);
 			ctrl.m_val = ffm.m_res;
 		}
-		void visit(Lv2Ports::Cv& cv) override {
+		void visit(Lv2Ports::Cv& cv) override
+		{
 			FloatFromModelVisitor ffm;
 			ffm.m_scalePointMap = &cv.m_scalePointMap;
 			cv.m_connectedModel->accept(ffm);
@@ -182,9 +198,12 @@ void Lv2Proc::copyModelsFromCore() {
 	}
 }
 
-void Lv2Proc::copyModelsToCore() {
-	struct Copy : public Lv2Ports::Visitor {
-		void visit(Lv2Ports::AtomSeq& atomPort) override {
+void Lv2Proc::copyModelsToCore()
+{
+	struct Copy : public Lv2Ports::Visitor
+	{
+		void visit(Lv2Ports::AtomSeq& atomPort) override
+		{
 			// we currently don't copy anything, but we need to clear the buffer
 			// for the plugin to write again
 			lv2_evbuf_reset(atomPort.m_buf.get(), false);
@@ -197,7 +216,8 @@ void Lv2Proc::copyModelsToCore() {
 	}
 }
 
-void Lv2Proc::copyBuffersFromCore(const sampleFrame* buf, unsigned firstChan, unsigned num, fpp_t frames) {
+void Lv2Proc::copyBuffersFromCore(const sampleFrame* buf, unsigned firstChan, unsigned num, fpp_t frames)
+{
 	inPorts().m_left->copyBuffersFromCore(buf, firstChan, frames);
 	if (num > 1) {
 		// if the caller requests to take input from two channels, but we only
@@ -212,7 +232,8 @@ void Lv2Proc::copyBuffersFromCore(const sampleFrame* buf, unsigned firstChan, un
 	}
 }
 
-void Lv2Proc::copyBuffersToCore(sampleFrame* buf, unsigned firstChan, unsigned num, fpp_t frames) const {
+void Lv2Proc::copyBuffersToCore(sampleFrame* buf, unsigned firstChan, unsigned num, fpp_t frames) const
+{
 	outPorts().m_left->copyBuffersToCore(buf, firstChan + 0, frames);
 	if (num > 1) {
 		// if the caller requests to copy into two channels, but we only have
@@ -228,7 +249,8 @@ void Lv2Proc::run(fpp_t frames) { lilv_instance_run(m_instance, static_cast<uint
 // in case there will be a PR which removes this callback and instead adds a
 // `ringbuffer_t<MidiEvent + time info>` to `class Instrument`, this
 // function (and the ringbuffer and its reader in `Lv2Proc`) will simply vanish
-void Lv2Proc::handleMidiInputEvent(const MidiEvent& event, const TimePos& time, f_cnt_t offset) {
+void Lv2Proc::handleMidiInputEvent(const MidiEvent& event, const TimePos& time, f_cnt_t offset)
+{
 	if (m_midiIn) {
 		// ringbuffer allows only one writer at a time
 		// however, this function can be called by multiple threads
@@ -250,7 +272,8 @@ void Lv2Proc::handleMidiInputEvent(const MidiEvent& event, const TimePos& time, 
 	}
 }
 
-AutomatableModel* Lv2Proc::modelAtPort(const QString& uri) {
+AutomatableModel* Lv2Proc::modelAtPort(const QString& uri)
+{
 	// unused currently
 	AutomatableModel* mod;
 	auto itr = m_connectedModels.find(uri.toUtf8().data());
@@ -262,7 +285,8 @@ AutomatableModel* Lv2Proc::modelAtPort(const QString& uri) {
 	return mod;
 }
 
-void Lv2Proc::initPlugin() {
+void Lv2Proc::initPlugin()
+{
 	m_features.initCommon();
 	initPluginSpecificFeatures();
 	m_features.createFeatureVectors();
@@ -283,7 +307,8 @@ void Lv2Proc::initPlugin() {
 	}
 }
 
-void Lv2Proc::shutdownPlugin() {
+void Lv2Proc::shutdownPlugin()
+{
 	if (m_valid) {
 		lilv_instance_deactivate(m_instance);
 		lilv_instance_free(m_instance);
@@ -291,7 +316,8 @@ void Lv2Proc::shutdownPlugin() {
 	}
 }
 
-bool Lv2Proc::hasNoteInput() const {
+bool Lv2Proc::hasNoteInput() const
+{
 	return m_midiIn;
 	// we could additionally check for
 	// http://lv2plug.in/ns/lv2core#InstrumentPlugin
@@ -299,7 +325,8 @@ bool Lv2Proc::hasNoteInput() const {
 	// so, if there's any MIDI input, we just assume we can send notes there
 }
 
-void Lv2Proc::initMOptions() {
+void Lv2Proc::initMOptions()
+{
 	/*
 		sampleRate:
 		LMMS can in theory inform plugins of a new sample rate.
@@ -323,14 +350,16 @@ void Lv2Proc::initMOptions() {
 	m_options.createOptionVectors();
 }
 
-void Lv2Proc::initPluginSpecificFeatures() {
+void Lv2Proc::initPluginSpecificFeatures()
+{
 	initMOptions();
 	m_features[LV2_OPTIONS__options] = const_cast<LV2_Options_Option*>(m_options.feature());
 }
 
 void Lv2Proc::loadFileInternal(const QString& file) { (void)file; }
 
-void Lv2Proc::createPort(std::size_t portNum) {
+void Lv2Proc::createPort(std::size_t portNum)
+{
 	Lv2Ports::Meta meta;
 	meta.get(m_plugin, portNum);
 
@@ -370,7 +399,8 @@ void Lv2Proc::createPort(std::size_t portNum) {
 			case Lv2Ports::Vis::Enumeration: {
 				ComboBoxModel* comboModel = new ComboBoxModel(nullptr, dispName);
 				LilvScalePoints* sps = lilv_port_get_scale_points(m_plugin, lilvPort);
-				LILV_FOREACH(scale_points, i, sps) {
+				LILV_FOREACH(scale_points, i, sps)
+				{
 					const LilvScalePoint* sp = lilv_scale_points_get(sps, i);
 					ctrl->m_scalePointMap.push_back(lilv_node_as_float(lilv_scale_point_get_value(sp)));
 					comboModel->addItem(lilv_node_as_string(lilv_scale_point_get_label(sp)));
@@ -404,7 +434,8 @@ void Lv2Proc::createPort(std::size_t portNum) {
 			AutoLilvNodes atomSupports(lilv_port_get_value(m_plugin, lilvPort, uriAtomSupports.get()));
 			AutoLilvNode uriMidiEvent(Engine::getLv2Manager()->uri(LV2_MIDI__MidiEvent));
 
-			LILV_FOREACH(nodes, itr, atomSupports.get()) {
+			LILV_FOREACH(nodes, itr, atomSupports.get())
+			{
 				if (lilv_node_equals(lilv_nodes_get(atomSupports.get(), itr), uriMidiEvent.get())) {
 					atomPort->flags |= Lv2Ports::AtomSeq::FlagType::Midi;
 				}
@@ -444,13 +475,16 @@ void Lv2Proc::createPort(std::size_t portNum) {
 	m_ports[portNum].reset(port);
 }
 
-void Lv2Proc::createPorts() {
+void Lv2Proc::createPorts()
+{
 	// register ports at the processor after creation,
 	// i.e. link their data or count them
-	struct RegisterPort : public Lv2Ports::Visitor {
+	struct RegisterPort : public Lv2Ports::Visitor
+	{
 		Lv2Proc* m_proc;
 
-		void visit(Lv2Ports::Control& ctrl) override {
+		void visit(Lv2Ports::Control& ctrl) override
+		{
 			if (ctrl.m_flow == Lv2Ports::Flow::Input) {
 				AutomatableModel* amo = ctrl.m_connectedModel.get();
 				m_proc->m_connectedModels.emplace(
@@ -459,7 +493,8 @@ void Lv2Proc::createPorts() {
 			}
 		}
 
-		void visit(Lv2Ports::Audio& audio) override {
+		void visit(Lv2Ports::Audio& audio) override
+		{
 			if (audio.mustBeUsed()) {
 				StereoPortRef dummy;
 				StereoPortRef* portRef = &dummy;
@@ -477,7 +512,8 @@ void Lv2Proc::createPorts() {
 			}
 		}
 
-		void visit(Lv2Ports::AtomSeq& atomPort) override {
+		void visit(Lv2Ports::AtomSeq& atomPort) override
+		{
 			if (atomPort.m_flow == Lv2Ports::Flow::Input) {
 				if (atomPort.flags & Lv2Ports::AtomSeq::FlagType::Midi) {
 					// take any MIDI input, prefer mandatory MIDI input
@@ -515,7 +551,8 @@ void Lv2Proc::createPorts() {
 	// dumpPorts();
 }
 
-struct ConnectPortVisitor : public Lv2Ports::Visitor {
+struct ConnectPortVisitor : public Lv2Ports::Visitor
+{
 	std::size_t m_num;
 	LilvInstance* m_instance;
 	void connectPort(void* location) { lilv_instance_connect_port(m_instance, static_cast<uint32_t>(m_num), location); }
@@ -530,21 +567,26 @@ ConnectPortVisitor::~ConnectPortVisitor() {}
 
 // !This function must be realtime safe!
 // use createPort to create any port before connecting
-void Lv2Proc::connectPort(std::size_t num) {
+void Lv2Proc::connectPort(std::size_t num)
+{
 	ConnectPortVisitor connect;
 	connect.m_num = num;
 	connect.m_instance = m_instance;
 	m_ports[num]->accept(connect);
 }
 
-void Lv2Proc::dumpPort(std::size_t num) {
-	struct DumpPortDetail : public Lv2Ports::ConstVisitor {
-		void visit(const Lv2Ports::Control& ctrl) override {
+void Lv2Proc::dumpPort(std::size_t num)
+{
+	struct DumpPortDetail : public Lv2Ports::ConstVisitor
+	{
+		void visit(const Lv2Ports::Control& ctrl) override
+		{
 			qDebug() << "  control port";
 			// output ports may be uninitialized yet, only print inputs
 			if (ctrl.m_flow == Lv2Ports::Flow::Input) { qDebug() << "    value:" << ctrl.m_val; }
 		}
-		void visit(const Lv2Ports::Audio& audio) override {
+		void visit(const Lv2Ports::Audio& audio) override
+		{
 			qDebug() << (audio.isSideChain() ? "  audio port (sidechain)" : "  audio port");
 			qDebug() << "    buffer size:" << audio.bufferSize();
 		}
@@ -569,11 +611,13 @@ void Lv2Proc::dumpPort(std::size_t num) {
 	port.accept(dumper);
 }
 
-bool Lv2Proc::portIsSideChain(const LilvPlugin* plugin, const LilvPort* port) {
+bool Lv2Proc::portIsSideChain(const LilvPlugin* plugin, const LilvPort* port)
+{
 	return lilv_port_has_property(plugin, port, uri(LV2_CORE_PREFIX "isSidechain").get());
 }
 
-bool Lv2Proc::portIsOptional(const LilvPlugin* plugin, const LilvPort* port) {
+bool Lv2Proc::portIsOptional(const LilvPlugin* plugin, const LilvPort* port)
+{
 	return lilv_port_has_property(plugin, port, uri(LV2_CORE__connectionOptional).get());
 }
 

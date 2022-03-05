@@ -42,7 +42,8 @@ inline char* fluid_sfont_get_name(fluid_sfont_t* sfont) { return sfont->get_name
 inline void fluid_sfont_iteration_start(fluid_sfont_t* sfont) { sfont->iteration_start(sfont); }
 
 // Due to the API change, we can't simply shim the 'fluid_sfont_iteration_next' function
-inline fluid_preset_t* fluid_sfont_iteration_next_wrapper(fluid_sfont_t* sfont, fluid_preset_t* preset) {
+inline fluid_preset_t* fluid_sfont_iteration_next_wrapper(fluid_sfont_t* sfont, fluid_preset_t* preset)
+{
 	return sfont->iteration_next(sfont, preset) ? preset : nullptr;
 }
 
@@ -58,7 +59,8 @@ inline fluid_preset_t* fluid_sfont_iteration_next_wrapper(fluid_sfont_t* sfont, 
 #define FLUID_CHORUS_DEFAULT_SPEED 0.3f
 #define FLUID_CHORUS_DEFAULT_DEPTH 8.0f
 
-inline fluid_preset_t* fluid_sfont_iteration_next_wrapper(fluid_sfont_t* sfont, fluid_preset_t*) {
+inline fluid_preset_t* fluid_sfont_iteration_next_wrapper(fluid_sfont_t* sfont, fluid_preset_t*)
+{
 	return fluid_sfont_iteration_next(sfont);
 }
 

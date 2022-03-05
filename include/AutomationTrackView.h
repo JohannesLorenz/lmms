@@ -30,7 +30,8 @@
 
 class AutomationTrack;
 
-class AutomationTrackView : public TrackView {
+class AutomationTrackView : public TrackView
+{
 public:
 	AutomationTrackView(AutomationTrack* at, TrackContainerView* tcv);
 	virtual ~AutomationTrackView() = default;

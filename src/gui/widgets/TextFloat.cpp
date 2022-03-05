@@ -36,7 +36,8 @@ TextFloat::TextFloat()
 	: QWidget(getGUI()->mainWindow(), Qt::ToolTip)
 	, m_title()
 	, m_text()
-	, m_pixmap() {
+	, m_pixmap()
+{
 	resize(20, 20);
 	hide();
 
@@ -45,27 +46,32 @@ TextFloat::TextFloat()
 	setFont(pointSize<8>(font()));
 }
 
-void TextFloat::setTitle(const QString& _title) {
+void TextFloat::setTitle(const QString& _title)
+{
 	m_title = _title;
 	updateSize();
 }
 
-void TextFloat::setText(const QString& _text) {
+void TextFloat::setText(const QString& _text)
+{
 	m_text = _text;
 	updateSize();
 }
 
-void TextFloat::setPixmap(const QPixmap& _pixmap) {
+void TextFloat::setPixmap(const QPixmap& _pixmap)
+{
 	m_pixmap = _pixmap;
 	updateSize();
 }
 
-void TextFloat::setVisibilityTimeOut(int _msecs) {
+void TextFloat::setVisibilityTimeOut(int _msecs)
+{
 	QTimer::singleShot(_msecs, this, SLOT(hide()));
 	show();
 }
 
-TextFloat* TextFloat::displayMessage(const QString& _msg, int _timeout, QWidget* _parent, int _add_y_margin) {
+TextFloat* TextFloat::displayMessage(const QString& _msg, int _timeout, QWidget* _parent, int _add_y_margin)
+{
 	QWidget* mw = getGUI()->mainWindow();
 	TextFloat* tf = new TextFloat;
 	if (_parent != nullptr) {
@@ -83,14 +89,16 @@ TextFloat* TextFloat::displayMessage(const QString& _msg, int _timeout, QWidget*
 }
 
 TextFloat* TextFloat::displayMessage(
-	const QString& _title, const QString& _msg, const QPixmap& _pixmap, int _timeout, QWidget* _parent) {
+	const QString& _title, const QString& _msg, const QPixmap& _pixmap, int _timeout, QWidget* _parent)
+{
 	TextFloat* tf = displayMessage(_msg, _timeout, _parent, 16);
 	tf->setTitle(_title);
 	tf->setPixmap(_pixmap);
 	return (tf);
 }
 
-void TextFloat::paintEvent(QPaintEvent* _pe) {
+void TextFloat::paintEvent(QPaintEvent* _pe)
+{
 	QStyleOption opt;
 	opt.init(this);
 	QPainter p(this);
@@ -124,7 +132,8 @@ void TextFloat::paintEvent(QPaintEvent* _pe) {
 
 void TextFloat::mousePressEvent(QMouseEvent*) { close(); }
 
-void TextFloat::updateSize() {
+void TextFloat::updateSize()
+{
 	QFontMetrics metrics(pointSize<8>(font()));
 	QRect textBound = metrics.boundingRect(m_text);
 	if (!m_title.isEmpty()) {

@@ -31,7 +31,8 @@
 MidiOss::MidiOss()
 	: MidiClientRaw()
 	, m_midiDev(probeDevice())
-	, m_quit(false) {
+	, m_quit(false)
+{
 	// only start thread, if opening of MIDI-device is successful,
 	// otherwise isRunning()==false indicates error
 	if (m_midiDev.open(QIODevice::ReadWrite | QIODevice::Unbuffered)
@@ -40,7 +41,8 @@ MidiOss::MidiOss()
 	}
 }
 
-MidiOss::~MidiOss() {
+MidiOss::~MidiOss()
+{
 	if (isRunning()) {
 		m_quit = true;
 		wait(1000);
@@ -48,7 +50,8 @@ MidiOss::~MidiOss() {
 	}
 }
 
-QString MidiOss::probeDevice() {
+QString MidiOss::probeDevice()
+{
 	QString dev = ConfigManager::inst()->value("midioss", "device");
 	if (dev.isEmpty()) {
 		if (getenv("MIDIDEV") != nullptr) { return getenv("MIDIDEV"); }
@@ -63,7 +66,8 @@ QString MidiOss::probeDevice() {
 
 void MidiOss::sendByte(const unsigned char c) { m_midiDev.putChar(c); }
 
-void MidiOss::run() {
+void MidiOss::run()
+{
 	while (m_quit == false && m_midiDev.isOpen()) {
 		char c;
 		if (!m_midiDev.getChar(&c)) { continue; }

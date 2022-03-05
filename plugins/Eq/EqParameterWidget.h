@@ -34,7 +34,8 @@ class EqCurve;
 class EqHandle;
 class FloatModel;
 
-class EqBand {
+class EqBand
+{
 public:
 	EqBand();
 	FloatModel* gain;
@@ -55,7 +56,8 @@ public:
 	float* peakR;
 };
 
-class EqParameterWidget : public QWidget {
+class EqParameterWidget : public QWidget
+{
 	Q_OBJECT
 public:
 	explicit EqParameterWidget(QWidget* parent = 0, EqControls* controls = 0);

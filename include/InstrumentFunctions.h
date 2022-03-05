@@ -34,7 +34,8 @@
 class InstrumentTrack;
 class NotePlayHandle;
 
-class InstrumentFunctionNoteStacking : public Model, public JournallingObject {
+class InstrumentFunctionNoteStacking : public Model, public JournallingObject
+{
 	Q_OBJECT
 
 public:
@@ -54,7 +55,8 @@ public:
 
 	inline QString nodeName() const override { return "chordcreator"; }
 
-	struct Chord {
+	struct Chord
+	{
 	private:
 		QString m_name;
 		ChordSemiTones m_semiTones;
@@ -62,7 +64,9 @@ public:
 
 	public:
 		Chord()
-			: m_size(0) {}
+			: m_size(0)
+		{
+		}
 
 		Chord(const char* n, const ChordSemiTones& semi_tones);
 
@@ -81,11 +85,13 @@ public:
 		int8_t operator[](int n) const { return m_semiTones[n]; }
 	};
 
-	struct ChordTable : public QVector<Chord> {
+	struct ChordTable : public QVector<Chord>
+	{
 	private:
 		ChordTable();
 
-		struct Init {
+		struct Init
+		{
 			const char* m_name;
 			ChordSemiTones m_semiTones;
 		};
@@ -93,7 +99,8 @@ public:
 		static Init s_initTable[];
 
 	public:
-		static const ChordTable& getInstance() {
+		static const ChordTable& getInstance()
+		{
 			static ChordTable inst;
 			return inst;
 		}
@@ -113,10 +120,19 @@ private:
 	friend class InstrumentFunctionNoteStackingView;
 };
 
-class InstrumentFunctionArpeggio : public Model, public JournallingObject {
+class InstrumentFunctionArpeggio : public Model, public JournallingObject
+{
 	Q_OBJECT
 public:
-	enum ArpDirections { ArpDirUp, ArpDirDown, ArpDirUpAndDown, ArpDirDownAndUp, ArpDirRandom, NumArpDirections };
+	enum ArpDirections
+	{
+		ArpDirUp,
+		ArpDirDown,
+		ArpDirUpAndDown,
+		ArpDirDownAndUp,
+		ArpDirRandom,
+		NumArpDirections
+	};
 
 	InstrumentFunctionArpeggio(Model* _parent);
 	virtual ~InstrumentFunctionArpeggio();
@@ -129,7 +145,12 @@ public:
 	inline QString nodeName() const override { return "arpeggiator"; }
 
 private:
-	enum ArpModes { FreeMode, SortMode, SyncMode };
+	enum ArpModes
+	{
+		FreeMode,
+		SortMode,
+		SyncMode
+	};
 
 	BoolModel m_arpEnabledModel;
 	ComboBoxModel m_arpModel;

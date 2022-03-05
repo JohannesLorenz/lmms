@@ -58,7 +58,8 @@ float phi[1200];
 long wavewords, wavemode = 0;
 float mem_t = 1.0f, mem_o = 1.0f, mem_n = 1.0f, mem_b = 1.0f, mem_tune = 1.0f, mem_time = 1.0f;
 
-int DrumSynth::LongestEnv(void) {
+int DrumSynth::LongestEnv(void)
+{
 	long e, eon, p;
 	float l = 0.f;
 
@@ -78,7 +79,8 @@ int DrumSynth::LongestEnv(void) {
 	return 2400 + (1200 * (int)(l / 1200));
 }
 
-float DrumSynth::LoudestEnv(void) {
+float DrumSynth::LoudestEnv(void)
+{
 	float loudest = 0.f;
 	int i = 0;
 
@@ -91,7 +93,8 @@ float DrumSynth::LoudestEnv(void) {
 	return (loudest * loudest);
 }
 
-void DrumSynth::UpdateEnv(int e, long t) {
+void DrumSynth::UpdateEnv(int e, long t)
+{
 	float endEnv, dT;
 	// 0.2's added
 	envData[e][NEXTT] = envpts[e][0][(long)(envData[e][PNT] + 1.f)] * timestretch; // get next point
@@ -104,7 +107,8 @@ void DrumSynth::UpdateEnv(int e, long t) {
 	envData[e][PNT] = envData[e][PNT] + 1.0f;
 }
 
-void DrumSynth::GetEnv(int env, const char* sec, const char* key, QString ini) {
+void DrumSynth::GetEnv(int env, const char* sec, const char* key, QString ini)
+{
 	char en[256], s[8];
 	int i = 0, o = 0, ep = 0;
 	GetPrivateProfileString(sec, key, "0,0 100,0", en, sizeof(en), ini);
@@ -134,7 +138,8 @@ void DrumSynth::GetEnv(int env, const char* sec, const char* key, QString ini) {
 	envData[env][MAX] = envpts[env][0][ep];
 }
 
-float DrumSynth::waveform(float ph, int form) {
+float DrumSynth::waveform(float ph, int form)
+{
 	float w;
 
 	switch (form) {
@@ -157,7 +162,8 @@ float DrumSynth::waveform(float ph, int form) {
 }
 
 int DrumSynth::GetPrivateProfileString(
-	const char* sec, const char* key, const char* def, char* buffer, int size, QString file) {
+	const char* sec, const char* key, const char* def, char* buffer, int size, QString file)
+{
 	stringstream is;
 	bool inSection = false;
 	char* line;
@@ -217,7 +223,8 @@ int DrumSynth::GetPrivateProfileString(
 	return len;
 }
 
-int DrumSynth::GetPrivateProfileInt(const char* sec, const char* key, int def, QString file) {
+int DrumSynth::GetPrivateProfileInt(const char* sec, const char* key, int def, QString file)
+{
 	char tmp[16];
 	int i = 0;
 
@@ -228,7 +235,8 @@ int DrumSynth::GetPrivateProfileInt(const char* sec, const char* key, int def, Q
 	return i;
 }
 
-float DrumSynth::GetPrivateProfileFloat(const char* sec, const char* key, float def, QString file) {
+float DrumSynth::GetPrivateProfileFloat(const char* sec, const char* key, float def, QString file)
+{
 	char tmp[16];
 	float f = 0.f;
 
@@ -244,7 +252,8 @@ float DrumSynth::GetPrivateProfileFloat(const char* sec, const char* key, float 
 //  an associative array or something once we have a datastructure to load in to.
 //  llama
 
-int DrumSynth::GetDSFileSamples(QString dsfile, int16_t*& wave, int channels, sample_rate_t Fs) {
+int DrumSynth::GetDSFileSamples(QString dsfile, int16_t*& wave, int channels, sample_rate_t Fs)
+{
 	// input file
 	char sec[32];
 	char ver[32];

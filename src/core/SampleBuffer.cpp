@@ -71,14 +71,16 @@ SampleBuffer::SampleBuffer()
 	, m_amplification(1.0f)
 	, m_reversed(false)
 	, m_frequency(DefaultBaseFreq)
-	, m_sampleRate(audioEngineSampleRate()) {
+	, m_sampleRate(audioEngineSampleRate())
+{
 
 	connect(Engine::audioEngine(), SIGNAL(sampleRateChanged()), this, SLOT(sampleRateChanged()));
 	update();
 }
 
 SampleBuffer::SampleBuffer(const QString& audioFile, bool isBase64Data)
-	: SampleBuffer() {
+	: SampleBuffer()
+{
 	if (isBase64Data) {
 		loadFromBase64(audioFile);
 	} else {
@@ -88,7 +90,8 @@ SampleBuffer::SampleBuffer(const QString& audioFile, bool isBase64Data)
 }
 
 SampleBuffer::SampleBuffer(const sampleFrame* data, const f_cnt_t frames)
-	: SampleBuffer() {
+	: SampleBuffer()
+{
 	if (frames > 0) {
 		m_origData = MM_ALLOC<sampleFrame>(frames);
 		memcpy(m_origData, data, frames * BYTES_PER_FRAME);
@@ -98,7 +101,8 @@ SampleBuffer::SampleBuffer(const sampleFrame* data, const f_cnt_t frames)
 }
 
 SampleBuffer::SampleBuffer(const f_cnt_t frames)
-	: SampleBuffer() {
+	: SampleBuffer()
+{
 	if (frames > 0) {
 		m_origData = MM_ALLOC<sampleFrame>(frames);
 		memset(m_origData, 0, frames * BYTES_PER_FRAME);
@@ -107,7 +111,8 @@ SampleBuffer::SampleBuffer(const f_cnt_t frames)
 	}
 }
 
-SampleBuffer::SampleBuffer(const SampleBuffer& orig) {
+SampleBuffer::SampleBuffer(const SampleBuffer& orig)
+{
 	orig.m_varLock.lockForRead();
 
 	m_audioFile = orig.m_audioFile;
@@ -133,7 +138,8 @@ SampleBuffer::SampleBuffer(const SampleBuffer& orig) {
 	orig.m_varLock.unlock();
 }
 
-void swap(SampleBuffer& first, SampleBuffer& second) noexcept {
+void swap(SampleBuffer& first, SampleBuffer& second) noexcept
+{
 	using std::swap;
 
 	// Lock both buffers for writing, with address as lock ordering
@@ -166,12 +172,14 @@ void swap(SampleBuffer& first, SampleBuffer& second) noexcept {
 	second.m_varLock.unlock();
 }
 
-SampleBuffer& SampleBuffer::operator=(SampleBuffer that) {
+SampleBuffer& SampleBuffer::operator=(SampleBuffer that)
+{
 	swap(*this, that);
 	return *this;
 }
 
-SampleBuffer::~SampleBuffer() {
+SampleBuffer::~SampleBuffer()
+{
 	MM_FREE(m_origData);
 	MM_FREE(m_data);
 }
@@ -180,7 +188,8 @@ void SampleBuffer::sampleRateChanged() { update(true); }
 
 sample_rate_t SampleBuffer::audioEngineSampleRate() { return Engine::audioEngine()->processingSampleRate(); }
 
-void SampleBuffer::update(bool keepSettings) {
+void SampleBuffer::update(bool keepSettings)
+{
 	const bool lock = (m_data != nullptr);
 	if (lock) {
 		Engine::audioEngine()->requestChangeInModel();
@@ -295,7 +304,8 @@ void SampleBuffer::update(bool keepSettings) {
 	}
 }
 
-void SampleBuffer::convertIntToFloat(int_sample_t*& ibuf, f_cnt_t frames, int channels) {
+void SampleBuffer::convertIntToFloat(int_sample_t*& ibuf, f_cnt_t frames, int channels)
+{
 	// following code transforms int-samples into float-samples and does amplifying & reversing
 	const float fac = 1 / OUTPUT_SAMPLE_MULTIPLIER;
 	m_data = MM_ALLOC<sampleFrame>(frames);
@@ -313,7 +323,8 @@ void SampleBuffer::convertIntToFloat(int_sample_t*& ibuf, f_cnt_t frames, int ch
 	delete[] ibuf;
 }
 
-void SampleBuffer::directFloatWrite(sample_t*& fbuf, f_cnt_t frames, int channels) {
+void SampleBuffer::directFloatWrite(sample_t*& fbuf, f_cnt_t frames, int channels)
+{
 
 	m_data = MM_ALLOC<sampleFrame>(frames);
 	const int ch = (channels > 1) ? 1 : 0;
@@ -330,7 +341,8 @@ void SampleBuffer::directFloatWrite(sample_t*& fbuf, f_cnt_t frames, int channel
 	delete[] fbuf;
 }
 
-void SampleBuffer::normalizeSampleRate(const sample_rate_t srcSR, bool keepSettings) {
+void SampleBuffer::normalizeSampleRate(const sample_rate_t srcSR, bool keepSettings)
+{
 	const sample_rate_t oldRate = m_sampleRate;
 	// do samplerate-conversion to our default-samplerate
 	if (srcSR != audioEngineSampleRate()) {
@@ -359,7 +371,8 @@ void SampleBuffer::normalizeSampleRate(const sample_rate_t srcSR, bool keepSetti
 	}
 }
 
-f_cnt_t SampleBuffer::decodeSampleSF(QString fileName, sample_t*& buf, ch_cnt_t& channels, sample_rate_t& samplerate) {
+f_cnt_t SampleBuffer::decodeSampleSF(QString fileName, sample_t*& buf, ch_cnt_t& channels, sample_rate_t& samplerate)
+{
 	SNDFILE* sndFile;
 	SF_INFO sfInfo;
 	sfInfo.format = 0;
@@ -405,11 +418,13 @@ f_cnt_t SampleBuffer::decodeSampleSF(QString fileName, sample_t*& buf, ch_cnt_t&
 
 // callback-functions for reading ogg-file
 
-size_t qfileReadCallback(void* ptr, size_t size, size_t n, void* udata) {
+size_t qfileReadCallback(void* ptr, size_t size, size_t n, void* udata)
+{
 	return static_cast<QFile*>(udata)->read((char*)ptr, size * n);
 }
 
-int qfileSeekCallback(void* udata, ogg_int64_t offset, int whence) {
+int qfileSeekCallback(void* udata, ogg_int64_t offset, int whence)
+{
 	QFile* f = static_cast<QFile*>(udata);
 
 	if (whence == SEEK_CUR) {
@@ -422,7 +437,8 @@ int qfileSeekCallback(void* udata, ogg_int64_t offset, int whence) {
 	return 0;
 }
 
-int qfileCloseCallback(void* udata) {
+int qfileCloseCallback(void* udata)
+{
 	delete static_cast<QFile*>(udata);
 	return 0;
 }
@@ -430,7 +446,8 @@ int qfileCloseCallback(void* udata) {
 long qfileTellCallback(void* udata) { return static_cast<QFile*>(udata)->pos(); }
 
 f_cnt_t SampleBuffer::decodeSampleOGGVorbis(
-	QString fileName, int_sample_t*& buf, ch_cnt_t& channels, sample_rate_t& samplerate) {
+	QString fileName, int_sample_t*& buf, ch_cnt_t& channels, sample_rate_t& samplerate)
+{
 	static ov_callbacks callbacks = {qfileReadCallback, qfileSeekCallback, qfileCloseCallback, qfileTellCallback};
 
 	OggVorbis_File vf;
@@ -501,7 +518,8 @@ f_cnt_t SampleBuffer::decodeSampleOGGVorbis(
 #endif
 
 f_cnt_t SampleBuffer::decodeSampleDS(
-	QString fileName, int_sample_t*& buf, ch_cnt_t& channels, sample_rate_t& samplerate) {
+	QString fileName, int_sample_t*& buf, ch_cnt_t& channels, sample_rate_t& samplerate)
+{
 	DrumSynth ds;
 	f_cnt_t frames = ds.GetDSFileSamples(fileName, buf, channels, samplerate);
 
@@ -511,7 +529,8 @@ f_cnt_t SampleBuffer::decodeSampleDS(
 }
 
 bool SampleBuffer::play(
-	sampleFrame* ab, handleState* state, const fpp_t frames, const float freq, const LoopMode loopMode) {
+	sampleFrame* ab, handleState* state, const fpp_t frames, const float freq, const LoopMode loopMode)
+{
 	f_cnt_t startFrame = m_startFrame;
 	f_cnt_t endFrame = m_endFrame;
 	f_cnt_t loopStartFrame = m_loopStartFrame;
@@ -636,7 +655,8 @@ bool SampleBuffer::play(
 }
 
 sampleFrame* SampleBuffer::getSampleFragment(f_cnt_t index, f_cnt_t frames, LoopMode loopMode, sampleFrame** tmp,
-	bool* backwards, f_cnt_t loopStart, f_cnt_t loopEnd, f_cnt_t end) const {
+	bool* backwards, f_cnt_t loopStart, f_cnt_t loopEnd, f_cnt_t end) const
+{
 	if (loopMode == LoopOff) {
 		if (index + frames <= end) { return m_data + index; }
 	} else if (loopMode == LoopOn) {
@@ -704,12 +724,14 @@ sampleFrame* SampleBuffer::getSampleFragment(f_cnt_t index, f_cnt_t frames, Loop
 	return *tmp;
 }
 
-f_cnt_t SampleBuffer::getLoopedIndex(f_cnt_t index, f_cnt_t startf, f_cnt_t endf) const {
+f_cnt_t SampleBuffer::getLoopedIndex(f_cnt_t index, f_cnt_t startf, f_cnt_t endf) const
+{
 	if (index < endf) { return index; }
 	return startf + (index - startf) % (endf - startf);
 }
 
-f_cnt_t SampleBuffer::getPingPongIndex(f_cnt_t index, f_cnt_t startf, f_cnt_t endf) const {
+f_cnt_t SampleBuffer::getPingPongIndex(f_cnt_t index, f_cnt_t startf, f_cnt_t endf) const
+{
 	if (index < endf) { return index; }
 	const f_cnt_t loopLen = endf - startf;
 	const f_cnt_t loopPos = (index - endf) % (loopLen * 2);
@@ -724,7 +746,8 @@ f_cnt_t SampleBuffer::getPingPongIndex(f_cnt_t index, f_cnt_t startf, f_cnt_t en
  * @param f_cnt_t fromFrame: First frame of the range
  * @param f_cnt_t toFrame: Last frame of the range non-inclusive
  */
-void SampleBuffer::visualize(QPainter& p, const QRect& dr, const QRect& clip, f_cnt_t fromFrame, f_cnt_t toFrame) {
+void SampleBuffer::visualize(QPainter& p, const QRect& dr, const QRect& clip, f_cnt_t fromFrame, f_cnt_t toFrame)
+{
 	if (m_frames == 0) { return; }
 
 	const bool focusOnRange = toFrame <= m_frames && 0 <= fromFrame && fromFrame < toFrame;
@@ -805,7 +828,8 @@ void SampleBuffer::visualize(QPainter& p, const QRect& dr, const QRect& clip, f_
 	}
 }
 
-QString SampleBuffer::openAudioFile() const {
+QString SampleBuffer::openAudioFile() const
+{
 	FileDialog ofd(nullptr, tr("Open audio file"));
 
 	QString dir;
@@ -850,7 +874,8 @@ QString SampleBuffer::openAudioFile() const {
 	return QString();
 }
 
-QString SampleBuffer::openAndSetAudioFile() {
+QString SampleBuffer::openAndSetAudioFile()
+{
 	QString fileName = this->openAudioFile();
 
 	if (!fileName.isEmpty()) { this->setAudioFile(fileName); }
@@ -858,7 +883,8 @@ QString SampleBuffer::openAndSetAudioFile() {
 	return fileName;
 }
 
-QString SampleBuffer::openAndSetWaveformFile() {
+QString SampleBuffer::openAndSetWaveformFile()
+{
 	if (m_audioFile.isEmpty()) { m_audioFile = ConfigManager::inst()->factorySamplesDir() + "waveforms/10saw.flac"; }
 
 	QString fileName = this->openAudioFile();
@@ -878,7 +904,8 @@ QString SampleBuffer::openAndSetWaveformFile() {
 #ifdef LMMS_HAVE_FLAC_STREAM_ENCODER_H
 FLAC__StreamEncoderWriteStatus flacStreamEncoderWriteCallback(const FLAC__StreamEncoder* /*encoder*/,
 	const FLAC__byte buffer[], unsigned int /*samples*/, unsigned int bytes, unsigned int /*currentFrame*/,
-	void* clientData) {
+	void* clientData)
+{
 	/*	if (bytes == 0)
 		{
 			return FLAC__STREAM_ENCODER_WRITE_STATUS_OK;
@@ -889,7 +916,8 @@ FLAC__StreamEncoderWriteStatus flacStreamEncoderWriteCallback(const FLAC__Stream
 }
 
 void flacStreamEncoderMetadataCallback(
-	const FLAC__StreamEncoder*, const FLAC__StreamMetadata* metadata, void* clientData) {
+	const FLAC__StreamEncoder*, const FLAC__StreamMetadata* metadata, void* clientData)
+{
 	QBuffer* b = static_cast<QBuffer*>(clientData);
 	b->seek(0);
 	b->write((const char*)metadata, sizeof(*metadata));
@@ -897,7 +925,8 @@ void flacStreamEncoderMetadataCallback(
 
 #endif
 
-QString& SampleBuffer::toBase64(QString& dst) const {
+QString& SampleBuffer::toBase64(QString& dst) const
+{
 #ifdef LMMS_HAVE_FLAC_STREAM_ENCODER_H
 	const f_cnt_t FRAMES_PER_BUF = 1152;
 
@@ -949,7 +978,8 @@ QString& SampleBuffer::toBase64(QString& dst) const {
 	return dst;
 }
 
-SampleBuffer* SampleBuffer::resample(const sample_rate_t srcSR, const sample_rate_t dstSR) {
+SampleBuffer* SampleBuffer::resample(const sample_rate_t srcSR, const sample_rate_t dstSR)
+{
 	sampleFrame* data = m_data;
 	const f_cnt_t frames = m_frames;
 	const f_cnt_t dstFrames = static_cast<f_cnt_t>((frames / (float)srcSR) * (float)dstSR);
@@ -978,20 +1008,23 @@ SampleBuffer* SampleBuffer::resample(const sample_rate_t srcSR, const sample_rat
 	return dstSB;
 }
 
-void SampleBuffer::setAudioFile(const QString& audioFile) {
+void SampleBuffer::setAudioFile(const QString& audioFile)
+{
 	m_audioFile = PathUtil::toShortestRelative(audioFile);
 	update();
 }
 
 #ifdef LMMS_HAVE_FLAC_STREAM_DECODER_H
 
-struct flacStreamDecoderClientData {
+struct flacStreamDecoderClientData
+{
 	QBuffer* readBuffer;
 	QBuffer* writeBuffer;
 };
 
 FLAC__StreamDecoderReadStatus flacStreamDecoderReadCallback(
-	const FLAC__StreamDecoder* /*decoder*/, FLAC__byte* buffer, unsigned int* bytes, void* clientData) {
+	const FLAC__StreamDecoder* /*decoder*/, FLAC__byte* buffer, unsigned int* bytes, void* clientData)
+{
 	int res = static_cast<flacStreamDecoderClientData*>(clientData)->readBuffer->read((char*)buffer, *bytes);
 
 	if (res > 0) {
@@ -1004,7 +1037,8 @@ FLAC__StreamDecoderReadStatus flacStreamDecoderReadCallback(
 }
 
 FLAC__StreamDecoderWriteStatus flacStreamDecoderWriteCallback(const FLAC__StreamDecoder* /*decoder*/,
-	const FLAC__Frame* frame, const FLAC__int32* const buffer[], void* clientData) {
+	const FLAC__Frame* frame, const FLAC__int32* const buffer[], void* clientData)
+{
 	if (frame->header.channels != 2) {
 		printf("channels != 2 in flacStreamDecoderWriteCallback()\n");
 		return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
@@ -1024,7 +1058,8 @@ FLAC__StreamDecoderWriteStatus flacStreamDecoderWriteCallback(const FLAC__Stream
 }
 
 void flacStreamDecoderMetadataCallback(const FLAC__StreamDecoder*, const FLAC__StreamMetadata*, void* /*clientData*/
-) {
+)
+{
 	printf("stream decoder metadata callback\n");
 	/*	QBuffer * b = static_cast<QBuffer *>(clientData);
 		b->seek(0);
@@ -1033,14 +1068,16 @@ void flacStreamDecoderMetadataCallback(const FLAC__StreamDecoder*, const FLAC__S
 
 void flacStreamDecoderErrorCallback(
 	const FLAC__StreamDecoder*, FLAC__StreamDecoderErrorStatus status, void* /*clientData*/
-) {
+)
+{
 	printf("error callback! %d\n", status);
 	// what to do now??
 }
 
 #endif
 
-void SampleBuffer::loadFromBase64(const QString& data) {
+void SampleBuffer::loadFromBase64(const QString& data)
+{
 	char* dst = nullptr;
 	int dsize = 0;
 	base64::decode(data, &dst, &dsize);
@@ -1100,12 +1137,14 @@ void SampleBuffer::setStartFrame(const f_cnt_t s) { m_startFrame = s; }
 
 void SampleBuffer::setEndFrame(const f_cnt_t e) { m_endFrame = e; }
 
-void SampleBuffer::setAmplification(float a) {
+void SampleBuffer::setAmplification(float a)
+{
 	m_amplification = a;
 	emit sampleUpdated();
 }
 
-void SampleBuffer::setReversed(bool on) {
+void SampleBuffer::setReversed(bool on)
+{
 	Engine::audioEngine()->requestChangeInModel();
 	m_varLock.lockForWrite();
 	if (m_reversed != on) { std::reverse(m_data, m_data + m_frames); }
@@ -1118,7 +1157,8 @@ void SampleBuffer::setReversed(bool on) {
 SampleBuffer::handleState::handleState(bool varyingPitch, int interpolationMode)
 	: m_frameIndex(0)
 	, m_varyingPitch(varyingPitch)
-	, m_isBackwards(false) {
+	, m_isBackwards(false)
+{
 	int error;
 	m_interpolationMode = interpolationMode;
 

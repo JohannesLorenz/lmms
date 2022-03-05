@@ -31,7 +31,8 @@
 
 class AutomationClip;
 
-class AutomationClipView : public ClipView {
+class AutomationClipView : public ClipView
+{
 	Q_OBJECT
 
 public:

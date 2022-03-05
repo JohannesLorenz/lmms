@@ -67,20 +67,25 @@ class QScrollArea;
 class CarlaParamsView;
 class Knob;
 
-class CarlaParamFloatModel : public FloatModel {
+class CarlaParamFloatModel : public FloatModel
+{
 public:
 	CarlaParamFloatModel(Model* parent)
 		: FloatModel(0.0, 0.0, 1.0, 0.001, parent, "Unused")
 		, m_isOutput(false)
-		, m_isEnabled(false) {}
+		, m_isEnabled(false)
+	{
+	}
 
 	// From AutomatableModel.h, it's private there.
-	inline static bool mustQuoteName(const QString& name) {
+	inline static bool mustQuoteName(const QString& name)
+	{
 		QRegExp reg("^[A-Za-z0-9._-]+$");
 		return !reg.exactMatch(name);
 	}
 
-	inline virtual void loadSettings(const QDomElement& element, const QString& name = QString("value")) override {
+	inline virtual void loadSettings(const QDomElement& element, const QString& name = QString("value")) override
+	{
 		AutomatableModel::loadSettings(element, name);
 		bool mustQuote = mustQuoteName(name);
 		QDomElement me = element.firstChildElement(mustQuote ? QString("automatablemodel") : name);
@@ -91,7 +96,8 @@ public:
 	}
 
 	inline virtual void saveSettings(
-		QDomDocument& doc, QDomElement& element, const QString& name = QString("value")) override {
+		QDomDocument& doc, QDomElement& element, const QString& name = QString("value")) override
+	{
 		if (m_isEnabled) {
 			AutomatableModel::saveSettings(doc, element, name);
 			bool mustQuote = mustQuoteName(name);
@@ -128,7 +134,8 @@ private:
 
 // -------------------------------------------------------------------
 
-class CarlaParamsSubWindow : public SubWindow {
+class CarlaParamsSubWindow : public SubWindow
+{
 	Q_OBJECT
 
 signals:
@@ -137,22 +144,26 @@ signals:
 
 public:
 	CarlaParamsSubWindow(QWidget* _parent, Qt::WindowFlags windowFlags)
-		: SubWindow(_parent) {
+		: SubWindow(_parent)
+	{
 		setAttribute(Qt::WA_DeleteOnClose, false);
 		setWindowFlags(windowFlags);
 	}
 
-	virtual void resizeEvent(QResizeEvent* event) override {
+	virtual void resizeEvent(QResizeEvent* event) override
+	{
 		if (mousePress) { resizing = true; }
 		SubWindow::resizeEvent(event);
 	}
 
-	virtual void mousePressEvent(QMouseEvent* event) override {
+	virtual void mousePressEvent(QMouseEvent* event) override
+	{
 		mousePress = true;
 		SubWindow::mousePressEvent(event);
 	}
 
-	virtual void mouseReleaseEvent(QMouseEvent* event) override {
+	virtual void mouseReleaseEvent(QMouseEvent* event) override
+	{
 		if (resizing) {
 			resizing = false;
 			mousePress = false;
@@ -161,7 +172,8 @@ public:
 		SubWindow::mouseReleaseEvent(event);
 	}
 
-	virtual void closeEvent(QCloseEvent* event) override {
+	virtual void closeEvent(QCloseEvent* event) override
+	{
 		emit uiClosed();
 		event->accept();
 	}
@@ -173,7 +185,8 @@ private:
 
 // -------------------------------------------------------------------
 
-class CARLABASE_EXPORT CarlaInstrument : public Instrument {
+class CARLABASE_EXPORT CarlaInstrument : public Instrument
+{
 	Q_OBJECT
 
 public:
@@ -239,7 +252,8 @@ private:
 
 // -------------------------------------------------------------------
 
-class CarlaInstrumentView : public InstrumentViewFixedSize {
+class CarlaInstrumentView : public InstrumentViewFixedSize
+{
 	Q_OBJECT
 
 public:
@@ -274,7 +288,8 @@ private:
 
 // -------------------------------------------------------------------
 
-class CarlaParamsView : public InstrumentView {
+class CarlaParamsView : public InstrumentView
+{
 	Q_OBJECT
 public:
 	CarlaParamsView(CarlaInstrumentView* const instrumentView, QWidget* const parent);

@@ -36,7 +36,8 @@
 
 namespace Lv2Ports {
 
-const char* toStr(Flow pf) {
+const char* toStr(Flow pf)
+{
 	switch (pf) {
 	case Flow::Unknown: return "unknown";
 	case Flow::Input: return "input";
@@ -45,7 +46,8 @@ const char* toStr(Flow pf) {
 	return "";
 }
 
-const char* toStr(Type pt) {
+const char* toStr(Type pt)
+{
 	switch (pt) {
 	case Type::Unknown: return "unknown";
 	case Type::Control: return "control";
@@ -56,7 +58,8 @@ const char* toStr(Type pt) {
 	return "";
 }
 
-const char* toStr(Vis pv) {
+const char* toStr(Vis pv)
+{
 	switch (pv) {
 	case Vis::Toggled: return "toggled";
 	case Vis::Enumeration: return "enumeration";
@@ -66,7 +69,8 @@ const char* toStr(Vis pv) {
 	return "";
 }
 
-std::vector<PluginIssue> Meta::get(const LilvPlugin* plugin, std::size_t portNum) {
+std::vector<PluginIssue> Meta::get(const LilvPlugin* plugin, std::size_t portNum)
+{
 	std::vector<PluginIssue> portIssues;
 	auto issue = [&portIssues](PluginIssueType i, std::string msg = "") { portIssues.emplace_back(i, std::move(msg)); };
 
@@ -225,7 +229,8 @@ std::vector<PluginIssue> Meta::get(const LilvPlugin* plugin, std::size_t portNum
 	return portIssues;
 }
 
-QString PortBase::name() const {
+QString PortBase::name() const
+{
 	AutoLilvNode node(lilv_port_get_name(m_plugin, m_port));
 	QString res = lilv_node_as_string(node.get());
 	return res;
@@ -235,21 +240,26 @@ QString PortBase::uri() const { return lilv_node_as_string(lilv_port_get_symbol(
 
 Audio::Audio(std::size_t bufferSize, bool isSidechain)
 	: m_buffer(bufferSize)
-	, m_sidechain(isSidechain) {}
+	, m_sidechain(isSidechain)
+{
+}
 
-void Audio::copyBuffersFromCore(const sampleFrame* lmmsBuf, unsigned channel, fpp_t frames) {
+void Audio::copyBuffersFromCore(const sampleFrame* lmmsBuf, unsigned channel, fpp_t frames)
+{
 	for (std::size_t f = 0; f < static_cast<unsigned>(frames); ++f) {
 		m_buffer[f] = lmmsBuf[f][channel];
 	}
 }
 
-void Audio::averageWithBuffersFromCore(const sampleFrame* lmmsBuf, unsigned channel, fpp_t frames) {
+void Audio::averageWithBuffersFromCore(const sampleFrame* lmmsBuf, unsigned channel, fpp_t frames)
+{
 	for (std::size_t f = 0; f < static_cast<unsigned>(frames); ++f) {
 		m_buffer[f] = (m_buffer[f] + lmmsBuf[f][channel]) / 2.0f;
 	}
 }
 
-void Audio::copyBuffersToCore(sampleFrame* lmmsBuf, unsigned channel, fpp_t frames) const {
+void Audio::copyBuffersToCore(sampleFrame* lmmsBuf, unsigned channel, fpp_t frames) const
+{
 	for (std::size_t f = 0; f < static_cast<unsigned>(frames); ++f) {
 		lmmsBuf[f][channel] = m_buffer[f];
 	}

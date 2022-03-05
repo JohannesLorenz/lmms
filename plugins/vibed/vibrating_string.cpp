@@ -34,7 +34,8 @@ vibratingString::vibratingString(float _pitch, float _pick, float _pickup, float
 	: m_oversample(2 * _oversample / (int)(_sample_rate / Engine::audioEngine()->baseSampleRate()))
 	, m_randomize(_randomize)
 	, m_stringLoss(1.0f - _string_loss)
-	, m_state(0.1f) {
+	, m_state(0.1f)
+{
 	m_outsamp = new sample_t[m_oversample];
 	int string_length;
 
@@ -64,7 +65,8 @@ vibratingString::vibratingString(float _pitch, float _pick, float _pickup, float
 	m_pickupLoc = static_cast<int>(_pickup * string_length);
 }
 
-vibratingString::delayLine* vibratingString::initDelayLine(int _len, int _pick) {
+vibratingString::delayLine* vibratingString::initDelayLine(int _len, int _pick)
+{
 	delayLine* dl = new vibratingString::delayLine[_len];
 	dl->length = _len;
 	if (_len > 0) {
@@ -86,14 +88,16 @@ vibratingString::delayLine* vibratingString::initDelayLine(int _len, int _pick) 
 	return (dl);
 }
 
-void vibratingString::freeDelayLine(delayLine* _dl) {
+void vibratingString::freeDelayLine(delayLine* _dl)
+{
 	if (_dl) {
 		delete[] _dl->data;
 		delete[] _dl;
 	}
 }
 
-void vibratingString::resample(float* _src, f_cnt_t _src_frames, f_cnt_t _dst_frames) {
+void vibratingString::resample(float* _src, f_cnt_t _src_frames, f_cnt_t _dst_frames)
+{
 	for (f_cnt_t frame = 0; frame < _dst_frames; ++frame) {
 		const float src_frame_float = frame * (float)_src_frames / _dst_frames;
 		const float frac_pos = src_frame_float - static_cast<f_cnt_t>(src_frame_float);

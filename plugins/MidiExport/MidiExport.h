@@ -36,7 +36,8 @@ class QDomNode;
 const int BUFFER_SIZE = 50 * 1024;
 typedef MidiFile::MIDITrack<BUFFER_SIZE> MTrack;
 
-struct MidiNote {
+struct MidiNote
+{
 	int time;
 	uint8_t pitch;
 	int duration;
@@ -48,7 +49,8 @@ struct MidiNote {
 typedef std::vector<MidiNote> MidiNoteVector;
 typedef std::vector<MidiNote>::iterator MidiNoteIterator;
 
-class MidiExport : public ExportFilter {
+class MidiExport : public ExportFilter
+{
 	// 	Q_OBJECT
 public:
 	MidiExport();

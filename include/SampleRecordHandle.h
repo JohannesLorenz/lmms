@@ -36,7 +36,8 @@ class SampleBuffer;
 class SampleClip;
 class Track;
 
-class SampleRecordHandle : public PlayHandle {
+class SampleRecordHandle : public PlayHandle
+{
 public:
 	SampleRecordHandle(SampleClip* clip);
 	virtual ~SampleRecordHandle();

@@ -31,10 +31,15 @@
 
 class InstrumentTrack;
 
-class LMMS_EXPORT MidiClip : public Clip {
+class LMMS_EXPORT MidiClip : public Clip
+{
 	Q_OBJECT
 public:
-	enum MidiClipTypes { BeatClip, MelodyClip };
+	enum MidiClipTypes
+	{
+		BeatClip,
+		MelodyClip
+	};
 
 	MidiClip(InstrumentTrack* instrumentTrack);
 	MidiClip(const MidiClip& other);

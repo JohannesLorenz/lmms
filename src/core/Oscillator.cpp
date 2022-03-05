@@ -37,7 +37,8 @@
 #include "fft_helpers.h"
 #include "fftw3.h"
 
-void Oscillator::waveTableInit() {
+void Oscillator::waveTableInit()
+{
 	createFFTPlans();
 	generateWaveTables();
 	// The oscillator FFT plans remain throughout the application lifecycle
@@ -58,9 +59,12 @@ Oscillator::Oscillator(const IntModel* wave_shape_model, const IntModel* mod_alg
 	, m_phase(phase_offset)
 	, m_userWave(nullptr)
 	, m_useWaveTable(false)
-	, m_isModulator(false) {}
+	, m_isModulator(false)
+{
+}
 
-void Oscillator::update(sampleFrame* ab, const fpp_t frames, const ch_cnt_t chnl, bool modulator) {
+void Oscillator::update(sampleFrame* ab, const fpp_t frames, const ch_cnt_t chnl, bool modulator)
+{
 	if (m_freq >= Engine::audioEngine()->processingSampleRate() / 2) {
 		BufferManager::clear(ab, frames);
 		return;
@@ -82,7 +86,8 @@ void Oscillator::update(sampleFrame* ab, const fpp_t frames, const ch_cnt_t chnl
 	}
 }
 
-void Oscillator::generateSawWaveTable(int bands, sample_t* table, int firstBand) {
+void Oscillator::generateSawWaveTable(int bands, sample_t* table, int firstBand)
+{
 	// sawtooth wave contain both even and odd harmonics
 	// hence sinewaves are added for all bands
 	// https://en.wikipedia.org/wiki/Sawtooth_wave
@@ -95,7 +100,8 @@ void Oscillator::generateSawWaveTable(int bands, sample_t* table, int firstBand)
 	}
 }
 
-void Oscillator::generateTriangleWaveTable(int bands, sample_t* table, int firstBand) {
+void Oscillator::generateTriangleWaveTable(int bands, sample_t* table, int firstBand)
+{
 	// triangle waves contain only odd harmonics
 	// hence sinewaves are added for alternate bands
 	// https://en.wikipedia.org/wiki/Triangle_wave
@@ -107,7 +113,8 @@ void Oscillator::generateTriangleWaveTable(int bands, sample_t* table, int first
 	}
 }
 
-void Oscillator::generateSquareWaveTable(int bands, sample_t* table, int firstBand) {
+void Oscillator::generateSquareWaveTable(int bands, sample_t* table, int firstBand)
+{
 	// square waves only contain odd harmonics,
 	// at diffrent levels when compared to triangle waves
 	// https://en.wikipedia.org/wiki/Square_wave
@@ -119,7 +126,8 @@ void Oscillator::generateSquareWaveTable(int bands, sample_t* table, int firstBa
 }
 
 // Expects waveform converted to frequency domain to be present in the spectrum buffer
-void Oscillator::generateFromFFT(int bands, sample_t* table) {
+void Oscillator::generateFromFFT(int bands, sample_t* table)
+{
 	// Keep only specified number of bands, set the rest to zero.
 	// Add a +1 offset to the requested number of bands, since the first "useful" frequency falls into bin 1.
 	// I.e., for bands = 1, keeping just bin 0 (center 0 Hz, +- 4 Hz) makes no sense, it would not produce any tone.
@@ -134,7 +142,8 @@ void Oscillator::generateFromFFT(int bands, sample_t* table) {
 		s_sampleBuffer, table, OscillatorConstants::WAVETABLE_LENGTH, 2 * OscillatorConstants::WAVETABLE_LENGTH + 1);
 }
 
-void Oscillator::generateAntiAliasUserWaveTable(SampleBuffer* sampleBuffer) {
+void Oscillator::generateAntiAliasUserWaveTable(SampleBuffer* sampleBuffer)
+{
 	if (sampleBuffer->m_userAntiAliasWaveTable == nullptr) { return; }
 
 	for (int i = 0; i < OscillatorConstants::WAVE_TABLES_PER_WAVEFORM_COUNT; ++i) {
@@ -155,7 +164,8 @@ fftwf_plan Oscillator::s_ifftPlan;
 fftwf_complex* Oscillator::s_specBuf;
 float Oscillator::s_sampleBuffer[OscillatorConstants::WAVETABLE_LENGTH];
 
-void Oscillator::createFFTPlans() {
+void Oscillator::createFFTPlans()
+{
 	Oscillator::s_specBuf
 		= (fftwf_complex*)fftwf_malloc((OscillatorConstants::WAVETABLE_LENGTH * 2 + 1) * sizeof(fftwf_complex));
 	Oscillator::s_fftPlan
@@ -169,13 +179,15 @@ void Oscillator::createFFTPlans() {
 	}
 }
 
-void Oscillator::destroyFFTPlans() {
+void Oscillator::destroyFFTPlans()
+{
 	fftwf_destroy_plan(s_fftPlan);
 	fftwf_destroy_plan(s_ifftPlan);
 	fftwf_free(s_specBuf);
 }
 
-void Oscillator::generateWaveTables() {
+void Oscillator::generateWaveTables()
+{
 	// Generate tables for simple shaped (constructed by summing sine waves).
 	// Start from the table that contains the least number of bands, and re-use each table in the following
 	// iteration, adding more bands in each step and avoiding repeated computation of earlier bands.
@@ -243,7 +255,8 @@ void Oscillator::generateWaveTables() {
 #endif
 }
 
-void Oscillator::updateNoSub(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl) {
+void Oscillator::updateNoSub(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl)
+{
 	switch (m_waveShapeModel->value()) {
 	case SineWave:
 	default: updateNoSub<SineWave>(_ab, _frames, _chnl); break;
@@ -257,7 +270,8 @@ void Oscillator::updateNoSub(sampleFrame* _ab, const fpp_t _frames, const ch_cnt
 	}
 }
 
-void Oscillator::updatePM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl) {
+void Oscillator::updatePM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl)
+{
 	switch (m_waveShapeModel->value()) {
 	case SineWave:
 	default: updatePM<SineWave>(_ab, _frames, _chnl); break;
@@ -271,7 +285,8 @@ void Oscillator::updatePM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t 
 	}
 }
 
-void Oscillator::updateAM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl) {
+void Oscillator::updateAM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl)
+{
 	switch (m_waveShapeModel->value()) {
 	case SineWave:
 	default: updateAM<SineWave>(_ab, _frames, _chnl); break;
@@ -285,7 +300,8 @@ void Oscillator::updateAM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t 
 	}
 }
 
-void Oscillator::updateMix(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl) {
+void Oscillator::updateMix(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl)
+{
 	switch (m_waveShapeModel->value()) {
 	case SineWave:
 	default: updateMix<SineWave>(_ab, _frames, _chnl); break;
@@ -299,7 +315,8 @@ void Oscillator::updateMix(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t
 	}
 }
 
-void Oscillator::updateSync(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl) {
+void Oscillator::updateSync(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl)
+{
 	switch (m_waveShapeModel->value()) {
 	case SineWave:
 	default: updateSync<SineWave>(_ab, _frames, _chnl); break;
@@ -313,7 +330,8 @@ void Oscillator::updateSync(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_
 	}
 }
 
-void Oscillator::updateFM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl) {
+void Oscillator::updateFM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl)
+{
 	switch (m_waveShapeModel->value()) {
 	case SineWave:
 	default: updateFM<SineWave>(_ab, _frames, _chnl); break;
@@ -328,7 +346,8 @@ void Oscillator::updateFM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t 
 }
 
 // should be called every time phase-offset is changed...
-inline void Oscillator::recalcPhase() {
+inline void Oscillator::recalcPhase()
+{
 	if (!typeInfo<float>::isEqual(m_phaseOffset, m_ext_phaseOffset)) {
 		m_phase -= m_phaseOffset;
 		m_phaseOffset = m_ext_phaseOffset;
@@ -337,14 +356,16 @@ inline void Oscillator::recalcPhase() {
 	m_phase = absFraction(m_phase);
 }
 
-inline bool Oscillator::syncOk(float _osc_coeff) {
+inline bool Oscillator::syncOk(float _osc_coeff)
+{
 	const float v1 = m_phase;
 	m_phase += _osc_coeff;
 	// check whether m_phase is in next period
 	return (floorf(m_phase) > floorf(v1));
 }
 
-float Oscillator::syncInit(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl) {
+float Oscillator::syncInit(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl)
+{
 	if (m_subOsc != nullptr) { m_subOsc->update(_ab, _frames, _chnl); }
 	recalcPhase();
 	return m_freq * m_detuning_div_samplerate;
@@ -352,7 +373,8 @@ float Oscillator::syncInit(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t
 
 // if we have no sub-osc, we can't do any modulation... just get our samples
 template <Oscillator::WaveShapes W>
-void Oscillator::updateNoSub(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl) {
+void Oscillator::updateNoSub(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl)
+{
 	recalcPhase();
 	const float osc_coeff = m_freq * m_detuning_div_samplerate;
 
@@ -364,7 +386,8 @@ void Oscillator::updateNoSub(sampleFrame* _ab, const fpp_t _frames, const ch_cnt
 
 // do pm by using sub-osc as modulator
 template <Oscillator::WaveShapes W>
-void Oscillator::updatePM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl) {
+void Oscillator::updatePM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl)
+{
 	m_subOsc->update(_ab, _frames, _chnl, true);
 	recalcPhase();
 	const float osc_coeff = m_freq * m_detuning_div_samplerate;
@@ -377,7 +400,8 @@ void Oscillator::updatePM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t 
 
 // do am by using sub-osc as modulator
 template <Oscillator::WaveShapes W>
-void Oscillator::updateAM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl) {
+void Oscillator::updateAM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl)
+{
 	m_subOsc->update(_ab, _frames, _chnl, false);
 	recalcPhase();
 	const float osc_coeff = m_freq * m_detuning_div_samplerate;
@@ -390,7 +414,8 @@ void Oscillator::updateAM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t 
 
 // do mix by using sub-osc as mix-sample
 template <Oscillator::WaveShapes W>
-void Oscillator::updateMix(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl) {
+void Oscillator::updateMix(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl)
+{
 	m_subOsc->update(_ab, _frames, _chnl, false);
 	recalcPhase();
 	const float osc_coeff = m_freq * m_detuning_div_samplerate;
@@ -404,7 +429,8 @@ void Oscillator::updateMix(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t
 // sync with sub-osc (every time sub-osc starts new period, we also start new
 // period)
 template <Oscillator::WaveShapes W>
-void Oscillator::updateSync(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl) {
+void Oscillator::updateSync(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl)
+{
 	const float sub_osc_coeff = m_subOsc->syncInit(_ab, _frames, _chnl);
 	recalcPhase();
 	const float osc_coeff = m_freq * m_detuning_div_samplerate;
@@ -418,7 +444,8 @@ void Oscillator::updateSync(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_
 
 // do fm by using sub-osc as modulator
 template <Oscillator::WaveShapes W>
-void Oscillator::updateFM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl) {
+void Oscillator::updateFM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t _chnl)
+{
 	m_subOsc->update(_ab, _frames, _chnl, true);
 	recalcPhase();
 	const float osc_coeff = m_freq * m_detuning_div_samplerate;
@@ -431,7 +458,8 @@ void Oscillator::updateFM(sampleFrame* _ab, const fpp_t _frames, const ch_cnt_t 
 	}
 }
 
-template <> inline sample_t Oscillator::getSample<Oscillator::SineWave>(const float sample) {
+template <> inline sample_t Oscillator::getSample<Oscillator::SineWave>(const float sample)
+{
 	const float current_freq = m_freq * m_detuning_div_samplerate * Engine::audioEngine()->processingSampleRate();
 
 	if (!m_useWaveTable || current_freq < OscillatorConstants::MAX_FREQ) {
@@ -441,7 +469,8 @@ template <> inline sample_t Oscillator::getSample<Oscillator::SineWave>(const fl
 	}
 }
 
-template <> inline sample_t Oscillator::getSample<Oscillator::TriangleWave>(const float _sample) {
+template <> inline sample_t Oscillator::getSample<Oscillator::TriangleWave>(const float _sample)
+{
 	if (m_useWaveTable && !m_isModulator) {
 		return wtSample(s_waveTables[WaveShapes::TriangleWave - FirstWaveShapeTable], _sample);
 	} else {
@@ -449,7 +478,8 @@ template <> inline sample_t Oscillator::getSample<Oscillator::TriangleWave>(cons
 	}
 }
 
-template <> inline sample_t Oscillator::getSample<Oscillator::SawWave>(const float _sample) {
+template <> inline sample_t Oscillator::getSample<Oscillator::SawWave>(const float _sample)
+{
 	if (m_useWaveTable && !m_isModulator) {
 		return wtSample(s_waveTables[WaveShapes::SawWave - FirstWaveShapeTable], _sample);
 	} else {
@@ -457,7 +487,8 @@ template <> inline sample_t Oscillator::getSample<Oscillator::SawWave>(const flo
 	}
 }
 
-template <> inline sample_t Oscillator::getSample<Oscillator::SquareWave>(const float _sample) {
+template <> inline sample_t Oscillator::getSample<Oscillator::SquareWave>(const float _sample)
+{
 	if (m_useWaveTable && !m_isModulator) {
 		return wtSample(s_waveTables[WaveShapes::SquareWave - FirstWaveShapeTable], _sample);
 	} else {
@@ -465,7 +496,8 @@ template <> inline sample_t Oscillator::getSample<Oscillator::SquareWave>(const 
 	}
 }
 
-template <> inline sample_t Oscillator::getSample<Oscillator::MoogSawWave>(const float _sample) {
+template <> inline sample_t Oscillator::getSample<Oscillator::MoogSawWave>(const float _sample)
+{
 	if (m_useWaveTable && !m_isModulator) {
 		return wtSample(s_waveTables[WaveShapes::MoogSawWave - FirstWaveShapeTable], _sample);
 	} else {
@@ -473,7 +505,8 @@ template <> inline sample_t Oscillator::getSample<Oscillator::MoogSawWave>(const
 	}
 }
 
-template <> inline sample_t Oscillator::getSample<Oscillator::ExponentialWave>(const float _sample) {
+template <> inline sample_t Oscillator::getSample<Oscillator::ExponentialWave>(const float _sample)
+{
 	if (m_useWaveTable && !m_isModulator) {
 		return wtSample(s_waveTables[WaveShapes::ExponentialWave - FirstWaveShapeTable], _sample);
 	} else {
@@ -481,11 +514,13 @@ template <> inline sample_t Oscillator::getSample<Oscillator::ExponentialWave>(c
 	}
 }
 
-template <> inline sample_t Oscillator::getSample<Oscillator::WhiteNoise>(const float _sample) {
+template <> inline sample_t Oscillator::getSample<Oscillator::WhiteNoise>(const float _sample)
+{
 	return (noiseSample(_sample));
 }
 
-template <> inline sample_t Oscillator::getSample<Oscillator::UserDefinedWave>(const float _sample) {
+template <> inline sample_t Oscillator::getSample<Oscillator::UserDefinedWave>(const float _sample)
+{
 	if (m_useWaveTable && !m_isModulator) {
 		return wtSample(m_userWave->m_userAntiAliasWaveTable, _sample);
 	} else {

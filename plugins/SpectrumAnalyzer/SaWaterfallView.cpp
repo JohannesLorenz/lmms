@@ -42,7 +42,8 @@
 SaWaterfallView::SaWaterfallView(SaControls* controls, SaProcessor* processor, QWidget* _parent)
 	: QWidget(_parent)
 	, m_controls(controls)
-	, m_processor(processor) {
+	, m_processor(processor)
+{
 	m_controlDialog = (EffectControlDialog*)_parent;
 	setMinimumSize(300, 150);
 	setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -70,7 +71,8 @@ SaWaterfallView::SaWaterfallView(SaControls* controls, SaProcessor* processor, Q
 // Compose and draw all the content; called by Qt.
 // Not as performance sensitive as SaSpectrumView, most of the processing is
 // done directly in SaProcessor.
-void SaWaterfallView::paintEvent(QPaintEvent* event) {
+void SaWaterfallView::paintEvent(QPaintEvent* event)
+{
 #ifdef SA_DEBUG
 	unsigned int draw_time = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 #endif
@@ -152,21 +154,24 @@ void SaWaterfallView::paintEvent(QPaintEvent* event) {
 }
 
 // Helper functions for time conversion
-float SaWaterfallView::samplesPerLine() {
+float SaWaterfallView::samplesPerLine()
+{
 	return (float)m_processor->inBlockSize() / m_controls->m_windowOverlapModel.value();
 }
 
 float SaWaterfallView::secondsPerLine() { return samplesPerLine() / m_processor->getSampleRate(); }
 
 // Convert time value to Y coordinate for display of given height.
-float SaWaterfallView::timeToYPixel(float time, int height) {
+float SaWaterfallView::timeToYPixel(float time, int height)
+{
 	float pixels_per_line = (float)height / m_processor->waterfallHeight();
 
 	return pixels_per_line * time / secondsPerLine();
 }
 
 // Convert Y coordinate on display of given height back to time value.
-float SaWaterfallView::yPixelToTime(float position, int height) {
+float SaWaterfallView::yPixelToTime(float position, int height)
+{
 	if (height == 0) { height = 1; }
 	float pixels_per_line = (float)height / m_processor->waterfallHeight();
 
@@ -174,7 +179,8 @@ float SaWaterfallView::yPixelToTime(float position, int height) {
 }
 
 // Generate labels for linear time scale.
-std::vector<std::pair<float, std::string>> SaWaterfallView::makeTimeTics() {
+std::vector<std::pair<float, std::string>> SaWaterfallView::makeTimeTics()
+{
 	std::vector<std::pair<float, std::string>> result;
 	float i;
 
@@ -200,13 +206,15 @@ std::vector<std::pair<float, std::string>> SaWaterfallView::makeTimeTics() {
 
 // Periodically trigger repaint and check if the widget is visible.
 // If it is not, stop drawing and inform the processor.
-void SaWaterfallView::periodicUpdate() {
+void SaWaterfallView::periodicUpdate()
+{
 	m_processor->setWaterfallActive(isVisible());
 	if (isVisible()) { update(); }
 }
 
 // Adjust window size and widget visibility when waterfall is enabled or disabbled.
-void SaWaterfallView::updateVisibility() {
+void SaWaterfallView::updateVisibility()
+{
 	// get container of the control dialog to be resized if needed
 	QWidget* subWindow = m_controlDialog->parentWidget();
 
@@ -227,7 +235,8 @@ void SaWaterfallView::updateVisibility() {
 }
 
 // Draw cursor and its coordinates if it is within display bounds.
-void SaWaterfallView::drawCursor(QPainter& painter) {
+void SaWaterfallView::drawCursor(QPainter& painter)
+{
 	if (m_cursor.x() >= m_displayLeft && m_cursor.x() <= m_displayRight && m_cursor.y() >= m_displayTop
 		&& m_cursor.y() <= m_displayBottom) {
 		// cursor lines
@@ -266,12 +275,14 @@ void SaWaterfallView::drawCursor(QPainter& painter) {
 // Handle mouse input: set new cursor position.
 // For some reason (a bug?), localPos() only returns integers. As a workaround
 // the fractional part is taken from windowPos() (which works correctly).
-void SaWaterfallView::mouseMoveEvent(QMouseEvent* event) {
+void SaWaterfallView::mouseMoveEvent(QMouseEvent* event)
+{
 	m_cursor = QPointF(event->localPos().x() - (event->windowPos().x() - (long)event->windowPos().x()),
 		event->localPos().y() - (event->windowPos().y() - (long)event->windowPos().y()));
 }
 
-void SaWaterfallView::mousePressEvent(QMouseEvent* event) {
+void SaWaterfallView::mousePressEvent(QMouseEvent* event)
+{
 	m_cursor = QPointF(event->localPos().x() - (event->windowPos().x() - (long)event->windowPos().x()),
 		event->localPos().y() - (event->windowPos().y() - (long)event->windowPos().y()));
 }

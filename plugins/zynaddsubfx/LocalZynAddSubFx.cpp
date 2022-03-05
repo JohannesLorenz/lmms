@@ -40,7 +40,8 @@ int LocalZynAddSubFx::s_instanceCount = 0;
 
 LocalZynAddSubFx::LocalZynAddSubFx()
 	: m_master(nullptr)
-	, m_ioEngine(nullptr) {
+	, m_ioEngine(nullptr)
+{
 	for (int i = 0; i < NumKeys; ++i) {
 		m_runningNotes[i] = 0;
 	}
@@ -76,36 +77,42 @@ LocalZynAddSubFx::LocalZynAddSubFx()
 	m_master->swaplr = 0;
 }
 
-LocalZynAddSubFx::~LocalZynAddSubFx() {
+LocalZynAddSubFx::~LocalZynAddSubFx()
+{
 	delete m_master;
 	delete m_ioEngine;
 
 	if (--s_instanceCount == 0) { delete[] denormalkillbuf; }
 }
 
-void LocalZynAddSubFx::initConfig() {
+void LocalZynAddSubFx::initConfig()
+{
 	config.init();
 
 	config.cfg.GzipCompression = 0;
 }
 
-void LocalZynAddSubFx::setSampleRate(int sampleRate) {
+void LocalZynAddSubFx::setSampleRate(int sampleRate)
+{
 	synth->samplerate = sampleRate;
 	synth->alias();
 }
 
-void LocalZynAddSubFx::setBufferSize(int bufferSize) {
+void LocalZynAddSubFx::setBufferSize(int bufferSize)
+{
 	synth->buffersize = bufferSize;
 	synth->alias();
 }
 
-void LocalZynAddSubFx::saveXML(const std::string& _filename) {
+void LocalZynAddSubFx::saveXML(const std::string& _filename)
+{
 	char* name = strdup(_filename.c_str());
 	m_master->saveXML(name);
 	free(name);
 }
 
-void LocalZynAddSubFx::loadXML(const std::string& _filename) {
+void LocalZynAddSubFx::loadXML(const std::string& _filename)
+{
 	char* f = strdup(_filename.c_str());
 
 	pthread_mutex_lock(&m_master->mutex);
@@ -119,7 +126,8 @@ void LocalZynAddSubFx::loadXML(const std::string& _filename) {
 	free(f);
 }
 
-void LocalZynAddSubFx::loadPreset(const std::string& _filename, int _part) {
+void LocalZynAddSubFx::loadPreset(const std::string& _filename, int _part)
+{
 	char* f = strdup(_filename.c_str());
 
 	pthread_mutex_lock(&m_master->mutex);
@@ -132,7 +140,8 @@ void LocalZynAddSubFx::loadPreset(const std::string& _filename, int _part) {
 	free(f);
 }
 
-void LocalZynAddSubFx::setPresetDir(const std::string& _dir) {
+void LocalZynAddSubFx::setPresetDir(const std::string& _dir)
+{
 	m_presetsDir = _dir;
 	for (int i = 0; i < MAX_BANK_ROOT_DIRS; ++i) {
 		if (config.cfg.bankRootDirList[i].empty()) {
@@ -144,20 +153,23 @@ void LocalZynAddSubFx::setPresetDir(const std::string& _dir) {
 	}
 }
 
-void LocalZynAddSubFx::setLmmsWorkingDir(const std::string& _dir) {
+void LocalZynAddSubFx::setLmmsWorkingDir(const std::string& _dir)
+{
 	if (config.workingDir != nullptr) { free(config.workingDir); }
 	config.workingDir = strdup(_dir.c_str());
 
 	initConfig();
 }
 
-void LocalZynAddSubFx::setPitchWheelBendRange(int semitones) {
+void LocalZynAddSubFx::setPitchWheelBendRange(int semitones)
+{
 	for (int i = 0; i < NUM_MIDI_PARTS; ++i) {
 		m_master->part[i]->ctl.setpitchwheelbendrange(semitones * 100);
 	}
 }
 
-void LocalZynAddSubFx::processMidiEvent(const MidiEvent& event) {
+void LocalZynAddSubFx::processMidiEvent(const MidiEvent& event)
+{
 	switch (event.type()) {
 	case MidiNoteOn:
 		if (event.velocity() > 0) {
@@ -179,7 +191,8 @@ void LocalZynAddSubFx::processMidiEvent(const MidiEvent& event) {
 	}
 }
 
-void LocalZynAddSubFx::processAudio(sampleFrame* _out) {
+void LocalZynAddSubFx::processAudio(sampleFrame* _out)
+{
 	float outputl[synth->buffersize];
 	float outputr[synth->buffersize];
 

@@ -46,7 +46,8 @@ class lb302SynthView;
 class LedCheckBox;
 class NotePlayHandle;
 
-class lb302FilterKnobState {
+class lb302FilterKnobState
+{
 public:
 	float cutoff;
 	float reso;
@@ -55,7 +56,8 @@ public:
 	float dist;
 };
 
-class lb302Filter {
+class lb302Filter
+{
 public:
 	lb302Filter(lb302FilterKnobState* p_fs);
 	virtual ~lb302Filter(){};
@@ -75,7 +77,8 @@ protected:
 	float vcf_rescoeff; // Resonance coefficient [0.30,9.54]
 };
 
-class lb302FilterIIR2 : public lb302Filter {
+class lb302FilterIIR2 : public lb302Filter
+{
 public:
 	lb302FilterIIR2(lb302FilterKnobState* p_fs);
 	virtual ~lb302FilterIIR2();
@@ -97,7 +100,8 @@ protected:
 	DspEffectLibrary::Distortion* m_dist;
 };
 
-class lb302Filter3Pole : public lb302Filter {
+class lb302Filter3Pole : public lb302Filter
+{
 public:
 	lb302Filter3Pole(lb302FilterKnobState* p_fs);
 
@@ -111,13 +115,15 @@ protected:
 	float ay1, ay2, aout, lastin, value;
 };
 
-class lb302Note {
+class lb302Note
+{
 public:
 	float vco_inc;
 	bool dead;
 };
 
-class lb302Synth : public Instrument {
+class lb302Synth : public Instrument
+{
 	Q_OBJECT
 public:
 	lb302Synth(InstrumentTrack* _instrument_track);
@@ -134,7 +140,8 @@ public:
 
 	virtual Flags flags() const { return IsSingleStreamed; }
 
-	virtual f_cnt_t desiredReleaseFrames() const {
+	virtual f_cnt_t desiredReleaseFrames() const
+	{
 		return 0; // 4048;
 	}
 
@@ -177,7 +184,8 @@ private:
 		vco_slideinc,  //* Slide base to use in next node. Nonzero=slide next note
 		vco_slidebase; //* The base vco_inc while sliding.
 
-	enum vco_shape_t {
+	enum vco_shape_t
+	{
 		SAWTOOTH,
 		SQUARE,
 		TRIANGLE,
@@ -211,7 +219,13 @@ private:
 		vca_a;		  // Amplifier coefficient.
 
 	// Envelope State
-	enum VCA_Mode { attack = 0, decay = 1, idle = 2, never_played = 3 };
+	enum VCA_Mode
+	{
+		attack = 0,
+		decay = 1,
+		idle = 2,
+		never_played = 3
+	};
 	VCA_Mode vca_mode;
 
 	// My hacks
@@ -236,7 +250,8 @@ private:
 	QMutex m_notesMutex;
 };
 
-class lb302SynthView : public InstrumentViewFixedSize {
+class lb302SynthView : public InstrumentViewFixedSize
+{
 	Q_OBJECT
 public:
 	lb302SynthView(Instrument* _instrument, QWidget* _parent);

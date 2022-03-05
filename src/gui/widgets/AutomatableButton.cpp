@@ -33,26 +33,31 @@
 AutomatableButton::AutomatableButton(QWidget* _parent, const QString& _name)
 	: QPushButton(_parent)
 	, BoolModelView(new BoolModel(false, nullptr, _name, true), this)
-	, m_group(nullptr) {
+	, m_group(nullptr)
+{
 	setWindowTitle(_name);
 	doConnections();
 	setFocusPolicy(Qt::NoFocus);
 }
 
-AutomatableButton::~AutomatableButton() {
+AutomatableButton::~AutomatableButton()
+{
 	if (m_group != nullptr) { m_group->removeButton(this); }
 }
 
-void AutomatableButton::modelChanged() {
+void AutomatableButton::modelChanged()
+{
 	if (QPushButton::isChecked() != model()->value()) { QPushButton::setChecked(model()->value()); }
 }
 
-void AutomatableButton::update() {
+void AutomatableButton::update()
+{
 	if (QPushButton::isChecked() != model()->value()) { QPushButton::setChecked(model()->value()); }
 	QPushButton::update();
 }
 
-void AutomatableButton::contextMenuEvent(QContextMenuEvent* _me) {
+void AutomatableButton::contextMenuEvent(QContextMenuEvent* _me)
+{
 	// for the case, the user clicked right while pressing left mouse-
 	// button, the context-menu appears while mouse-cursor is still hidden
 	// and it isn't shown again until user does something which causes
@@ -70,7 +75,8 @@ void AutomatableButton::contextMenuEvent(QContextMenuEvent* _me) {
 	}
 }
 
-void AutomatableButton::mousePressEvent(QMouseEvent* _me) {
+void AutomatableButton::mousePressEvent(QMouseEvent* _me)
+{
 	if (_me->button() == Qt::LeftButton && !(_me->modifiers() & Qt::ControlModifier)) {
 		// User simply clicked, toggle if needed
 		if (isCheckable()) { toggle(); }
@@ -92,11 +98,13 @@ void AutomatableButton::mousePressEvent(QMouseEvent* _me) {
 	}
 }
 
-void AutomatableButton::mouseReleaseEvent(QMouseEvent* _me) {
+void AutomatableButton::mouseReleaseEvent(QMouseEvent* _me)
+{
 	if (_me && _me->button() == Qt::LeftButton) { emit clicked(); }
 }
 
-void AutomatableButton::toggle() {
+void AutomatableButton::toggle()
+{
 	if (isCheckable() && m_group != nullptr) {
 		if (model()->value() == false) { m_group->activateButton(this); }
 	} else {
@@ -106,18 +114,21 @@ void AutomatableButton::toggle() {
 
 automatableButtonGroup::automatableButtonGroup(QWidget* _parent, const QString& _name)
 	: QWidget(_parent)
-	, IntModelView(new IntModel(0, 0, 0, nullptr, _name, true), this) {
+	, IntModelView(new IntModel(0, 0, 0, nullptr, _name, true), this)
+{
 	hide();
 	setWindowTitle(_name);
 }
 
-automatableButtonGroup::~automatableButtonGroup() {
+automatableButtonGroup::~automatableButtonGroup()
+{
 	for (QList<AutomatableButton*>::iterator it = m_buttons.begin(); it != m_buttons.end(); ++it) {
 		(*it)->m_group = nullptr;
 	}
 }
 
-void automatableButtonGroup::addButton(AutomatableButton* _btn) {
+void automatableButtonGroup::addButton(AutomatableButton* _btn)
+{
 	_btn->m_group = this;
 	_btn->setCheckable(true);
 	_btn->model()->setValue(false);
@@ -130,12 +141,14 @@ void automatableButtonGroup::addButton(AutomatableButton* _btn) {
 	updateButtons();
 }
 
-void automatableButtonGroup::removeButton(AutomatableButton* _btn) {
+void automatableButtonGroup::removeButton(AutomatableButton* _btn)
+{
 	m_buttons.erase(std::find(m_buttons.begin(), m_buttons.end(), _btn));
 	_btn->m_group = nullptr;
 }
 
-void automatableButtonGroup::activateButton(AutomatableButton* _btn) {
+void automatableButtonGroup::activateButton(AutomatableButton* _btn)
+{
 	if (_btn != m_buttons[model()->value()] && m_buttons.indexOf(_btn) != -1) {
 		model()->setValue(m_buttons.indexOf(_btn));
 		for (AutomatableButton* btn : m_buttons) {
@@ -144,13 +157,15 @@ void automatableButtonGroup::activateButton(AutomatableButton* _btn) {
 	}
 }
 
-void automatableButtonGroup::modelChanged() {
+void automatableButtonGroup::modelChanged()
+{
 	connect(model(), SIGNAL(dataChanged()), this, SLOT(updateButtons()));
 	IntModelView::modelChanged();
 	updateButtons();
 }
 
-void automatableButtonGroup::updateButtons() {
+void automatableButtonGroup::updateButtons()
+{
 	model()->setRange(0, m_buttons.size() - 1);
 	int i = 0;
 	for (AutomatableButton* btn : m_buttons) {

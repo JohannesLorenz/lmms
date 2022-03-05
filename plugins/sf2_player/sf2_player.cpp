@@ -63,7 +63,8 @@ Plugin::Descriptor PLUGIN_EXPORT sf2player_plugin_descriptor = {
 };
 }
 
-struct SF2PluginData {
+struct SF2PluginData
+{
 	int midiNote;
 	int lastPanning;
 	float lastVelocity;
@@ -99,7 +100,8 @@ sf2Instrument::sf2Instrument(InstrumentTrack* _instrument_track)
 	, m_chorusNum(FLUID_CHORUS_DEFAULT_N, 0, 10.0, 1.0, this, tr("Chorus voices"))
 	, m_chorusLevel(FLUID_CHORUS_DEFAULT_LEVEL, 0, 10.0, 0.01, this, tr("Chorus level"))
 	, m_chorusSpeed(FLUID_CHORUS_DEFAULT_SPEED, 0.29, 5.0, 0.01, this, tr("Chorus speed"))
-	, m_chorusDepth(FLUID_CHORUS_DEFAULT_DEPTH, 0, 46.0, 0.05, this, tr("Chorus depth")) {
+	, m_chorusDepth(FLUID_CHORUS_DEFAULT_DEPTH, 0, 46.0, 0.05, this, tr("Chorus depth"))
+{
 	for (int i = 0; i < 128; ++i) {
 		m_notesRunning[i] = 0;
 	}
@@ -173,7 +175,8 @@ sf2Instrument::sf2Instrument(InstrumentTrack* _instrument_track)
 	Engine::audioEngine()->addPlayHandle(iph);
 }
 
-sf2Instrument::~sf2Instrument() {
+sf2Instrument::~sf2Instrument()
+{
 	Engine::audioEngine()->removePlayHandlesOfTypes(
 		instrumentTrack(), PlayHandle::TypeNotePlayHandle | PlayHandle::TypeInstrumentPlayHandle);
 	freeFont();
@@ -182,7 +185,8 @@ sf2Instrument::~sf2Instrument() {
 	if (m_srcState != nullptr) { src_delete(m_srcState); }
 }
 
-void sf2Instrument::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void sf2Instrument::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	_this.setAttribute("src", m_filename);
 	m_patchNum.saveSettings(_doc, _this, "patch");
 	m_bankNum.saveSettings(_doc, _this, "bank");
@@ -202,7 +206,8 @@ void sf2Instrument::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 	m_chorusDepth.saveSettings(_doc, _this, "chorusDepth");
 }
 
-void sf2Instrument::loadSettings(const QDomElement& _this) {
+void sf2Instrument::loadSettings(const QDomElement& _this)
+{
 	openFile(_this.attribute("src"), false);
 	m_patchNum.loadSettings(_this, "patch");
 	m_bankNum.loadSettings(_this, "bank");
@@ -222,7 +227,8 @@ void sf2Instrument::loadSettings(const QDomElement& _this) {
 	m_chorusDepth.loadSettings(_this, "chorusDepth");
 }
 
-void sf2Instrument::loadFile(const QString& _file) {
+void sf2Instrument::loadFile(const QString& _file)
+{
 	if (!_file.isEmpty() && QFileInfo(_file).exists()) { openFile(_file, false); }
 
 	// setting the first bank and patch number that is found
@@ -263,7 +269,8 @@ void sf2Instrument::loadFile(const QString& _file) {
 	}
 }
 
-AutomatableModel* sf2Instrument::childModel(const QString& _modelName) {
+AutomatableModel* sf2Instrument::childModel(const QString& _modelName)
+{
 	if (_modelName == "bank") {
 		return &m_bankNum;
 	} else if (_modelName == "patch") {
@@ -275,7 +282,8 @@ AutomatableModel* sf2Instrument::childModel(const QString& _modelName) {
 
 QString sf2Instrument::nodeName() const { return sf2player_plugin_descriptor.name; }
 
-void sf2Instrument::freeFont() {
+void sf2Instrument::freeFont()
+{
 	m_synthMutex.lock();
 
 	if (m_font != nullptr) {
@@ -303,7 +311,8 @@ void sf2Instrument::freeFont() {
 	m_synthMutex.unlock();
 }
 
-void sf2Instrument::openFile(const QString& _sf2File, bool updateTrackName) {
+void sf2Instrument::openFile(const QString& _sf2File, bool updateTrackName)
+{
 	emit fileLoading();
 
 	// Used for loading file
@@ -369,13 +378,15 @@ void sf2Instrument::openFile(const QString& _sf2File, bool updateTrackName) {
 	updatePatch();
 }
 
-void sf2Instrument::updatePatch() {
+void sf2Instrument::updatePatch()
+{
 	if (m_bankNum.value() >= 0 && m_patchNum.value() >= 0) {
 		fluid_synth_program_select(m_synth, m_channel, m_fontId, m_bankNum.value(), m_patchNum.value());
 	}
 }
 
-QString sf2Instrument::getCurrentPatchName() {
+QString sf2Instrument::getCurrentPatchName()
+{
 	int iBankSelected = m_bankNum.value();
 	int iProgSelected = m_patchNum.value();
 
@@ -411,19 +422,22 @@ void sf2Instrument::updateGain() { fluid_synth_set_gain(m_synth, m_gain.value())
 
 void sf2Instrument::updateReverbOn() { fluid_synth_set_reverb_on(m_synth, m_reverbOn.value() ? 1 : 0); }
 
-void sf2Instrument::updateReverb() {
+void sf2Instrument::updateReverb()
+{
 	fluid_synth_set_reverb(
 		m_synth, m_reverbRoomSize.value(), m_reverbDamping.value(), m_reverbWidth.value(), m_reverbLevel.value());
 }
 
 void sf2Instrument::updateChorusOn() { fluid_synth_set_chorus_on(m_synth, m_chorusOn.value() ? 1 : 0); }
 
-void sf2Instrument::updateChorus() {
+void sf2Instrument::updateChorus()
+{
 	fluid_synth_set_chorus(m_synth, static_cast<int>(m_chorusNum.value()), m_chorusLevel.value(), m_chorusSpeed.value(),
 		m_chorusDepth.value(), 0);
 }
 
-void sf2Instrument::reloadSynth() {
+void sf2Instrument::reloadSynth()
+{
 	double tempRate;
 
 	// Set & get, returns the true sample rate
@@ -483,7 +497,8 @@ void sf2Instrument::reloadSynth() {
 	m_lastMidiPitchRange = -1;
 }
 
-void sf2Instrument::playNote(NotePlayHandle* _n, sampleFrame*) {
+void sf2Instrument::playNote(NotePlayHandle* _n, sampleFrame*)
+{
 	if (_n->isMasterNote() || (_n->hasParent() && _n->isReleased())) { return; }
 
 	const f_cnt_t tfp = _n->totalFramesPlayed();
@@ -525,7 +540,8 @@ void sf2Instrument::playNote(NotePlayHandle* _n, sampleFrame*) {
 	}
 }
 
-void sf2Instrument::noteOn(SF2PluginData* n) {
+void sf2Instrument::noteOn(SF2PluginData* n)
+{
 	m_synthMutex.lock();
 
 	// get list of current voice IDs so we can easily spot the new
@@ -560,7 +576,8 @@ void sf2Instrument::noteOn(SF2PluginData* n) {
 	m_notesRunningMutex.unlock();
 }
 
-void sf2Instrument::noteOff(SF2PluginData* n) {
+void sf2Instrument::noteOff(SF2PluginData* n)
+{
 	n->noteOffSent = true;
 	m_notesRunningMutex.lock();
 	const int notes = --m_notesRunning[n->midiNote];
@@ -573,7 +590,8 @@ void sf2Instrument::noteOff(SF2PluginData* n) {
 	}
 }
 
-void sf2Instrument::play(sampleFrame* _working_buffer) {
+void sf2Instrument::play(sampleFrame* _working_buffer)
+{
 	const fpp_t frames = Engine::audioEngine()->framesPerPeriod();
 
 	// set midi pitch for this period
@@ -644,7 +662,8 @@ void sf2Instrument::play(sampleFrame* _working_buffer) {
 	instrumentTrack()->processAudioBuffer(_working_buffer, frames, nullptr);
 }
 
-void sf2Instrument::renderFrames(f_cnt_t frames, sampleFrame* buf) {
+void sf2Instrument::renderFrames(f_cnt_t frames, sampleFrame* buf)
+{
 	m_synthMutex.lock();
 	if (m_internalSampleRate < Engine::audioEngine()->processingSampleRate() && m_srcState != nullptr) {
 		const fpp_t f = frames * m_internalSampleRate / Engine::audioEngine()->processingSampleRate();
@@ -676,7 +695,8 @@ void sf2Instrument::renderFrames(f_cnt_t frames, sampleFrame* buf) {
 	m_synthMutex.unlock();
 }
 
-void sf2Instrument::deleteNotePluginData(NotePlayHandle* _n) {
+void sf2Instrument::deleteNotePluginData(NotePlayHandle* _n)
+{
 	SF2PluginData* pluginData = static_cast<SF2PluginData*>(_n->m_pluginData);
 	if (!pluginData->noteOffSent) // if we for some reason haven't noteoffed the note before it gets deleted,
 								  // do it here
@@ -691,16 +711,19 @@ void sf2Instrument::deleteNotePluginData(NotePlayHandle* _n) {
 
 PluginView* sf2Instrument::instantiateView(QWidget* _parent) { return new sf2InstrumentView(this, _parent); }
 
-class sf2Knob : public Knob {
+class sf2Knob : public Knob
+{
 public:
 	sf2Knob(QWidget* _parent)
-		: Knob(knobStyled, _parent) {
+		: Knob(knobStyled, _parent)
+	{
 		setFixedSize(31, 38);
 	}
 };
 
 sf2InstrumentView::sf2InstrumentView(Instrument* _instrument, QWidget* _parent)
-	: InstrumentViewFixedSize(_instrument, _parent) {
+	: InstrumentViewFixedSize(_instrument, _parent)
+{
 	//	QVBoxLayout * vl = new QVBoxLayout( this );
 	//	QHBoxLayout * hl = new QHBoxLayout();
 
@@ -847,7 +870,8 @@ sf2InstrumentView::sf2InstrumentView(Instrument* _instrument, QWidget* _parent)
 
 sf2InstrumentView::~sf2InstrumentView() {}
 
-void sf2InstrumentView::modelChanged() {
+void sf2InstrumentView::modelChanged()
+{
 	sf2Instrument* k = castModel<sf2Instrument>();
 	m_bankNumLcd->setModel(&k->m_bankNum);
 	m_patchNumLcd->setModel(&k->m_patchNum);
@@ -873,7 +897,8 @@ void sf2InstrumentView::modelChanged() {
 	updateFilename();
 }
 
-void sf2InstrumentView::updateFilename() {
+void sf2InstrumentView::updateFilename()
+{
 	sf2Instrument* i = castModel<sf2Instrument>();
 	QFontMetrics fm(m_filenameLabel->font());
 	QString file = i->m_filename.endsWith(".sf2", Qt::CaseInsensitive) ? i->m_filename.left(i->m_filename.length() - 4)
@@ -888,7 +913,8 @@ void sf2InstrumentView::updateFilename() {
 	update();
 }
 
-void sf2InstrumentView::updatePatchName() {
+void sf2InstrumentView::updatePatchName()
+{
 	sf2Instrument* i = castModel<sf2Instrument>();
 	QFontMetrics fm(font());
 	QString patch = i->getCurrentPatchName();
@@ -899,7 +925,8 @@ void sf2InstrumentView::updatePatchName() {
 
 void sf2InstrumentView::invalidateFile() { m_patchDialogButton->setEnabled(false); }
 
-void sf2InstrumentView::showFileDialog() {
+void sf2InstrumentView::showFileDialog()
+{
 	sf2Instrument* k = castModel<sf2Instrument>();
 
 	FileDialog ofd(nullptr, tr("Open SoundFont file"));
@@ -930,7 +957,8 @@ void sf2InstrumentView::showFileDialog() {
 	m_fileDialogButton->setEnabled(true);
 }
 
-void sf2InstrumentView::showPatchDialog() {
+void sf2InstrumentView::showPatchDialog()
+{
 	sf2Instrument* k = castModel<sf2Instrument>();
 
 	patchesDialog pd(this);

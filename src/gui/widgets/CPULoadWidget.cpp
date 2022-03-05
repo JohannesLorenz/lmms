@@ -38,7 +38,8 @@ CPULoadWidget::CPULoadWidget(QWidget* _parent)
 	, m_background(embed::getIconPixmap("cpuload_bg"))
 	, m_leds(embed::getIconPixmap("cpuload_leds"))
 	, m_changed(true)
-	, m_updateTimer() {
+	, m_updateTimer()
+{
 	setAttribute(Qt::WA_OpaquePaintEvent, true);
 	setFixedSize(m_background.width(), m_background.height());
 
@@ -50,7 +51,8 @@ CPULoadWidget::CPULoadWidget(QWidget* _parent)
 
 CPULoadWidget::~CPULoadWidget() {}
 
-void CPULoadWidget::paintEvent(QPaintEvent*) {
+void CPULoadWidget::paintEvent(QPaintEvent*)
+{
 	if (m_changed == true) {
 		m_changed = false;
 
@@ -68,7 +70,8 @@ void CPULoadWidget::paintEvent(QPaintEvent*) {
 	p.drawPixmap(0, 0, m_temp);
 }
 
-void CPULoadWidget::updateCpuLoad() {
+void CPULoadWidget::updateCpuLoad()
+{
 	// smooth load-values a bit
 	int new_load = (m_currentLoad + Engine::audioEngine()->cpuLoad()) / 2;
 	if (new_load != m_currentLoad) {

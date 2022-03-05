@@ -84,7 +84,8 @@ AudioEngine::AudioEngine(bool renderOnly)
 	, m_changesSignal(false)
 	, m_changes(0)
 	, m_doChangesMutex(QMutex::Recursive)
-	, m_waitingForWrite(false) {
+	, m_waitingForWrite(false)
+{
 	for (int i = 0; i < 2; ++i) {
 		m_inputBufferFrames[i] = 0;
 		m_inputBufferSize[i] = DEFAULT_BUFFER_SIZE * 100;
@@ -134,7 +135,8 @@ AudioEngine::AudioEngine(bool renderOnly)
 	}
 }
 
-AudioEngine::~AudioEngine() {
+AudioEngine::~AudioEngine()
+{
 	runChangesInModel();
 
 	for (int w = 0; w < m_numWorkers; ++w) {
@@ -163,7 +165,8 @@ AudioEngine::~AudioEngine() {
 	}
 }
 
-void AudioEngine::initDevices() {
+void AudioEngine::initDevices()
+{
 	bool success_ful = false;
 	if (m_renderOnly) {
 		m_audioDev = new AudioDummy(success_ful, this);
@@ -178,7 +181,8 @@ void AudioEngine::initDevices() {
 	emit sampleRateChanged();
 }
 
-void AudioEngine::startProcessing(bool needsFifo) {
+void AudioEngine::startProcessing(bool needsFifo)
+{
 	if (needsFifo) {
 		m_fifoWriter = new fifoWriter(this, m_fifo);
 		m_fifoWriter->start(QThread::HighPriority);
@@ -191,7 +195,8 @@ void AudioEngine::startProcessing(bool needsFifo) {
 	m_isProcessing = true;
 }
 
-void AudioEngine::stopProcessing() {
+void AudioEngine::stopProcessing()
+{
 	m_isProcessing = false;
 
 	if (m_fifoWriter != nullptr) {
@@ -205,27 +210,32 @@ void AudioEngine::stopProcessing() {
 	}
 }
 
-sample_rate_t AudioEngine::baseSampleRate() const {
+sample_rate_t AudioEngine::baseSampleRate() const
+{
 	sample_rate_t sr = ConfigManager::inst()->value("audioengine", "samplerate").toInt();
 	if (sr < 44100) { sr = 44100; }
 	return sr;
 }
 
-sample_rate_t AudioEngine::outputSampleRate() const {
+sample_rate_t AudioEngine::outputSampleRate() const
+{
 	return m_audioDev != nullptr ? m_audioDev->sampleRate() : baseSampleRate();
 }
 
-sample_rate_t AudioEngine::inputSampleRate() const {
+sample_rate_t AudioEngine::inputSampleRate() const
+{
 	return m_audioDev != nullptr ? m_audioDev->sampleRate() : baseSampleRate();
 }
 
-sample_rate_t AudioEngine::processingSampleRate() const {
+sample_rate_t AudioEngine::processingSampleRate() const
+{
 	return outputSampleRate() * m_qualitySettings.sampleRateMultiplier();
 }
 
 bool AudioEngine::criticalXRuns() const { return cpuLoad() >= 99 && Engine::getSong()->isExporting() == false; }
 
-void AudioEngine::pushInputFrames(sampleFrame* _ab, const f_cnt_t _frames) {
+void AudioEngine::pushInputFrames(sampleFrame* _ab, const f_cnt_t _frames)
+{
 	requestChangeInModel();
 
 	f_cnt_t frames = m_inputBufferFrames[m_inputBufferWrite];
@@ -250,7 +260,8 @@ void AudioEngine::pushInputFrames(sampleFrame* _ab, const f_cnt_t _frames) {
 	doneChangeInModel();
 }
 
-const surroundSampleFrame* AudioEngine::renderNextBuffer() {
+const surroundSampleFrame* AudioEngine::renderNextBuffer()
+{
 	m_profiler.startPeriod();
 
 	s_renderingThread = true;
@@ -343,7 +354,8 @@ const surroundSampleFrame* AudioEngine::renderNextBuffer() {
 	return m_outputBufferRead;
 }
 
-void AudioEngine::swapBuffers() {
+void AudioEngine::swapBuffers()
+{
 	m_inputBufferWrite = (m_inputBufferWrite + 1) % 2;
 	m_inputBufferRead = (m_inputBufferRead + 1) % 2;
 	m_inputBufferFrames[m_inputBufferWrite] = 0;
@@ -352,7 +364,8 @@ void AudioEngine::swapBuffers() {
 	BufferManager::clear(m_outputBufferWrite, m_framesPerPeriod);
 }
 
-void AudioEngine::handleMetronome() {
+void AudioEngine::handleMetronome()
+{
 	static tick_t lastMetroTicks = -1;
 
 	Song* song = Engine::getSong();
@@ -383,7 +396,8 @@ void AudioEngine::handleMetronome() {
 
 void AudioEngine::clear() { m_clearSignal = true; }
 
-void AudioEngine::clearNewPlayHandles() {
+void AudioEngine::clearNewPlayHandles()
+{
 	requestChangeInModel();
 	for (LocklessListElement* e = m_newPlayHandles.popList(); e;) {
 		LocklessListElement* next = e->next;
@@ -395,14 +409,16 @@ void AudioEngine::clearNewPlayHandles() {
 
 // removes all play-handles. this is necessary, when the song is stopped ->
 // all remaining notes etc. would be played until their end
-void AudioEngine::clearInternal() {
+void AudioEngine::clearInternal()
+{
 	// TODO: m_midiClient->noteOffAll();
 	for (auto ph : m_playHandles) {
 		if (ph->type() != PlayHandle::TypeInstrumentPlayHandle) { m_playHandlesToRemove.push_back(ph); }
 	}
 }
 
-AudioEngine::StereoSample AudioEngine::getPeakValues(sampleFrame* ab, const f_cnt_t frames) const {
+AudioEngine::StereoSample AudioEngine::getPeakValues(sampleFrame* ab, const f_cnt_t frames) const
+{
 	sample_t peakLeft = 0.0f;
 	sample_t peakRight = 0.0f;
 
@@ -417,7 +433,8 @@ AudioEngine::StereoSample AudioEngine::getPeakValues(sampleFrame* ab, const f_cn
 	return StereoSample(peakLeft, peakRight);
 }
 
-void AudioEngine::changeQuality(const struct qualitySettings& qs) {
+void AudioEngine::changeQuality(const struct qualitySettings& qs)
+{
 	// don't delete the audio-device
 	stopProcessing();
 
@@ -430,7 +447,8 @@ void AudioEngine::changeQuality(const struct qualitySettings& qs) {
 	startProcessing();
 }
 
-void AudioEngine::doSetAudioDevice(AudioDevice* _dev) {
+void AudioEngine::doSetAudioDevice(AudioDevice* _dev)
+{
 	// TODO: Use shared_ptr here in the future.
 	// Currently, this is safe, because this is only called by
 	// ProjectRenderer, and after ProjectRenderer calls this function,
@@ -446,8 +464,8 @@ void AudioEngine::doSetAudioDevice(AudioDevice* _dev) {
 	}
 }
 
-void AudioEngine::setAudioDevice(
-	AudioDevice* _dev, const struct qualitySettings& _qs, bool _needs_fifo, bool startNow) {
+void AudioEngine::setAudioDevice(AudioDevice* _dev, const struct qualitySettings& _qs, bool _needs_fifo, bool startNow)
+{
 	stopProcessing();
 
 	m_qualitySettings = _qs;
@@ -460,11 +478,13 @@ void AudioEngine::setAudioDevice(
 	if (startNow) { startProcessing(_needs_fifo); }
 }
 
-void AudioEngine::storeAudioDevice() {
+void AudioEngine::storeAudioDevice()
+{
 	if (!m_oldAudioDev) { m_oldAudioDev = m_audioDev; }
 }
 
-void AudioEngine::restoreAudioDevice() {
+void AudioEngine::restoreAudioDevice()
+{
 	if (m_oldAudioDev && m_audioDev != m_oldAudioDev) {
 		stopProcessing();
 		delete m_audioDev;
@@ -477,7 +497,8 @@ void AudioEngine::restoreAudioDevice() {
 	m_oldAudioDev = nullptr;
 }
 
-void AudioEngine::removeAudioPort(AudioPort* port) {
+void AudioEngine::removeAudioPort(AudioPort* port)
+{
 	requestChangeInModel();
 
 	QVector<AudioPort*>::Iterator it = std::find(m_audioPorts.begin(), m_audioPorts.end(), port);
@@ -485,7 +506,8 @@ void AudioEngine::removeAudioPort(AudioPort* port) {
 	doneChangeInModel();
 }
 
-bool AudioEngine::addPlayHandle(PlayHandle* handle) {
+bool AudioEngine::addPlayHandle(PlayHandle* handle)
+{
 	if (criticalXRuns() == false) {
 		m_newPlayHandles.push(handle);
 		handle->audioPort()->addPlayHandle(handle);
@@ -500,7 +522,8 @@ bool AudioEngine::addPlayHandle(PlayHandle* handle) {
 	return false;
 }
 
-void AudioEngine::removePlayHandle(PlayHandle* ph) {
+void AudioEngine::removePlayHandle(PlayHandle* ph)
+{
 	requestChangeInModel();
 	// check thread affinity as we must not delete play-handles
 	// which were created in a thread different than the audio engine thread
@@ -543,7 +566,8 @@ void AudioEngine::removePlayHandle(PlayHandle* ph) {
 	doneChangeInModel();
 }
 
-void AudioEngine::removePlayHandlesOfTypes(Track* track, const quint8 types) {
+void AudioEngine::removePlayHandlesOfTypes(Track* track, const quint8 types)
+{
 	requestChangeInModel();
 	PlayHandleList::Iterator it = m_playHandles.begin();
 	while (it != m_playHandles.end()) {
@@ -561,7 +585,8 @@ void AudioEngine::removePlayHandlesOfTypes(Track* track, const quint8 types) {
 	doneChangeInModel();
 }
 
-void AudioEngine::requestChangeInModel() {
+void AudioEngine::requestChangeInModel()
+{
 	if (s_renderingThread) return;
 
 	m_changesMutex.lock();
@@ -577,7 +602,8 @@ void AudioEngine::requestChangeInModel() {
 	m_waitChangesMutex.unlock();
 }
 
-void AudioEngine::doneChangeInModel() {
+void AudioEngine::doneChangeInModel()
+{
 	if (s_renderingThread) return;
 
 	m_changesMutex.lock();
@@ -591,7 +617,8 @@ void AudioEngine::doneChangeInModel() {
 	m_doChangesMutex.unlock();
 }
 
-void AudioEngine::runChangesInModel() {
+void AudioEngine::runChangesInModel()
+{
 	if (m_changesSignal) {
 		m_waitChangesMutex.lock();
 		// allow changes in the model from other threads ...
@@ -602,7 +629,8 @@ void AudioEngine::runChangesInModel() {
 	}
 }
 
-bool AudioEngine::isAudioDevNameValid(QString name) {
+bool AudioEngine::isAudioDevNameValid(QString name)
+{
 #ifdef LMMS_HAVE_SDL
 	if (name == AudioSdl::name()) { return true; }
 #endif
@@ -640,7 +668,8 @@ bool AudioEngine::isAudioDevNameValid(QString name) {
 	return false;
 }
 
-bool AudioEngine::isMidiDevNameValid(QString name) {
+bool AudioEngine::isMidiDevNameValid(QString name)
+{
 #ifdef LMMS_HAVE_ALSA
 	if (name == MidiAlsaSeq::name() || name == MidiAlsaRaw::name()) { return true; }
 #endif
@@ -670,7 +699,8 @@ bool AudioEngine::isMidiDevNameValid(QString name) {
 	return false;
 }
 
-AudioDevice* AudioEngine::tryAudioDevices() {
+AudioDevice* AudioEngine::tryAudioDevices()
+{
 	bool success_ful = false;
 	AudioDevice* dev = nullptr;
 	QString dev_name = ConfigManager::inst()->value("audioengine", "audiodev");
@@ -787,7 +817,8 @@ AudioDevice* AudioEngine::tryAudioDevices() {
 	return new AudioDummy(success_ful, this);
 }
 
-MidiClient* AudioEngine::tryMidiClients() {
+MidiClient* AudioEngine::tryMidiClients()
+{
 	QString client_name = ConfigManager::inst()->value("audioengine", "mididev");
 	if (!isMidiDevNameValid(client_name)) { client_name = ""; }
 
@@ -884,13 +915,15 @@ MidiClient* AudioEngine::tryMidiClients() {
 AudioEngine::fifoWriter::fifoWriter(AudioEngine* audioEngine, Fifo* fifo)
 	: m_audioEngine(audioEngine)
 	, m_fifo(fifo)
-	, m_writing(true) {
+	, m_writing(true)
+{
 	setObjectName("AudioEngine::fifoWriter");
 }
 
 void AudioEngine::fifoWriter::finish() { m_writing = false; }
 
-void AudioEngine::fifoWriter::run() {
+void AudioEngine::fifoWriter::run()
+{
 	disable_denormals();
 
 #if 0
@@ -917,7 +950,8 @@ void AudioEngine::fifoWriter::run() {
 	m_fifo->waitUntilRead();
 }
 
-void AudioEngine::fifoWriter::write(surroundSampleFrame* buffer) {
+void AudioEngine::fifoWriter::write(surroundSampleFrame* buffer)
+{
 	m_audioEngine->m_waitChangesMutex.lock();
 	m_audioEngine->m_waitingForWrite = true;
 	m_audioEngine->m_waitChangesMutex.unlock();

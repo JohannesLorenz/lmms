@@ -33,7 +33,9 @@
 Instrument::Instrument(
 	InstrumentTrack* _instrument_track, const Descriptor* _descriptor, const Descriptor::SubPluginFeatures::Key* key)
 	: Plugin(_descriptor, nullptr /* _instrument_track*/, key)
-	, m_instrumentTrack(_instrument_track) {}
+	, m_instrumentTrack(_instrument_track)
+{
+}
 
 void Instrument::play(sampleFrame*) {}
 
@@ -42,7 +44,8 @@ void Instrument::deleteNotePluginData(NotePlayHandle*) {}
 f_cnt_t Instrument::beatLen(NotePlayHandle*) const { return (0); }
 
 Instrument* Instrument::instantiate(const QString& _plugin_name, InstrumentTrack* _instrument_track,
-	const Descriptor::SubPluginFeatures::Key* key, bool keyFromDnd) {
+	const Descriptor::SubPluginFeatures::Key* key, bool keyFromDnd)
+{
 	if (keyFromDnd) Q_ASSERT(!key);
 	// copy from above // TODO! common cleaner func
 	Plugin* p = Plugin::instantiateWithKey(_plugin_name, _instrument_track, key, keyFromDnd);
@@ -54,7 +57,8 @@ Instrument* Instrument::instantiate(const QString& _plugin_name, InstrumentTrack
 bool Instrument::isFromTrack(const Track* _track) const { return (m_instrumentTrack == _track); }
 
 // helper function for Instrument::applyFadeIn
-static int countZeroCrossings(sampleFrame* buf, fpp_t start, fpp_t frames) {
+static int countZeroCrossings(sampleFrame* buf, fpp_t start, fpp_t frames)
+{
 	// zero point crossing counts of all channels
 	int zeroCrossings[DEFAULT_CHANNELS] = {0};
 	// maximum zero point crossing of all channels
@@ -75,7 +79,8 @@ static int countZeroCrossings(sampleFrame* buf, fpp_t start, fpp_t frames) {
 }
 
 // helper function for Instrument::applyFadeIn
-fpp_t getFadeInLength(float maxLength, fpp_t frames, int zeroCrossings) {
+fpp_t getFadeInLength(float maxLength, fpp_t frames, int zeroCrossings)
+{
 	// calculate the length of the fade in
 	// Length is inversely proportional to the max of zeroCrossings,
 	// because for low frequencies, we need a longer fade in to
@@ -83,7 +88,8 @@ fpp_t getFadeInLength(float maxLength, fpp_t frames, int zeroCrossings) {
 	return (fpp_t)(maxLength / ((float)zeroCrossings / ((float)frames / 128.0f) + 1.0f));
 }
 
-void Instrument::applyFadeIn(sampleFrame* buf, NotePlayHandle* n) {
+void Instrument::applyFadeIn(sampleFrame* buf, NotePlayHandle* n)
+{
 	const static float MAX_FADE_IN_LENGTH = 85.0;
 	f_cnt_t total = n->totalFramesPlayed();
 	if (total == 0) {
@@ -125,7 +131,8 @@ void Instrument::applyFadeIn(sampleFrame* buf, NotePlayHandle* n) {
 	}
 }
 
-void Instrument::applyRelease(sampleFrame* buf, const NotePlayHandle* _n) {
+void Instrument::applyRelease(sampleFrame* buf, const NotePlayHandle* _n)
+{
 	const fpp_t frames = _n->framesLeftForCurrentPeriod();
 	const fpp_t fpp = Engine::audioEngine()->framesPerPeriod();
 	const f_cnt_t fl = _n->framesLeft();

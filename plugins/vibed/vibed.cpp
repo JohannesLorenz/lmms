@@ -59,7 +59,8 @@ Plugin::Descriptor PLUGIN_EXPORT vibedstrings_plugin_descriptor = {
 }
 
 vibed::vibed(InstrumentTrack* _instrumentTrack)
-	: Instrument(_instrumentTrack, &vibedstrings_plugin_descriptor) {
+	: Instrument(_instrumentTrack, &vibedstrings_plugin_descriptor)
+{
 
 	FloatModel* knob;
 	BoolModel* led;
@@ -109,7 +110,8 @@ vibed::vibed(InstrumentTrack* _instrumentTrack)
 
 vibed::~vibed() {}
 
-void vibed::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void vibed::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 
 	QString name;
 
@@ -159,7 +161,8 @@ void vibed::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 	}
 }
 
-void vibed::loadSettings(const QDomElement& _this) {
+void vibed::loadSettings(const QDomElement& _this)
+{
 
 	QString name;
 
@@ -220,7 +223,8 @@ void vibed::loadSettings(const QDomElement& _this) {
 
 QString vibed::nodeName() const { return (vibedstrings_plugin_descriptor.name); }
 
-void vibed::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer) {
+void vibed::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
+{
 	if (_n->totalFramesPlayed() == 0 || _n->m_pluginData == nullptr) {
 		_n->m_pluginData
 			= new stringContainer(_n->frequency(), Engine::audioEngine()->processingSampleRate(), __sampleLength);
@@ -264,7 +268,8 @@ void vibed::deleteNotePluginData(NotePlayHandle* _n) { delete static_cast<string
 PluginView* vibed::instantiateView(QWidget* _parent) { return (new vibedView(this, _parent)); }
 
 vibedView::vibedView(Instrument* _instrument, QWidget* _parent)
-	: InstrumentViewFixedSize(_instrument, _parent) {
+	: InstrumentViewFixedSize(_instrument, _parent)
+{
 	setAutoFillBackground(true);
 	QPalette pal;
 	pal.setBrush(backgroundRole(), PLUGIN_NAME::getIconPixmap("artwork"));
@@ -410,7 +415,8 @@ vibedView::vibedView(Instrument* _instrument, QWidget* _parent)
 
 void vibedView::modelChanged() { showString(0); }
 
-void vibedView::showString(int _string) {
+void vibedView::showString(int _string)
+{
 	vibed* v = castModel<vibed>();
 
 	m_pickKnob->setModel(v->m_pickKnobs[_string]);
@@ -427,48 +433,57 @@ void vibedView::showString(int _string) {
 	m_power->setModel(v->m_powerButtons[_string]);
 }
 
-void vibedView::sinWaveClicked() {
+void vibedView::sinWaveClicked()
+{
 	m_graph->model()->setWaveToSine();
 	Engine::getSong()->setModified();
 }
 
-void vibedView::triangleWaveClicked() {
+void vibedView::triangleWaveClicked()
+{
 	m_graph->model()->setWaveToTriangle();
 	Engine::getSong()->setModified();
 }
 
-void vibedView::sawWaveClicked() {
+void vibedView::sawWaveClicked()
+{
 	m_graph->model()->setWaveToSaw();
 	Engine::getSong()->setModified();
 }
 
-void vibedView::sqrWaveClicked() {
+void vibedView::sqrWaveClicked()
+{
 	m_graph->model()->setWaveToSquare();
 	Engine::getSong()->setModified();
 }
 
-void vibedView::noiseWaveClicked() {
+void vibedView::noiseWaveClicked()
+{
 	m_graph->model()->setWaveToNoise();
 	Engine::getSong()->setModified();
 }
 
-void vibedView::usrWaveClicked() {
+void vibedView::usrWaveClicked()
+{
 	QString fileName = m_graph->model()->setWaveToUser();
 	ToolTip::add(m_usrWaveBtn, fileName);
 	Engine::getSong()->setModified();
 }
 
-void vibedView::smoothClicked() {
+void vibedView::smoothClicked()
+{
 	m_graph->model()->smooth();
 	Engine::getSong()->setModified();
 }
 
-void vibedView::normalizeClicked() {
+void vibedView::normalizeClicked()
+{
 	m_graph->model()->normalize();
 	Engine::getSong()->setModified();
 }
 
-void vibedView::contextMenuEvent(QContextMenuEvent*) {
+void vibedView::contextMenuEvent(QContextMenuEvent*)
+{
 
 	CaptionMenu contextMenu(model()->displayName(), this);
 	contextMenu.exec(QCursor::pos());

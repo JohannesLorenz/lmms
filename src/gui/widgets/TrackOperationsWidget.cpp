@@ -123,7 +123,8 @@ TrackOperationsWidget::~TrackOperationsWidget() {}
  *
  *  \param me The mouse event to respond to.
  */
-void TrackOperationsWidget::mousePressEvent(QMouseEvent* me) {
+void TrackOperationsWidget::mousePressEvent(QMouseEvent* me)
+{
 	if (me->button() == Qt::LeftButton && me->modifiers() & Qt::ControlModifier
 		&& m_trackView->getTrack()->type() != Track::PatternTrack) {
 		DataFile dataFile(DataFile::DragNDropData);
@@ -147,7 +148,8 @@ void TrackOperationsWidget::mousePressEvent(QMouseEvent* me) {
  *  \todo Flesh this out a bit - is it correct?
  *  \param pe The paint event to respond to
  */
-void TrackOperationsWidget::paintEvent(QPaintEvent* pe) {
+void TrackOperationsWidget::paintEvent(QPaintEvent* pe)
+{
 	QPainter p(this);
 
 	p.fillRect(rect(), palette().brush(QPalette::Background));
@@ -162,7 +164,8 @@ void TrackOperationsWidget::paintEvent(QPaintEvent* pe) {
 }
 
 /*! \brief Show a message box warning the user that this track is about to be closed */
-bool TrackOperationsWidget::confirmRemoval() {
+bool TrackOperationsWidget::confirmRemoval()
+{
 	bool needConfirm = ConfigManager::inst()->value("ui", "trackdeletionwarning", "1").toInt();
 	if (!needConfirm) { return true; }
 
@@ -195,7 +198,8 @@ bool TrackOperationsWidget::confirmRemoval() {
 /*! \brief Clone this track
  *
  */
-void TrackOperationsWidget::cloneTrack() {
+void TrackOperationsWidget::cloneTrack()
+{
 	TrackContainerView* tcView = m_trackView->trackContainerView();
 
 	Track* newTrack = m_trackView->getTrack()->clone();
@@ -210,7 +214,8 @@ void TrackOperationsWidget::cloneTrack() {
 }
 
 /*! \brief Clear this track - clears all Clips from the track */
-void TrackOperationsWidget::clearTrack() {
+void TrackOperationsWidget::clearTrack()
+{
 	Track* t = m_trackView->getTrack();
 	t->addJournalCheckPoint();
 	t->lock();
@@ -221,11 +226,13 @@ void TrackOperationsWidget::clearTrack() {
 /*! \brief Remove this track from the track list
  *
  */
-void TrackOperationsWidget::removeTrack() {
+void TrackOperationsWidget::removeTrack()
+{
 	if (confirmRemoval()) { emit trackRemovalScheduled(m_trackView); }
 }
 
-void TrackOperationsWidget::selectTrackColor() {
+void TrackOperationsWidget::selectTrackColor()
+{
 	QColor new_color
 		= ColorChooser(this).withPalette(ColorChooser::Palette::Track)->getColor(m_trackView->getTrack()->color());
 
@@ -237,14 +244,16 @@ void TrackOperationsWidget::selectTrackColor() {
 	Engine::getSong()->setModified();
 }
 
-void TrackOperationsWidget::resetTrackColor() {
+void TrackOperationsWidget::resetTrackColor()
+{
 	auto track = m_trackView->getTrack();
 	track->addJournalCheckPoint();
 	track->resetColor();
 	Engine::getSong()->setModified();
 }
 
-void TrackOperationsWidget::randomizeTrackColor() {
+void TrackOperationsWidget::randomizeTrackColor()
+{
 	QColor buffer = ColorChooser::getPalette(ColorChooser::Palette::Track)[rand() % 48];
 	auto track = m_trackView->getTrack();
 	track->addJournalCheckPoint();
@@ -252,7 +261,8 @@ void TrackOperationsWidget::randomizeTrackColor() {
 	Engine::getSong()->setModified();
 }
 
-void TrackOperationsWidget::resetClipColors() {
+void TrackOperationsWidget::resetClipColors()
+{
 	auto track = m_trackView->getTrack();
 	track->addJournalCheckPoint();
 	for (auto clip : track->getClips()) {
@@ -269,7 +279,8 @@ void TrackOperationsWidget::resetClipColors() {
  *  on all Clips (same should be added for sample tracks when
  *  sampletrack recording is implemented)
  */
-void TrackOperationsWidget::updateMenu() {
+void TrackOperationsWidget::updateMenu()
+{
 	QMenu* toMenu = m_trackOps->menu();
 	toMenu->clear();
 	toMenu->addAction(embed::getIconPixmap("edit_copy", 16, 16), tr("Clone this track"), this, SLOT(cloneTrack()));
@@ -302,7 +313,8 @@ void TrackOperationsWidget::updateMenu() {
 	colorMenu->addAction(tr("Reset clip colors"), this, SLOT(resetClipColors()));
 }
 
-void TrackOperationsWidget::toggleRecording(bool on) {
+void TrackOperationsWidget::toggleRecording(bool on)
+{
 	AutomationTrackView* atv = dynamic_cast<AutomationTrackView*>(m_trackView);
 	if (atv) {
 		for (Clip* clip : atv->getTrack()->getClips()) {

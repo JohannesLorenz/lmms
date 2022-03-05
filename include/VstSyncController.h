@@ -31,7 +31,8 @@
 
 #include "VstSyncData.h"
 
-class VstSyncController : public QObject {
+class VstSyncController : public QObject
+{
 	Q_OBJECT
 public:
 	VstSyncController();
@@ -43,7 +44,8 @@ public:
 
 	void setTempo(int newTempo);
 
-	void setTimeSignature(int num, int denom) {
+	void setTimeSignature(int num, int denom)
+	{
 		m_syncData->timeSigNumer = num;
 		m_syncData->timeSigDenom = denom;
 	}

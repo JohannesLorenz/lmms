@@ -50,7 +50,8 @@ const std::set<const char*, Lv2Manager::CmpStr> Lv2Manager::pluginBlacklist = {
 	"http://calf.sourceforge.net/plugins/TransientDesigner", "http://calf.sourceforge.net/plugins/Vinyl"};
 
 Lv2Manager::Lv2Manager()
-	: m_uridCache(m_uridMap) {
+	: m_uridCache(m_uridMap)
+{
 	const char* dbgStr = getenv("LMMS_LV2_DEBUG");
 	m_debug = (dbgStr && *dbgStr);
 
@@ -77,21 +78,24 @@ Lv2Manager::~Lv2Manager() { lilv_world_free(m_world); }
 
 AutoLilvNode Lv2Manager::uri(const char* uriStr) { return AutoLilvNode(lilv_new_uri(m_world, uriStr)); }
 
-const LilvPlugin* Lv2Manager::getPlugin(const std::string& uri) {
+const LilvPlugin* Lv2Manager::getPlugin(const std::string& uri)
+{
 	auto itr = m_lv2InfoMap.find(uri);
 	return itr == m_lv2InfoMap.end() ? nullptr : itr->second.plugin();
 }
 
 const LilvPlugin* Lv2Manager::getPlugin(const QString& uri) { return getPlugin(uri.toStdString()); }
 
-void Lv2Manager::initPlugins() {
+void Lv2Manager::initPlugins()
+{
 	const LilvPlugins* plugins = lilv_world_get_all_plugins(m_world);
 	std::size_t pluginCount = 0, pluginsLoaded = 0;
 	QElapsedTimer timer;
 	timer.start();
 
 	unsigned blacklisted = 0;
-	LILV_FOREACH(plugins, itr, plugins) {
+	LILV_FOREACH(plugins, itr, plugins)
+	{
 		const LilvPlugin* curPlug = lilv_plugins_get(plugins, itr);
 
 		std::vector<PluginIssue> issues;
@@ -149,16 +153,19 @@ void Lv2Manager::initPlugins() {
 
 bool Lv2Manager::CmpStr::operator()(const char* a, const char* b) const { return std::strcmp(a, b) < 0; }
 
-bool Lv2Manager::isFeatureSupported(const char* featName) const {
+bool Lv2Manager::isFeatureSupported(const char* featName) const
+{
 	return m_supportedFeatureURIs.find(featName) != m_supportedFeatureURIs.end();
 }
 
-AutoLilvNodes Lv2Manager::findNodes(const LilvNode* subject, const LilvNode* predicate, const LilvNode* object) {
+AutoLilvNodes Lv2Manager::findNodes(const LilvNode* subject, const LilvNode* predicate, const LilvNode* object)
+{
 	return AutoLilvNodes(lilv_world_find_nodes(m_world, subject, predicate, object));
 }
 
 // unused + untested yet
-bool Lv2Manager::isSubclassOf(const LilvPluginClass* clvss, const char* uriStr) {
+bool Lv2Manager::isSubclassOf(const LilvPluginClass* clvss, const char* uriStr)
+{
 	const LilvPluginClasses* allClasses = lilv_world_get_plugin_classes(m_world);
 	const LilvPluginClass* root = lilv_world_get_plugin_class(m_world);
 	const LilvPluginClass* search = lilv_plugin_classes_get_by_uri(allClasses, uri(uriStr).get());

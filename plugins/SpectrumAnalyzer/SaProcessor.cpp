@@ -51,7 +51,8 @@ SaProcessor::SaProcessor(const SaControls* controls)
 	, m_spectrumActive(false)
 	, m_waterfallActive(false)
 	, m_waterfallNotEmpty(0)
-	, m_reallocating(false) {
+	, m_reallocating(false)
+{
 	m_fftWindow.resize(m_inBlockSize, 1.0);
 	precomputeWindow(m_fftWindow.data(), m_inBlockSize, BLACKMAN_HARRIS);
 
@@ -74,7 +75,8 @@ SaProcessor::SaProcessor(const SaControls* controls)
 	m_history.resize(waterfallWidth() * m_waterfallHeight * sizeof qRgb(0, 0, 0), 0);
 }
 
-SaProcessor::~SaProcessor() {
+SaProcessor::~SaProcessor()
+{
 	if (m_fftPlanL != nullptr) { fftwf_destroy_plan(m_fftPlanL); }
 	if (m_fftPlanR != nullptr) { fftwf_destroy_plan(m_fftPlanR); }
 	if (m_spectrumL != nullptr) { fftwf_free(m_spectrumL); }
@@ -87,7 +89,8 @@ SaProcessor::~SaProcessor() {
 }
 
 // Load data from audio thread ringbuffer and run FFT analysis if buffer is full enough.
-void SaProcessor::analyze(LocklessRingBuffer<sampleFrame>& ring_buffer) {
+void SaProcessor::analyze(LocklessRingBuffer<sampleFrame>& ring_buffer)
+{
 	LocklessRingBufferReader<sampleFrame> reader(ring_buffer);
 
 	// Processing thread loop
@@ -279,7 +282,8 @@ void SaProcessor::analyze(LocklessRingBuffer<sampleFrame>& ring_buffer) {
 // Gamma correction is applied to make small values more visible and to make
 // a linear gradient actually appear roughly linear. The correction should be
 // around 0.42 to 0.45 for sRGB displays (or lower for bigger visibility boost).
-QRgb SaProcessor::makePixel(float left, float right) const {
+QRgb SaProcessor::makePixel(float left, float right) const
+{
 	const float gamma_correction = m_controls->m_waterfallGammaModel.value();
 	if (m_controls->m_stereoModel.value()) {
 		float ampL = pow(left, gamma_correction);
@@ -301,7 +305,8 @@ void SaProcessor::setSpectrumActive(bool active) { m_spectrumActive = active; }
 void SaProcessor::setWaterfallActive(bool active) { m_waterfallActive = active; }
 
 // Reallocate data buffers according to newly set block size.
-void SaProcessor::reallocateBuffers() {
+void SaProcessor::reallocateBuffers()
+{
 	unsigned int new_size_index = m_controls->m_blockSizeModel.value();
 	unsigned int new_in_size, new_fft_size;
 	unsigned int new_bins;
@@ -380,7 +385,8 @@ void SaProcessor::reallocateBuffers() {
 }
 
 // Precompute a new FFT window based on currently selected type.
-void SaProcessor::rebuildWindow() {
+void SaProcessor::rebuildWindow()
+{
 	// computation is done in fft_helpers
 	QMutexLocker lock(&m_dataAccess);
 	precomputeWindow(m_fftWindow.data(), m_inBlockSize, (FFT_WINDOWS)m_controls->m_windowModel.value());
@@ -388,7 +394,8 @@ void SaProcessor::rebuildWindow() {
 
 // Clear all data buffers and replace contents with zeros.
 // Note: may take a few milliseconds, do not call in a loop!
-void SaProcessor::clear() {
+void SaProcessor::clear()
+{
 	const unsigned int overlaps = m_controls->m_windowOverlapModel.value();
 	QMutexLocker lock(&m_dataAccess);
 	// If there is any window overlap, leave space only for the new samples
@@ -409,13 +416,15 @@ void SaProcessor::clear() {
 
 // Clear only history work buffer. Used to flush old data when waterfall
 // is shown after a period of inactivity.
-void SaProcessor::clearHistory() {
+void SaProcessor::clearHistory()
+{
 	QMutexLocker lock(&m_dataAccess);
 	std::fill(m_history_work.begin(), m_history_work.end(), 0);
 }
 
 // Check if result buffers contain any non-zero values
-bool SaProcessor::spectrumNotEmpty() {
+bool SaProcessor::spectrumNotEmpty()
+{
 	QMutexLocker lock(&m_reallocationAccess);
 	return notEmpty(m_normSpectrumL) || notEmpty(m_normSpectrumR);
 }
@@ -439,7 +448,8 @@ unsigned int SaProcessor::binCount() const { return m_fftBlockSize / 2 + 1; }
 // FFT transform can easily produce more bins than can be reasonably useful for
 // currently used display resolutions. This function limits width of the final
 // image to a given size, which is then used during waterfall render and display.
-unsigned int SaProcessor::waterfallWidth() const {
+unsigned int SaProcessor::waterfallWidth() const
+{
 	return binCount() < m_waterfallMaxWidth ? binCount() : m_waterfallMaxWidth;
 }
 
@@ -451,7 +461,8 @@ float SaProcessor::binToFreq(unsigned int bin_index) const { return getNyquistFr
 // actually outside the frequency range.
 float SaProcessor::binBandwidth() const { return getNyquistFreq() / (binCount() - 1); }
 
-float SaProcessor::getFreqRangeMin(bool linear) const {
+float SaProcessor::getFreqRangeMin(bool linear) const
+{
 	switch (m_controls->m_freqRangeModel.value()) {
 	case FRANGE_AUDIBLE: return FRANGE_AUDIBLE_START;
 	case FRANGE_BASS: return FRANGE_BASS_START;
@@ -462,7 +473,8 @@ float SaProcessor::getFreqRangeMin(bool linear) const {
 	}
 }
 
-float SaProcessor::getFreqRangeMax() const {
+float SaProcessor::getFreqRangeMax() const
+{
 	switch (m_controls->m_freqRangeModel.value()) {
 	case FRANGE_AUDIBLE: return FRANGE_AUDIBLE_END;
 	case FRANGE_BASS: return FRANGE_BASS_END;
@@ -477,7 +489,8 @@ float SaProcessor::getFreqRangeMax() const {
 // NOTE: Results of this function may be cached by SaSpectrumView. If you use
 // a new function call or variable that can affect results of this function,
 // make sure to also add it as a trigger for cache update in SaSpectrumView.
-float SaProcessor::freqToXPixel(float freq, unsigned int width) const {
+float SaProcessor::freqToXPixel(float freq, unsigned int width) const
+{
 	if (m_controls->m_logXModel.value()) {
 		if (freq <= 1) { return 0; }
 		float min = log10(getFreqRangeMin());
@@ -491,7 +504,8 @@ float SaProcessor::freqToXPixel(float freq, unsigned int width) const {
 }
 
 // Map pixel x position on display of given width back to frequency.
-float SaProcessor::xPixelToFreq(float x, unsigned int width) const {
+float SaProcessor::xPixelToFreq(float x, unsigned int width) const
+{
 	if (m_controls->m_logXModel.value()) {
 		float min = log10(getFreqRangeMin());
 		float max = log10(getFreqRangeMax());
@@ -507,7 +521,8 @@ float SaProcessor::xPixelToFreq(float x, unsigned int width) const {
 // --------------------------------------
 // Amplitude conversion helpers
 //
-float SaProcessor::getAmpRangeMin(bool linear) const {
+float SaProcessor::getAmpRangeMin(bool linear) const
+{
 	// return very low limit to make sure zero gets included at linear grid
 	if (linear) { return -900; }
 	switch (m_controls->m_ampRangeModel.value()) {
@@ -519,7 +534,8 @@ float SaProcessor::getAmpRangeMin(bool linear) const {
 	}
 }
 
-float SaProcessor::getAmpRangeMax() const {
+float SaProcessor::getAmpRangeMax() const
+{
 	switch (m_controls->m_ampRangeModel.value()) {
 	case ARANGE_EXTENDED: return ARANGE_EXTENDED_END;
 	case ARANGE_SILENT: return ARANGE_SILENT_END;
@@ -531,7 +547,8 @@ float SaProcessor::getAmpRangeMax() const {
 
 // Map linear amplitude to pixel y position on a display of given height.
 // Note that display coordinates are flipped: amplitude grows from [height] to zero.
-float SaProcessor::ampToYPixel(float amplitude, unsigned int height) const {
+float SaProcessor::ampToYPixel(float amplitude, unsigned int height) const
+{
 	if (m_controls->m_logYModel.value()) {
 		// logarithmic scale: convert linear amplitude to dB (relative to 1.0)
 		float amplitude_dB = 10 * log10(amplitude);
@@ -553,7 +570,8 @@ float SaProcessor::ampToYPixel(float amplitude, unsigned int height) const {
 // Map pixel y position on display of given height back to amplitude.
 // Note that display coordinates are flipped: amplitude grows from [height] to zero.
 // Also note that in logarithmic Y mode the returned amplitude is in dB, not linear.
-float SaProcessor::yPixelToAmp(float y, unsigned int height) const {
+float SaProcessor::yPixelToAmp(float y, unsigned int height) const
+{
 	if (m_controls->m_logYModel.value()) {
 		float max = getAmpRangeMax();
 		float range = getAmpRangeMin() - max;

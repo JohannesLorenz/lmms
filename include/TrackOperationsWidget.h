@@ -32,7 +32,8 @@ class QPushButton;
 class PixmapButton;
 class TrackView;
 
-class TrackOperationsWidget : public QWidget {
+class TrackOperationsWidget : public QWidget
+{
 	Q_OBJECT
 public:
 	TrackOperationsWidget(TrackView* parent);

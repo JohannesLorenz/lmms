@@ -31,7 +31,8 @@
 class PatternStore;
 class ComboBox;
 
-class PatternEditor : public TrackContainerView {
+class PatternEditor : public TrackContainerView
+{
 	Q_OBJECT
 public:
 	PatternEditor(PatternStore* ps);
@@ -60,7 +61,8 @@ private:
 	void makeSteps(bool clone);
 };
 
-class PatternEditorWindow : public Editor {
+class PatternEditorWindow : public Editor
+{
 	Q_OBJECT
 public:
 	PatternEditorWindow(PatternStore* ps);

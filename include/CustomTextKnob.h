@@ -4,7 +4,8 @@
 
 #include "Knob.h"
 
-class LMMS_EXPORT CustomTextKnob : public Knob {
+class LMMS_EXPORT CustomTextKnob : public Knob
+{
 protected:
 	inline void setHintText(const QString& _txt_before, const QString& _txt_after) {} // inaccessible
 public:

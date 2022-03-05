@@ -31,7 +31,8 @@
 
 class PeakControllerEffect;
 
-class PeakControllerEffectControls : public EffectControls {
+class PeakControllerEffectControls : public EffectControls
+{
 	Q_OBJECT
 public:
 	PeakControllerEffectControls(PeakControllerEffect* _eff);

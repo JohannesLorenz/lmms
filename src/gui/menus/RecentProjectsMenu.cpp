@@ -10,14 +10,16 @@
 #include "embed.h"
 
 RecentProjectsMenu::RecentProjectsMenu(QWidget* parent)
-	: QMenu(tr("&Recently Opened Projects"), parent) {
+	: QMenu(tr("&Recently Opened Projects"), parent)
+{
 	setIcon(embed::getIconPixmap("project_open_recent"));
 
 	connect(this, SIGNAL(aboutToShow()), this, SLOT(fillMenu()));
 	connect(this, SIGNAL(triggered(QAction*)), this, SLOT(openProject(QAction*)));
 }
 
-void RecentProjectsMenu::fillMenu() {
+void RecentProjectsMenu::fillMenu()
+{
 	clear();
 	QStringList rup = ConfigManager::inst()->recentlyOpenedProjects();
 
@@ -43,7 +45,8 @@ void RecentProjectsMenu::fillMenu() {
 	}
 }
 
-void RecentProjectsMenu::openProject(QAction* _action) {
+void RecentProjectsMenu::openProject(QAction* _action)
+{
 	auto mainWindow = getGUI()->mainWindow();
 	if (mainWindow->mayChangeProject(true)) {
 		const QString f = _action->text().replace("&&", "&");

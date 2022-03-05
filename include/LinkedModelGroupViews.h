@@ -45,7 +45,8 @@
 		ModelView. The "view" in the name is just for consistency
 		with LinkedModelGroupsView.
 */
-class LinkedModelGroupView : public QWidget {
+class LinkedModelGroupView : public QWidget
+{
 public:
 	/**
 		@param colNum numbers of columns for the controls
@@ -81,7 +82,8 @@ private:
 	@note It's intended this class does not inherit from ModelView.
 		Inheriting classes need to do that, see e.g. Lv2Instrument.h
 */
-class LinkedModelGroupsView {
+class LinkedModelGroupsView
+{
 protected:
 	~LinkedModelGroupsView() = default;
 

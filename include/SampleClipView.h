@@ -29,7 +29,8 @@
 
 class SampleClip;
 
-class SampleClipView : public ClipView {
+class SampleClipView : public ClipView
+{
 	Q_OBJECT
 
 public:

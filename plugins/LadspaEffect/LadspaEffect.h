@@ -36,7 +36,8 @@
 typedef struct PortDescription port_desc_t;
 typedef QVector<port_desc_t*> multi_proc_t;
 
-class LadspaEffect : public Effect {
+class LadspaEffect : public Effect
+{
 	Q_OBJECT
 public:
 	LadspaEffect(Model* _parent, const Descriptor::SubPluginFeatures::Key* _key);

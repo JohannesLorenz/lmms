@@ -34,7 +34,8 @@ class MidiCCRackView;
 class TrackContainerView;
 class TrackLabelButton;
 
-class InstrumentTrackView : public TrackView {
+class InstrumentTrackView : public TrackView
+{
 	Q_OBJECT
 public:
 	InstrumentTrackView(InstrumentTrack* _it, TrackContainerView* tc);

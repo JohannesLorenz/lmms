@@ -60,7 +60,8 @@ WatsynObject::WatsynObject(float* _A1wave, float* _A2wave, float* _B1wave, float
 	, m_samplerate(_samplerate)
 	, m_nph(_nph)
 	, m_fpp(_frames)
-	, m_parent(_w) {
+	, m_parent(_w)
+{
 	m_abuf = new sampleFrame[_frames];
 	m_bbuf = new sampleFrame[_frames];
 
@@ -82,12 +83,14 @@ WatsynObject::WatsynObject(float* _A1wave, float* _A2wave, float* _B1wave, float
 	memcpy(&m_B2wave, _B2wave, sizeof(m_B2wave));
 }
 
-WatsynObject::~WatsynObject() {
+WatsynObject::~WatsynObject()
+{
 	delete[] m_abuf;
 	delete[] m_bbuf;
 }
 
-void WatsynObject::renderOutput(fpp_t _frames) {
+void WatsynObject::renderOutput(fpp_t _frames)
+{
 	if (m_abuf == nullptr) m_abuf = new sampleFrame[m_fpp];
 	if (m_bbuf == nullptr) m_bbuf = new sampleFrame[m_fpp];
 
@@ -257,7 +260,8 @@ WatsynInstrument::WatsynInstrument(InstrumentTrack* _instrument_track)
 	, m_bmod(0, 0, 3, this, tr("B2-B1 modulation"))
 	,
 
-	m_selectedGraph(0, 0, 3, this, tr("Selected graph")) {
+	m_selectedGraph(0, 0, 3, this, tr("Selected graph"))
+{
 	connect(&a1_vol, SIGNAL(dataChanged()), this, SLOT(updateVolumes()));
 	connect(&a2_vol, SIGNAL(dataChanged()), this, SLOT(updateVolumes()));
 	connect(&b1_vol, SIGNAL(dataChanged()), this, SLOT(updateVolumes()));
@@ -306,7 +310,8 @@ WatsynInstrument::WatsynInstrument(InstrumentTrack* _instrument_track)
 
 WatsynInstrument::~WatsynInstrument() {}
 
-void WatsynInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer) {
+void WatsynInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
+{
 	if (_n->totalFramesPlayed() == 0 || _n->m_pluginData == nullptr) {
 		WatsynObject* w
 			= new WatsynObject(&A1_wave[0], &A2_wave[0], &B1_wave[0], &B2_wave[0], m_amod.value(), m_bmod.value(),
@@ -417,7 +422,8 @@ void WatsynInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer
 
 void WatsynInstrument::deleteNotePluginData(NotePlayHandle* _n) { delete static_cast<WatsynObject*>(_n->m_pluginData); }
 
-void WatsynInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void WatsynInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	a1_vol.saveSettings(_doc, _this, "a1_vol");
 	a2_vol.saveSettings(_doc, _this, "a2_vol");
 	b1_vol.saveSettings(_doc, _this, "b1_vol");
@@ -468,7 +474,8 @@ void WatsynInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 	/*	m_selectedGraph.saveSettings( _doc, _this, "selgraph" );*/
 }
 
-void WatsynInstrument::loadSettings(const QDomElement& _this) {
+void WatsynInstrument::loadSettings(const QDomElement& _this)
+{
 	a1_vol.loadSettings(_this, "a1_vol");
 	a2_vol.loadSettings(_this, "a2_vol");
 	b1_vol.loadSettings(_this, "b1_vol");
@@ -527,7 +534,8 @@ QString WatsynInstrument::nodeName() const { return (watsyn_plugin_descriptor.na
 
 PluginView* WatsynInstrument::instantiateView(QWidget* _parent) { return (new WatsynView(this, _parent)); }
 
-void WatsynInstrument::updateVolumes() {
+void WatsynInstrument::updateVolumes()
+{
 	m_lvol[A1_OSC] = leftCh(a1_vol.value(), a1_pan.value());
 	m_rvol[A1_OSC] = rightCh(a1_vol.value(), a1_pan.value());
 
@@ -541,52 +549,61 @@ void WatsynInstrument::updateVolumes() {
 	m_rvol[B2_OSC] = rightCh(b2_vol.value(), b2_pan.value());
 }
 
-void WatsynInstrument::updateFreqA1() {
+void WatsynInstrument::updateFreqA1()
+{
 	// calculate frequencies
 	m_lfreq[A1_OSC] = (a1_mult.value() / 8) * powf(2, a1_ltune.value() / 1200);
 	m_rfreq[A1_OSC] = (a1_mult.value() / 8) * powf(2, a1_rtune.value() / 1200);
 }
 
-void WatsynInstrument::updateFreqA2() {
+void WatsynInstrument::updateFreqA2()
+{
 	// calculate frequencies
 	m_lfreq[A2_OSC] = (a2_mult.value() / 8) * powf(2, a2_ltune.value() / 1200);
 	m_rfreq[A2_OSC] = (a2_mult.value() / 8) * powf(2, a2_rtune.value() / 1200);
 }
 
-void WatsynInstrument::updateFreqB1() {
+void WatsynInstrument::updateFreqB1()
+{
 	// calculate frequencies
 	m_lfreq[B1_OSC] = (b1_mult.value() / 8) * powf(2, b1_ltune.value() / 1200);
 	m_rfreq[B1_OSC] = (b1_mult.value() / 8) * powf(2, b1_rtune.value() / 1200);
 }
 
-void WatsynInstrument::updateFreqB2() {
+void WatsynInstrument::updateFreqB2()
+{
 	// calculate frequencies
 	m_lfreq[B2_OSC] = (b2_mult.value() / 8) * powf(2, b2_ltune.value() / 1200);
 	m_rfreq[B2_OSC] = (b2_mult.value() / 8) * powf(2, b2_rtune.value() / 1200);
 }
 
-void WatsynInstrument::updateWaveA1() {
+void WatsynInstrument::updateWaveA1()
+{
 	// do sinc+oversampling on the wavetables to improve quality
 	srccpy(&A1_wave[0], const_cast<float*>(a1_graph.samples()));
 }
 
-void WatsynInstrument::updateWaveA2() {
+void WatsynInstrument::updateWaveA2()
+{
 	// do sinc+oversampling on the wavetables to improve quality
 	srccpy(&A2_wave[0], const_cast<float*>(a2_graph.samples()));
 }
 
-void WatsynInstrument::updateWaveB1() {
+void WatsynInstrument::updateWaveB1()
+{
 	// do sinc+oversampling on the wavetables to improve quality
 	srccpy(&B1_wave[0], const_cast<float*>(b1_graph.samples()));
 }
 
-void WatsynInstrument::updateWaveB2() {
+void WatsynInstrument::updateWaveB2()
+{
 	// do sinc+oversampling on the wavetables to improve quality
 	srccpy(&B2_wave[0], const_cast<float*>(b2_graph.samples()));
 }
 
 WatsynView::WatsynView(Instrument* _instrument, QWidget* _parent)
-	: InstrumentViewFixedSize(_instrument, _parent) {
+	: InstrumentViewFixedSize(_instrument, _parent)
+{
 	setAutoFillBackground(true);
 	QPalette pal;
 
@@ -853,7 +870,8 @@ WatsynView::WatsynView(Instrument* _instrument, QWidget* _parent)
 
 WatsynView::~WatsynView() {}
 
-void WatsynView::updateLayout() {
+void WatsynView::updateLayout()
+{
 	switch (m_selectedGraphGroup->model()->value()) {
 	case A1_OSC:
 		a1_graph->show();
@@ -882,7 +900,8 @@ void WatsynView::updateLayout() {
 	}
 }
 
-void WatsynView::sinWaveClicked() {
+void WatsynView::sinWaveClicked()
+{
 	switch (m_selectedGraphGroup->model()->value()) {
 	case A1_OSC:
 		a1_graph->model()->setWaveToSine();
@@ -903,7 +922,8 @@ void WatsynView::sinWaveClicked() {
 	}
 }
 
-void WatsynView::triWaveClicked() {
+void WatsynView::triWaveClicked()
+{
 	switch (m_selectedGraphGroup->model()->value()) {
 	case A1_OSC:
 		a1_graph->model()->setWaveToTriangle();
@@ -924,7 +944,8 @@ void WatsynView::triWaveClicked() {
 	}
 }
 
-void WatsynView::sawWaveClicked() {
+void WatsynView::sawWaveClicked()
+{
 	switch (m_selectedGraphGroup->model()->value()) {
 	case A1_OSC:
 		a1_graph->model()->setWaveToSaw();
@@ -945,7 +966,8 @@ void WatsynView::sawWaveClicked() {
 	}
 }
 
-void WatsynView::sqrWaveClicked() {
+void WatsynView::sqrWaveClicked()
+{
 	switch (m_selectedGraphGroup->model()->value()) {
 	case A1_OSC:
 		a1_graph->model()->setWaveToSquare();
@@ -966,7 +988,8 @@ void WatsynView::sqrWaveClicked() {
 	}
 }
 
-void WatsynView::normalizeClicked() {
+void WatsynView::normalizeClicked()
+{
 	switch (m_selectedGraphGroup->model()->value()) {
 	case A1_OSC:
 		a1_graph->model()->normalize();
@@ -987,7 +1010,8 @@ void WatsynView::normalizeClicked() {
 	}
 }
 
-void WatsynView::invertClicked() {
+void WatsynView::invertClicked()
+{
 	switch (m_selectedGraphGroup->model()->value()) {
 	case A1_OSC:
 		a1_graph->model()->invert();
@@ -1008,7 +1032,8 @@ void WatsynView::invertClicked() {
 	}
 }
 
-void WatsynView::smoothClicked() {
+void WatsynView::smoothClicked()
+{
 	switch (m_selectedGraphGroup->model()->value()) {
 	case A1_OSC:
 		a1_graph->model()->smooth();
@@ -1029,7 +1054,8 @@ void WatsynView::smoothClicked() {
 	}
 }
 
-void WatsynView::phaseLeftClicked() {
+void WatsynView::phaseLeftClicked()
+{
 	switch (m_selectedGraphGroup->model()->value()) {
 	case A1_OSC:
 		a1_graph->model()->shiftPhase(-15);
@@ -1050,7 +1076,8 @@ void WatsynView::phaseLeftClicked() {
 	}
 }
 
-void WatsynView::phaseRightClicked() {
+void WatsynView::phaseRightClicked()
+{
 	switch (m_selectedGraphGroup->model()->value()) {
 	case A1_OSC:
 		a1_graph->model()->shiftPhase(15);
@@ -1071,7 +1098,8 @@ void WatsynView::phaseRightClicked() {
 	}
 }
 
-void WatsynView::loadClicked() {
+void WatsynView::loadClicked()
+{
 	QString fileName;
 	switch (m_selectedGraphGroup->model()->value()) {
 	case A1_OSC:
@@ -1093,7 +1121,8 @@ void WatsynView::loadClicked() {
 	}
 }
 
-void WatsynView::modelChanged() {
+void WatsynView::modelChanged()
+{
 	WatsynInstrument* w = castModel<WatsynInstrument>();
 
 	a1_volKnob->setModel(&w->a1_vol);
@@ -1144,7 +1173,8 @@ void WatsynView::modelChanged() {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* m, void*) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* m, void*)
+{
 	return (new WatsynInstrument(static_cast<InstrumentTrack*>(m)));
 }
 }

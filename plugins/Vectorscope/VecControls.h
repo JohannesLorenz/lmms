@@ -32,7 +32,8 @@
 class Vectorscope;
 
 // Holds all the configuration values
-class VecControls : public EffectControls {
+class VecControls : public EffectControls
+{
 	Q_OBJECT
 public:
 	explicit VecControls(Vectorscope* effect);

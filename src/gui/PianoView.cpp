@@ -142,7 +142,8 @@ PianoView::PianoView(QWidget* parent)
  *  \todo check the scan codes for ',' = c, 'L' = c#, '.' = d, ':' = d#,
  *     '/' = d, '[' = f', '=' = f'#, ']' = g' - Paul's additions
  */
-int PianoView::getKeyFromKeyEvent(QKeyEvent* _ke) {
+int PianoView::getKeyFromKeyEvent(QKeyEvent* _ke)
+{
 #ifdef LMMS_BUILD_APPLE
 	const int k = _ke->nativeVirtualKey();
 #else
@@ -278,7 +279,8 @@ int PianoView::getKeyFromKeyEvent(QKeyEvent* _ke) {
 /*! \brief Register a change to this piano display view
  *
  */
-void PianoView::modelChanged() {
+void PianoView::modelChanged()
+{
 	m_piano = castModel<Piano>();
 	if (m_piano != nullptr) {
 		connect(m_piano->instrumentTrack()->baseNoteModel(), SIGNAL(dataChanged()), this, SLOT(update()));
@@ -311,7 +313,8 @@ void PianoView::modelChanged() {
  *
  *  \param _p The point that the mouse was pressed.
  */
-int PianoView::getKeyFromMouse(const QPoint& _p) const {
+int PianoView::getKeyFromMouse(const QPoint& _p) const
+{
 	int offset = _p.x() % PW_WHITE_KEY_WIDTH;
 	if (offset < 0) offset += PW_WHITE_KEY_WIDTH;
 	int key_num = (_p.x() - offset) / PW_WHITE_KEY_WIDTH;
@@ -350,7 +353,8 @@ int PianoView::getKeyFromMouse(const QPoint& _p) const {
  *
  *  \param _new_pos the new key position.
  */
-void PianoView::pianoScrolled(int new_pos) {
+void PianoView::pianoScrolled(int new_pos)
+{
 	m_startKey = WhiteKeys[new_pos % Piano::WhiteKeysPerOctave] + (new_pos / Piano::WhiteKeysPerOctave) * KeysPerOctave;
 
 	update();
@@ -361,7 +365,8 @@ void PianoView::pianoScrolled(int new_pos) {
  *  \param me the ContextMenuEvent to handle.
  *  \todo Is this right, or does this create the context menu?
  */
-void PianoView::contextMenuEvent(QContextMenuEvent* me) {
+void PianoView::contextMenuEvent(QContextMenuEvent* me)
+{
 	if (me->pos().y() > PIANO_BASE || m_piano == nullptr || m_piano->instrumentTrack()->keyRangeImport()) {
 		QWidget::contextMenuEvent(me);
 		return;
@@ -395,7 +400,8 @@ void PianoView::contextMenuEvent(QContextMenuEvent* me) {
  *
  *  \param me the mouse click to handle.
  */
-void PianoView::mousePressEvent(QMouseEvent* me) {
+void PianoView::mousePressEvent(QMouseEvent* me)
+{
 	if (me->button() == Qt::LeftButton && m_piano != nullptr) {
 		// get pressed key
 		int key_num = getKeyFromMouse(me->pos());
@@ -444,7 +450,8 @@ void PianoView::mousePressEvent(QMouseEvent* me) {
  *
  *  \param _me the mousePressEvent to handle.
  */
-void PianoView::mouseReleaseEvent(QMouseEvent*) {
+void PianoView::mouseReleaseEvent(QMouseEvent*)
+{
 	if (m_lastKey != -1) {
 		if (m_piano != nullptr) {
 			m_piano->midiEventProcessor()->processInEvent(MidiEvent(MidiNoteOff, -1, m_lastKey, 0));
@@ -473,7 +480,8 @@ void PianoView::mouseReleaseEvent(QMouseEvent*) {
  *  reduce or remove the duplication between this, the mousePressEvent()
  *  and mouseReleaseEvent() methods.
  */
-void PianoView::mouseMoveEvent(QMouseEvent* _me) {
+void PianoView::mouseMoveEvent(QMouseEvent* _me)
+{
 	if (m_piano == nullptr) { return; }
 
 	int key_num = getKeyFromMouse(_me->pos());
@@ -522,7 +530,8 @@ void PianoView::mouseMoveEvent(QMouseEvent* _me) {
  *
  *  \param _ke the KeyEvent to handle.
  */
-void PianoView::keyPressEvent(QKeyEvent* _ke) {
+void PianoView::keyPressEvent(QKeyEvent* _ke)
+{
 	const int key_num = getKeyFromKeyEvent(_ke) + (DefaultOctave - 1) * KeysPerOctave;
 
 	if (_ke->isAutoRepeat() == false && key_num > -1) {
@@ -542,7 +551,8 @@ void PianoView::keyPressEvent(QKeyEvent* _ke) {
  *
  *  \param _ke the KeyEvent to handle.
  */
-void PianoView::keyReleaseEvent(QKeyEvent* _ke) {
+void PianoView::keyReleaseEvent(QKeyEvent* _ke)
+{
 	const int key_num = getKeyFromKeyEvent(_ke) + (DefaultOctave - 1) * KeysPerOctave;
 	if (_ke->isAutoRepeat() == false && key_num > -1) {
 		if (m_piano != nullptr) {
@@ -561,7 +571,8 @@ void PianoView::keyReleaseEvent(QKeyEvent* _ke) {
  *
  *  \todo Is there supposed to be a parameter given here?
  */
-void PianoView::focusOutEvent(QFocusEvent*) {
+void PianoView::focusOutEvent(QFocusEvent*)
+{
 	if (m_piano == nullptr) { return; }
 
 	// focus just switched to another control inside the instrument track
@@ -595,7 +606,8 @@ void PianoView::focusInEvent(QFocusEvent*) { m_piano->instrumentTrack()->autoAss
  *
  *  \param event resize-event object (unused)
  */
-void PianoView::resizeEvent(QResizeEvent* event) {
+void PianoView::resizeEvent(QResizeEvent* event)
+{
 	QWidget::resizeEvent(event);
 	m_pianoScroll->setRange(
 		0, Piano::NumWhiteKeys - static_cast<int>(floor(static_cast<float>(width()) / PW_WHITE_KEY_WIDTH)));
@@ -615,7 +627,8 @@ void PianoView::resizeEvent(QResizeEvent* event) {
  *  \todo is this description of what the method does correct?
  *  \todo replace the final subtract with initialising x to width/2.
  */
-int PianoView::getKeyX(int _key_num) const {
+int PianoView::getKeyX(int _key_num) const
+{
 	int k = m_startKey;
 	if (_key_num < m_startKey) { return (_key_num - k) * PW_WHITE_KEY_WIDTH / 2; }
 
@@ -644,19 +657,22 @@ int PianoView::getKeyX(int _key_num) const {
 
 /*! \brief Return the width of a given key
  */
-int PianoView::getKeyWidth(int key_num) const {
+int PianoView::getKeyWidth(int key_num) const
+{
 	return Piano::isWhiteKey(key_num) ? PW_WHITE_KEY_WIDTH : PW_BLACK_KEY_WIDTH;
 }
 
 /*! \brief Return the height of a given key
  */
-int PianoView::getKeyHeight(int key_num) const {
+int PianoView::getKeyHeight(int key_num) const
+{
 	return Piano::isWhiteKey(key_num) ? PW_WHITE_KEY_HEIGHT : PW_BLACK_KEY_HEIGHT;
 }
 
 /*! \brief Return model and title of the marker closest to the given key
  */
-IntModel* PianoView::getNearestMarker(int key, QString* title) {
+IntModel* PianoView::getNearestMarker(int key, QString* title)
+{
 	const int base = m_piano->instrumentTrack()->baseNote();
 	const int first = m_piano->instrumentTrack()->firstKey();
 	const int last = m_piano->instrumentTrack()->lastKey();
@@ -680,7 +696,8 @@ IntModel* PianoView::getNearestMarker(int key, QString* title) {
  *
  *  \todo Is there supposed to be a parameter given here?
  */
-void PianoView::paintEvent(QPaintEvent*) {
+void PianoView::paintEvent(QPaintEvent*)
+{
 	QPainter p(this);
 
 	// set smaller font for printing number of every octave

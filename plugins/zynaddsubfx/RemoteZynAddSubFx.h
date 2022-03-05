@@ -27,7 +27,8 @@
 
 #include "RemotePlugin.h"
 
-enum ZasfRemoteMessageIDs {
+enum ZasfRemoteMessageIDs
+{
 	IdZasfPresetDirectory = IdUserBase,
 	IdZasfLmmsWorkingDirectory,
 	IdZasfSetPitchWheelBendRange

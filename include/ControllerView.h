@@ -38,7 +38,8 @@ class QMdiSubWindow;
 
 class LedCheckBox;
 
-class ControllerView : public QFrame, public ModelView {
+class ControllerView : public QFrame, public ModelView
+{
 	Q_OBJECT
 public:
 	ControllerView(Controller* _controller, QWidget* _parent);

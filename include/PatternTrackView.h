@@ -30,7 +30,8 @@
 class PatternTrack;
 class TrackLabelButton;
 
-class PatternTrackView : public TrackView {
+class PatternTrackView : public TrackView
+{
 	Q_OBJECT
 public:
 	PatternTrackView(PatternTrack* pt, TrackContainerView* tcv);

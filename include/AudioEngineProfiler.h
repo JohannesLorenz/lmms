@@ -30,7 +30,8 @@
 #include "MicroTimer.h"
 #include "lmms_basics.h"
 
-class AudioEngineProfiler {
+class AudioEngineProfiler
+{
 public:
 	AudioEngineProfiler();
 	~AudioEngineProfiler();

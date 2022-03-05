@@ -33,7 +33,8 @@
 
 class QAction;
 
-class MidiPortMenu : public QMenu, public ModelView {
+class MidiPortMenu : public QMenu, public ModelView
+{
 	Q_OBJECT
 public:
 	MidiPortMenu(MidiPort::Modes _mode);

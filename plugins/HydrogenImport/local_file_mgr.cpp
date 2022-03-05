@@ -10,7 +10,8 @@
 /* New QtXml based methods */
 
 QString LocalFileMng::readXmlString(QDomNode node, const QString& nodeName, const QString& defaultValue,
-	bool bCanBeEmpty, bool bShouldExists, bool tinyXmlCompatMode) {
+	bool bCanBeEmpty, bool bShouldExists, bool tinyXmlCompatMode)
+{
 	QDomElement element = node.firstChildElement(nodeName);
 
 	if (!node.isNull() && !element.isNull()) {
@@ -31,7 +32,8 @@ QString LocalFileMng::readXmlString(QDomNode node, const QString& nodeName, cons
 }
 
 float LocalFileMng::readXmlFloat(QDomNode node, const QString& nodeName, float defaultValue, bool bCanBeEmpty,
-	bool bShouldExists, bool tinyXmlCompatMode) {
+	bool bShouldExists, bool tinyXmlCompatMode)
+{
 	QLocale c_locale = QLocale::c();
 	QDomElement element = node.firstChildElement(nodeName);
 
@@ -53,7 +55,8 @@ float LocalFileMng::readXmlFloat(QDomNode node, const QString& nodeName, float d
 }
 
 int LocalFileMng::readXmlInt(QDomNode node, const QString& nodeName, int defaultValue, bool bCanBeEmpty,
-	bool bShouldExists, bool tinyXmlCompatMode) {
+	bool bShouldExists, bool tinyXmlCompatMode)
+{
 	QLocale c_locale = QLocale::c();
 	QDomElement element = node.firstChildElement(nodeName);
 
@@ -75,7 +78,8 @@ int LocalFileMng::readXmlInt(QDomNode node, const QString& nodeName, int default
 }
 
 bool LocalFileMng::readXmlBool(
-	QDomNode node, const QString& nodeName, bool defaultValue, bool bShouldExists, bool tinyXmlCompatMode) {
+	QDomNode node, const QString& nodeName, bool defaultValue, bool bShouldExists, bool tinyXmlCompatMode)
+{
 	QDomElement element = node.firstChildElement(nodeName);
 
 	if (!node.isNull() && !element.isNull()) {
@@ -100,7 +104,8 @@ bool LocalFileMng::readXmlBool(
 /* Convert (in-place) an XML escape sequence into a literal byte,
  * rather than the character it actually refers to.
  */
-void LocalFileMng::convertFromTinyXMLString(QByteArray* str) {
+void LocalFileMng::convertFromTinyXMLString(QByteArray* str)
+{
 	/* When TinyXML encountered a non-ASCII character, it would
 	 * simply write the character as "&#xx;" -- where "xx" is
 	 * the hex character code.  However, this doesn't respect
@@ -147,7 +152,8 @@ void LocalFileMng::convertFromTinyXMLString(QByteArray* str) {
 	}
 }
 
-bool LocalFileMng::checkTinyXMLCompatMode(const QString& filename) {
+bool LocalFileMng::checkTinyXMLCompatMode(const QString& filename)
+{
 	/*
 		Check if filename was created with TinyXml or QtXml
 		TinyXML: return true
@@ -170,7 +176,8 @@ bool LocalFileMng::checkTinyXMLCompatMode(const QString& filename) {
 	}
 }
 
-QDomDocument LocalFileMng::openXmlDocument(const QString& filename) {
+QDomDocument LocalFileMng::openXmlDocument(const QString& filename)
+{
 	bool TinyXMLCompat = LocalFileMng::checkTinyXMLCompatMode(filename);
 
 	QDomDocument doc;

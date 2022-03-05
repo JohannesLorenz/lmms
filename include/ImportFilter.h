@@ -32,7 +32,8 @@
 
 class TrackContainer;
 
-class LMMS_EXPORT ImportFilter : public Plugin {
+class LMMS_EXPORT ImportFilter : public Plugin
+{
 public:
 	ImportFilter(const QString& _file_name, const Descriptor* _descriptor);
 	virtual ~ImportFilter();
@@ -50,7 +51,8 @@ protected:
 
 	inline void closeFile() { m_file.close(); }
 
-	inline int readByte() {
+	inline int readByte()
+	{
 		unsigned char c;
 		if (m_file.getChar((char*)&c)) { return static_cast<int>(c); }
 		return -1;
@@ -58,7 +60,8 @@ protected:
 
 	inline int readBlock(char* _data, int _len) { return m_file.read(_data, _len); }
 
-	inline QByteArray readAllData() {
+	inline QByteArray readAllData()
+	{
 		m_file.seek(0);
 		return m_file.readAll();
 	}

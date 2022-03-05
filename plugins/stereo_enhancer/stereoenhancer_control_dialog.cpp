@@ -30,7 +30,8 @@
 #include "stereoenhancer_controls.h"
 
 stereoEnhancerControlDialog::stereoEnhancerControlDialog(stereoEnhancerControls* _controls)
-	: EffectControlDialog(_controls) {
+	: EffectControlDialog(_controls)
+{
 	QHBoxLayout* l = new QHBoxLayout(this);
 
 	Knob* widthKnob = new Knob(knobBright_26, this);

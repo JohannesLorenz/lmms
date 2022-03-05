@@ -36,7 +36,8 @@ ControllerConnectionVector ControllerConnection::s_connections;
 ControllerConnection::ControllerConnection(Controller* _controller)
 	: m_controller(nullptr)
 	, m_controllerId(-1)
-	, m_ownsController(false) {
+	, m_ownsController(false)
+{
 	if (_controller != nullptr) {
 		setController(_controller);
 	} else {
@@ -48,11 +49,13 @@ ControllerConnection::ControllerConnection(Controller* _controller)
 ControllerConnection::ControllerConnection(int _controllerId)
 	: m_controller(Controller::create(Controller::DummyController, nullptr))
 	, m_controllerId(_controllerId)
-	, m_ownsController(false) {
+	, m_ownsController(false)
+{
 	s_connections.append(this);
 }
 
-ControllerConnection::~ControllerConnection() {
+ControllerConnection::~ControllerConnection()
+{
 	if (m_controller && m_controller->type() != Controller::DummyController) { m_controller->removeConnection(this); }
 	s_connections.remove(s_connections.indexOf(this));
 	if (m_ownsController) { delete m_controller; }
@@ -60,7 +63,8 @@ ControllerConnection::~ControllerConnection() {
 
 void ControllerConnection::setController(int /*_controllerId*/) {}
 
-void ControllerConnection::setController(Controller* _controller) {
+void ControllerConnection::setController(Controller* _controller)
+{
 	if (m_ownsController && m_controller) {
 		delete m_controller;
 		m_controller = nullptr;
@@ -87,7 +91,8 @@ void ControllerConnection::setController(Controller* _controller) {
 	if (!m_ownsController) { QObject::connect(_controller, SIGNAL(destroyed()), this, SLOT(deleteConnection())); }
 }
 
-inline void ControllerConnection::setTargetName(const QString& _name) {
+inline void ControllerConnection::setTargetName(const QString& _name)
+{
 	m_targetName = _name;
 	if (m_controller) {
 		//	m_controller->getMidiPort()->setName( _name );
@@ -101,7 +106,8 @@ inline void ControllerConnection::setTargetName(const QString& _name) {
  * controllers. So, we remember the controller-ID and use a dummyController
  * instead.  Once the song is loaded, finalizeConnections() connects to the proper controllers
  */
-void ControllerConnection::finalizeConnections() {
+void ControllerConnection::finalizeConnections()
+{
 	for (int i = 0; i < s_connections.size(); ++i) {
 		ControllerConnection* c = s_connections[i];
 		if (!c->isFinalized() && c->m_controllerId < Engine::getSong()->controllers().size()) {
@@ -113,7 +119,8 @@ void ControllerConnection::finalizeConnections() {
 	}
 }
 
-void ControllerConnection::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void ControllerConnection::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	if (Engine::getSong()) {
 		if (m_ownsController) {
 			m_controller->saveState(_doc, _this);
@@ -124,7 +131,8 @@ void ControllerConnection::saveSettings(QDomDocument& _doc, QDomElement& _this) 
 	}
 }
 
-void ControllerConnection::loadSettings(const QDomElement& _this) {
+void ControllerConnection::loadSettings(const QDomElement& _this)
+{
 	QDomNode node = _this.firstChild();
 	if (!node.isNull()) {
 		setController(Controller::create(node.toElement(), Engine::getSong()));

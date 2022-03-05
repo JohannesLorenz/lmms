@@ -62,7 +62,8 @@ TimeLineWidget::TimeLineWidget(const int xoff, const int yoff, const float ppb, 
 	, m_savedPos(-1)
 	, m_hint(nullptr)
 	, m_action(NoAction)
-	, m_moveXOff(0) {
+	, m_moveXOff(0)
+{
 	m_loopPos[0] = 0;
 	m_loopPos[1] = DefaultTicksPerBar;
 
@@ -82,17 +83,20 @@ TimeLineWidget::TimeLineWidget(const int xoff, const int yoff, const float ppb, 
 	connect(Engine::getSong(), SIGNAL(timeSignatureChanged(int, int)), this, SLOT(update()));
 }
 
-TimeLineWidget::~TimeLineWidget() {
+TimeLineWidget::~TimeLineWidget()
+{
 	if (getGUI()->songEditor()) { m_pos.m_timeLine = nullptr; }
 	delete m_hint;
 }
 
-void TimeLineWidget::setXOffset(const int x) {
+void TimeLineWidget::setXOffset(const int x)
+{
 	m_xOffset = x;
 	if (s_posMarkerPixmap != nullptr) { m_xOffset -= s_posMarkerPixmap->width() / 2; }
 }
 
-void TimeLineWidget::addToolButtons(QToolBar* _tool_bar) {
+void TimeLineWidget::addToolButtons(QToolBar* _tool_bar)
+{
 	NStateButton* autoScroll = new NStateButton(_tool_bar);
 	autoScroll->setGeneralToolTip(tr("Auto scrolling"));
 	autoScroll->addState(embed::getIconPixmap("autoscroll_on"));
@@ -122,14 +126,16 @@ void TimeLineWidget::addToolButtons(QToolBar* _tool_bar) {
 	_tool_bar->addWidget(behaviourAtStop);
 }
 
-void TimeLineWidget::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void TimeLineWidget::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	_this.setAttribute("lp0pos", (int)loopBegin());
 	_this.setAttribute("lp1pos", (int)loopEnd());
 	_this.setAttribute("lpstate", m_loopPoints);
 	_this.setAttribute("stopbehaviour", m_behaviourAtStop);
 }
 
-void TimeLineWidget::loadSettings(const QDomElement& _this) {
+void TimeLineWidget::loadSettings(const QDomElement& _this)
+{
 	m_loopPos[0] = _this.attribute("lp0pos").toInt();
 	m_loopPos[1] = _this.attribute("lp1pos").toInt();
 	m_loopPoints = static_cast<LoopPointStates>(_this.attribute("lpstate").toInt());
@@ -139,7 +145,8 @@ void TimeLineWidget::loadSettings(const QDomElement& _this) {
 	if (_this.hasAttribute("stopbehaviour")) { emit loadBehaviourAtStop(_this.attribute("stopbehaviour").toInt()); }
 }
 
-void TimeLineWidget::updatePosition(const TimePos&) {
+void TimeLineWidget::updatePosition(const TimePos&)
+{
 	const int new_x = markerX(m_pos);
 
 	if (new_x != m_posMarkerX) {
@@ -152,14 +159,16 @@ void TimeLineWidget::updatePosition(const TimePos&) {
 
 void TimeLineWidget::toggleAutoScroll(int _n) { m_autoScroll = static_cast<AutoScrollStates>(_n); }
 
-void TimeLineWidget::toggleLoopPoints(int _n) {
+void TimeLineWidget::toggleLoopPoints(int _n)
+{
 	m_loopPoints = static_cast<LoopPointStates>(_n);
 	update();
 }
 
 void TimeLineWidget::toggleBehaviourAtStop(int _n) { m_behaviourAtStop = static_cast<BehaviourAtStopStates>(_n); }
 
-void TimeLineWidget::paintEvent(QPaintEvent*) {
+void TimeLineWidget::paintEvent(QPaintEvent*)
+{
 	QPainter p(this);
 
 	// Draw background
@@ -230,7 +239,8 @@ void TimeLineWidget::paintEvent(QPaintEvent*) {
 	}
 }
 
-void TimeLineWidget::mousePressEvent(QMouseEvent* event) {
+void TimeLineWidget::mousePressEvent(QMouseEvent* event)
+{
 	if (event->x() < m_xOffset) { return; }
 	if (event->button() == Qt::LeftButton && !(event->modifiers() & Qt::ShiftModifier)) {
 		m_action = MovePositionMarker;
@@ -267,7 +277,8 @@ void TimeLineWidget::mousePressEvent(QMouseEvent* event) {
 	mouseMoveEvent(event);
 }
 
-void TimeLineWidget::mouseMoveEvent(QMouseEvent* event) {
+void TimeLineWidget::mouseMoveEvent(QMouseEvent* event)
+{
 	parentWidget()->update(); // essential for widgets that this timeline had taken their mouse move event from.
 	const TimePos t
 		= m_begin + static_cast<int>(qMax(event->x() - m_xOffset - m_moveXOff, 0) * TimePos::ticksPerBar() / m_ppb);
@@ -316,7 +327,8 @@ void TimeLineWidget::mouseMoveEvent(QMouseEvent* event) {
 	}
 }
 
-void TimeLineWidget::mouseReleaseEvent(QMouseEvent* event) {
+void TimeLineWidget::mouseReleaseEvent(QMouseEvent* event)
+{
 	delete m_hint;
 	m_hint = nullptr;
 	if (m_action == SelectSongClip) { emit selectionFinished(); }

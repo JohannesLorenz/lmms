@@ -46,7 +46,8 @@ const int TRACK_OP_WIDTH = 78;
 const int DEFAULT_SETTINGS_WIDGET_WIDTH_COMPACT = 96;
 const int TRACK_OP_WIDTH_COMPACT = 62;
 
-class TrackView : public QWidget, public ModelView, public JournallingObject {
+class TrackView : public QWidget, public ModelView, public JournallingObject
+{
 	Q_OBJECT
 public:
 	TrackView(Track* _track, TrackContainerView* tcv);
@@ -78,7 +79,8 @@ public slots:
 protected:
 	void modelChanged() override;
 
-	void saveSettings(QDomDocument& doc, QDomElement& element) override {
+	void saveSettings(QDomDocument& doc, QDomElement& element) override
+	{
 		Q_UNUSED(doc)
 		Q_UNUSED(element)
 	}
@@ -96,7 +98,12 @@ protected:
 	void resizeEvent(QResizeEvent* re) override;
 
 private:
-	enum Actions { NoAction, MoveTrack, ResizeTrack };
+	enum Actions
+	{
+		NoAction,
+		MoveTrack,
+		ResizeTrack
+	};
 
 	Track* m_track;
 	TrackContainerView* m_trackContainerView;

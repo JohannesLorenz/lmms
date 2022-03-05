@@ -94,7 +94,8 @@ ClipView::ClipView(Clip* clip, TrackView* tv)
 	, m_cursorHand(QCursor(embed::getIconPixmap("hand")))
 	, m_cursorKnife(QCursor(embed::getIconPixmap("cursor_knife")))
 	, m_cursorSetYet(false)
-	, m_needsUpdate(true) {
+	, m_needsUpdate(true)
+{
 	if (s_textFloat == nullptr) {
 		s_textFloat = new TextFloat;
 		s_textFloat->setPixmap(embed::getIconPixmap("clock"));
@@ -133,7 +134,8 @@ ClipView::ClipView(Clip* clip, TrackView* tv)
  *  Destroys the given ClipView.
  *
  */
-ClipView::~ClipView() {
+ClipView::~ClipView()
+{
 	delete m_hint;
 	// we have to give our track-container the focus because otherwise the
 	// op-buttons of our track-widgets could become focus and when the user
@@ -149,7 +151,8 @@ ClipView::~ClipView() {
  *  it needs to be redrawn.
  *
  */
-void ClipView::update() {
+void ClipView::update()
+{
 	if (!m_cursorSetYet) {
 		m_cursorHand = QCursor(embed::getIconPixmap("hand"), m_mouseHotspotHand.width(), m_mouseHotspotHand.height());
 		m_cursorKnife
@@ -218,7 +221,8 @@ void ClipView::setNeedsUpdate(bool b) { m_needsUpdate = b; }
  *
  * \return Boolean state of whether the QWidget was able to close.
  */
-bool ClipView::close() {
+bool ClipView::close()
+{
 	m_trackView->getTrackContentWidget()->removeClipView(this);
 	return QWidget::close();
 }
@@ -230,7 +234,8 @@ bool ClipView::close() {
  *  scheduled for later deletion rather than closed immediately.
  *
  */
-void ClipView::remove() {
+void ClipView::remove()
+{
 	m_trackView->getTrack()->addJournalCheckPoint();
 
 	// delete ourself
@@ -245,7 +250,8 @@ void ClipView::remove() {
  *  the clip's length in pixels adding in the border.
  *
  */
-void ClipView::updateLength() {
+void ClipView::updateLength()
+{
 	if (fixedClips()) {
 		setFixedWidth(parentWidget()->width());
 	} else {
@@ -264,14 +270,16 @@ void ClipView::updateLength() {
  *  view's length.
  *
  */
-void ClipView::updatePosition() {
+void ClipView::updatePosition()
+{
 	m_trackView->getTrackContentWidget()->changePosition();
 	// moving a Clip can result in change of song-length etc.,
 	// therefore we update the track-container
 	m_trackView->trackContainerView()->update();
 }
 
-void ClipView::selectColor() {
+void ClipView::selectColor()
+{
 	// Get a color from the user
 	QColor new_color = ColorChooser(this).withPalette(ColorChooser::Palette::Track)->getColor(m_clip->color());
 	if (new_color.isValid()) { setColor(&new_color); }
@@ -285,7 +293,8 @@ void ClipView::resetColor() { setColor(nullptr); }
  *
  *  \param color The new QColor. Pass nullptr to use the Track's color.
  */
-void ClipView::setColor(const QColor* color) {
+void ClipView::setColor(const QColor* color)
+{
 	std::set<Track*> journaledTracks;
 
 	auto selectedClips = getClickedClips();
@@ -325,7 +334,8 @@ void ClipView::setColor(const QColor* color) {
  *
  * \param dee The QDragEnterEvent to watch.
  */
-void ClipView::dragEnterEvent(QDragEnterEvent* dee) {
+void ClipView::dragEnterEvent(QDragEnterEvent* dee)
+{
 	TrackContentWidget* tcw = getTrackView()->getTrackContentWidget();
 	TimePos clipPos = TimePos(m_clip->startPosition());
 
@@ -345,7 +355,8 @@ void ClipView::dragEnterEvent(QDragEnterEvent* dee) {
  *
  * \param de The QDropEvent to handle.
  */
-void ClipView::dropEvent(QDropEvent* de) {
+void ClipView::dropEvent(QDropEvent* de)
+{
 	QString type = StringPairDrag::decodeKey(de);
 	QString value = StringPairDrag::decodeValue(de);
 
@@ -379,7 +390,8 @@ void ClipView::dropEvent(QDropEvent* de) {
  *
  * @param me The QMouseEvent that is triggering the cursor change
  */
-void ClipView::updateCursor(QMouseEvent* me) {
+void ClipView::updateCursor(QMouseEvent* me)
+{
 	SampleClip* sClip = dynamic_cast<SampleClip*>(m_clip);
 
 	// If we are at the edges, use the resize cursor
@@ -406,7 +418,8 @@ void ClipView::updateCursor(QMouseEvent* me) {
  *
  * \param clips The trackContectObjects to save in a DataFile
  */
-DataFile ClipView::createClipDataFiles(const QVector<ClipView*>& clipViews) const {
+DataFile ClipView::createClipDataFiles(const QVector<ClipView*>& clipViews) const
+{
 	Track* t = m_trackView->getTrack();
 	TrackContainer* tc = t->trackContainer();
 	DataFile dataFile(DataFile::DragNDropData);
@@ -445,7 +458,8 @@ DataFile ClipView::createClipDataFiles(const QVector<ClipView*>& clipViews) cons
 	return dataFile;
 }
 
-void ClipView::paintTextLabel(QString const& text, QPainter& painter) {
+void ClipView::paintTextLabel(QString const& text, QPainter& painter)
+{
 	if (text.trimmed() == "") { return; }
 
 	painter.setRenderHint(QPainter::TextAntialiasing);
@@ -486,7 +500,8 @@ void ClipView::paintTextLabel(QString const& text, QPainter& painter) {
  *
  * \param me The QMouseEvent to handle.
  */
-void ClipView::mousePressEvent(QMouseEvent* me) {
+void ClipView::mousePressEvent(QMouseEvent* me)
+{
 	// Right now, active is only used on right/mid clicks actions, so we use a ternary operator
 	// to avoid the overhead of calling getClickedClips when it's not used
 	auto active = me->button() == Qt::LeftButton ? QVector<ClipView*>() : getClickedClips();
@@ -599,7 +614,8 @@ void ClipView::mousePressEvent(QMouseEvent* me) {
  * \param me The QMouseEvent to handle.
  * \todo what does the final else case do here?
  */
-void ClipView::mouseMoveEvent(QMouseEvent* me) {
+void ClipView::mouseMoveEvent(QMouseEvent* me)
+{
 	if (m_action == CopySelection || m_action == ToggleSelected) {
 		if (mouseMovedDistance(me, 2) == true) {
 			QVector<ClipView*> clipViews;
@@ -759,7 +775,8 @@ void ClipView::mouseMoveEvent(QMouseEvent* me) {
  *
  * \param me The QMouseEvent to handle.
  */
-void ClipView::mouseReleaseEvent(QMouseEvent* me) {
+void ClipView::mouseReleaseEvent(QMouseEvent* me)
+{
 	// If the CopySelection was chosen as the action due to mouse movement,
 	// it will have been cleared.  At this point Toggle is the desired action.
 	// An active StringPairDrag will prevent this method from being called,
@@ -790,7 +807,8 @@ void ClipView::mouseReleaseEvent(QMouseEvent* me) {
  *
  * \param cme The QContextMenuEvent to add the actions to.
  */
-void ClipView::contextMenuEvent(QContextMenuEvent* cme) {
+void ClipView::contextMenuEvent(QContextMenuEvent* cme)
+{
 	QVector<ClipView*> selectedClips = getClickedClips();
 
 	// Depending on whether we right-clicked a selection or an individual Clip we will have
@@ -844,7 +862,8 @@ void ClipView::contextMenuEvent(QContextMenuEvent* cme) {
 }
 
 // This method processes the actions from the context menu of the Clip View.
-void ClipView::contextMenuAction(ContextMenuAction action) {
+void ClipView::contextMenuAction(ContextMenuAction action)
+{
 	QVector<ClipView*> active = getClickedClips();
 	// active will be later used for the remove, copy, cut or toggleMute methods
 
@@ -858,7 +877,8 @@ void ClipView::contextMenuAction(ContextMenuAction action) {
 	}
 }
 
-QVector<ClipView*> ClipView::getClickedClips() {
+QVector<ClipView*> ClipView::getClickedClips()
+{
 	// Get a list of selected selectableObjects
 	QVector<selectableObject*> sos = getGUI()->songEditor()->m_editor->selectedObjects();
 
@@ -874,14 +894,16 @@ QVector<ClipView*> ClipView::getClickedClips() {
 	return selection.contains(this) ? selection : QVector<ClipView*>(1, this);
 }
 
-void ClipView::remove(QVector<ClipView*> clipvs) {
+void ClipView::remove(QVector<ClipView*> clipvs)
+{
 	for (auto clipv : clipvs) {
 		// No need to check if it's nullptr because we check when building the QVector
 		clipv->remove();
 	}
 }
 
-void ClipView::copy(QVector<ClipView*> clipvs) {
+void ClipView::copy(QVector<ClipView*> clipvs)
+{
 	// For copyStringPair()
 	using namespace Clipboard;
 
@@ -892,7 +914,8 @@ void ClipView::copy(QVector<ClipView*> clipvs) {
 	copyStringPair(QString("clip_%1").arg(m_clip->getTrack()->type()), dataFile.toString());
 }
 
-void ClipView::cut(QVector<ClipView*> clipvs) {
+void ClipView::cut(QVector<ClipView*> clipvs)
+{
 	// Copy the selected Clips
 	copy(clipvs);
 
@@ -900,7 +923,8 @@ void ClipView::cut(QVector<ClipView*> clipvs) {
 	remove(clipvs);
 }
 
-void ClipView::paste() {
+void ClipView::paste()
+{
 	// For getMimeData()
 	using namespace Clipboard;
 
@@ -915,14 +939,16 @@ void ClipView::paste() {
 	}
 }
 
-void ClipView::toggleMute(QVector<ClipView*> clipvs) {
+void ClipView::toggleMute(QVector<ClipView*> clipvs)
+{
 	for (auto clipv : clipvs) {
 		// No need to check for nullptr because we check while building the clipvs QVector
 		clipv->getClip()->toggleMute();
 	}
 }
 
-bool ClipView::canMergeSelection(QVector<ClipView*> clipvs) {
+bool ClipView::canMergeSelection(QVector<ClipView*> clipvs)
+{
 	// Can't merge a single Clip
 	if (clipvs.size() < 2) { return false; }
 
@@ -939,7 +965,8 @@ bool ClipView::canMergeSelection(QVector<ClipView*> clipvs) {
 	return isInstrumentTrack && ownerTracks.size() == 1;
 }
 
-void ClipView::mergeClips(QVector<ClipView*> clipvs) {
+void ClipView::mergeClips(QVector<ClipView*> clipvs)
+{
 	// Get the track that we are merging Clips in
 	InstrumentTrack* track = dynamic_cast<InstrumentTrack*>(clipvs.at(0)->getTrackView()->getTrack());
 
@@ -1012,7 +1039,8 @@ void ClipView::mergeClips(QVector<ClipView*> clipvs) {
 float ClipView::pixelsPerBar() { return m_trackView->trackContainerView()->pixelsPerBar(); }
 
 /*! \brief Save the offsets between all selected tracks and a clicked track */
-void ClipView::setInitialOffsets() {
+void ClipView::setInitialOffsets()
+{
 	QVector<selectableObject*> so = m_trackView->trackContainerView()->selectedObjects();
 	QVector<TimePos> offsets;
 	for (QVector<selectableObject*>::iterator it = so.begin(); it != so.end(); ++it) {
@@ -1029,13 +1057,15 @@ void ClipView::setInitialOffsets() {
  * \param _me The QMouseEvent.
  * \param distance The threshold distance that the mouse has moved to return true.
  */
-bool ClipView::mouseMovedDistance(QMouseEvent* me, int distance) {
+bool ClipView::mouseMovedDistance(QMouseEvent* me, int distance)
+{
 	QPoint dPos = mapToGlobal(me->pos()) - m_initialMouseGlobalPos;
 	const int pixelsMoved = dPos.manhattanLength();
 	return (pixelsMoved > distance || pixelsMoved < -distance);
 }
 
-bool ClipView::unquantizedModHeld(QMouseEvent* me) {
+bool ClipView::unquantizedModHeld(QMouseEvent* me)
+{
 	return me->modifiers() & Qt::ControlModifier || me->modifiers() & Qt::AltModifier;
 }
 
@@ -1044,7 +1074,8 @@ bool ClipView::unquantizedModHeld(QMouseEvent* me) {
  *
  * \param me The QMouseEvent
  */
-TimePos ClipView::draggedClipPos(QMouseEvent* me) {
+TimePos ClipView::draggedClipPos(QMouseEvent* me)
+{
 	// Pixels per bar
 	const float ppb = m_trackView->trackContainerView()->pixelsPerBar();
 	// The pixel distance that the mouse has moved
@@ -1074,7 +1105,8 @@ TimePos ClipView::draggedClipPos(QMouseEvent* me) {
 	return newPos;
 }
 
-int ClipView::knifeMarkerPos(QMouseEvent* me) {
+int ClipView::knifeMarkerPos(QMouseEvent* me)
+{
 	// Position relative to start of clip
 	const int markerPos = me->pos().x();
 
@@ -1092,7 +1124,8 @@ int ClipView::knifeMarkerPos(QMouseEvent* me) {
 	}
 }
 
-TimePos ClipView::quantizeSplitPos(TimePos midiPos, bool shiftMode) {
+TimePos ClipView::quantizeSplitPos(TimePos midiPos, bool shiftMode)
+{
 	const float snapSize = getGUI()->songEditor()->m_editor->getSnapSize();
 	if (shiftMode) { // If shift is held we quantize the length of the new left clip...
 		const TimePos leftPos = midiPos.quantize(snapSize);
@@ -1111,7 +1144,8 @@ TimePos ClipView::quantizeSplitPos(TimePos midiPos, bool shiftMode) {
 }
 
 // Return the color that the Clip's background should be
-QColor ClipView::getColorForDisplay(QColor defaultColor) {
+QColor ClipView::getColorForDisplay(QColor defaultColor)
+{
 	// Get the pure Clip color
 	auto clipColor = m_clip->hasColor() ? m_clip->usesCustomClipColor() ? m_clip->color() : m_clip->getTrack()->color()
 										: defaultColor;

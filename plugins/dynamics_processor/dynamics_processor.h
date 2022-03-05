@@ -31,7 +31,8 @@
 
 class RmsHelper;
 
-class dynProcEffect : public Effect {
+class dynProcEffect : public Effect
+{
 public:
 	dynProcEffect(Model* _parent, const Descriptor::SubPluginFeatures::Key* _key);
 	virtual ~dynProcEffect();

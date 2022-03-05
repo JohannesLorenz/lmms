@@ -28,7 +28,8 @@
 
 #include <QLineEdit>
 
-class TrackRenameLineEdit : public QLineEdit {
+class TrackRenameLineEdit : public QLineEdit
+{
 	Q_OBJECT
 public:
 	TrackRenameLineEdit(QWidget* parent);

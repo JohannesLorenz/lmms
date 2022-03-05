@@ -47,7 +47,8 @@ const int FILTER_GROUPBOX_HEIGHT = 245 - FILTER_GROUPBOX_Y;
 InstrumentSoundShapingView::InstrumentSoundShapingView(QWidget* _parent)
 	: QWidget(_parent)
 	, ModelView(nullptr, this)
-	, m_ss(nullptr) {
+	, m_ss(nullptr)
+{
 	m_targetsTabWidget = new TabWidget(tr("TARGET"), this);
 	m_targetsTabWidget->setGeometry(
 		TARGETS_TABWIDGET_X, TARGETS_TABWIDGET_Y, TARGETS_TABWIDGET_WIDTH, TARGETS_TABWIDGET_HEIGTH);
@@ -85,13 +86,15 @@ InstrumentSoundShapingView::InstrumentSoundShapingView(QWidget* _parent)
 
 InstrumentSoundShapingView::~InstrumentSoundShapingView() { delete m_targetsTabWidget; }
 
-void InstrumentSoundShapingView::setFunctionsHidden(bool hidden) {
+void InstrumentSoundShapingView::setFunctionsHidden(bool hidden)
+{
 	m_targetsTabWidget->setHidden(hidden);
 	m_filterGroupBox->setHidden(hidden);
 	m_singleStreamInfoLabel->setHidden(!hidden);
 }
 
-void InstrumentSoundShapingView::modelChanged() {
+void InstrumentSoundShapingView::modelChanged()
+{
 	m_ss = castModel<InstrumentSoundShaping>();
 	m_filterGroupBox->setModel(&m_ss->m_filterEnabledModel);
 	m_filterComboBox->setModel(&m_ss->m_filterModel);

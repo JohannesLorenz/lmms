@@ -41,7 +41,8 @@
 VstSyncController::VstSyncController()
 	: m_syncData(nullptr)
 	, m_shmID(-1)
-	, m_shm("/usr/bin/lmms") {
+	, m_shm("/usr/bin/lmms")
+{
 	if (ConfigManager::inst()->value("ui", "syncvstplugins").toInt()) {
 		connect(Engine::audioEngine(), SIGNAL(sampleRateChanged()), this, SLOT(updateSampleRate()));
 
@@ -83,7 +84,8 @@ VstSyncController::VstSyncController()
 	updateSampleRate();
 }
 
-VstSyncController::~VstSyncController() {
+VstSyncController::~VstSyncController()
+{
 	if (m_syncData->hasSHM == false) {
 		delete m_syncData;
 	} else {
@@ -102,7 +104,8 @@ VstSyncController::~VstSyncController() {
 	}
 }
 
-void VstSyncController::setAbsolutePosition(double ticks) {
+void VstSyncController::setAbsolutePosition(double ticks)
+{
 #ifdef VST_SNC_LATENCY
 	m_syncData->ppqPos = ((ticks + 0) / 48.0) - m_syncData->m_latency;
 #else
@@ -110,7 +113,8 @@ void VstSyncController::setAbsolutePosition(double ticks) {
 #endif
 }
 
-void VstSyncController::setTempo(int newTempo) {
+void VstSyncController::setTempo(int newTempo)
+{
 	m_syncData->m_bpm = newTempo;
 
 #ifdef VST_SNC_LATENCY
@@ -118,13 +122,15 @@ void VstSyncController::setTempo(int newTempo) {
 #endif
 }
 
-void VstSyncController::startCycle(int startTick, int endTick) {
+void VstSyncController::startCycle(int startTick, int endTick)
+{
 	m_syncData->isCycle = true;
 	m_syncData->cycleStart = startTick / (float)48;
 	m_syncData->cycleEnd = endTick / (float)48;
 }
 
-void VstSyncController::update() {
+void VstSyncController::update()
+{
 	m_syncData->m_bufferSize = Engine::audioEngine()->framesPerPeriod();
 
 #ifdef VST_SNC_LATENCY
@@ -132,7 +138,8 @@ void VstSyncController::update() {
 #endif
 }
 
-void VstSyncController::updateSampleRate() {
+void VstSyncController::updateSampleRate()
+{
 	m_syncData->m_sampleRate = Engine::audioEngine()->processingSampleRate();
 
 #ifdef VST_SNC_LATENCY

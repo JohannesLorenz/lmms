@@ -54,7 +54,8 @@ BitcrushEffect::BitcrushEffect(Model* parent, const Descriptor::SubPluginFeature
 	: Effect(&bitcrush_plugin_descriptor, parent, key)
 	, m_controls(this)
 	, m_sampleRate(Engine::audioEngine()->processingSampleRate())
-	, m_filter(m_sampleRate) {
+	, m_filter(m_sampleRate)
+{
 	m_buffer = MM_ALLOC<sampleFrame>(Engine::audioEngine()->framesPerPeriod() * OS_RATE);
 	m_filter.setLowpass(m_sampleRate * (CUTOFF_RATIO * OS_RATIO));
 	m_needsUpdate = true;
@@ -70,7 +71,8 @@ BitcrushEffect::BitcrushEffect(Model* parent, const Descriptor::SubPluginFeature
 
 BitcrushEffect::~BitcrushEffect() { MM_FREE(m_buffer); }
 
-void BitcrushEffect::sampleRateChanged() {
+void BitcrushEffect::sampleRateChanged()
+{
 	m_sampleRate = Engine::audioEngine()->processingSampleRate();
 	m_filter.setSampleRate(m_sampleRate);
 	m_filter.setLowpass(m_sampleRate * (CUTOFF_RATIO * OS_RATIO));
@@ -81,7 +83,8 @@ inline float BitcrushEffect::depthCrush(float in) { return roundf(in * (float)m_
 
 inline float BitcrushEffect::noise(float amt) { return fastRandf(amt * 2.0f) - amt; }
 
-bool BitcrushEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
+bool BitcrushEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
+{
 	if (!isEnabled() || !isRunning()) { return (false); }
 
 	// update values
@@ -192,7 +195,8 @@ bool BitcrushEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data)
+{
 	return new BitcrushEffect(parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(data));
 }
 }

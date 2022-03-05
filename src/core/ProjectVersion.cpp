@@ -28,7 +28,8 @@
 
 ProjectVersion::ProjectVersion(QString version, CompareType c)
 	: m_version(version)
-	, m_compareType(c) {
+	, m_compareType(c)
+{
 	// Version numbers may have build data, prefixed with a '+',
 	// but this mustn't affect version precedence in comparisons
 	QString metadataStripped = version.split("+").first();
@@ -63,10 +64,13 @@ ProjectVersion::ProjectVersion(QString version, CompareType c)
 }
 
 ProjectVersion::ProjectVersion(const char* version, CompareType c)
-	: ProjectVersion(QString(version), c) {}
+	: ProjectVersion(QString(version), c)
+{
+}
 
 //! @param c Determines the number of identifiers to check when comparing
-int ProjectVersion::compare(const ProjectVersion& a, const ProjectVersion& b, CompareType c) {
+int ProjectVersion::compare(const ProjectVersion& a, const ProjectVersion& b, CompareType c)
+{
 	// How many identifiers to compare before we consider the versions equal
 	const int limit = static_cast<int>(c);
 
@@ -126,6 +130,7 @@ int ProjectVersion::compare(const ProjectVersion& a, const ProjectVersion& b, Co
 	return aLabels.size() - bLabels.size();
 }
 
-int ProjectVersion::compare(ProjectVersion v1, ProjectVersion v2) {
+int ProjectVersion::compare(ProjectVersion v1, ProjectVersion v2)
+{
 	return compare(v1, v2, std::min(v1.getCompareType(), v2.getCompareType()));
 }

@@ -65,7 +65,8 @@ ProjectRenderer::ProjectRenderer(const AudioEngine::qualitySettings& qualitySett
 	, m_fileDev(nullptr)
 	, m_qualitySettings(qualitySettings)
 	, m_progress(0)
-	, m_abort(false) {
+	, m_abort(false)
+{
 	AudioFileDeviceInstantiaton audioEncoderFactory = fileEncodeDevices[exportFileFormat].m_getDevInst;
 
 	if (audioEncoderFactory) {
@@ -84,7 +85,8 @@ ProjectRenderer::~ProjectRenderer() {}
 
 // Little help function for getting file format from a file extension
 // (only for registered file-encoders).
-ProjectRenderer::ExportFileFormats ProjectRenderer::getFileFormatFromExtension(const QString& _ext) {
+ProjectRenderer::ExportFileFormats ProjectRenderer::getFileFormatFromExtension(const QString& _ext)
+{
 	int idx = 0;
 	while (fileEncodeDevices[idx].m_fileFormat != NumFileFormats) {
 		if (QString(fileEncodeDevices[idx].m_extension) == _ext) { return (fileEncodeDevices[idx].m_fileFormat); }
@@ -94,11 +96,13 @@ ProjectRenderer::ExportFileFormats ProjectRenderer::getFileFormatFromExtension(c
 	return (WaveFile); // Default.
 }
 
-QString ProjectRenderer::getFileExtensionFromFormat(ExportFileFormats fmt) {
+QString ProjectRenderer::getFileExtensionFromFormat(ExportFileFormats fmt)
+{
 	return fileEncodeDevices[fmt].m_extension;
 }
 
-void ProjectRenderer::startProcessing() {
+void ProjectRenderer::startProcessing()
+{
 
 	if (isReady()) {
 		// Have to do audio engine stuff with GUI-thread affinity in order to
@@ -113,7 +117,8 @@ void ProjectRenderer::startProcessing() {
 	}
 }
 
-void ProjectRenderer::run() {
+void ProjectRenderer::run()
+{
 	MemoryManager::ThreadGuard mmThreadGuard;
 	Q_UNUSED(mmThreadGuard);
 #if 0
@@ -160,12 +165,14 @@ void ProjectRenderer::run() {
 	if (m_abort) { QFile(f).remove(); }
 }
 
-void ProjectRenderer::abortProcessing() {
+void ProjectRenderer::abortProcessing()
+{
 	m_abort = true;
 	wait();
 }
 
-void ProjectRenderer::updateConsoleProgress() {
+void ProjectRenderer::updateConsoleProgress()
+{
 	const int cols = 50;
 	static int rot = 0;
 	char buf[80];

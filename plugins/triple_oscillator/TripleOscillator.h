@@ -39,7 +39,8 @@ class SampleBuffer;
 
 const int NUM_OF_OSCILLATORS = 3;
 
-class OscillatorObject : public Model {
+class OscillatorObject : public Model
+{
 	MM_OPERATORS
 	Q_OBJECT
 public:
@@ -84,7 +85,8 @@ private slots:
 	void updateUseWaveTable();
 };
 
-class TripleOscillator : public Instrument {
+class TripleOscillator : public Instrument
+{
 	Q_OBJECT
 public:
 	TripleOscillator(InstrumentTrack* _track);
@@ -108,7 +110,8 @@ protected slots:
 private:
 	OscillatorObject* m_osc[NUM_OF_OSCILLATORS];
 
-	struct oscPtr {
+	struct oscPtr
+	{
 		MM_OPERATORS
 		Oscillator* oscLeft;
 		Oscillator* oscRight;
@@ -117,7 +120,8 @@ private:
 	friend class TripleOscillatorView;
 };
 
-class TripleOscillatorView : public InstrumentViewFixedSize {
+class TripleOscillatorView : public InstrumentViewFixedSize
+{
 	Q_OBJECT
 public:
 	TripleOscillatorView(Instrument* _instrument, QWidget* _parent);
@@ -129,7 +133,8 @@ private:
 	automatableButtonGroup* m_mod1BtnGrp;
 	automatableButtonGroup* m_mod2BtnGrp;
 
-	struct OscillatorKnobs {
+	struct OscillatorKnobs
+	{
 		MM_OPERATORS
 		OscillatorKnobs(Knob* v, Knob* p, Knob* c, Knob* fl, Knob* fr, Knob* po, Knob* spd, PixmapButton* uwb,
 			automatableButtonGroup* wsbg, PixmapButton* wt)
@@ -142,7 +147,9 @@ private:
 			, m_stereoPhaseDetuningKnob(spd)
 			, m_userWaveButton(uwb)
 			, m_waveShapeBtnGrp(wsbg)
-			, m_multiBandWaveTableButton(wt) {}
+			, m_multiBandWaveTableButton(wt)
+		{
+		}
 		OscillatorKnobs() {}
 		Knob* m_volKnob;
 		Knob* m_panKnob;

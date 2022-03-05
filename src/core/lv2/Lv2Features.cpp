@@ -31,11 +31,13 @@
 #include "Engine.h"
 #include "Lv2Manager.h"
 
-bool Lv2Features::isFeatureSupported(const char* featName) {
+bool Lv2Features::isFeatureSupported(const char* featName)
+{
 	return Engine::getLv2Manager()->isFeatureSupported(featName);
 }
 
-Lv2Features::Lv2Features() {
+Lv2Features::Lv2Features()
+{
 	const Lv2Manager* man = Engine::getLv2Manager();
 	// create (yet empty) map feature URI -> feature
 	for (const char* uri : man->supportedFeatureURIs()) {
@@ -43,14 +45,16 @@ Lv2Features::Lv2Features() {
 	}
 }
 
-void Lv2Features::initCommon() {
+void Lv2Features::initCommon()
+{
 	Lv2Manager* man = Engine::getLv2Manager();
 	// init m_featureByUri with the plugin-common features
 	operator[](LV2_URID__map) = man->uridMap().mapFeature();
 	operator[](LV2_URID__unmap) = man->uridMap().unmapFeature();
 }
 
-void Lv2Features::createFeatureVectors() {
+void Lv2Features::createFeatureVectors()
+{
 	// create vector of features
 	for (std::pair<const char* const, void*>& pr : m_featureByUri) {
 		/*
@@ -73,7 +77,8 @@ void Lv2Features::createFeatureVectors() {
 	m_featurePointers.push_back(nullptr);
 }
 
-void*& Lv2Features::operator[](const char* featName) {
+void*& Lv2Features::operator[](const char* featName)
+{
 	auto itr = m_featureByUri.find(featName);
 	Q_ASSERT(itr != m_featureByUri.end());
 	return itr->second;

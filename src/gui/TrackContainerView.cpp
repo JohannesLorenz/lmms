@@ -55,7 +55,8 @@ TrackContainerView::TrackContainerView(TrackContainer* _tc)
 	, m_trackViews()
 	, m_scrollArea(new scrollArea(this))
 	, m_ppb(DEFAULT_PIXELS_PER_BAR)
-	, m_rubberBand(new RubberBand(m_scrollArea)) {
+	, m_rubberBand(new RubberBand(m_scrollArea))
+{
 	m_tc->setHook(this);
 	// keeps the direction of the widget, undepended on the locale
 	setLayoutDirection(Qt::LeftToRight);
@@ -82,19 +83,22 @@ TrackContainerView::TrackContainerView(TrackContainer* _tc)
 	connect(m_tc, SIGNAL(trackAdded(Track*)), this, SLOT(createTrackView(Track*)), Qt::QueuedConnection);
 }
 
-TrackContainerView::~TrackContainerView() {
+TrackContainerView::~TrackContainerView()
+{
 	while (!m_trackViews.empty()) {
 		delete m_trackViews.takeLast();
 	}
 }
 
-void TrackContainerView::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void TrackContainerView::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	MainWindow::saveWidgetState(this, _this);
 }
 
 void TrackContainerView::loadSettings(const QDomElement& _this) { MainWindow::restoreWidgetState(this, _this); }
 
-TrackView* TrackContainerView::addTrackView(TrackView* _tv) {
+TrackView* TrackContainerView::addTrackView(TrackView* _tv)
+{
 	m_trackViews.push_back(_tv);
 	m_scrollLayout->addWidget(_tv);
 	connect(this, SIGNAL(positionChanged(const TimePos&)), _tv->getTrackContentWidget(),
@@ -103,7 +107,8 @@ TrackView* TrackContainerView::addTrackView(TrackView* _tv) {
 	return (_tv);
 }
 
-void TrackContainerView::removeTrackView(TrackView* _tv) {
+void TrackContainerView::removeTrackView(TrackView* _tv)
+{
 	int index = m_trackViews.indexOf(_tv);
 	if (index != -1) {
 		m_trackViews.removeAt(index);
@@ -116,7 +121,8 @@ void TrackContainerView::removeTrackView(TrackView* _tv) {
 	}
 }
 
-void TrackContainerView::moveTrackView(TrackView* trackView, int indexTo) {
+void TrackContainerView::moveTrackView(TrackView* trackView, int indexTo)
+{
 	// Can't move out of bounds
 	if (indexTo >= m_trackViews.size() || indexTo < 0) { return; }
 
@@ -138,19 +144,22 @@ void TrackContainerView::moveTrackView(TrackView* trackView, int indexTo) {
 	realignTracks();
 }
 
-void TrackContainerView::moveTrackViewUp(TrackView* trackView) {
+void TrackContainerView::moveTrackViewUp(TrackView* trackView)
+{
 	int index = m_trackViews.indexOf(trackView);
 
 	moveTrackView(trackView, index - 1);
 }
 
-void TrackContainerView::moveTrackViewDown(TrackView* trackView) {
+void TrackContainerView::moveTrackViewDown(TrackView* trackView)
+{
 	int index = m_trackViews.indexOf(trackView);
 
 	moveTrackView(trackView, index + 1);
 }
 
-void TrackContainerView::scrollToTrackView(TrackView* _tv) {
+void TrackContainerView::scrollToTrackView(TrackView* _tv)
+{
 	if (!m_trackViews.contains(_tv)) {
 		qWarning("TrackContainerView::scrollToTrackView: TrackView is not owned by this");
 	} else {
@@ -169,7 +178,8 @@ void TrackContainerView::scrollToTrackView(TrackView* _tv) {
 	}
 }
 
-void TrackContainerView::realignTracks() {
+void TrackContainerView::realignTracks()
+{
 	m_scrollArea->widget()->setFixedWidth(width());
 	m_scrollArea->widget()->setFixedHeight(m_scrollArea->widget()->minimumSizeHint().height());
 
@@ -179,7 +189,8 @@ void TrackContainerView::realignTracks() {
 	}
 }
 
-TrackView* TrackContainerView::createTrackView(Track* _t) {
+TrackView* TrackContainerView::createTrackView(Track* _t)
+{
 	// m_tc->addJournalCheckPoint();
 
 	// Avoid duplicating track views
@@ -190,7 +201,8 @@ TrackView* TrackContainerView::createTrackView(Track* _t) {
 	return _t->createView(this);
 }
 
-void TrackContainerView::deleteTrackView(TrackView* _tv) {
+void TrackContainerView::deleteTrackView(TrackView* _tv)
+{
 	// m_tc->addJournalCheckPoint();
 
 	Track* t = _tv->getTrack();
@@ -202,7 +214,8 @@ void TrackContainerView::deleteTrackView(TrackView* _tv) {
 	Engine::audioEngine()->doneChangeInModel();
 }
 
-const TrackView* TrackContainerView::trackViewAt(const int _y) const {
+const TrackView* TrackContainerView::trackViewAt(const int _y) const
+{
 	const int abs_y = _y + m_scrollArea->verticalScrollBar()->value();
 	int y_cnt = 0;
 
@@ -221,7 +234,8 @@ bool TrackContainerView::allowRubberband() const { return (false); }
 
 bool TrackContainerView::knifeMode() const { return false; }
 
-void TrackContainerView::setPixelsPerBar(int ppb) {
+void TrackContainerView::setPixelsPerBar(int ppb)
+{
 	m_ppb = ppb;
 
 	// tell all TrackContentWidgets to update their background tile pixmap
@@ -230,7 +244,8 @@ void TrackContainerView::setPixelsPerBar(int ppb) {
 	}
 }
 
-void TrackContainerView::clearAllTracks() {
+void TrackContainerView::clearAllTracks()
+{
 	while (!m_trackViews.empty()) {
 		TrackView* tv = m_trackViews.takeLast();
 		Track* t = tv->getTrack();
@@ -239,7 +254,8 @@ void TrackContainerView::clearAllTracks() {
 	}
 }
 
-void TrackContainerView::dragEnterEvent(QDragEnterEvent* _dee) {
+void TrackContainerView::dragEnterEvent(QDragEnterEvent* _dee)
+{
 	StringPairDrag::processDragEnterEvent(_dee,
 		QString("presetfile,pluginpresetfile,samplefile,instrument,"
 				"importedproject,soundfontfile,patchfile,vstpluginfile,projectfile,"
@@ -248,12 +264,14 @@ void TrackContainerView::dragEnterEvent(QDragEnterEvent* _dee) {
 			.arg(Track::SampleTrack));
 }
 
-void TrackContainerView::stopRubberBand() {
+void TrackContainerView::stopRubberBand()
+{
 	m_rubberBand->hide();
 	m_rubberBand->setEnabled(false);
 }
 
-void TrackContainerView::dropEvent(QDropEvent* _de) {
+void TrackContainerView::dropEvent(QDropEvent* _de)
+{
 	QString type = StringPairDrag::decodeKey(_de);
 	QString value = StringPairDrag::decodeValue(_de);
 	if (type == "instrument") {
@@ -295,7 +313,8 @@ void TrackContainerView::dropEvent(QDropEvent* _de) {
 	}
 }
 
-void TrackContainerView::resizeEvent(QResizeEvent* _re) {
+void TrackContainerView::resizeEvent(QResizeEvent* _re)
+{
 	realignTracks();
 	QWidget::resizeEvent(_re);
 }
@@ -304,14 +323,16 @@ RubberBand* TrackContainerView::rubberBand() const { return m_rubberBand; }
 
 TrackContainerView::scrollArea::scrollArea(TrackContainerView* _parent)
 	: QScrollArea(_parent)
-	, m_trackContainerView(_parent) {
+	, m_trackContainerView(_parent)
+{
 	setFrameStyle(QFrame::NoFrame);
 	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
 TrackContainerView::scrollArea::~scrollArea() {}
 
-void TrackContainerView::scrollArea::wheelEvent(QWheelEvent* _we) {
+void TrackContainerView::scrollArea::wheelEvent(QWheelEvent* _we)
+{
 	// always pass wheel-event to parent-widget (song-editor
 	// pattern-editor etc.) because they might want to use it for zooming
 	// or scrolling left/right if a modifier-key is pressed, otherwise
@@ -323,11 +344,13 @@ void TrackContainerView::scrollArea::wheelEvent(QWheelEvent* _we) {
 InstrumentLoaderThread::InstrumentLoaderThread(QObject* parent, InstrumentTrack* it, QString name)
 	: QThread(parent)
 	, m_it(it)
-	, m_name(name) {
+	, m_name(name)
+{
 	m_containerThread = thread();
 }
 
-void InstrumentLoaderThread::run() {
+void InstrumentLoaderThread::run()
+{
 	Instrument* i = m_it->loadInstrument(m_name, nullptr, true /*always DnD*/);
 	QObject* parent = i->parent();
 	i->setParent(0);

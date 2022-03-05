@@ -40,7 +40,8 @@
 
 PatternEditor::PatternEditor(PatternStore* ps)
 	: TrackContainerView(ps)
-	, m_ps(ps) {
+	, m_ps(ps)
+{
 	setModel(ps);
 }
 
@@ -48,7 +49,8 @@ void PatternEditor::addSteps() { makeSteps(false); }
 
 void PatternEditor::cloneSteps() { makeSteps(true); }
 
-void PatternEditor::removeSteps() {
+void PatternEditor::removeSteps()
+{
 	TrackContainer::TrackList tl = model()->tracks();
 
 	for (TrackContainer::TrackList::iterator it = tl.begin(); it != tl.end(); ++it) {
@@ -63,21 +65,25 @@ void PatternEditor::addSampleTrack() { (void)Track::create(Track::SampleTrack, m
 
 void PatternEditor::addAutomationTrack() { (void)Track::create(Track::AutomationTrack, model()); }
 
-void PatternEditor::removeViewsForPattern(int pattern) {
+void PatternEditor::removeViewsForPattern(int pattern)
+{
 	for (TrackView* view : trackViews()) {
 		view->getTrackContentWidget()->removeClipView(pattern);
 	}
 }
 
-void PatternEditor::saveSettings(QDomDocument& doc, QDomElement& element) {
+void PatternEditor::saveSettings(QDomDocument& doc, QDomElement& element)
+{
 	MainWindow::saveWidgetState(parentWidget(), element);
 }
 
-void PatternEditor::loadSettings(const QDomElement& element) {
+void PatternEditor::loadSettings(const QDomElement& element)
+{
 	MainWindow::restoreWidgetState(parentWidget(), element);
 }
 
-void PatternEditor::dropEvent(QDropEvent* de) {
+void PatternEditor::dropEvent(QDropEvent* de)
+{
 	QString type = StringPairDrag::decodeKey(de);
 	QString value = StringPairDrag::decodeValue(de);
 
@@ -108,12 +114,14 @@ void PatternEditor::dropEvent(QDropEvent* de) {
 	}
 }
 
-void PatternEditor::updatePosition() {
+void PatternEditor::updatePosition()
+{
 	// realignTracks();
 	emit positionChanged(m_currentPosition);
 }
 
-void PatternEditor::makeSteps(bool clone) {
+void PatternEditor::makeSteps(bool clone)
+{
 	TrackContainer::TrackList tl = model()->tracks();
 
 	for (TrackContainer::TrackList::iterator it = tl.begin(); it != tl.end(); ++it) {
@@ -130,7 +138,8 @@ void PatternEditor::makeSteps(bool clone) {
 
 // Creates a clone of the current pattern track with the same content, but no clips in the song editor
 // TODO: Avoid repeated code from cloneTrack and clearTrack in TrackOperationsWidget somehow
-void PatternEditor::cloneClip() {
+void PatternEditor::cloneClip()
+{
 	// Get the current PatternTrack id
 	PatternStore* ps = static_cast<PatternStore*>(model());
 	const int currentPattern = ps->currentPattern();
@@ -151,7 +160,8 @@ void PatternEditor::cloneClip() {
 
 PatternEditorWindow::PatternEditorWindow(PatternStore* ps)
 	: Editor(false)
-	, m_editor(new PatternEditor(ps)) {
+	, m_editor(new PatternEditor(ps))
+{
 	setWindowIcon(embed::getIconPixmap("pattern_track_btn"));
 	setWindowTitle(tr("Pattern Editor"));
 	setCentralWidget(m_editor);
@@ -222,7 +232,8 @@ PatternEditorWindow::~PatternEditorWindow() {}
 
 QSize PatternEditorWindow::sizeHint() const { return {minimumWidth() + 10, 300}; }
 
-void PatternEditorWindow::play() {
+void PatternEditorWindow::play()
+{
 	if (Engine::getSong()->playMode() != Song::Mode_PlayPattern) {
 		Engine::getSong()->playPattern();
 	} else {

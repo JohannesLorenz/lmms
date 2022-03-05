@@ -31,7 +31,8 @@ class Master;
 class MidiEvent;
 class NulEngine;
 
-class LocalZynAddSubFx {
+class LocalZynAddSubFx
+{
 public:
 	LocalZynAddSubFx();
 	~LocalZynAddSubFx();

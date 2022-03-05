@@ -40,7 +40,8 @@ class LedCheckBox;
 class TempoSyncKnob;
 class PixmapButton;
 
-class LfoController : public Controller {
+class LfoController : public Controller
+{
 	Q_OBJECT
 public:
 	LfoController(Model* _parent);
@@ -82,7 +83,8 @@ protected slots:
 	friend class LfoControllerDialog;
 };
 
-class LfoControllerDialog : public ControllerDialog {
+class LfoControllerDialog : public ControllerDialog
+{
 	Q_OBJECT
 public:
 	LfoControllerDialog(Controller* _controller, QWidget* _parent);

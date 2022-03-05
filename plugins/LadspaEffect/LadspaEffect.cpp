@@ -56,7 +56,8 @@ LadspaEffect::LadspaEffect(Model* _parent, const Descriptor::SubPluginFeatures::
 	: Effect(&ladspaeffect_plugin_descriptor, _parent, _key)
 	, m_controls(nullptr)
 	, m_maxSampleRate(0)
-	, m_key(LadspaSubPluginFeatures::subPluginKeyToLadspaKey(_key)) {
+	, m_key(LadspaSubPluginFeatures::subPluginKeyToLadspaKey(_key))
+{
 	Ladspa2LMMS* manager = Engine::getLADSPAManager();
 	if (manager->getDescription(m_key) == nullptr) {
 		Engine::getSong()->collectError(tr("Unknown LADSPA plugin %1 requested.").arg(m_key.second));
@@ -73,7 +74,8 @@ LadspaEffect::LadspaEffect(Model* _parent, const Descriptor::SubPluginFeatures::
 
 LadspaEffect::~LadspaEffect() { pluginDestruction(); }
 
-void LadspaEffect::changeSampleRate() {
+void LadspaEffect::changeSampleRate()
+{
 	DataFile dataFile(DataFile::EffectSettings);
 	m_controls->saveState(dataFile, dataFile.content());
 
@@ -95,7 +97,8 @@ void LadspaEffect::changeSampleRate() {
 	AutomationClip::resolveAllIDs();
 }
 
-bool LadspaEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames) {
+bool LadspaEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames)
+{
 	m_pluginMutex.lock();
 	if (!isOkay() || dontRun() || !isRunning() || !isEnabled()) {
 		m_pluginMutex.unlock();
@@ -194,12 +197,14 @@ bool LadspaEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames) {
 	return (is_running);
 }
 
-void LadspaEffect::setControl(int _control, LADSPA_Data _value) {
+void LadspaEffect::setControl(int _control, LADSPA_Data _value)
+{
 	if (!isOkay()) { return; }
 	m_portControls[_control]->value = _value;
 }
 
-void LadspaEffect::pluginInstantiation() {
+void LadspaEffect::pluginInstantiation()
+{
 	m_maxSampleRate = maxSamplerate(displayName());
 
 	Ladspa2LMMS* manager = Engine::getLADSPAManager();
@@ -375,7 +380,8 @@ void LadspaEffect::pluginInstantiation() {
 	m_controls = new LadspaControls(this);
 }
 
-void LadspaEffect::pluginDestruction() {
+void LadspaEffect::pluginDestruction()
+{
 	if (!isOkay()) { return; }
 
 	delete m_controls;
@@ -400,7 +406,8 @@ void LadspaEffect::pluginDestruction() {
 
 static QMap<QString, sample_rate_t> __buggy_plugins;
 
-sample_rate_t LadspaEffect::maxSamplerate(const QString& _name) {
+sample_rate_t LadspaEffect::maxSamplerate(const QString& _name)
+{
 	if (__buggy_plugins.isEmpty()) {
 		__buggy_plugins["C* AmpVTS"] = 88200;
 		__buggy_plugins["Chorus2"] = 44100;
@@ -414,7 +421,8 @@ sample_rate_t LadspaEffect::maxSamplerate(const QString& _name) {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data)
+{
 	return new LadspaEffect(_parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(_data));
 }
 }

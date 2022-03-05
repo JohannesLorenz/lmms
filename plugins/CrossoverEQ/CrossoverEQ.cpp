@@ -55,19 +55,22 @@ CrossoverEQEffect::CrossoverEQEffect(Model* parent, const Descriptor::SubPluginF
 	, m_hp2(m_sampleRate)
 	, m_hp3(m_sampleRate)
 	, m_hp4(m_sampleRate)
-	, m_needsUpdate(true) {
+	, m_needsUpdate(true)
+{
 	m_tmp1 = MM_ALLOC<sampleFrame>(Engine::audioEngine()->framesPerPeriod());
 	m_tmp2 = MM_ALLOC<sampleFrame>(Engine::audioEngine()->framesPerPeriod());
 	m_work = MM_ALLOC<sampleFrame>(Engine::audioEngine()->framesPerPeriod());
 }
 
-CrossoverEQEffect::~CrossoverEQEffect() {
+CrossoverEQEffect::~CrossoverEQEffect()
+{
 	MM_FREE(m_tmp1);
 	MM_FREE(m_tmp2);
 	MM_FREE(m_work);
 }
 
-void CrossoverEQEffect::sampleRateChanged() {
+void CrossoverEQEffect::sampleRateChanged()
+{
 	m_sampleRate = Engine::audioEngine()->processingSampleRate();
 	m_lp1.setSampleRate(m_sampleRate);
 	m_lp2.setSampleRate(m_sampleRate);
@@ -78,7 +81,8 @@ void CrossoverEQEffect::sampleRateChanged() {
 	m_needsUpdate = true;
 }
 
-bool CrossoverEQEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
+bool CrossoverEQEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
+{
 	if (!isEnabled() || !isRunning()) { return (false); }
 
 	// filters update
@@ -165,7 +169,8 @@ bool CrossoverEQEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 	return isRunning();
 }
 
-void CrossoverEQEffect::clearFilterHistories() {
+void CrossoverEQEffect::clearFilterHistories()
+{
 	m_lp1.clearHistory();
 	m_lp2.clearHistory();
 	m_lp3.clearHistory();
@@ -177,7 +182,8 @@ void CrossoverEQEffect::clearFilterHistories() {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data)
+{
 	return new CrossoverEQEffect(parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(data));
 }
 }

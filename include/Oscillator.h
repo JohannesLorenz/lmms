@@ -39,10 +39,12 @@
 
 class IntModel;
 
-class LMMS_EXPORT Oscillator {
+class LMMS_EXPORT Oscillator
+{
 	MM_OPERATORS
 public:
-	enum WaveShapes {
+	enum WaveShapes
+	{
 		SineWave,
 		TriangleWave,
 		SawWave,
@@ -56,7 +58,8 @@ public:
 		NumWaveShapeTables = WhiteNoise - FirstWaveShapeTable, //!< Number of band-limited wave shapes to be generated
 	};
 
-	enum ModulationAlgos {
+	enum ModulationAlgos
+	{
 		PhaseModulation,
 		AmplitudeModulation,
 		SignalMix,
@@ -83,7 +86,8 @@ public:
 	// now follow the wave-shape-routines...
 	static inline sample_t sinSample(const float _sample) { return sinf(_sample * F_2PI); }
 
-	static inline sample_t triangleSample(const float _sample) {
+	static inline sample_t triangleSample(const float _sample)
+	{
 		const float ph = absFraction(_sample);
 		if (ph <= 0.25f) {
 			return ph * 4.0f;
@@ -97,19 +101,22 @@ public:
 
 	static inline sample_t squareSample(const float _sample) { return (absFraction(_sample) > 0.5f) ? -1.0f : 1.0f; }
 
-	static inline sample_t moogSawSample(const float _sample) {
+	static inline sample_t moogSawSample(const float _sample)
+	{
 		const float ph = absFraction(_sample);
 		if (ph < 0.5f) { return -1.0f + ph * 4.0f; }
 		return 1.0f - 2.0f * ph;
 	}
 
-	static inline sample_t expSample(const float _sample) {
+	static inline sample_t expSample(const float _sample)
+	{
 		float ph = absFraction(_sample);
 		if (ph > 0.5f) { ph = 1.0f - ph; }
 		return -1.0f + 8.0f * ph * ph;
 	}
 
-	static inline sample_t noiseSample(const float) {
+	static inline sample_t noiseSample(const float)
+	{
 		// Precise implementation
 		//		return 1.0f - rand() * 2.0f / RAND_MAX;
 
@@ -119,14 +126,16 @@ public:
 
 	inline sample_t userWaveSample(const float _sample) const { return m_userWave->userWaveSample(_sample); }
 
-	struct wtSampleControl {
+	struct wtSampleControl
+	{
 		float frame;
 		f_cnt_t f1;
 		f_cnt_t f2;
 		int band;
 	};
 
-	inline wtSampleControl getWtSampleControl(const float sample) const {
+	inline wtSampleControl getWtSampleControl(const float sample) const
+	{
 		wtSampleControl control;
 		control.frame = sample * OscillatorConstants::WAVETABLE_LENGTH;
 		control.f1 = static_cast<f_cnt_t>(control.frame) % OscillatorConstants::WAVETABLE_LENGTH;
@@ -139,28 +148,32 @@ public:
 
 	inline sample_t wtSample(const sample_t table[OscillatorConstants::WAVE_TABLES_PER_WAVEFORM_COUNT]
 												 [OscillatorConstants::WAVETABLE_LENGTH],
-		const float sample) const {
+		const float sample) const
+	{
 		assert(table != nullptr);
 		wtSampleControl control = getWtSampleControl(sample);
 		return linearInterpolate(
 			table[control.band][control.f1], table[control.band][control.f2], fraction(control.frame));
 	}
 
-	inline sample_t wtSample(const std::unique_ptr<OscillatorConstants::waveform_t>& table, const float sample) const {
+	inline sample_t wtSample(const std::unique_ptr<OscillatorConstants::waveform_t>& table, const float sample) const
+	{
 		assert(table != nullptr);
 		wtSampleControl control = getWtSampleControl(sample);
 		return linearInterpolate(
 			(*table)[control.band][control.f1], (*table)[control.band][control.f2], fraction(control.frame));
 	}
 
-	inline sample_t wtSample(sample_t** table, const float sample) const {
+	inline sample_t wtSample(sample_t** table, const float sample) const
+	{
 		assert(table != nullptr);
 		wtSampleControl control = getWtSampleControl(sample);
 		return linearInterpolate(
 			table[control.band][control.f1], table[control.band][control.f2], fraction(control.frame));
 	}
 
-	static inline int waveTableBandFromFreq(float freq) {
+	static inline int waveTableBandFromFreq(float freq)
+	{
 		// Frequency bands are indexed relative to default MIDI key frequencies.
 		// I.e., 440 Hz (A4, key 69): 69 + 12 * log2(1) = 69
 		// To always avoid aliasing, ceil() is used instead of round(). It ensures that the nearest wavetable with
@@ -176,7 +189,8 @@ public:
 			: band;
 	}
 
-	static inline float freqFromWaveTableBand(int band) {
+	static inline float freqFromWaveTableBand(int band)
+	{
 		return 440.0f * std::pow(2.0f, (band * OscillatorConstants::SEMITONES_PER_TABLE - 69.0f) / 12.0f);
 	}
 

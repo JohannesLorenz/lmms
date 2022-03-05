@@ -36,10 +36,12 @@
 
 class graphModel;
 
-class LMMS_EXPORT Graph : public QWidget, public ModelView {
+class LMMS_EXPORT Graph : public QWidget, public ModelView
+{
 	Q_OBJECT
 public:
-	enum graphStyle {
+	enum graphStyle
+	{
 		NearestStyle,		  //!< draw as stairs
 		LinearStyle,		  //!< connect each 2 samples with a line, with wrapping
 		LinearNonCyclicStyle, //!< LinearStyle without wrapping
@@ -63,7 +65,8 @@ public:
 
 	inline graphStyle getGraphStyle() { return m_graphStyle; }
 
-	inline void setGraphStyle(graphStyle _s) {
+	inline void setGraphStyle(graphStyle _s)
+	{
 		m_graphStyle = _s;
 		update();
 	}
@@ -104,7 +107,8 @@ private:
 	Function plot graph with discrete x scale and continous y scale
 	This makes it possible to display "#x" samples
 */
-class LMMS_EXPORT graphModel : public Model {
+class LMMS_EXPORT graphModel : public Model
+{
 	Q_OBJECT
 public:
 	/**

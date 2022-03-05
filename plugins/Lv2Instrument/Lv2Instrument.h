@@ -37,7 +37,8 @@
 // currently only MIDI works
 #define LV2_INSTRUMENT_USE_MIDI
 
-class Lv2Instrument : public Instrument, public Lv2ControlBase {
+class Lv2Instrument : public Instrument, public Lv2ControlBase
+{
 	Q_OBJECT
 public:
 	/*
@@ -69,7 +70,8 @@ public:
 	/*
 		misc
 	*/
-	Flags flags() const override {
+	Flags flags() const override
+	{
 #ifdef LV2_INSTRUMENT_USE_MIDI
 		return IsSingleStreamed | IsMidiBased;
 #else
@@ -93,7 +95,8 @@ private:
 	friend class Lv2InsView;
 };
 
-class Lv2InsView : public InstrumentView, public Lv2ViewBase {
+class Lv2InsView : public InstrumentView, public Lv2ViewBase
+{
 	Q_OBJECT
 public:
 	Lv2InsView(Lv2Instrument* _instrument, QWidget* _parent);

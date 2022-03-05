@@ -40,13 +40,17 @@ TempoSyncKnob::TempoSyncKnob(knobTypes _knob_num, QWidget* _parent, const QStrin
 	: Knob(_knob_num, _parent, _name)
 	, m_tempoSyncIcon(embed::getIconPixmap("tempo_sync"))
 	, m_tempoSyncDescription(tr("Tempo Sync"))
-	, m_custom(nullptr) {}
+	, m_custom(nullptr)
+{
+}
 
-TempoSyncKnob::~TempoSyncKnob() {
+TempoSyncKnob::~TempoSyncKnob()
+{
 	if (m_custom) { delete m_custom->parentWidget(); }
 }
 
-void TempoSyncKnob::modelChanged() {
+void TempoSyncKnob::modelChanged()
+{
 	if (model() == nullptr) { qWarning("no TempoSyncKnobModel has been set!"); }
 	if (m_custom != nullptr) { m_custom->setModel(&model()->m_custom); }
 	connect(model(), SIGNAL(syncModeChanged(TempoSyncMode)), this, SLOT(updateDescAndIcon()));
@@ -54,7 +58,8 @@ void TempoSyncKnob::modelChanged() {
 	updateDescAndIcon();
 }
 
-void TempoSyncKnob::contextMenuEvent(QContextMenuEvent*) {
+void TempoSyncKnob::contextMenuEvent(QContextMenuEvent*)
+{
 	mouseReleaseEvent(nullptr);
 
 	CaptionMenu contextMenu(model()->displayName(), this);
@@ -104,7 +109,8 @@ void TempoSyncKnob::contextMenuEvent(QContextMenuEvent*) {
 	delete syncMenu;
 }
 
-void TempoSyncKnob::updateDescAndIcon() {
+void TempoSyncKnob::updateDescAndIcon()
+{
 	if (model()->m_tempoSyncMode) {
 		switch (model()->m_tempoSyncMode) {
 		case TempoSyncKnobModel::SyncCustom:
@@ -149,19 +155,22 @@ void TempoSyncKnob::updateDescAndIcon() {
 
 const QString& TempoSyncKnob::syncDescription() { return m_tempoSyncDescription; }
 
-void TempoSyncKnob::setSyncDescription(const QString& _new_description) {
+void TempoSyncKnob::setSyncDescription(const QString& _new_description)
+{
 	m_tempoSyncDescription = _new_description;
 	emit syncDescriptionChanged(_new_description);
 }
 
 const QPixmap& TempoSyncKnob::syncIcon() { return m_tempoSyncIcon; }
 
-void TempoSyncKnob::setSyncIcon(const QPixmap& _new_icon) {
+void TempoSyncKnob::setSyncIcon(const QPixmap& _new_icon)
+{
 	m_tempoSyncIcon = _new_icon;
 	emit syncIconChanged();
 }
 
-void TempoSyncKnob::showCustom() {
+void TempoSyncKnob::showCustom()
+{
 	if (m_custom == nullptr) {
 		m_custom = new MeterDialog(getGUI()->mainWindow()->workspace());
 		QMdiSubWindow* subWindow = getGUI()->mainWindow()->addWindowedWidget(m_custom);

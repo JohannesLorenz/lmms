@@ -64,7 +64,8 @@ InstrumentTrack::InstrumentTrack(TrackContainer* tc)
 	, m_arpeggio(this)
 	, m_noteStacking(this)
 	, m_piano(this)
-	, m_microtuner() {
+	, m_microtuner()
+{
 	m_pitchModel.setCenterValue(0);
 	m_panningModel.setCenterValue(DefaultPanning);
 	m_baseNoteModel.setInitValue(DefaultKey);
@@ -105,7 +106,8 @@ bool InstrumentTrack::keyRangeImport() const { return m_microtuner.enabled() && 
 
 /** \brief Check if there is a valid mapping for the given key and it is within defined of range.
  */
-bool InstrumentTrack::isKeyMapped(int key) const {
+bool InstrumentTrack::isKeyMapped(int key) const
+{
 	if (key < firstKey() || key > lastKey()) { return false; }
 	if (!m_microtuner.enabled()) { return true; }
 
@@ -118,7 +120,8 @@ bool InstrumentTrack::isKeyMapped(int key) const {
 /** \brief Return first mapped key, based on currently selected keymap or user selection.
  *	\return Number ranging from 0 to NumKeys -1
  */
-int InstrumentTrack::firstKey() const {
+int InstrumentTrack::firstKey() const
+{
 	if (keyRangeImport()) {
 		return Engine::getSong()->getKeymap(m_microtuner.currentKeymap())->getFirstKey();
 	} else {
@@ -129,7 +132,8 @@ int InstrumentTrack::firstKey() const {
 /** \brief Return last mapped key, based on currently selected keymap or user selection.
  *	\return Number ranging from 0 to NumKeys -1
  */
-int InstrumentTrack::lastKey() const {
+int InstrumentTrack::lastKey() const
+{
 	if (keyRangeImport()) {
 		return Engine::getSong()->getKeymap(m_microtuner.currentKeymap())->getLastKey();
 	} else {
@@ -140,7 +144,8 @@ int InstrumentTrack::lastKey() const {
 /** \brief Return base key number, based on currently selected keymap or user selection.
  *	\return Number ranging from 0 to NumKeys -1
  */
-int InstrumentTrack::baseNote() const {
+int InstrumentTrack::baseNote() const
+{
 	int mp = m_useMasterPitchModel.value() ? Engine::getSong()->masterPitch() : 0;
 
 	if (keyRangeImport()) {
@@ -153,7 +158,8 @@ int InstrumentTrack::baseNote() const {
 /** \brief Return frequency assigned to the base key, based on currently selected keymap.
  *	\return Frequency in Hz
  */
-float InstrumentTrack::baseFreq() const {
+float InstrumentTrack::baseFreq() const
+{
 	if (m_microtuner.enabled()) {
 		return Engine::getSong()->getKeymap(m_microtuner.currentKeymap())->getBaseFreq();
 	} else {
@@ -161,7 +167,8 @@ float InstrumentTrack::baseFreq() const {
 	}
 }
 
-InstrumentTrack::~InstrumentTrack() {
+InstrumentTrack::~InstrumentTrack()
+{
 	// De-assign midi device
 	if (m_hasAutoMidiDev) {
 		autoAssignMidiDevice(false);
@@ -175,7 +182,8 @@ InstrumentTrack::~InstrumentTrack() {
 	if (m_instrument) delete m_instrument;
 }
 
-void InstrumentTrack::processAudioBuffer(sampleFrame* buf, const fpp_t frames, NotePlayHandle* n) {
+void InstrumentTrack::processAudioBuffer(sampleFrame* buf, const fpp_t frames, NotePlayHandle* n)
+{
 	// we must not play the sound if this InstrumentTrack is muted...
 	if (isMuted() || (Engine::getSong()->playMode() != Song::Mode_PlayMidiClip && n && n->isPatternTrackMuted())
 		|| !m_instrument) {
@@ -225,7 +233,8 @@ void InstrumentTrack::processAudioBuffer(sampleFrame* buf, const fpp_t frames, N
 	}
 }
 
-MidiEvent InstrumentTrack::applyMasterKey(const MidiEvent& event) {
+MidiEvent InstrumentTrack::applyMasterKey(const MidiEvent& event)
+{
 	MidiEvent copy(event);
 	switch (event.type()) {
 	case MidiNoteOn:
@@ -236,7 +245,8 @@ MidiEvent InstrumentTrack::applyMasterKey(const MidiEvent& event) {
 	return copy;
 }
 
-void InstrumentTrack::processCCEvent(int controller) {
+void InstrumentTrack::processCCEvent(int controller)
+{
 	// Does nothing if the LED is disabled
 	if (!m_midiCCEnable->value()) { return; }
 
@@ -250,7 +260,8 @@ void InstrumentTrack::processCCEvent(int controller) {
 	processInEvent(MidiEvent(MidiControlChange, channel, cc, value, nullptr, MidiEvent::Source::Internal));
 }
 
-void InstrumentTrack::processInEvent(const MidiEvent& event, const TimePos& time, f_cnt_t offset) {
+void InstrumentTrack::processInEvent(const MidiEvent& event, const TimePos& time, f_cnt_t offset)
+{
 	if (Engine::getSong()->isExporting() && event.source() == MidiEvent::Source::External) { return; }
 
 	bool eventHandled = false;
@@ -352,7 +363,8 @@ void InstrumentTrack::processInEvent(const MidiEvent& event, const TimePos& time
 	}
 }
 
-void InstrumentTrack::processOutEvent(const MidiEvent& event, const TimePos& time, f_cnt_t offset) {
+void InstrumentTrack::processOutEvent(const MidiEvent& event, const TimePos& time, f_cnt_t offset)
+{
 	// do nothing if we do not have an instrument instance (e.g. when loading settings)
 	if (m_instrument == nullptr) { return; }
 
@@ -399,7 +411,8 @@ void InstrumentTrack::processOutEvent(const MidiEvent& event, const TimePos& tim
 	m_midiPort.processOutEvent(event, time);
 }
 
-void InstrumentTrack::silenceAllNotes(bool removeIPH) {
+void InstrumentTrack::silenceAllNotes(bool removeIPH)
+{
 	m_midiNotesMutex.lock();
 	for (int i = 0; i < NumKeys; ++i) {
 		m_notes[i] = nullptr;
@@ -417,7 +430,8 @@ void InstrumentTrack::silenceAllNotes(bool removeIPH) {
 	Engine::audioEngine()->doneChangeInModel();
 }
 
-f_cnt_t InstrumentTrack::beatLen(NotePlayHandle* _n) const {
+f_cnt_t InstrumentTrack::beatLen(NotePlayHandle* _n) const
+{
 	if (m_instrument != nullptr) {
 		const f_cnt_t len = m_instrument->beatLen(_n);
 		if (len > 0) { return len; }
@@ -425,7 +439,8 @@ f_cnt_t InstrumentTrack::beatLen(NotePlayHandle* _n) const {
 	return m_soundShaping.envFrames();
 }
 
-void InstrumentTrack::playNote(NotePlayHandle* n, sampleFrame* workingBuffer) {
+void InstrumentTrack::playNote(NotePlayHandle* n, sampleFrame* workingBuffer)
+{
 	// arpeggio- and chord-widget has to do its work -> adding sub-notes
 	// for chords/arpeggios
 	m_noteStacking.processNote(n);
@@ -437,16 +452,19 @@ void InstrumentTrack::playNote(NotePlayHandle* n, sampleFrame* workingBuffer) {
 	}
 }
 
-QString InstrumentTrack::instrumentName() const {
+QString InstrumentTrack::instrumentName() const
+{
 	if (m_instrument != nullptr) { return m_instrument->displayName(); }
 	return QString();
 }
 
-void InstrumentTrack::deleteNotePluginData(NotePlayHandle* n) {
+void InstrumentTrack::deleteNotePluginData(NotePlayHandle* n)
+{
 	if (m_instrument != nullptr) { m_instrument->deleteNotePluginData(n); }
 }
 
-void InstrumentTrack::setName(const QString& _new_name) {
+void InstrumentTrack::setName(const QString& _new_name)
+{
 	Track::setName(_new_name);
 	m_midiPort.setName(name());
 	m_audioPort.setName(name());
@@ -454,7 +472,8 @@ void InstrumentTrack::setName(const QString& _new_name) {
 	emit nameChanged();
 }
 
-void InstrumentTrack::updateBaseNote() {
+void InstrumentTrack::updateBaseNote()
+{
 	Engine::audioEngine()->requestChangeInModel();
 	for (NotePlayHandleList::Iterator it = m_processHandles.begin(); it != m_processHandles.end(); ++it) {
 		(*it)->setFrequencyUpdate();
@@ -462,13 +481,15 @@ void InstrumentTrack::updateBaseNote() {
 	Engine::audioEngine()->doneChangeInModel();
 }
 
-void InstrumentTrack::updatePitch() {
+void InstrumentTrack::updatePitch()
+{
 	updateBaseNote();
 
 	processOutEvent(MidiEvent(MidiPitchBend, midiPort()->realOutputChannel(), midiPitch()));
 }
 
-void InstrumentTrack::updatePitchRange() {
+void InstrumentTrack::updatePitchRange()
+{
 	const int r = m_pitchRangeModel.value();
 	m_pitchModel.setRange(MinPitchDefault * r, MaxPitchDefault * r);
 
@@ -482,18 +503,21 @@ void InstrumentTrack::updatePitchRange() {
 
 void InstrumentTrack::updateMixerChannel() { m_audioPort.setNextMixerChannel(m_mixerChannelModel.value()); }
 
-int InstrumentTrack::masterKey(int _midi_key) const {
+int InstrumentTrack::masterKey(int _midi_key) const
+{
 
 	int key = baseNote();
 	return qBound<int>(0, _midi_key - (key - DefaultKey), NumKeys);
 }
 
-void InstrumentTrack::removeMidiPortNode(DataFile& _dataFile) {
+void InstrumentTrack::removeMidiPortNode(DataFile& _dataFile)
+{
 	QDomNodeList n = _dataFile.elementsByTagName("midiport");
 	n.item(0).parentNode().removeChild(n.item(0));
 }
 
-bool InstrumentTrack::play(const TimePos& _start, const fpp_t _frames, const f_cnt_t _offset, int _clip_num) {
+bool InstrumentTrack::play(const TimePos& _start, const fpp_t _frames, const f_cnt_t _offset, int _clip_num)
+{
 	if (!m_instrument || !tryLock()) { return false; }
 	const float frames_per_tick = Engine::framesPerTick();
 
@@ -566,7 +590,8 @@ bool InstrumentTrack::play(const TimePos& _start, const fpp_t _frames, const f_c
 	return played_a_note;
 }
 
-Clip* InstrumentTrack::createClip(const TimePos& pos) {
+Clip* InstrumentTrack::createClip(const TimePos& pos)
+{
 	MidiClip* p = new MidiClip(this);
 	p->movePosition(pos);
 	return p;
@@ -574,7 +599,8 @@ Clip* InstrumentTrack::createClip(const TimePos& pos) {
 
 TrackView* InstrumentTrack::createView(TrackContainerView* tcv) { return new InstrumentTrackView(this, tcv); }
 
-void InstrumentTrack::saveTrackSpecificSettings(QDomDocument& doc, QDomElement& thisElement) {
+void InstrumentTrack::saveTrackSpecificSettings(QDomDocument& doc, QDomElement& thisElement)
+{
 	m_volumeModel.saveSettings(doc, thisElement, "vol");
 	m_panningModel.saveSettings(doc, thisElement, "pan");
 	m_pitchModel.saveSettings(doc, thisElement, "pitch");
@@ -620,7 +646,8 @@ void InstrumentTrack::saveTrackSpecificSettings(QDomDocument& doc, QDomElement& 
 	m_audioPort.effects()->saveState(doc, thisElement);
 }
 
-void InstrumentTrack::loadTrackSpecificSettings(const QDomElement& thisElement) {
+void InstrumentTrack::loadTrackSpecificSettings(const QDomElement& thisElement)
+{
 	// don't delete instrument in preview mode if it's the same
 	// we can't do this for other situations due to some issues with linked models
 	bool reuseInstrument
@@ -704,7 +731,8 @@ void InstrumentTrack::loadTrackSpecificSettings(const QDomElement& thisElement) 
 
 void InstrumentTrack::setPreviewMode(const bool value) { m_previewMode = value; }
 
-void InstrumentTrack::replaceInstrument(DataFile dataFile) {
+void InstrumentTrack::replaceInstrument(DataFile dataFile)
+{
 	// loadSettings clears the mixer channel, so we save it here and set it back later
 	int mixerChannel = mixerChannelModel()->value();
 
@@ -726,14 +754,16 @@ void InstrumentTrack::replaceInstrument(DataFile dataFile) {
 	Engine::getSong()->setModified();
 }
 
-QString InstrumentTrack::getSavedInstrumentName(const QDomElement& thisElement) const {
+QString InstrumentTrack::getSavedInstrumentName(const QDomElement& thisElement) const
+{
 	QDomElement elem = thisElement.firstChildElement("instrument");
 	if (!elem.isNull()) { return elem.attribute("name"); }
 	return "";
 }
 
 Instrument* InstrumentTrack::loadInstrument(
-	const QString& _plugin_name, const Plugin::Descriptor::SubPluginFeatures::Key* key, bool keyFromDnd) {
+	const QString& _plugin_name, const Plugin::Descriptor::SubPluginFeatures::Key* key, bool keyFromDnd)
+{
 	if (keyFromDnd) Q_ASSERT(!key);
 
 	silenceAllNotes(true);
@@ -755,7 +785,8 @@ InstrumentTrack* InstrumentTrack::s_autoAssignedTrack = nullptr;
  *
  *  \param assign set to true to connect the midi device, set to false to disconnect
  */
-void InstrumentTrack::autoAssignMidiDevice(bool assign) {
+void InstrumentTrack::autoAssignMidiDevice(bool assign)
+{
 	if (assign) {
 		if (s_autoAssignedTrack) { s_autoAssignedTrack->autoAssignMidiDevice(false); }
 		s_autoAssignedTrack = this;

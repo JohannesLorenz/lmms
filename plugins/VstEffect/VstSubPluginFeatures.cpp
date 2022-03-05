@@ -32,14 +32,18 @@
 #include "ConfigManager.h"
 
 VstSubPluginFeatures::VstSubPluginFeatures(Plugin::PluginTypes _type)
-	: SubPluginFeatures(_type) {}
+	: SubPluginFeatures(_type)
+{
+}
 
-void VstSubPluginFeatures::fillDescriptionWidget(QWidget* _parent, const Key* _key) const {
+void VstSubPluginFeatures::fillDescriptionWidget(QWidget* _parent, const Key* _key) const
+{
 	new QLabel(QWidget::tr("Name: ") + _key->name, _parent);
 	new QLabel(QWidget::tr("File: ") + _key->attributes["file"], _parent);
 }
 
-void VstSubPluginFeatures::listSubPluginKeys(const Plugin::Descriptor* _desc, KeyList& _kl) const {
+void VstSubPluginFeatures::listSubPluginKeys(const Plugin::Descriptor* _desc, KeyList& _kl) const
+{
 	QStringList* dlls = new QStringList();
 	const QString path = QString("");
 	addPluginsFromDir(dlls, path);
@@ -52,7 +56,8 @@ void VstSubPluginFeatures::listSubPluginKeys(const Plugin::Descriptor* _desc, Ke
 	delete dlls;
 }
 
-void VstSubPluginFeatures::addPluginsFromDir(QStringList* filenames, QString path) const {
+void VstSubPluginFeatures::addPluginsFromDir(QStringList* filenames, QString path) const
+{
 	QStringList dirs
 		= QDir(ConfigManager::inst()->vstDir() + path).entryList(QStringList() << "*", QDir::Dirs, QDir::Name);
 	for (int i = 0; i < dirs.size(); i++) {

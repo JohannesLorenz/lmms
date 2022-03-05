@@ -7,7 +7,8 @@
 #include <string>
 #include <vector>
 
-class LocalFileMng {
+class LocalFileMng
+{
 public:
 	LocalFileMng();
 	~LocalFileMng();

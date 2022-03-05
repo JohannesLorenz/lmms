@@ -29,7 +29,8 @@
 
 #include "AutomatableModelView.h"
 
-class AutomatableSlider : public QSlider, public IntModelView {
+class AutomatableSlider : public QSlider, public IntModelView
+{
 	Q_OBJECT
 public:
 	AutomatableSlider(QWidget* _parent, const QString& _name = QString());

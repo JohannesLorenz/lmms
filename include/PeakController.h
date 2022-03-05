@@ -34,7 +34,8 @@ class PeakControllerEffect;
 
 typedef QVector<PeakControllerEffect*> PeakControllerEffectVector;
 
-class LMMS_EXPORT PeakController : public Controller {
+class LMMS_EXPORT PeakController : public Controller
+{
 	Q_OBJECT
 public:
 	PeakController(Model* _parent, PeakControllerEffect* _peak_effect = nullptr);
@@ -75,7 +76,8 @@ private:
 	bool m_coeffNeedsUpdate;
 };
 
-class PeakControllerDialog : public ControllerDialog {
+class PeakControllerDialog : public ControllerDialog
+{
 	Q_OBJECT
 public:
 	PeakControllerDialog(Controller* _controller, QWidget* _parent);

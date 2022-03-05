@@ -47,18 +47,21 @@ stereoEnhancerEffect::stereoEnhancerEffect(Model* _parent, const Descriptor::Sub
 	, m_seFX(DspEffectLibrary::StereoEnhancer(0.0f))
 	, m_delayBuffer(new sampleFrame[DEFAULT_BUFFER_SIZE])
 	, m_currFrame(0)
-	, m_bbControls(this) {
+	, m_bbControls(this)
+{
 	// TODO:  Make m_delayBuffer customizable?
 	clearMyBuffer();
 }
 
-stereoEnhancerEffect::~stereoEnhancerEffect() {
+stereoEnhancerEffect::~stereoEnhancerEffect()
+{
 	if (m_delayBuffer) { delete[] m_delayBuffer; }
 
 	m_currFrame = 0;
 }
 
-bool stereoEnhancerEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames) {
+bool stereoEnhancerEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames)
+{
 
 	// This appears to be used for determining whether or not to continue processing
 	// audio with this effect
@@ -109,7 +112,8 @@ bool stereoEnhancerEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _fr
 	return (isRunning());
 }
 
-void stereoEnhancerEffect::clearMyBuffer() {
+void stereoEnhancerEffect::clearMyBuffer()
+{
 	int i;
 	for (i = 0; i < DEFAULT_BUFFER_SIZE; i++) {
 		m_delayBuffer[i][0] = 0.0f;
@@ -122,7 +126,8 @@ void stereoEnhancerEffect::clearMyBuffer() {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data)
+{
 	return (new stereoEnhancerEffect(_parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(_data)));
 }
 }

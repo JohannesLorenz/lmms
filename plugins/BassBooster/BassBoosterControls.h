@@ -30,7 +30,8 @@
 
 class BassBoosterEffect;
 
-class BassBoosterControls : public EffectControls {
+class BassBoosterControls : public EffectControls
+{
 	Q_OBJECT
 public:
 	BassBoosterControls(BassBoosterEffect* effect);

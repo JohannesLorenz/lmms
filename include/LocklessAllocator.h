@@ -28,7 +28,8 @@
 #include <atomic>
 #include <cstddef>
 
-class LocklessAllocator {
+class LocklessAllocator
+{
 public:
 	LocklessAllocator(size_t nmemb, size_t size);
 	virtual ~LocklessAllocator();
@@ -47,10 +48,13 @@ private:
 	std::atomic_int m_startIndex;
 };
 
-template <typename T> class LocklessAllocatorT : private LocklessAllocator {
+template <typename T> class LocklessAllocatorT : private LocklessAllocator
+{
 public:
 	LocklessAllocatorT(size_t nmemb)
-		: LocklessAllocator(nmemb, sizeof(T)) {}
+		: LocklessAllocator(nmemb, sizeof(T))
+	{
+	}
 
 	virtual ~LocklessAllocatorT() {}
 

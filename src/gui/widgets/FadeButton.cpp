@@ -38,7 +38,8 @@ FadeButton::FadeButton(
 	, m_releaseTimer()
 	, m_normalColor(_normal_color)
 	, m_activatedColor(_activated_color)
-	, m_holdColor(holdColor) {
+	, m_holdColor(holdColor)
+{
 	setAttribute(Qt::WA_OpaquePaintEvent, true);
 	setCursor(QCursor(embed::getIconPixmap("hand"), 3, 3));
 	setFocusPolicy(Qt::NoFocus);
@@ -49,17 +50,20 @@ FadeButton::~FadeButton() {}
 
 void FadeButton::setActiveColor(const QColor& activated_color) { m_activatedColor = activated_color; }
 
-void FadeButton::activate() {
+void FadeButton::activate()
+{
 	m_stateTimer.restart();
 	activeNotes++;
 	update();
 }
 
-void FadeButton::activateOnce() {
+void FadeButton::activateOnce()
+{
 	if (activeNotes == 0) { activate(); }
 }
 
-void FadeButton::noteEnd() {
+void FadeButton::noteEnd()
+{
 	if (activeNotes <= 0) {
 		qWarning("noteEnd() triggered without a corresponding activate()!");
 		activeNotes = 0;
@@ -72,7 +76,8 @@ void FadeButton::noteEnd() {
 	update();
 }
 
-void FadeButton::paintEvent(QPaintEvent* _pe) {
+void FadeButton::paintEvent(QPaintEvent* _pe)
+{
 	QColor col = m_normalColor;
 
 	if (m_stateTimer.isValid() && m_stateTimer.elapsed() < FadeDuration) {
@@ -104,7 +109,8 @@ void FadeButton::paintEvent(QPaintEvent* _pe) {
 	p.drawLine(0, 0, w, 0);
 }
 
-QColor FadeButton::fadeToColor(QColor startCol, QColor endCol, QElapsedTimer timer, float duration) {
+QColor FadeButton::fadeToColor(QColor startCol, QColor endCol, QElapsedTimer timer, float duration)
+{
 	QColor col;
 
 	const float state = 1 - timer.elapsed() / duration;

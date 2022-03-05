@@ -55,7 +55,8 @@ class Knob;
 class PixmapButton;
 class QLabel;
 
-class CompressorControlDialog : public EffectControlDialog {
+class CompressorControlDialog : public EffectControlDialog
+{
 	Q_OBJECT
 public:
 	CompressorControlDialog(CompressorControls* controls);

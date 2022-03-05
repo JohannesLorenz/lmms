@@ -25,7 +25,8 @@
 
 #include "Ladspa2LMMS.h"
 
-Ladspa2LMMS::Ladspa2LMMS() {
+Ladspa2LMMS::Ladspa2LMMS()
+{
 	l_sortable_plugin_t plugins = getSortedPlugins();
 
 	for (l_sortable_plugin_t::iterator it = plugins.begin(); it != plugins.end(); ++it) {
@@ -58,7 +59,8 @@ Ladspa2LMMS::Ladspa2LMMS() {
 
 Ladspa2LMMS::~Ladspa2LMMS() {}
 
-QString Ladspa2LMMS::getShortName(const ladspa_key_t& _key) {
+QString Ladspa2LMMS::getShortName(const ladspa_key_t& _key)
+{
 	QString name = getName(_key);
 
 	if (name.indexOf("(") > 0) { name = name.left(name.indexOf("(")); }

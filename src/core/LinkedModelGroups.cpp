@@ -33,7 +33,8 @@
 	LinkedModelGroup
 */
 
-void LinkedModelGroup::linkControls(LinkedModelGroup* other) {
+void LinkedModelGroup::linkControls(LinkedModelGroup* other)
+{
 	foreach_model([&other](const std::string& id, ModelInfo& inf) {
 		auto itr2 = other->m_models.find(id);
 		Q_ASSERT(itr2 != other->m_models.end());
@@ -41,20 +42,23 @@ void LinkedModelGroup::linkControls(LinkedModelGroup* other) {
 	});
 }
 
-void LinkedModelGroup::saveValues(QDomDocument& doc, QDomElement& that) {
+void LinkedModelGroup::saveValues(QDomDocument& doc, QDomElement& that)
+{
 	foreach_model([&doc, &that](const std::string&, ModelInfo& inf) {
 		inf.m_model->saveSettings(doc, that, /*m_models[idx].m_name*/ inf.m_name); /* TODO: m_name useful */
 	});
 }
 
-void LinkedModelGroup::loadValues(const QDomElement& that) {
+void LinkedModelGroup::loadValues(const QDomElement& that)
+{
 	foreach_model([&that](const std::string&, ModelInfo& inf) {
 		// try to load, if it fails, this will load a sane initial value
 		inf.m_model->loadSettings(that, /*m_models()[idx].m_name*/ inf.m_name); /* TODO: m_name useful */
 	});
 }
 
-void LinkedModelGroup::addModel(AutomatableModel* model, const QString& name) {
+void LinkedModelGroup::addModel(AutomatableModel* model, const QString& name)
+{
 	model->setObjectName(name);
 	m_models.emplace(std::string(name.toUtf8().data()), ModelInfo(name, model));
 	connect(
@@ -72,7 +76,8 @@ void LinkedModelGroup::addModel(AutomatableModel* model, const QString& name) {
 	emit dataChanged();
 }
 
-void LinkedModelGroup::removeControl(AutomatableModel* mdl) {
+void LinkedModelGroup::removeControl(AutomatableModel* mdl)
+{
 	if (containsModel(mdl->objectName())) {
 		emit modelRemoved(mdl);
 		eraseModel(mdl->objectName());
@@ -83,7 +88,8 @@ bool LinkedModelGroup::eraseModel(const QString& name) { return m_models.erase(n
 
 void LinkedModelGroup::clearModels() { m_models.clear(); }
 
-bool LinkedModelGroup::containsModel(const QString& name) const {
+bool LinkedModelGroup::containsModel(const QString& name) const
+{
 	return m_models.find(name.toStdString()) != m_models.end();
 }
 
@@ -93,7 +99,8 @@ bool LinkedModelGroup::containsModel(const QString& name) const {
 
 LinkedModelGroups::~LinkedModelGroups() {}
 
-void LinkedModelGroups::linkAllModels() {
+void LinkedModelGroups::linkAllModels()
+{
 	LinkedModelGroup* first = getGroup(0);
 	LinkedModelGroup* cur;
 
@@ -102,7 +109,8 @@ void LinkedModelGroups::linkAllModels() {
 	}
 }
 
-void LinkedModelGroups::saveSettings(QDomDocument& doc, QDomElement& that) {
+void LinkedModelGroups::saveSettings(QDomDocument& doc, QDomElement& that)
+{
 	LinkedModelGroup* grp0 = getGroup(0);
 	if (grp0) {
 		QDomElement models = doc.createElement("models");
@@ -112,7 +120,8 @@ void LinkedModelGroups::saveSettings(QDomDocument& doc, QDomElement& that) {
 	}
 }
 
-void LinkedModelGroups::loadSettings(const QDomElement& that) {
+void LinkedModelGroups::loadSettings(const QDomElement& that)
+{
 	QDomElement models = that.firstChildElement("models");
 	LinkedModelGroup* grp0;
 	if (!models.isNull() && (grp0 = getGroup(0))) {

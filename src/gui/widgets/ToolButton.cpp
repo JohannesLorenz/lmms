@@ -28,7 +28,8 @@
 
 ToolButton::ToolButton(
 	const QPixmap& _pixmap, const QString& _tooltip, QObject* _receiver, const char* _slot, QWidget* _parent)
-	: QToolButton(_parent) {
+	: QToolButton(_parent)
+{
 	setAutoFillBackground(false);
 
 	if (_receiver != nullptr && _slot != nullptr) { connect(this, SIGNAL(clicked()), _receiver, _slot); }

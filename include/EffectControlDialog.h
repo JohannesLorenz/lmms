@@ -32,7 +32,8 @@
 
 class EffectControls;
 
-class LMMS_EXPORT EffectControlDialog : public QWidget, public ModelView {
+class LMMS_EXPORT EffectControlDialog : public QWidget, public ModelView
+{
 	Q_OBJECT
 public:
 	EffectControlDialog(EffectControls* _controls);

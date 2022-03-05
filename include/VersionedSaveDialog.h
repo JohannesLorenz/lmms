@@ -33,7 +33,8 @@
 class QLineEdit;
 class LedCheckBox;
 
-class SaveOptionsWidget : public QWidget {
+class SaveOptionsWidget : public QWidget
+{
 public:
 	SaveOptionsWidget(Song::SaveOptions& saveOptions);
 
@@ -42,7 +43,8 @@ private:
 	LedCheckBox* m_saveAsProjectBundleCheckbox;
 };
 
-class VersionedSaveDialog : public FileDialog {
+class VersionedSaveDialog : public FileDialog
+{
 	Q_OBJECT
 public:
 	explicit VersionedSaveDialog(QWidget* parent = 0, QWidget* saveOptionsWidget = nullptr,

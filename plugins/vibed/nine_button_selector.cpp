@@ -34,7 +34,8 @@ nineButtonSelector::nineButtonSelector(QPixmap _button0_on, QPixmap _button0_off
 	QPixmap _button6_off, QPixmap _button7_on, QPixmap _button7_off, QPixmap _button8_on, QPixmap _button8_off,
 	int _default, int _x, int _y, QWidget* _parent)
 	: QWidget(_parent)
-	, IntModelView(new nineButtonSelectorModel(0, 8, _default, nullptr, QString(), true), this) {
+	, IntModelView(new nineButtonSelectorModel(0, 8, _default, nullptr, QString(), true), this)
+{
 	setFixedSize(50, 50);
 	move(_x, _y);
 
@@ -114,7 +115,8 @@ nineButtonSelector::nineButtonSelector(QPixmap _button0_on, QPixmap _button0_off
 	m_lastBtn->setChecked(true);
 }
 
-nineButtonSelector::~nineButtonSelector() {
+nineButtonSelector::~nineButtonSelector()
+{
 	for (int i = 0; i < 9; i++) {
 		delete m_buttons[i];
 	}
@@ -140,12 +142,14 @@ void nineButtonSelector::button8Clicked() { setSelected(8); }
 
 void nineButtonSelector::modelChanged() { updateButton(model()->value()); }
 
-void nineButtonSelector::setSelected(int _new_button) {
+void nineButtonSelector::setSelected(int _new_button)
+{
 	model()->setValue(_new_button);
 	updateButton(_new_button);
 }
 
-void nineButtonSelector::updateButton(int _new_button) {
+void nineButtonSelector::updateButton(int _new_button)
+{
 	m_lastBtn->setChecked(false);
 	m_lastBtn->update();
 
@@ -156,7 +160,8 @@ void nineButtonSelector::updateButton(int _new_button) {
 	emit nineButtonSelection(_new_button);
 }
 
-void nineButtonSelector::contextMenuEvent(QContextMenuEvent*) {
+void nineButtonSelector::contextMenuEvent(QContextMenuEvent*)
+{
 	CaptionMenu contextMenu(windowTitle(), this);
 	contextMenu.exec(QCursor::pos());
 }

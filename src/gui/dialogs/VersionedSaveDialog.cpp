@@ -35,7 +35,8 @@
 
 VersionedSaveDialog::VersionedSaveDialog(QWidget* parent, QWidget* saveOptionsWidget, const QString& caption,
 	const QString& directory, const QString& filter)
-	: FileDialog(parent, caption, directory, filter) {
+	: FileDialog(parent, caption, directory, filter)
+{
 	setAcceptMode(QFileDialog::AcceptSave);
 	setFileMode(QFileDialog::AnyFile);
 
@@ -75,7 +76,8 @@ VersionedSaveDialog::VersionedSaveDialog(QWidget* parent, QWidget* saveOptionsWi
 	connect(minusButton, SIGNAL(clicked()), this, SLOT(decrementVersion()));
 }
 
-bool VersionedSaveDialog::changeFileNameVersion(QString& fileName, bool increment) {
+bool VersionedSaveDialog::changeFileNameVersion(QString& fileName, bool increment)
+{
 	static QRegExp regexp("[- ]\\d+(\\.\\w+)?$");
 
 	int idx = regexp.indexIn(fileName);
@@ -106,7 +108,8 @@ bool VersionedSaveDialog::changeFileNameVersion(QString& fileName, bool incremen
 	return true;
 }
 
-void VersionedSaveDialog::incrementVersion() {
+void VersionedSaveDialog::incrementVersion()
+{
 	const QStringList& selected = selectedFiles();
 	if (selected.size() != 1) return;
 	QString file = selected[0];
@@ -115,7 +118,8 @@ void VersionedSaveDialog::incrementVersion() {
 	selectFile(file);
 }
 
-void VersionedSaveDialog::decrementVersion() {
+void VersionedSaveDialog::decrementVersion()
+{
 	const QStringList& selected = selectedFiles();
 	if (selected.size() != 1) return;
 	QString file = selected[0];
@@ -124,7 +128,8 @@ void VersionedSaveDialog::decrementVersion() {
 	selectFile(file);
 }
 
-bool VersionedSaveDialog::fileExistsQuery(QString FileName, QString WindowTitle) {
+bool VersionedSaveDialog::fileExistsQuery(QString FileName, QString WindowTitle)
+{
 	bool fileExists = false;
 	if (QFile(FileName).exists()) {
 		QMessageBox mb;
@@ -140,7 +145,8 @@ bool VersionedSaveDialog::fileExistsQuery(QString FileName, QString WindowTitle)
 	return fileExists;
 }
 
-SaveOptionsWidget::SaveOptionsWidget(Song::SaveOptions& saveOptions) {
+SaveOptionsWidget::SaveOptionsWidget(Song::SaveOptions& saveOptions)
+{
 	auto* layout = new QVBoxLayout();
 
 	m_discardMIDIConnectionsCheckbox = new LedCheckBox(nullptr);

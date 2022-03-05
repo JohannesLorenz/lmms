@@ -29,20 +29,25 @@
 
 #include "LocklessAllocator.h"
 
-template <typename T> class LocklessList {
+template <typename T> class LocklessList
+{
 public:
-	struct Element {
+	struct Element
+	{
 		T value;
 		Element* next;
 	};
 
 	LocklessList(size_t size)
 		: m_first(nullptr)
-		, m_allocator(new LocklessAllocatorT<Element>(size)) {}
+		, m_allocator(new LocklessAllocatorT<Element>(size))
+	{
+	}
 
 	~LocklessList() { delete m_allocator; }
 
-	void push(T value) {
+	void push(T value)
+	{
 		Element* e = m_allocator->alloc();
 		e->value = value;
 		e->next = m_first.load(std::memory_order_relaxed);

@@ -29,12 +29,15 @@
 
 class TrackView;
 
-class MixerLineLcdSpinBox : public LcdSpinBox {
+class MixerLineLcdSpinBox : public LcdSpinBox
+{
 	Q_OBJECT
 public:
 	MixerLineLcdSpinBox(int numDigits, QWidget* parent, const QString& name, TrackView* tv = nullptr)
 		: LcdSpinBox(numDigits, parent, name)
-		, m_tv(tv) {}
+		, m_tv(tv)
+	{
+	}
 	virtual ~MixerLineLcdSpinBox() {}
 
 	void setTrackView(TrackView* tv);

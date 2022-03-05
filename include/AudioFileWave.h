@@ -31,14 +31,16 @@
 #include "AudioFileDevice.h"
 #include "lmmsconfig.h"
 
-class AudioFileWave : public AudioFileDevice {
+class AudioFileWave : public AudioFileDevice
+{
 public:
 	AudioFileWave(OutputSettings const& outputSettings, const ch_cnt_t channels, bool& successful, const QString& file,
 		AudioEngine* audioEngine);
 	virtual ~AudioFileWave();
 
 	static AudioFileDevice* getInst(const QString& outputFilename, OutputSettings const& outputSettings,
-		const ch_cnt_t channels, AudioEngine* audioEngine, bool& successful) {
+		const ch_cnt_t channels, AudioEngine* audioEngine, bool& successful)
+	{
 		return new AudioFileWave(outputSettings, channels, successful, outputFilename, audioEngine);
 	}
 

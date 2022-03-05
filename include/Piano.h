@@ -31,9 +31,14 @@
 class InstrumentTrack;
 class MidiEventProcessor;
 
-class Piano final : public Model {
+class Piano final : public Model
+{
 public:
-	enum KeyTypes { WhiteKey, BlackKey };
+	enum KeyTypes
+	{
+		WhiteKey,
+		BlackKey
+	};
 
 	Piano(InstrumentTrack* track);
 

@@ -55,13 +55,13 @@ SpacesInParentheses: false
 # but required to avoid tons of auto reformatting
 BreakBeforeBraces: Custom
 BraceWrapping:
-  AfterClass: false
+  AfterClass: true
   AfterControlStatement: Never
-  AfterEnum: false
-  AfterFunction: false
+  AfterEnum: true
+  AfterFunction: true
   AfterNamespace: false
-  AfterStruct: false
-  AfterUnion: false
+  AfterStruct: true
+  AfterUnion: true
   AfterExternBlock: false
   BeforeCatch: false
   BeforeElse: false

@@ -37,12 +37,14 @@
 #include "Song.h"
 #include "TrackContainer.h"
 
-class AutomationTrackTest : QTestSuite {
+class AutomationTrackTest : QTestSuite
+{
 	Q_OBJECT
 private slots:
 	void initTestCase() {}
 
-	void testClipLinear() {
+	void testClipLinear()
+	{
 		AutomationClip c(nullptr);
 		c.setProgressionType(AutomationClip::LinearProgression);
 		c.putValue(0, 0.0, false);
@@ -56,7 +58,8 @@ private slots:
 		QCOMPARE(c.valueAt(150), 1.0f);
 	}
 
-	void testClipDiscrete() {
+	void testClipDiscrete()
+	{
 		AutomationClip c(nullptr);
 		c.setProgressionType(AutomationClip::DiscreteProgression);
 		c.putValue(0, 0.0, false);
@@ -68,7 +71,8 @@ private slots:
 		QCOMPARE(c.valueAt(150), 1.0f);
 	}
 
-	void testClips() {
+	void testClips()
+	{
 		FloatModel model;
 
 		auto song = Engine::getSong();
@@ -101,7 +105,8 @@ private slots:
 		QCOMPARE(song->automatedValuesAt(150)[&model], 0.5f);
 	}
 
-	void testLengthRespected() {
+	void testLengthRespected()
+	{
 		FloatModel model;
 
 		auto song = Engine::getSong();
@@ -125,7 +130,8 @@ private slots:
 		QCOMPARE(song->automatedValuesAt(100)[&model], 0.5f);
 	}
 
-	void testInlineAutomation() {
+	void testInlineAutomation()
+	{
 		auto song = Engine::getSong();
 
 		InstrumentTrack* instrumentTrack = dynamic_cast<InstrumentTrack*>(Track::create(Track::InstrumentTrack, song));
@@ -147,7 +153,8 @@ private slots:
 		QCOMPARE(clip->valueAt(TimePos(4, 0)), 1.0f);
 	}
 
-	void testPatternTrack() {
+	void testPatternTrack()
+	{
 		auto song = Engine::getSong();
 		auto patternStore = Engine::patternStore();
 		PatternTrack patternTrack(song);
@@ -183,7 +190,8 @@ private slots:
 		QCOMPARE(song->automatedValuesAt(TimePos::ticksPerBar() + 5)[&model], 0.5f);
 	}
 
-	void testGlobalAutomation() {
+	void testGlobalAutomation()
+	{
 		// Global automation should not have priority, see https://github.com/LMMS/lmms/issues/4268
 		// Tests regression caused by 75077f6200a5aee3a5821aae48a3b8466ed8714a
 		auto song = Engine::getSong();

@@ -46,7 +46,9 @@ FloatModel* KnobControl::model() { return m_knob->model(); }
 AutomatableModelView* KnobControl::modelView() { return m_knob; }
 
 KnobControl::KnobControl(QWidget* parent)
-	: m_knob(new Knob(parent)) {}
+	: m_knob(new Knob(parent))
+{
+}
 
 KnobControl::~KnobControl() {}
 
@@ -61,7 +63,8 @@ AutomatableModelView* ComboControl::modelView() { return m_combo; }
 ComboControl::ComboControl(QWidget* parent)
 	: m_widget(new QWidget(parent))
 	, m_combo(new ComboBox(nullptr))
-	, m_label(new QLabel(m_widget)) {
+	, m_label(new QLabel(m_widget))
+{
 	m_combo->setFixedSize(64, ComboBox::DEFAULT_HEIGHT);
 	QVBoxLayout* vbox = new QVBoxLayout(m_widget);
 	vbox->addWidget(m_combo);
@@ -84,7 +87,8 @@ AutomatableModelView* CheckControl::modelView() { return m_checkBox; }
 CheckControl::CheckControl(QWidget* parent)
 	: m_widget(new QWidget(parent))
 	, m_checkBox(new LedCheckBox(nullptr, QString(), LedCheckBox::Green))
-	, m_label(new QLabel(m_widget)) {
+	, m_label(new QLabel(m_widget))
+{
 	QVBoxLayout* vbox = new QVBoxLayout(m_widget);
 	vbox->addWidget(m_checkBox);
 	vbox->addWidget(m_label);
@@ -103,6 +107,8 @@ IntModel* LcdControl::model() { return m_lcd->model(); }
 AutomatableModelView* LcdControl::modelView() { return m_lcd; }
 
 LcdControl::LcdControl(int numDigits, QWidget* parent)
-	: m_lcd(new LcdSpinBox(numDigits, parent)) {}
+	: m_lcd(new LcdSpinBox(numDigits, parent))
+{
+}
 
 LcdControl::~LcdControl() {}

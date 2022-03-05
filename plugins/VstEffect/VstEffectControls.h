@@ -37,7 +37,8 @@ class QMdiSubWindow;
 class QScrollArea;
 class VstEffect;
 
-class VstEffectControls : public EffectControls {
+class VstEffectControls : public EffectControls
+{
 	Q_OBJECT
 public:
 	VstEffectControls(VstEffect* _eff);
@@ -85,7 +86,8 @@ private:
 	bool m_vstGuiVisible;
 };
 
-class manageVSTEffectView : public QObject {
+class manageVSTEffectView : public QObject
+{
 	Q_OBJECT
 public:
 	manageVSTEffectView(VstEffect* _eff, VstEffectControls* m_vi);

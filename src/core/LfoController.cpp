@@ -42,7 +42,8 @@ LfoController::LfoController(Model* _parent)
 	, m_phaseOffset(0)
 	, m_currentPhase(0)
 	, m_sampleFunction(&Oscillator::sinSample)
-	, m_userDefSampleBuffer(new SampleBuffer) {
+	, m_userDefSampleBuffer(new SampleBuffer)
+{
 	setSampleExact(true);
 	connect(&m_waveModel, SIGNAL(dataChanged()), this, SLOT(updateSampleFunction()), Qt::DirectConnection);
 
@@ -56,7 +57,8 @@ LfoController::LfoController(Model* _parent)
 	updateDuration();
 }
 
-LfoController::~LfoController() {
+LfoController::~LfoController()
+{
 	sharedObject::unref(m_userDefSampleBuffer);
 	m_baseModel.disconnect(this);
 	m_speedModel.disconnect(this);
@@ -66,7 +68,8 @@ LfoController::~LfoController() {
 	m_multiplierModel.disconnect(this);
 }
 
-void LfoController::updateValueBuffer() {
+void LfoController::updateValueBuffer()
+{
 	m_phaseOffset = m_phaseModel.value() / 360.0;
 	float phase = m_currentPhase + m_phaseOffset;
 
@@ -97,12 +100,14 @@ void LfoController::updateValueBuffer() {
 	m_bufferLastUpdated = s_periods;
 }
 
-void LfoController::updatePhase() {
+void LfoController::updatePhase()
+{
 	m_currentPhase = (Engine::getSong()->getFrames()) / m_duration;
 	m_bufferLastUpdated = s_periods - 1;
 }
 
-void LfoController::updateDuration() {
+void LfoController::updateDuration()
+{
 	float newDurationF = Engine::audioEngine()->processingSampleRate() * m_speedModel.value();
 
 	switch (m_multiplierModel.value()) {
@@ -116,7 +121,8 @@ void LfoController::updateDuration() {
 	m_duration = newDurationF;
 }
 
-void LfoController::updateSampleFunction() {
+void LfoController::updateSampleFunction()
+{
 	switch (m_waveModel.value()) {
 	case Oscillator::SineWave: m_sampleFunction = &Oscillator::sinSample; break;
 	case Oscillator::TriangleWave: m_sampleFunction = &Oscillator::triangleSample; break;
@@ -136,7 +142,8 @@ void LfoController::updateSampleFunction() {
 	}
 }
 
-void LfoController::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void LfoController::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	Controller::saveSettings(_doc, _this);
 
 	m_baseModel.saveSettings(_doc, _this, "base");
@@ -148,7 +155,8 @@ void LfoController::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 	_this.setAttribute("userwavefile", m_userDefSampleBuffer->audioFile());
 }
 
-void LfoController::loadSettings(const QDomElement& _this) {
+void LfoController::loadSettings(const QDomElement& _this)
+{
 	Controller::loadSettings(_this);
 
 	m_baseModel.loadSettings(_this, "base");

@@ -55,7 +55,8 @@ GuiApplication* GuiApplication::instance() { return s_instance; }
 
 GuiApplication* getGUI() { return GuiApplication::instance(); }
 
-GuiApplication::GuiApplication() {
+GuiApplication::GuiApplication()
+{
 	// prompt the user to create the LMMS working directory (e.g. ~/Documents/lmms) if it doesn't exist
 	if (!ConfigManager::inst()->hasWorkingDir()
 		&& QMessageBox::question(nullptr, tr("Working directory"),
@@ -162,7 +163,8 @@ GuiApplication::GuiApplication() {
 
 GuiApplication::~GuiApplication() { s_instance = nullptr; }
 
-void GuiApplication::displayInitProgress(const QString& msg) {
+void GuiApplication::displayInitProgress(const QString& msg)
+{
 	Q_ASSERT(m_loadingProgressLabel != nullptr);
 
 	m_loadingProgressLabel->setText(msg);
@@ -171,7 +173,8 @@ void GuiApplication::displayInitProgress(const QString& msg) {
 	qApp->processEvents();
 }
 
-void GuiApplication::childDestroyed(QObject* obj) {
+void GuiApplication::childDestroyed(QObject* obj)
+{
 	// when any object that can be reached via getGUI()->mainWindow(), getGUI()->mixerView(), etc
 	//   is destroyed, ensure that their accessor functions will return null instead of a garbage pointer.
 	if (obj == m_mainWindow) {
@@ -199,7 +202,8 @@ void GuiApplication::childDestroyed(QObject* obj) {
 /*!
  * @brief Returns the Windows System font.
  */
-QFont GuiApplication::getWin32SystemFont() {
+QFont GuiApplication::getWin32SystemFont()
+{
 	NONCLIENTMETRICS metrics = {sizeof(NONCLIENTMETRICS)};
 	SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &metrics, 0);
 	int pointSize = metrics.lfMessageFont.lfHeight;

@@ -31,7 +31,8 @@ class TrackView;
 
 class TrackRenameLineEdit;
 
-class TrackLabelButton : public QToolButton {
+class TrackLabelButton : public QToolButton
+{
 	Q_OBJECT
 public:
 	TrackLabelButton(TrackView* _tv, QWidget* _parent);

@@ -37,7 +37,8 @@ class MixerLineLcdSpinBox;
 class QLineEdit;
 class SampleTrackView;
 
-class SampleTrackWindow : public QWidget, public ModelView, public SerializingObjectHook {
+class SampleTrackWindow : public QWidget, public ModelView, public SerializingObjectHook
+{
 	Q_OBJECT
 public:
 	SampleTrackWindow(SampleTrackView* tv);

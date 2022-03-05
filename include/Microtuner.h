@@ -29,7 +29,8 @@
 #include "ComboBoxModel.h"
 #include "JournallingObject.h"
 
-class LMMS_EXPORT Microtuner : public Model, public JournallingObject {
+class LMMS_EXPORT Microtuner : public Model, public JournallingObject
+{
 	Q_OBJECT
 public:
 	explicit Microtuner();

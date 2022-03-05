@@ -44,21 +44,24 @@ Plugin::Descriptor PLUGIN_EXPORT flanger_plugin_descriptor = {
 
 FlangerEffect::FlangerEffect(Model* parent, const Plugin::Descriptor::SubPluginFeatures::Key* key)
 	: Effect(&flanger_plugin_descriptor, parent, key)
-	, m_flangerControls(this) {
+	, m_flangerControls(this)
+{
 	m_lfo = new QuadratureLfo(Engine::audioEngine()->processingSampleRate());
 	m_lDelay = new MonoDelay(1, Engine::audioEngine()->processingSampleRate());
 	m_rDelay = new MonoDelay(1, Engine::audioEngine()->processingSampleRate());
 	m_noise = new Noise;
 }
 
-FlangerEffect::~FlangerEffect() {
+FlangerEffect::~FlangerEffect()
+{
 	if (m_lDelay) { delete m_lDelay; }
 	if (m_rDelay) { delete m_rDelay; }
 	if (m_lfo) { delete m_lfo; }
 	if (m_noise) { delete m_noise; }
 }
 
-bool FlangerEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
+bool FlangerEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
+{
 	if (!isEnabled() || !isRunning()) { return (false); }
 	double outSum = 0.0;
 	const float d = dryLevel();
@@ -98,7 +101,8 @@ bool FlangerEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
 	return isRunning();
 }
 
-void FlangerEffect::changeSampleRate() {
+void FlangerEffect::changeSampleRate()
+{
 	m_lfo->setSampleRate(Engine::audioEngine()->processingSampleRate());
 	m_lDelay->setSampleRate(Engine::audioEngine()->processingSampleRate());
 	m_rDelay->setSampleRate(Engine::audioEngine()->processingSampleRate());
@@ -109,7 +113,8 @@ void FlangerEffect::restartLFO() { m_lfo->restart(); }
 extern "C" {
 
 // needed for getting plugin out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data)
+{
 	return new FlangerEffect(parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(data));
 }
 }

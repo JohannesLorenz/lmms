@@ -27,7 +27,8 @@
 #include <QKeyEvent>
 #include <QVector>
 
-class ColorChooser : public QColorDialog {
+class ColorChooser : public QColorDialog
+{
 public:
 	ColorChooser(const QColor& initial, QWidget* parent)
 		: QColorDialog(initial, parent){};
@@ -35,7 +36,12 @@ public:
 		: QColorDialog(parent){};
 	//! For getting a color without having to initialise a color dialog
 	ColorChooser(){};
-	enum class Palette { Default, Track, Mixer };
+	enum class Palette
+	{
+		Default,
+		Track,
+		Mixer
+	};
 	//! Set global palette via array, checking bounds
 	void setPalette(QVector<QColor>);
 	//! Set global paletter via enum
@@ -47,7 +53,8 @@ public:
 
 protected:
 	//! Forward key events to the parent to prevent stuck notes when the dialog gets focus
-	void keyReleaseEvent(QKeyEvent* event) override {
+	void keyReleaseEvent(QKeyEvent* event) override
+	{
 		QKeyEvent ke(*event);
 		QApplication::sendEvent(parentWidget(), &ke);
 	}

@@ -67,11 +67,14 @@ Plugin::Descriptor PLUGIN_EXPORT midiimport_plugin_descriptor = {
 MidiImport::MidiImport(const QString& _file)
 	: ImportFilter(_file, &midiimport_plugin_descriptor)
 	, m_events()
-	, m_timingDivision(0) {}
+	, m_timingDivision(0)
+{
+}
 
 MidiImport::~MidiImport() {}
 
-bool MidiImport::tryImport(TrackContainer* tc) {
+bool MidiImport::tryImport(TrackContainer* tc)
+{
 	if (openFile() == false) { return false; }
 
 #ifdef LMMS_HAVE_FLUIDSYNTH
@@ -107,19 +110,23 @@ bool MidiImport::tryImport(TrackContainer* tc) {
 	}
 }
 
-class smfMidiCC {
+class smfMidiCC
+{
 
 public:
 	smfMidiCC()
 		: at(nullptr)
 		, ap(nullptr)
-		, lastPos(0) {}
+		, lastPos(0)
+	{
+	}
 
 	AutomationTrack* at;
 	AutomationClip* ap;
 	TimePos lastPos;
 
-	smfMidiCC& create(TrackContainer* tc, QString tn) {
+	smfMidiCC& create(TrackContainer* tc, QString tn)
+	{
 		if (!at) {
 			// Keep LMMS responsive, for now the import runs
 			// in the main thread. This should probably be
@@ -131,13 +138,15 @@ public:
 		return *this;
 	}
 
-	void clear() {
+	void clear()
+	{
 		at = nullptr;
 		ap = nullptr;
 		lastPos = 0;
 	}
 
-	smfMidiCC& putValue(TimePos time, AutomatableModel* objModel, float value) {
+	smfMidiCC& putValue(TimePos time, AutomatableModel* objModel, float value)
+	{
 		if (!ap || time > lastPos + DefaultTicksPerBar) {
 			TimePos pPos = TimePos(time.getBar(), 0);
 			ap = dynamic_cast<AutomationClip*>(at->createClip(pPos));
@@ -153,7 +162,8 @@ public:
 	}
 };
 
-class smfMidiChannel {
+class smfMidiChannel
+{
 
 public:
 	smfMidiChannel()
@@ -161,7 +171,9 @@ public:
 		, p(nullptr)
 		, it_inst(nullptr)
 		, isSF2(false)
-		, hasNotes(false) {}
+		, hasNotes(false)
+	{
+	}
 
 	InstrumentTrack* it;
 	MidiClip* p;
@@ -170,7 +182,8 @@ public:
 	bool hasNotes;
 	QString trackName;
 
-	smfMidiChannel* create(TrackContainer* tc, QString tn) {
+	smfMidiChannel* create(TrackContainer* tc, QString tn)
+	{
 		if (!it) {
 			// Keep LMMS responsive
 			qApp->processEvents();
@@ -201,13 +214,15 @@ public:
 		return this;
 	}
 
-	void addNote(Note& n) {
+	void addNote(Note& n)
+	{
 		if (!p) { p = dynamic_cast<MidiClip*>(it->createClip(0)); }
 		p->addNote(n, false);
 		hasNotes = true;
 	}
 
-	void splitMidiClips() {
+	void splitMidiClips()
+	{
 		MidiClip* newMidiClip = nullptr;
 		TimePos lastEnd(0);
 
@@ -229,7 +244,8 @@ public:
 	}
 };
 
-bool MidiImport::readSMF(TrackContainer* tc) {
+bool MidiImport::readSMF(TrackContainer* tc)
+{
 	const int MIDI_CC_COUNT = 128 + 1; // 0-127 (128) + pitch bend
 	const int preTrackSteps = 2;
 	QProgressDialog pd(TrackContainer::tr("Importing MIDI-file..."), TrackContainer::tr("Cancel"), 0, preTrackSteps,
@@ -458,7 +474,8 @@ bool MidiImport::readSMF(TrackContainer* tc) {
 	return true;
 }
 
-bool MidiImport::readRIFF(TrackContainer* tc) {
+bool MidiImport::readRIFF(TrackContainer* tc)
+{
 	// skip file length
 	skip(4);
 
@@ -488,14 +505,16 @@ bool MidiImport::readRIFF(TrackContainer* tc) {
 	return readSMF(tc);
 }
 
-void MidiImport::error() {
+void MidiImport::error()
+{
 	printf("MidiImport::readTrack(): invalid MIDI data (offset %#x)\n", (unsigned int)file().pos());
 }
 
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model*, void* _data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model*, void* _data)
+{
 	return new MidiImport(QString::fromUtf8(static_cast<const char*>(_data)));
 }
 }

@@ -44,11 +44,14 @@ TrackContainer::TrackContainer()
 	: Model(nullptr)
 	, JournallingObject()
 	, m_tracksMutex()
-	, m_tracks() {}
+	, m_tracks()
+{
+}
 
 TrackContainer::~TrackContainer() { clearAllTracks(); }
 
-void TrackContainer::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void TrackContainer::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	_this.setTagName(classNodeName());
 	_this.setAttribute("type", nodeName());
 
@@ -60,7 +63,8 @@ void TrackContainer::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 	m_tracksMutex.unlock();
 }
 
-void TrackContainer::loadSettings(const QDomElement& _this) {
+void TrackContainer::loadSettings(const QDomElement& _this)
+{
 	bool journalRestore = _this.parentNode().nodeName() == "journaldata";
 	if (journalRestore) { clearAllTracks(); }
 
@@ -113,7 +117,8 @@ void TrackContainer::loadSettings(const QDomElement& _this) {
 	}
 }
 
-int TrackContainer::countTracks(Track::TrackTypes _tt) const {
+int TrackContainer::countTracks(Track::TrackTypes _tt) const
+{
 	int cnt = 0;
 	m_tracksMutex.lockForRead();
 	for (int i = 0; i < m_tracks.size(); ++i) {
@@ -123,7 +128,8 @@ int TrackContainer::countTracks(Track::TrackTypes _tt) const {
 	return (cnt);
 }
 
-void TrackContainer::addTrack(Track* _track) {
+void TrackContainer::addTrack(Track* _track)
+{
 	if (_track->type() != Track::HiddenAutomationTrack) {
 		_track->lock();
 		m_tracksMutex.lockForWrite();
@@ -134,7 +140,8 @@ void TrackContainer::addTrack(Track* _track) {
 	}
 }
 
-void TrackContainer::removeTrack(Track* _track) {
+void TrackContainer::removeTrack(Track* _track)
+{
 	// need a read locker to ensure that m_tracks doesn't change after reading index.
 	//   After checking that index != -1, we need to upgrade the lock to a write locker before changing m_tracks.
 	//   But since Qt offers no function to promote a read lock to a write lock, we must start with the write locker.
@@ -152,7 +159,8 @@ void TrackContainer::removeTrack(Track* _track) {
 
 void TrackContainer::updateAfterTrackAdd() {}
 
-void TrackContainer::clearAllTracks() {
+void TrackContainer::clearAllTracks()
+{
 	// m_tracksMutex.lockForWrite();
 	while (!m_tracks.isEmpty()) {
 		delete m_tracks.first();
@@ -160,18 +168,21 @@ void TrackContainer::clearAllTracks() {
 	// m_tracksMutex.unlock();
 }
 
-bool TrackContainer::isEmpty() const {
+bool TrackContainer::isEmpty() const
+{
 	for (TrackList::const_iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
 		if (!(*it)->getClips().isEmpty()) { return false; }
 	}
 	return true;
 }
 
-AutomatedValueMap TrackContainer::automatedValuesAt(TimePos time, int clipNum) const {
+AutomatedValueMap TrackContainer::automatedValuesAt(TimePos time, int clipNum) const
+{
 	return automatedValuesFromTracks(tracks(), time, clipNum);
 }
 
-AutomatedValueMap TrackContainer::automatedValuesFromTracks(const TrackList& tracks, TimePos time, int clipNum) {
+AutomatedValueMap TrackContainer::automatedValuesFromTracks(const TrackList& tracks, TimePos time, int clipNum)
+{
 	Track::clipVector clips;
 
 	for (Track* track : tracks) {

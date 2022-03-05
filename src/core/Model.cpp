@@ -24,7 +24,8 @@
 
 #include "Model.h"
 
-QString Model::fullDisplayName() const {
+QString Model::fullDisplayName() const
+{
 	const QString& n = displayName();
 	if (parentModel()) {
 		const QString p = parentModel()->fullDisplayName();

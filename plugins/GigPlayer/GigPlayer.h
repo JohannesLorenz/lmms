@@ -46,16 +46,20 @@ class NotePlayHandle;
 class PatchesDialog;
 class QLabel;
 
-struct GIGPluginData {
+struct GIGPluginData
+{
 	int midiNote;
 };
 
 // Load a GIG file using libgig
-class GigInstance {
+class GigInstance
+{
 public:
 	GigInstance(QString filename)
 		: riff(filename.toUtf8().constData())
-		, gig(&riff) {}
+		, gig(&riff)
+	{
+	}
 
 private:
 	RIFF::File riff;
@@ -65,9 +69,11 @@ public:
 };
 
 // Stores options for the notes, e.g. velocity and release time
-struct Dimension {
+struct Dimension
+{
 	Dimension()
-		: release(false) {
+		: release(false)
+	{
 		for (int i = 0; i < 8; ++i) {
 			DimValues[i] = 0;
 		}
@@ -80,7 +86,8 @@ struct Dimension {
 // Takes information from the GIG file for a certain note and provides the
 // amplitude (0-1) to multiply the signal by (internally incrementing the
 // position in the envelope when asking for the amplitude).
-class ADSR {
+class ADSR
+{
 	// From the file
 	float preattack;	  // initial amplitude (0-1)
 	float attack;		  // 0-60s
@@ -112,7 +119,8 @@ public:
 
 // The sample from the GIG file with our current position in both the sample
 // and the envelope
-class GigSample {
+class GigSample
+{
 public:
 	GigSample(gig::Sample* pSample, gig::DimensionRegion* pDimRegion, float attenuation, int interpolation,
 		float desiredFreq);
@@ -150,7 +158,8 @@ public:
 };
 
 // What portion of a note are we in?
-enum GigState {
+enum GigState
+{
 	// We just pressed the key
 	KeyDown,
 	// The note is currently playing
@@ -164,7 +173,8 @@ enum GigState {
 };
 
 // Corresponds to a certain midi note pressed, but may contain multiple samples
-class GigNote {
+class GigNote
+{
 public:
 	int midiNote;
 	int velocity;
@@ -187,10 +197,13 @@ public:
 		, isRelease(false)
 		, state(KeyDown)
 		, frequency(frequency)
-		, handle(handle) {}
+		, handle(handle)
+	{
+	}
 };
 
-class GigInstrument : public Instrument {
+class GigInstrument : public Instrument
+{
 	Q_OBJECT
 	MM_OPERATORS
 
@@ -285,7 +298,8 @@ signals:
 	void patchChanged();
 };
 
-class GigInstrumentView : public InstrumentViewFixedSize {
+class GigInstrumentView : public InstrumentViewFixedSize
+{
 	Q_OBJECT
 public:
 	GigInstrumentView(Instrument* _instrument, QWidget* _parent);

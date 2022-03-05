@@ -40,7 +40,8 @@ class ControllerConnection;
 
 typedef QVector<ControllerConnection*> ControllerConnectionVector;
 
-class LMMS_EXPORT ControllerConnection : public QObject, public JournallingObject {
+class LMMS_EXPORT ControllerConnection : public QObject, public JournallingObject
+{
 	Q_OBJECT
 public:
 	ControllerConnection(Controller* _controller);

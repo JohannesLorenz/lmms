@@ -33,17 +33,21 @@
 
 // internal helper class allowing to create QToolButtons with
 // vertical orientation
-class SideBarButton : public QToolButton {
+class SideBarButton : public QToolButton
+{
 public:
 	SideBarButton(Qt::Orientation _orientation, QWidget* _parent)
 		: QToolButton(_parent)
-		, m_orientation(_orientation) {}
+		, m_orientation(_orientation)
+	{
+	}
 
 	virtual ~SideBarButton() = default;
 
 	Qt::Orientation orientation() const { return m_orientation; }
 
-	QSize sizeHint() const override {
+	QSize sizeHint() const override
+	{
 		QSize s = QToolButton::sizeHint();
 		s.setWidth(s.width() + 8);
 		if (orientation() == Qt::Horizontal) { return s; }
@@ -51,7 +55,8 @@ public:
 	}
 
 protected:
-	void paintEvent(QPaintEvent*) override {
+	void paintEvent(QPaintEvent*) override
+	{
 		QStylePainter p(this);
 		QStyleOptionToolButton opt;
 		initStyleOption(&opt);
@@ -70,7 +75,8 @@ private:
 
 SideBar::SideBar(Qt::Orientation _orientation, QWidget* _parent)
 	: QToolBar(_parent)
-	, m_btnGroup(this) {
+	, m_btnGroup(this)
+{
 	setOrientation(_orientation);
 	setIconSize(QSize(16, 16));
 
@@ -80,7 +86,8 @@ SideBar::SideBar(Qt::Orientation _orientation, QWidget* _parent)
 
 SideBar::~SideBar() {}
 
-void SideBar::appendTab(SideBarWidget* widget) {
+void SideBar::appendTab(SideBarWidget* widget)
+{
 	SideBarButton* button = new SideBarButton(orientation(), this);
 	button->setText(" " + widget->title());
 	button->setIcon(widget->icon());
@@ -98,7 +105,8 @@ void SideBar::appendTab(SideBarWidget* widget) {
 	connect(widget, &SideBarWidget::closeButtonClicked, [=]() { button->click(); });
 }
 
-void SideBar::toggleButton(QAbstractButton* button) {
+void SideBar::toggleButton(QAbstractButton* button)
+{
 	QToolButton* toolButton = nullptr;
 	QWidget* activeWidget = nullptr;
 

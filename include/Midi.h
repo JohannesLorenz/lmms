@@ -27,7 +27,8 @@
 
 #include "lmms_basics.h"
 
-enum MidiEventTypes {
+enum MidiEventTypes
+{
 	// messages
 	MidiNoteOff = 0x80,
 	MidiNoteOn = 0x90,
@@ -56,7 +57,8 @@ enum MidiEventTypes {
 	MidiMetaEvent = 0xFF
 };
 
-enum MidiMetaEventTypes {
+enum MidiMetaEventTypes
+{
 	MidiMetaInvalid = 0x00,
 	MidiCopyright = 0x02,
 	MidiTrackName = 0x03,
@@ -76,7 +78,8 @@ enum MidiMetaEventTypes {
 };
 typedef MidiMetaEventTypes MidiMetaEventType;
 
-enum MidiStandardControllers {
+enum MidiStandardControllers
+{
 	MidiControllerBankSelect = 0,
 	MidiControllerModulationWheel = 1,
 	MidiControllerBreathController = 2,
@@ -107,7 +110,8 @@ enum MidiStandardControllers {
 
 };
 
-enum MidiControllerRegisteredParameterNumbers {
+enum MidiControllerRegisteredParameterNumbers
+{
 	MidiPitchBendSensitivityRPN = 0x0000,
 	MidiChannelFineTuningRPN = 0x0001,
 	MidiChannelCoarseTuningRPN = 0x0002,

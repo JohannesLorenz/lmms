@@ -31,7 +31,8 @@
 
 class AmplifierEffect;
 
-class AmplifierControls : public EffectControls {
+class AmplifierControls : public EffectControls
+{
 	Q_OBJECT
 public:
 	AmplifierControls(AmplifierEffect* effect);

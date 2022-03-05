@@ -12,7 +12,8 @@ Base relativeBases[] = {Base::ProjectDir, Base::FactorySample, Base::UserSample,
 	Base::UserLADSPA, Base::DefaultLADSPA, Base::UserSoundfont, Base::DefaultSoundfont, Base::UserGIG, Base::DefaultGIG,
 	Base::LocalDir};
 
-QString baseLocation(const Base base, bool* error /* = nullptr*/) {
+QString baseLocation(const Base base, bool* error /* = nullptr*/)
+{
 	// error is false unless something goes wrong
 	if (error) { *error = false; }
 
@@ -50,7 +51,8 @@ QString baseLocation(const Base base, bool* error /* = nullptr*/) {
 	return QDir::cleanPath(loc) + "/";
 }
 
-QDir baseQDir(const Base base, bool* error /* = nullptr*/) {
+QDir baseQDir(const Base base, bool* error /* = nullptr*/)
+{
 	if (base == Base::Absolute) {
 		if (error) { *error = false; }
 		return QDir::root();
@@ -58,7 +60,8 @@ QDir baseQDir(const Base base, bool* error /* = nullptr*/) {
 	return QDir(baseLocation(base, error));
 }
 
-QString basePrefix(const Base base) {
+QString basePrefix(const Base base)
+{
 	switch (base) {
 	case Base::ProjectDir: return QStringLiteral("userprojects:");
 	case Base::FactorySample: return QStringLiteral("factorysample:");
@@ -76,7 +79,8 @@ QString basePrefix(const Base base) {
 	}
 }
 
-Base baseLookup(const QString& path) {
+Base baseLookup(const QString& path)
+{
 	for (auto base : relativeBases) {
 		QString prefix = basePrefix(base);
 		if (path.startsWith(prefix)) { return base; }
@@ -88,7 +92,8 @@ QString stripPrefix(const QString& path) { return path.mid(basePrefix(baseLookup
 
 QString cleanName(const QString& path) { return stripPrefix(QFileInfo(path).baseName()); }
 
-QString oldRelativeUpgrade(const QString& input) {
+QString oldRelativeUpgrade(const QString& input)
+{
 	if (input.isEmpty()) { return input; }
 
 	// Start by assuming that the file is a user sample
@@ -108,7 +113,8 @@ QString oldRelativeUpgrade(const QString& input) {
 	return basePrefix(assumedBase) + input;
 }
 
-QString toAbsolute(const QString& input, bool* error /* = nullptr*/) {
+QString toAbsolute(const QString& input, bool* error /* = nullptr*/)
+{
 	// First, do no harm to absolute paths
 	QFileInfo inputFileInfo = QFileInfo(input);
 	if (inputFileInfo.isAbsolute()) {
@@ -122,7 +128,8 @@ QString toAbsolute(const QString& input, bool* error /* = nullptr*/) {
 	return baseLocation(base, error) + upgraded.remove(0, basePrefix(base).length());
 }
 
-QString relativeOrAbsolute(const QString& input, const Base base) {
+QString relativeOrAbsolute(const QString& input, const Base base)
+{
 	if (input.isEmpty()) { return input; }
 	QString absolutePath = toAbsolute(input);
 	if (base == Base::Absolute) { return absolutePath; }
@@ -133,7 +140,8 @@ QString relativeOrAbsolute(const QString& input, const Base base) {
 	return (relativePath.startsWith("..") || error) ? absolutePath : relativePath;
 }
 
-QString toShortestRelative(const QString& input, bool allowLocal /* = false*/) {
+QString toShortestRelative(const QString& input, bool allowLocal /* = false*/)
+{
 	QFileInfo inputFileInfo = QFileInfo(input);
 	QString absolutePath = inputFileInfo.isAbsolute() ? input : toAbsolute(input);
 

@@ -48,7 +48,8 @@ SampleTrackWindow::SampleTrackWindow(SampleTrackView* tv)
 	: QWidget()
 	, ModelView(nullptr, this)
 	, m_track(tv->model())
-	, m_stv(tv) {
+	, m_stv(tv)
+{
 	// init own layout + widgets
 	setFocusPolicy(Qt::StrongFocus);
 	QVBoxLayout* vlayout = new QVBoxLayout(this);
@@ -153,13 +154,15 @@ SampleTrackWindow::SampleTrackWindow(SampleTrackView* tv)
 
 SampleTrackWindow::~SampleTrackWindow() {}
 
-void SampleTrackWindow::setSampleTrackView(SampleTrackView* tv) {
+void SampleTrackWindow::setSampleTrackView(SampleTrackView* tv)
+{
 	if (m_stv && tv) { m_stv->m_tlb->setChecked(false); }
 
 	m_stv = tv;
 }
 
-void SampleTrackWindow::modelChanged() {
+void SampleTrackWindow::modelChanged()
+{
 	m_track = castModel<SampleTrack>();
 
 	m_nameLineEdit->setText(m_track->name());
@@ -175,18 +178,21 @@ void SampleTrackWindow::modelChanged() {
 	updateName();
 }
 
-void SampleTrackWindow::updateName() {
+void SampleTrackWindow::updateName()
+{
 	setWindowTitle(m_track->name().length() > 25 ? (m_track->name().left(24) + "...") : m_track->name());
 
 	if (m_nameLineEdit->text() != m_track->name()) { m_nameLineEdit->setText(m_track->name()); }
 }
 
-void SampleTrackWindow::textChanged(const QString& new_name) {
+void SampleTrackWindow::textChanged(const QString& new_name)
+{
 	m_track->setName(new_name);
 	Engine::getSong()->setModified();
 }
 
-void SampleTrackWindow::toggleVisibility(bool on) {
+void SampleTrackWindow::toggleVisibility(bool on)
+{
 	if (on) {
 		show();
 		parentWidget()->show();
@@ -196,7 +202,8 @@ void SampleTrackWindow::toggleVisibility(bool on) {
 	}
 }
 
-void SampleTrackWindow::closeEvent(QCloseEvent* ce) {
+void SampleTrackWindow::closeEvent(QCloseEvent* ce)
+{
 	ce->ignore();
 
 	if (getGUI()->mainWindow()->workspace()) {
@@ -209,12 +216,14 @@ void SampleTrackWindow::closeEvent(QCloseEvent* ce) {
 	m_stv->m_tlb->setChecked(false);
 }
 
-void SampleTrackWindow::saveSettings(QDomDocument& doc, QDomElement& element) {
+void SampleTrackWindow::saveSettings(QDomDocument& doc, QDomElement& element)
+{
 	MainWindow::saveWidgetState(this, element);
 	Q_UNUSED(element)
 }
 
-void SampleTrackWindow::loadSettings(const QDomElement& element) {
+void SampleTrackWindow::loadSettings(const QDomElement& element)
+{
 	MainWindow::restoreWidgetState(this, element);
 	if (isVisible()) { m_stv->m_tlb->setChecked(true); }
 }

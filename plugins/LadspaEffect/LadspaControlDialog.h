@@ -33,7 +33,8 @@ class QHBoxLayout;
 class LadspaControls;
 class LedCheckBox;
 
-class LadspaControlDialog : public EffectControlDialog {
+class LadspaControlDialog : public EffectControlDialog
+{
 	Q_OBJECT
 public:
 	LadspaControlDialog(LadspaControls* _ctl);

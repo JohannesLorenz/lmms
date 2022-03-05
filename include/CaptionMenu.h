@@ -32,7 +32,8 @@
 ///
 /// \brief A context menu with a caption
 ///
-class LMMS_EXPORT CaptionMenu : public QMenu {
+class LMMS_EXPORT CaptionMenu : public QMenu
+{
 	Q_OBJECT
 public:
 	CaptionMenu(const QString& _title, QWidget* _parent = 0);

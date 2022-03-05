@@ -31,11 +31,14 @@
 
 ControllerDialog::ControllerDialog(Controller* _controller, QWidget* _parent)
 	: QWidget(_parent)
-	, ModelView(_controller, this) {}
+	, ModelView(_controller, this)
+{
+}
 
 ControllerDialog::~ControllerDialog() {}
 
-void ControllerDialog::closeEvent(QCloseEvent* _ce) {
+void ControllerDialog::closeEvent(QCloseEvent* _ce)
+{
 	_ce->ignore();
 	emit closed();
 }

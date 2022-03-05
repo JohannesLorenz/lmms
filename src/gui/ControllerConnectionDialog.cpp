@@ -44,18 +44,21 @@
 #include "ToolButton.h"
 #include "embed.h"
 
-class AutoDetectMidiController : public MidiController {
+class AutoDetectMidiController : public MidiController
+{
 public:
 	AutoDetectMidiController(Model* parent)
 		: MidiController(parent)
 		, m_detectedMidiChannel(0)
-		, m_detectedMidiController(0) {
+		, m_detectedMidiController(0)
+	{
 		updateName();
 	}
 
 	virtual ~AutoDetectMidiController() {}
 
-	void processInEvent(const MidiEvent& event, const TimePos& time, f_cnt_t offset = 0) override {
+	void processInEvent(const MidiEvent& event, const TimePos& time, f_cnt_t offset = 0) override
+	{
 		if (event.type() == MidiControlChange
 			&& (m_midiPort.inputChannel() == 0 || m_midiPort.inputChannel() == event.channel() + 1)) {
 			m_detectedMidiChannel = event.channel() + 1;
@@ -68,7 +71,8 @@ public:
 
 	// Would be a nice copy ctor, but too hard to add copy ctor because
 	// model has none.
-	MidiController* copyToMidiController(Model* parent) {
+	MidiController* copyToMidiController(Model* parent)
+	{
 		MidiController* c = new MidiController(parent);
 		c->m_midiPort.setInputChannel(m_midiPort.inputChannel());
 		c->m_midiPort.setInputController(m_midiPort.inputController());
@@ -78,7 +82,8 @@ public:
 		return c;
 	}
 
-	void useDetected() {
+	void useDetected()
+	{
 		m_midiPort.setInputChannel(m_detectedMidiChannel);
 		m_midiPort.setInputController(m_detectedMidiController);
 
@@ -90,7 +95,8 @@ public:
 	}
 
 public slots:
-	void reset() {
+	void reset()
+	{
 		m_midiPort.setInputChannel(0);
 		m_midiPort.setInputController(0);
 	}
@@ -107,7 +113,8 @@ ControllerConnectionDialog::ControllerConnectionDialog(QWidget* _parent, const A
 	, m_midiAutoDetect(false)
 	, m_controller(nullptr)
 	, m_targetModel(_target_model)
-	, m_midiController(nullptr) {
+	, m_midiController(nullptr)
+{
 	setWindowIcon(embed::getIconPixmap("setup_audio"));
 	setWindowTitle(tr("Connection Settings"));
 	setModal(true);
@@ -225,13 +232,15 @@ ControllerConnectionDialog::ControllerConnectionDialog(QWidget* _parent, const A
 	show();
 }
 
-ControllerConnectionDialog::~ControllerConnectionDialog() {
+ControllerConnectionDialog::~ControllerConnectionDialog()
+{
 	delete m_readablePorts;
 
 	delete m_midiController;
 }
 
-void ControllerConnectionDialog::selectController() {
+void ControllerConnectionDialog::selectController()
+{
 	// Midi
 	if (m_midiGroupBox->model()->value() > 0) {
 		if (m_midiControllerSpinBox->model()->value() > 0) {
@@ -270,7 +279,8 @@ void ControllerConnectionDialog::selectController() {
 	accept();
 }
 
-void ControllerConnectionDialog::midiToggled() {
+void ControllerConnectionDialog::midiToggled()
+{
 	int enabled = m_midiGroupBox->model()->value();
 	if (enabled != 0) {
 		if (m_userGroupBox->model()->value() != 0) { m_userGroupBox->model()->setValue(0); }
@@ -299,27 +309,32 @@ void ControllerConnectionDialog::midiToggled() {
 	m_midiAutoDetectCheckBox->setEnabled(enabled);
 }
 
-void ControllerConnectionDialog::userToggled() {
+void ControllerConnectionDialog::userToggled()
+{
 	int enabled = m_userGroupBox->model()->value();
 	if (enabled != 0 && m_midiGroupBox->model()->value() != 0) { m_midiGroupBox->model()->setValue(0); }
 }
 
-void ControllerConnectionDialog::userSelected() {
+void ControllerConnectionDialog::userSelected()
+{
 	m_userGroupBox->model()->setValue(1);
 	userToggled();
 }
 
-void ControllerConnectionDialog::autoDetectToggled() {
+void ControllerConnectionDialog::autoDetectToggled()
+{
 	if (m_midiAutoDetect.value()) { m_midiController->reset(); }
 }
 
-void ControllerConnectionDialog::midiValueChanged() {
+void ControllerConnectionDialog::midiValueChanged()
+{
 	if (m_midiAutoDetect.value()) {
 		m_midiController->useDetected();
 		if (m_readablePorts) { m_readablePorts->updateMenu(); }
 	}
 }
 
-void ControllerConnectionDialog::enableAutoDetect(QAction* _a) {
+void ControllerConnectionDialog::enableAutoDetect(QAction* _a)
+{
 	if (_a->isChecked()) { m_midiAutoDetectCheckBox->model()->setValue(true); }
 }

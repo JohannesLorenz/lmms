@@ -30,7 +30,8 @@
 
 class DelayEffect;
 
-class DelayControls : public EffectControls {
+class DelayControls : public EffectControls
+{
 	Q_OBJECT
 public:
 	DelayControls(DelayEffect* effect);

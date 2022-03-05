@@ -53,7 +53,8 @@ CompressorControlDialog::CompressorControlDialog(CompressorControls* controls)
 	, m_threshColor(39, 171, 95, 100)
 	, m_textColor(209, 216, 228, 50)
 	, m_graphColor(209, 216, 228, 50)
-	, m_resetColor(200, 100, 15, 200) {
+	, m_resetColor(200, 100, 15, 200)
+{
 	setAutoFillBackground(true);
 	QPalette pal;
 	pal.setBrush(backgroundRole(), PLUGIN_NAME::getIconPixmap("artwork"));
@@ -317,7 +318,8 @@ CompressorControlDialog::CompressorControlDialog(CompressorControls* controls)
 	limiterChanged();
 }
 
-void CompressorControlDialog::makeLargeKnob(Knob* knob, QString hint, QString unit) {
+void CompressorControlDialog::makeLargeKnob(Knob* knob, QString hint, QString unit)
+{
 	knob->setHintText(hint, unit);
 	knob->setFixedSize(56, 56);
 	knob->setOuterRadius(23);
@@ -326,7 +328,8 @@ void CompressorControlDialog::makeLargeKnob(Knob* knob, QString hint, QString un
 	knob->setCenterPointY(28);
 }
 
-void CompressorControlDialog::makeSmallKnob(Knob* knob, QString hint, QString unit) {
+void CompressorControlDialog::makeSmallKnob(Knob* knob, QString hint, QString unit)
+{
 	knob->setHintText(hint, unit);
 	knob->setFixedSize(30, 30);
 	knob->setOuterRadius(10);
@@ -335,27 +338,32 @@ void CompressorControlDialog::makeSmallKnob(Knob* knob, QString hint, QString un
 	knob->setCenterPointY(15);
 }
 
-void CompressorControlDialog::peakmodeChanged() {
+void CompressorControlDialog::peakmodeChanged()
+{
 	m_rmsKnob->setVisible(!m_controls->m_peakmodeModel.value());
 	m_rmsEnabledLabel->setVisible(!m_controls->m_peakmodeModel.value());
 }
 
-void CompressorControlDialog::stereoLinkChanged() {
+void CompressorControlDialog::stereoLinkChanged()
+{
 	m_blendKnob->setVisible(m_controls->m_stereoLinkModel.value() == 4);
 	m_blendEnabledLabel->setVisible(m_controls->m_stereoLinkModel.value() == 4);
 }
 
-void CompressorControlDialog::lookaheadChanged() {
+void CompressorControlDialog::lookaheadChanged()
+{
 	m_lookaheadLengthKnob->setVisible(m_controls->m_lookaheadModel.value());
 	m_lookaheadEnabledLabel->setVisible(m_controls->m_lookaheadModel.value());
 }
 
-void CompressorControlDialog::limiterChanged() {
+void CompressorControlDialog::limiterChanged()
+{
 	m_ratioKnob->setVisible(!m_controls->m_limiterModel.value());
 	m_ratioEnabledLabel->setVisible(!m_controls->m_limiterModel.value());
 }
 
-void CompressorControlDialog::updateDisplay() {
+void CompressorControlDialog::updateDisplay()
+{
 	if (!isVisible()) {
 		m_timeElapsed.restart();
 		return;
@@ -405,7 +413,8 @@ void CompressorControlDialog::updateDisplay() {
 	update();
 }
 
-void CompressorControlDialog::drawVisPixmap() {
+void CompressorControlDialog::drawVisPixmap()
+{
 	m_p.begin(&m_visPixmap);
 
 	// Move entire display to the left
@@ -449,7 +458,8 @@ void CompressorControlDialog::drawVisPixmap() {
 	m_p.end();
 }
 
-void CompressorControlDialog::redrawKnee() {
+void CompressorControlDialog::redrawKnee()
+{
 	m_controls->m_effect->m_redrawKnee = false;
 
 	// Start drawing knee visualizer
@@ -525,7 +535,8 @@ void CompressorControlDialog::redrawKnee() {
 	m_lastKneePoint = 0;
 }
 
-void CompressorControlDialog::drawKneePixmap2() {
+void CompressorControlDialog::drawKneePixmap2()
+{
 	m_p.begin(&m_kneePixmap2);
 
 	m_p.setRenderHint(QPainter::Antialiasing, false);
@@ -544,7 +555,8 @@ void CompressorControlDialog::drawKneePixmap2() {
 	m_p.end();
 }
 
-void CompressorControlDialog::drawMiscPixmap() {
+void CompressorControlDialog::drawMiscPixmap()
+{
 	m_p.begin(&m_miscPixmap);
 
 	m_p.setCompositionMode(QPainter::CompositionMode_Source);
@@ -563,7 +575,8 @@ void CompressorControlDialog::drawMiscPixmap() {
 	m_controls->m_effect->m_redrawThreshold = false;
 }
 
-void CompressorControlDialog::paintEvent(QPaintEvent* event) {
+void CompressorControlDialog::paintEvent(QPaintEvent* event)
+{
 	if (!isVisible()) { return; }
 
 	m_p.begin(this);
@@ -583,7 +596,8 @@ void CompressorControlDialog::paintEvent(QPaintEvent* event) {
 	m_p.end();
 }
 
-inline int CompressorControlDialog::dbfsToYPoint(float inDbfs) {
+inline int CompressorControlDialog::dbfsToYPoint(float inDbfs)
+{
 	return (-((inDbfs + m_dbRange) / m_dbRange) + 1) * m_windowSizeY;
 }
 
@@ -591,7 +605,8 @@ inline int CompressorControlDialog::dbfsToXPoint(float inDbfs) { return m_kneeWi
 
 void CompressorControlDialog::resizeEvent(QResizeEvent* event) { resetCompressorView(); }
 
-void CompressorControlDialog::wheelEvent(QWheelEvent* event) {
+void CompressorControlDialog::wheelEvent(QWheelEvent* event)
+{
 	const float temp = m_dbRange;
 	const float dbRangeNew = m_dbRange - copysignf(COMP_GRID_SPACING, event->angleDelta().y());
 	m_dbRange = round(qBound(COMP_GRID_SPACING, dbRangeNew, COMP_GRID_MAX) / COMP_GRID_SPACING) * COMP_GRID_SPACING;
@@ -604,7 +619,8 @@ void CompressorControlDialog::wheelEvent(QWheelEvent* event) {
 	}
 }
 
-void CompressorControlDialog::drawGraph() {
+void CompressorControlDialog::drawGraph()
+{
 	m_p.begin(&m_graphPixmap);
 
 	m_p.setRenderHint(QPainter::Antialiasing, false);
@@ -630,7 +646,8 @@ void CompressorControlDialog::drawGraph() {
 	m_p.end();
 }
 
-void CompressorControlDialog::resetCompressorView() {
+void CompressorControlDialog::resetCompressorView()
+{
 	m_windowSizeX = size().width();
 	m_windowSizeY = size().height();
 	m_kneeWindowSizeX = m_windowSizeY;

@@ -29,7 +29,8 @@
 
 class stereoEnhancerControls;
 
-class stereoEnhancerControlDialog : public EffectControlDialog {
+class stereoEnhancerControlDialog : public EffectControlDialog
+{
 	Q_OBJECT
 public:
 	stereoEnhancerControlDialog(stereoEnhancerControls* _controls);

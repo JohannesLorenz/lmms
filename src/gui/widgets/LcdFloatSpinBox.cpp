@@ -49,7 +49,8 @@ LcdFloatSpinBox::LcdFloatSpinBox(int numWhole, int numFrac, const QString& name,
 	, m_mouseMoving(false)
 	, m_intStep(false)
 	, m_origMousePos()
-	, m_displayOffset(0) {
+	, m_displayOffset(0)
+{
 	layoutSetup();
 }
 
@@ -60,11 +61,13 @@ LcdFloatSpinBox::LcdFloatSpinBox(int numWhole, int numFrac, const QString& style
 	, m_mouseMoving(false)
 	, m_intStep(false)
 	, m_origMousePos()
-	, m_displayOffset(0) {
+	, m_displayOffset(0)
+{
 	layoutSetup(style);
 }
 
-void LcdFloatSpinBox::layoutSetup(const QString& style) {
+void LcdFloatSpinBox::layoutSetup(const QString& style)
+{
 	// Assemble the LCD parts
 	QHBoxLayout* lcdLayout = new QHBoxLayout();
 
@@ -92,7 +95,8 @@ void LcdFloatSpinBox::layoutSetup(const QString& style) {
 	this->setLayout(outerLayout);
 }
 
-void LcdFloatSpinBox::update() {
+void LcdFloatSpinBox::update()
+{
 	const int whole = static_cast<int>(model()->value());
 	const float fraction = model()->value() - whole;
 	const int intFraction = fraction * std::pow(10.f, m_fractionDisplay.numDigits());
@@ -102,13 +106,15 @@ void LcdFloatSpinBox::update() {
 	QWidget::update();
 }
 
-void LcdFloatSpinBox::contextMenuEvent(QContextMenuEvent* event) {
+void LcdFloatSpinBox::contextMenuEvent(QContextMenuEvent* event)
+{
 	CaptionMenu contextMenu(model()->displayName());
 	addDefaultActions(&contextMenu);
 	contextMenu.exec(QCursor::pos());
 }
 
-void LcdFloatSpinBox::mousePressEvent(QMouseEvent* event) {
+void LcdFloatSpinBox::mousePressEvent(QMouseEvent* event)
+{
 	if (event->button() == Qt::LeftButton && !(event->modifiers() & Qt::ControlModifier)
 		&& event->y() < m_wholeDisplay.cellHeight() + 2) {
 		m_mouseMoving = true;
@@ -124,7 +130,8 @@ void LcdFloatSpinBox::mousePressEvent(QMouseEvent* event) {
 	}
 }
 
-void LcdFloatSpinBox::mouseMoveEvent(QMouseEvent* event) {
+void LcdFloatSpinBox::mouseMoveEvent(QMouseEvent* event)
+{
 	// switch between integer and fractional step based on cursor position
 	if (event->x() < m_wholeDisplay.width()) {
 		m_intStep = true;
@@ -143,14 +150,16 @@ void LcdFloatSpinBox::mouseMoveEvent(QMouseEvent* event) {
 	}
 }
 
-void LcdFloatSpinBox::mouseReleaseEvent(QMouseEvent*) {
+void LcdFloatSpinBox::mouseReleaseEvent(QMouseEvent*)
+{
 	if (m_mouseMoving) {
 		model()->restoreJournallingState();
 		m_mouseMoving = false;
 	}
 }
 
-void LcdFloatSpinBox::wheelEvent(QWheelEvent* event) {
+void LcdFloatSpinBox::wheelEvent(QWheelEvent* event)
+{
 	// switch between integer and fractional step based on cursor position
 	if (event->x() < m_wholeDisplay.width()) {
 		m_intStep = true;
@@ -165,7 +174,8 @@ void LcdFloatSpinBox::wheelEvent(QWheelEvent* event) {
 
 void LcdFloatSpinBox::mouseDoubleClickEvent(QMouseEvent*) { enterValue(); }
 
-void LcdFloatSpinBox::enterValue() {
+void LcdFloatSpinBox::enterValue()
+{
 	bool ok;
 	float newVal;
 
@@ -176,7 +186,8 @@ void LcdFloatSpinBox::enterValue() {
 	if (ok) { model()->setValue(newVal); }
 }
 
-float LcdFloatSpinBox::getStep() const {
+float LcdFloatSpinBox::getStep() const
+{
 	if (m_intStep) {
 		return 1;
 	} else {
@@ -184,7 +195,8 @@ float LcdFloatSpinBox::getStep() const {
 	}
 }
 
-void LcdFloatSpinBox::paintEvent(QPaintEvent*) {
+void LcdFloatSpinBox::paintEvent(QPaintEvent*)
+{
 	QPainter p(this);
 
 	// Border

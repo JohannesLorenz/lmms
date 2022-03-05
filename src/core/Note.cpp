@@ -41,7 +41,8 @@ Note::Note(
 	, m_panning(qBound(PanningLeft, panning, PanningRight))
 	, m_length(length)
 	, m_pos(pos)
-	, m_detuning(nullptr) {
+	, m_detuning(nullptr)
+{
 	if (detuning) {
 		m_detuning = sharedObject::ref(detuning);
 	} else {
@@ -61,11 +62,13 @@ Note::Note(const Note& note)
 	, m_panning(note.m_panning)
 	, m_length(note.m_length)
 	, m_pos(note.m_pos)
-	, m_detuning(nullptr) {
+	, m_detuning(nullptr)
+{
 	if (note.m_detuning) { m_detuning = sharedObject::ref(note.m_detuning); }
 }
 
-Note::~Note() {
+Note::~Note()
+{
 	if (m_detuning) { sharedObject::unref(m_detuning); }
 }
 
@@ -73,35 +76,41 @@ void Note::setLength(const TimePos& length) { m_length = length; }
 
 void Note::setPos(const TimePos& pos) { m_pos = pos; }
 
-void Note::setKey(const int key) {
+void Note::setKey(const int key)
+{
 	const int k = qBound(0, key, NumKeys - 1);
 	m_key = k;
 }
 
-void Note::setVolume(volume_t volume) {
+void Note::setVolume(volume_t volume)
+{
 	const volume_t v = qBound(MinVolume, volume, MaxVolume);
 	m_volume = v;
 }
 
-void Note::setPanning(panning_t panning) {
+void Note::setPanning(panning_t panning)
+{
 	const panning_t p = qBound(PanningLeft, panning, PanningRight);
 	m_panning = p;
 }
 
-TimePos Note::quantized(const TimePos& m, const int qGrid) {
+TimePos Note::quantized(const TimePos& m, const int qGrid)
+{
 	float p = ((float)m / qGrid);
 	if (p - floorf(p) < 0.5f) { return static_cast<int>(p) * qGrid; }
 	return static_cast<int>(p + 1) * qGrid;
 }
 
-void Note::quantizeLength(const int qGrid) {
+void Note::quantizeLength(const int qGrid)
+{
 	setLength(quantized(length(), qGrid));
 	if (length() == 0) { setLength(qGrid); }
 }
 
 void Note::quantizePos(const int qGrid) { setPos(quantized(pos(), qGrid)); }
 
-void Note::saveSettings(QDomDocument& doc, QDomElement& parent) {
+void Note::saveSettings(QDomDocument& doc, QDomElement& parent)
+{
 	parent.setAttribute("key", m_key);
 	parent.setAttribute("vol", m_volume);
 	parent.setAttribute("pan", m_panning);
@@ -111,7 +120,8 @@ void Note::saveSettings(QDomDocument& doc, QDomElement& parent) {
 	if (m_detuning && m_length) { m_detuning->saveSettings(doc, parent); }
 }
 
-void Note::loadSettings(const QDomElement& _this) {
+void Note::loadSettings(const QDomElement& _this)
+{
 	const int oldKey = _this.attribute("tone").toInt() + _this.attribute("oct").toInt() * KeysPerOctave;
 	m_key = qMax(oldKey, _this.attribute("key").toInt());
 	m_volume = _this.attribute("vol").toInt();
@@ -125,7 +135,8 @@ void Note::loadSettings(const QDomElement& _this) {
 	}
 }
 
-void Note::createDetuning() {
+void Note::createDetuning()
+{
 	if (m_detuning == nullptr) {
 		m_detuning = new DetuningHelper;
 		(void)m_detuning->automationClip();
@@ -136,6 +147,7 @@ void Note::createDetuning() {
 
 bool Note::hasDetuningInfo() const { return m_detuning && m_detuning->hasAutomation(); }
 
-bool Note::withinRange(int tickStart, int tickEnd) const {
+bool Note::withinRange(int tickStart, int tickEnd) const
+{
 	return pos().getTicks() >= tickStart && pos().getTicks() <= tickEnd && length().getTicks() != 0;
 }

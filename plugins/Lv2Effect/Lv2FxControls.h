@@ -30,7 +30,8 @@
 
 class Lv2Effect;
 
-class Lv2FxControls : public EffectControls, public Lv2ControlBase {
+class Lv2FxControls : public EffectControls, public Lv2ControlBase
+{
 	Q_OBJECT
 public:
 	Lv2FxControls(Lv2Effect* effect, const QString& uri);

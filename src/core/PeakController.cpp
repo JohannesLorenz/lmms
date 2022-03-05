@@ -41,7 +41,8 @@ bool PeakController::m_buggedFile;
 PeakController::PeakController(Model* _parent, PeakControllerEffect* _peak_effect)
 	: Controller(Controller::PeakController, _parent, tr("Peak Controller"))
 	, m_peakEffect(_peak_effect)
-	, m_currentSample(0.0f) {
+	, m_currentSample(0.0f)
+{
 	setSampleExact(true);
 	if (m_peakEffect) { connect(m_peakEffect, SIGNAL(destroyed()), this, SLOT(handleDestroyedEffect())); }
 	connect(Engine::audioEngine(), SIGNAL(sampleRateChanged()), this, SLOT(updateCoeffs()));
@@ -50,13 +51,15 @@ PeakController::PeakController(Model* _parent, PeakControllerEffect* _peak_effec
 	m_coeffNeedsUpdate = true;
 }
 
-PeakController::~PeakController() {
+PeakController::~PeakController()
+{
 	if (m_peakEffect != nullptr && m_peakEffect->effectChain() != nullptr) {
 		m_peakEffect->effectChain()->removeEffect(m_peakEffect);
 	}
 }
 
-void PeakController::updateValueBuffer() {
+void PeakController::updateValueBuffer()
+{
 	if (m_coeffNeedsUpdate) {
 		const float ratio = 44100.0f / Engine::audioEngine()->processingSampleRate();
 		m_attackCoeff = 1.0f - powf(2.0f, -0.3f * (1.0f - m_peakEffect->attackModel()->value()) * ratio);
@@ -92,7 +95,8 @@ void PeakController::updateValueBuffer() {
 
 void PeakController::updateCoeffs() { m_coeffNeedsUpdate = true; }
 
-void PeakController::handleDestroyedEffect() {
+void PeakController::handleDestroyedEffect()
+{
 	// possible race condition...
 	// printf("disconnecting effect\n");
 	disconnect(m_peakEffect);
@@ -101,7 +105,8 @@ void PeakController::handleDestroyedEffect() {
 	delete this;
 }
 
-void PeakController::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void PeakController::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	if (m_peakEffect) {
 		Controller::saveSettings(_doc, _this);
 
@@ -109,7 +114,8 @@ void PeakController::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 	}
 }
 
-void PeakController::loadSettings(const QDomElement& _this) {
+void PeakController::loadSettings(const QDomElement& _this)
+{
 	Controller::loadSettings(_this);
 
 	int effectId = _this.attribute("effectId").toInt();
@@ -125,13 +131,15 @@ void PeakController::loadSettings(const QDomElement& _this) {
 }
 
 // Backward compatibility function for bug in <= 0.4.15
-void PeakController::initGetControllerBySetting() {
+void PeakController::initGetControllerBySetting()
+{
 	m_loadCount = 0;
 	m_getCount = 0;
 	m_buggedFile = false;
 }
 
-PeakController* PeakController::getControllerBySetting(const QDomElement& _this) {
+PeakController* PeakController::getControllerBySetting(const QDomElement& _this)
+{
 	int effectId = _this.attribute("effectId").toInt();
 
 	PeakControllerEffectVector::Iterator i;

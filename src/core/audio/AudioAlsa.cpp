@@ -38,7 +38,8 @@ AudioAlsa::AudioAlsa(bool& _success_ful, AudioEngine* _audioEngine)
 	, m_handle(nullptr)
 	, m_hwParams(nullptr)
 	, m_swParams(nullptr)
-	, m_convertEndian(false) {
+	, m_convertEndian(false)
+{
 	_success_ful = false;
 
 	if (setenv("PULSE_ALSA_HOOK_CONF", "/dev/null", 0)) {
@@ -81,7 +82,8 @@ AudioAlsa::AudioAlsa(bool& _success_ful, AudioEngine* _audioEngine)
 	_success_ful = true;
 }
 
-AudioAlsa::~AudioAlsa() {
+AudioAlsa::~AudioAlsa()
+{
 	stopProcessing();
 	if (m_handle != nullptr) { snd_pcm_close(m_handle); }
 
@@ -90,7 +92,8 @@ AudioAlsa::~AudioAlsa() {
 	if (m_swParams != nullptr) { snd_pcm_sw_params_free(m_swParams); }
 }
 
-QString AudioAlsa::probeDevice() {
+QString AudioAlsa::probeDevice()
+{
 	QString dev = ConfigManager::inst()->value("audioalsa", "device");
 	if (dev == "") {
 		if (getenv("AUDIODEV") != nullptr) { return getenv("AUDIODEV"); }
@@ -113,7 +116,8 @@ QString AudioAlsa::probeDevice() {
  *
  * @return A collection of devices found on the system.
  */
-AudioAlsa::DeviceInfoCollection AudioAlsa::getAvailableDevices() {
+AudioAlsa::DeviceInfoCollection AudioAlsa::getAvailableDevices()
+{
 	DeviceInfoCollection deviceInfos;
 
 	char** hints;
@@ -141,7 +145,8 @@ AudioAlsa::DeviceInfoCollection AudioAlsa::getAvailableDevices() {
 	return deviceInfos;
 }
 
-int AudioAlsa::handleError(int _err) {
+int AudioAlsa::handleError(int _err)
+{
 	if (_err == -EPIPE) {
 		// under-run
 		_err = snd_pcm_prepare(m_handle);
@@ -171,13 +176,15 @@ int AudioAlsa::handleError(int _err) {
 	return _err;
 }
 
-void AudioAlsa::startProcessing() {
+void AudioAlsa::startProcessing()
+{
 	if (!isRunning()) { start(QThread::HighPriority); }
 }
 
 void AudioAlsa::stopProcessing() { stopProcessingThread(this); }
 
-void AudioAlsa::applyQualitySettings() {
+void AudioAlsa::applyQualitySettings()
+{
 	if (hqAudio()) {
 		setSampleRate(Engine::audioEngine()->processingSampleRate());
 
@@ -202,7 +209,8 @@ void AudioAlsa::applyQualitySettings() {
 	AudioDevice::applyQualitySettings();
 }
 
-void AudioAlsa::run() {
+void AudioAlsa::run()
+{
 	surroundSampleFrame* temp = new surroundSampleFrame[audioEngine()->framesPerPeriod()];
 	int_sample_t* outbuf = new int_sample_t[audioEngine()->framesPerPeriod() * channels()];
 	int_sample_t* pcmbuf = new int_sample_t[m_periodSize * channels()];
@@ -258,7 +266,8 @@ void AudioAlsa::run() {
 	delete[] pcmbuf;
 }
 
-int AudioAlsa::setHWParams(const ch_cnt_t _channels, snd_pcm_access_t _access) {
+int AudioAlsa::setHWParams(const ch_cnt_t _channels, snd_pcm_access_t _access)
+{
 	int err, dir;
 
 	// choose all parameters
@@ -339,7 +348,8 @@ int AudioAlsa::setHWParams(const ch_cnt_t _channels, snd_pcm_access_t _access) {
 	return (0); // all ok
 }
 
-int AudioAlsa::setSWParams() {
+int AudioAlsa::setSWParams()
+{
 	int err;
 
 	// get the current swparams

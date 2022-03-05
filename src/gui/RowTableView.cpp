@@ -28,11 +28,14 @@
 #include <QPainter>
 #include <QStyledItemDelegate>
 
-class RowDelegate : public QStyledItemDelegate {
+class RowDelegate : public QStyledItemDelegate
+{
 public:
 	RowDelegate(QAbstractItemView* table, QObject* parent = 0)
 		: QStyledItemDelegate(parent)
-		, m_table(table) {}
+		, m_table(table)
+	{
+	}
 	virtual void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 
 protected:
@@ -42,12 +45,14 @@ private:
 	QAbstractItemView* m_table;
 };
 
-void RowDelegate::initStyleOption(QStyleOptionViewItem* option, const QModelIndex& index) const {
+void RowDelegate::initStyleOption(QStyleOptionViewItem* option, const QModelIndex& index) const
+{
 	QStyledItemDelegate::initStyleOption(option, index);
 	option->state &= ~QStyle::State_HasFocus;
 }
 
-void RowDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const {
+void RowDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
 	QStyledItemDelegate::paint(painter, option, index);
 	if (index.row() == m_table->currentIndex().row()) {
 		const QRect rect(option.rect);
@@ -61,20 +66,23 @@ void RowDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, c
 }
 
 RowTableView::RowTableView(QWidget* parent)
-	: QTableView(parent) {
+	: QTableView(parent)
+{
 	m_rowDelegate = new RowDelegate(this, this);
 }
 
 RowTableView::~RowTableView() { delete m_rowDelegate; }
 
-void RowTableView::setModel(QAbstractItemModel* model) {
+void RowTableView::setModel(QAbstractItemModel* model)
+{
 	QTableView::setModel(model);
 	for (int i = 0; i < model->rowCount(); i++) {
 		setItemDelegateForRow(i, m_rowDelegate);
 	}
 }
 
-void RowTableView::keyPressEvent(QKeyEvent* event) {
+void RowTableView::keyPressEvent(QKeyEvent* event)
+{
 	switch (event->key()) {
 	case Qt::Key_Tab:
 	case Qt::Key_Backtab:

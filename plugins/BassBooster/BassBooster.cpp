@@ -46,7 +46,8 @@ BassBoosterEffect::BassBoosterEffect(Model* parent, const Descriptor::SubPluginF
 	: Effect(&bassbooster_plugin_descriptor, parent, key)
 	, m_frequencyChangeNeeded(false)
 	, m_bbFX(DspEffectLibrary::FastBassBoost(70.0f, 1.0f, 2.8f))
-	, m_bbControls(this) {
+	, m_bbControls(this)
+{
 	changeFrequency();
 	changeGain();
 	changeRatio();
@@ -54,7 +55,8 @@ BassBoosterEffect::BassBoosterEffect(Model* parent, const Descriptor::SubPluginF
 
 BassBoosterEffect::~BassBoosterEffect() {}
 
-bool BassBoosterEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
+bool BassBoosterEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
+{
 	if (!isEnabled() || !isRunning()) { return (false); }
 	// check out changed controls
 	if (m_frequencyChangeNeeded || m_bbControls.m_freqModel.isValueChanged()) {
@@ -94,19 +96,22 @@ bool BassBoosterEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 	return isRunning();
 }
 
-inline void BassBoosterEffect::changeFrequency() {
+inline void BassBoosterEffect::changeFrequency()
+{
 	const sample_t fac = Engine::audioEngine()->processingSampleRate() / 44100.0f;
 
 	m_bbFX.leftFX().setFrequency(m_bbControls.m_freqModel.value() * fac);
 	m_bbFX.rightFX().setFrequency(m_bbControls.m_freqModel.value() * fac);
 }
 
-inline void BassBoosterEffect::changeGain() {
+inline void BassBoosterEffect::changeGain()
+{
 	m_bbFX.leftFX().setGain(m_bbControls.m_gainModel.value());
 	m_bbFX.rightFX().setGain(m_bbControls.m_gainModel.value());
 }
 
-inline void BassBoosterEffect::changeRatio() {
+inline void BassBoosterEffect::changeRatio()
+{
 	m_bbFX.leftFX().setRatio(m_bbControls.m_ratioModel.value());
 	m_bbFX.rightFX().setRatio(m_bbControls.m_ratioModel.value());
 }
@@ -114,7 +119,8 @@ inline void BassBoosterEffect::changeRatio() {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data)
+{
 	return new BassBoosterEffect(parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(data));
 }
 }

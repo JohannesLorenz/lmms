@@ -10,7 +10,8 @@ class GroupBox;
 class InstrumentTrack;
 class Knob;
 
-class MidiCCRackView : public QWidget, public SerializingObject {
+class MidiCCRackView : public QWidget, public SerializingObject
+{
 	Q_OBJECT
 public:
 	MidiCCRackView(InstrumentTrack* track);

@@ -31,7 +31,8 @@
 
 namespace embed {
 
-QPixmap getIconPixmap(const QString& pixmapName, int width, int height, const char** xpm) {
+QPixmap getIconPixmap(const QString& pixmapName, int width, int height, const char** xpm)
+{
 	QString cacheName;
 	if (width > 0 && height > 0) {
 		cacheName = QString("%1_%2_%3").arg(pixmapName, width, height);
@@ -64,7 +65,8 @@ QPixmap getIconPixmap(const QString& pixmapName, int width, int height, const ch
 	return pixmap;
 }
 
-QString getText(const char* name) {
+QString getText(const char* name)
+{
 	return QString::fromUtf8((const char*)QResource(QString(":/%1").arg(name)).data());
 }
 

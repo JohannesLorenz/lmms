@@ -30,7 +30,8 @@
 
 class BitcrushControls;
 
-class BitcrushControlDialog : public EffectControlDialog {
+class BitcrushControlDialog : public EffectControlDialog
+{
 	Q_OBJECT
 public:
 	BitcrushControlDialog(BitcrushControls* controls);

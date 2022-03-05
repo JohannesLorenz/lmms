@@ -29,14 +29,16 @@
 
 MidiPortMenu::MidiPortMenu(MidiPort::Modes _mode)
 	: ModelView(nullptr, this)
-	, m_mode(_mode) {
+	, m_mode(_mode)
+{
 	setFont(pointSize<9>(font()));
 	connect(this, SIGNAL(triggered(QAction*)), this, SLOT(activatedPort(QAction*)));
 }
 
 MidiPortMenu::~MidiPortMenu() {}
 
-void MidiPortMenu::modelChanged() {
+void MidiPortMenu::modelChanged()
+{
 	MidiPort* mp = castModel<MidiPort>();
 	if (m_mode == MidiPort::Input) {
 		connect(mp, SIGNAL(readablePortsChanged()), this, SLOT(updateMenu()));
@@ -46,7 +48,8 @@ void MidiPortMenu::modelChanged() {
 	updateMenu();
 }
 
-void MidiPortMenu::activatedPort(QAction* _item) {
+void MidiPortMenu::activatedPort(QAction* _item)
+{
 	if (m_mode == MidiPort::Input) {
 		castModel<MidiPort>()->subscribeReadablePort(_item->text(), _item->isChecked());
 	} else if (m_mode == MidiPort::Output) {
@@ -54,7 +57,8 @@ void MidiPortMenu::activatedPort(QAction* _item) {
 	}
 }
 
-void MidiPortMenu::updateMenu() {
+void MidiPortMenu::updateMenu()
+{
 	MidiPort* mp = castModel<MidiPort>();
 	const MidiPort::Map& map = (m_mode == MidiPort::Input) ? mp->readablePorts() : mp->writablePorts();
 	clear();

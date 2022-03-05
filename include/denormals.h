@@ -13,7 +13,8 @@
 // Intel® 64 and IA-32 Architectures Software Developer’s Manual,
 // Volume 1: Basic Architecture,
 // 11.6.3 Checking for the DAZ Flag in the MXCSR Register
-int inline can_we_daz() {
+int inline can_we_daz()
+{
 	alignas(16) unsigned char buffer[512] = {0};
 #if defined(LMMS_HOST_X86)
 	_fxsave(buffer);
@@ -27,7 +28,8 @@ int inline can_we_daz() {
 #endif
 
 // Set denormal protection for this thread.
-void inline disable_denormals() {
+void inline disable_denormals()
+{
 #ifdef __SSE__
 	/* Setting DAZ might freeze systems not supporting it */
 	if (can_we_daz()) { _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON); }

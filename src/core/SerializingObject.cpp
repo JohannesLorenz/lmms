@@ -27,13 +27,17 @@
 #include <QDomElement>
 
 SerializingObject::SerializingObject()
-	: m_hook(nullptr) {}
+	: m_hook(nullptr)
+{
+}
 
-SerializingObject::~SerializingObject() {
+SerializingObject::~SerializingObject()
+{
 	if (m_hook) { m_hook->m_hookedIn = nullptr; }
 }
 
-QDomElement SerializingObject::saveState(QDomDocument& doc, QDomElement& parent) {
+QDomElement SerializingObject::saveState(QDomDocument& doc, QDomElement& parent)
+{
 	QDomElement element = doc.createElement(nodeName());
 	parent.appendChild(element);
 
@@ -44,13 +48,15 @@ QDomElement SerializingObject::saveState(QDomDocument& doc, QDomElement& parent)
 	return element;
 }
 
-void SerializingObject::restoreState(const QDomElement& element) {
+void SerializingObject::restoreState(const QDomElement& element)
+{
 	loadSettings(element);
 
 	if (hook()) { hook()->loadSettings(element); }
 }
 
-void SerializingObject::setHook(SerializingObjectHook* hook) {
+void SerializingObject::setHook(SerializingObjectHook* hook)
+{
 	if (m_hook) { m_hook->m_hookedIn = nullptr; }
 
 	m_hook = hook;
@@ -58,7 +64,8 @@ void SerializingObject::setHook(SerializingObjectHook* hook) {
 	if (m_hook) { m_hook->m_hookedIn = this; }
 }
 
-void SerializingObject::saveSettings(QDomDocument& doc, QDomElement& element) {
+void SerializingObject::saveSettings(QDomDocument& doc, QDomElement& element)
+{
 	Q_UNUSED(doc)
 	Q_UNUSED(element)
 }

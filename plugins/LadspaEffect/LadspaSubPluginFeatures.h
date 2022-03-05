@@ -31,7 +31,8 @@
 #include "LadspaManager.h"
 #include "Plugin.h"
 
-class LadspaSubPluginFeatures : public Plugin::Descriptor::SubPluginFeatures {
+class LadspaSubPluginFeatures : public Plugin::Descriptor::SubPluginFeatures
+{
 public:
 	LadspaSubPluginFeatures(Plugin::PluginTypes _type);
 

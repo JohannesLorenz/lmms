@@ -55,7 +55,8 @@ InstrumentSoundShaping::InstrumentSoundShaping(InstrumentTrack* _instrument_trac
 	, m_filterEnabledModel(false, this)
 	, m_filterModel(this, tr("Filter type"))
 	, m_filterCutModel(14000.0, 1.0, 14000.0, 1.0, this, tr("Cutoff frequency"))
-	, m_filterResModel(0.5, BasicFilters<>::minQ(), 10.0, 0.01, this, tr("Q/Resonance")) {
+	, m_filterResModel(0.5, BasicFilters<>::minQ(), 10.0, 0.01, this, tr("Q/Resonance"))
+{
 	for (int i = 0; i < NumTargets; ++i) {
 		float value_for_zero_amount = 0.0;
 		if (i == Volume) { value_for_zero_amount = 1.0; }
@@ -89,7 +90,8 @@ InstrumentSoundShaping::InstrumentSoundShaping(InstrumentTrack* _instrument_trac
 
 InstrumentSoundShaping::~InstrumentSoundShaping() {}
 
-float InstrumentSoundShaping::volumeLevel(NotePlayHandle* n, const f_cnt_t frame) {
+float InstrumentSoundShaping::volumeLevel(NotePlayHandle* n, const f_cnt_t frame)
+{
 	f_cnt_t envReleaseBegin = frame - n->releaseFramesDone() + n->framesBeforeRelease();
 
 	if (n->isReleased() == false) { envReleaseBegin += Engine::audioEngine()->framesPerPeriod(); }
@@ -100,7 +102,8 @@ float InstrumentSoundShaping::volumeLevel(NotePlayHandle* n, const f_cnt_t frame
 	return level;
 }
 
-void InstrumentSoundShaping::processAudioBuffer(sampleFrame* buffer, const fpp_t frames, NotePlayHandle* n) {
+void InstrumentSoundShaping::processAudioBuffer(sampleFrame* buffer, const fpp_t frames, NotePlayHandle* n)
+{
 	const f_cnt_t envTotalFrames = n->totalFramesPlayed();
 	f_cnt_t envReleaseBegin = envTotalFrames - n->releaseFramesDone() + n->framesBeforeRelease();
 
@@ -216,7 +219,8 @@ void InstrumentSoundShaping::processAudioBuffer(sampleFrame* buffer, const fpp_t
 		}*/
 }
 
-f_cnt_t InstrumentSoundShaping::envFrames(const bool _only_vol) const {
+f_cnt_t InstrumentSoundShaping::envFrames(const bool _only_vol) const
+{
 	f_cnt_t ret_val = m_envLfoParameters[Volume]->PAHD_Frames();
 
 	if (_only_vol == false) {
@@ -229,7 +233,8 @@ f_cnt_t InstrumentSoundShaping::envFrames(const bool _only_vol) const {
 	return ret_val;
 }
 
-f_cnt_t InstrumentSoundShaping::releaseFrames() const {
+f_cnt_t InstrumentSoundShaping::releaseFrames() const
+{
 	if (!m_instrumentTrack->instrument()) { return 0; }
 
 	f_cnt_t ret_val = m_instrumentTrack->instrument()->desiredReleaseFrames();
@@ -244,7 +249,8 @@ f_cnt_t InstrumentSoundShaping::releaseFrames() const {
 	return ret_val;
 }
 
-void InstrumentSoundShaping::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void InstrumentSoundShaping::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	m_filterModel.saveSettings(_doc, _this, "ftype");
 	m_filterCutModel.saveSettings(_doc, _this, "fcut");
 	m_filterResModel.saveSettings(_doc, _this, "fres");
@@ -257,7 +263,8 @@ void InstrumentSoundShaping::saveSettings(QDomDocument& _doc, QDomElement& _this
 	}
 }
 
-void InstrumentSoundShaping::loadSettings(const QDomElement& _this) {
+void InstrumentSoundShaping::loadSettings(const QDomElement& _this)
+{
 	m_filterModel.loadSettings(_this, "ftype");
 	m_filterCutModel.loadSettings(_this, "fcut");
 	m_filterResModel.loadSettings(_this, "fres");

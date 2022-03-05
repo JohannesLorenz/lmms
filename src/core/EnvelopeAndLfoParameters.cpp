@@ -39,7 +39,8 @@ const f_cnt_t minimumFrames = 1;
 
 EnvelopeAndLfoParameters::LfoInstances* EnvelopeAndLfoParameters::s_lfoInstances = nullptr;
 
-void EnvelopeAndLfoParameters::LfoInstances::trigger() {
+void EnvelopeAndLfoParameters::LfoInstances::trigger()
+{
 	QMutexLocker m(&m_lfoListMutex);
 	for (LfoList::Iterator it = m_lfos.begin(); it != m_lfos.end(); ++it) {
 		(*it)->m_lfoFrame += Engine::audioEngine()->framesPerPeriod();
@@ -47,7 +48,8 @@ void EnvelopeAndLfoParameters::LfoInstances::trigger() {
 	}
 }
 
-void EnvelopeAndLfoParameters::LfoInstances::reset() {
+void EnvelopeAndLfoParameters::LfoInstances::reset()
+{
 	QMutexLocker m(&m_lfoListMutex);
 	for (LfoList::Iterator it = m_lfos.begin(); it != m_lfos.end(); ++it) {
 		(*it)->m_lfoFrame = 0;
@@ -55,12 +57,14 @@ void EnvelopeAndLfoParameters::LfoInstances::reset() {
 	}
 }
 
-void EnvelopeAndLfoParameters::LfoInstances::add(EnvelopeAndLfoParameters* lfo) {
+void EnvelopeAndLfoParameters::LfoInstances::add(EnvelopeAndLfoParameters* lfo)
+{
 	QMutexLocker m(&m_lfoListMutex);
 	m_lfos.append(lfo);
 }
 
-void EnvelopeAndLfoParameters::LfoInstances::remove(EnvelopeAndLfoParameters* lfo) {
+void EnvelopeAndLfoParameters::LfoInstances::remove(EnvelopeAndLfoParameters* lfo)
+{
 	QMutexLocker m(&m_lfoListMutex);
 	m_lfos.removeAll(lfo);
 }
@@ -91,7 +95,8 @@ EnvelopeAndLfoParameters::EnvelopeAndLfoParameters(float _value_for_zero_amount,
 	, m_controlEnvAmountModel(false, this, tr("Modulate env amount"))
 	, m_lfoFrame(0)
 	, m_lfoAmountIsZero(false)
-	, m_lfoShapeData(nullptr) {
+	, m_lfoShapeData(nullptr)
+{
 	m_amountModel.setCenterValue(0);
 	m_lfoAmountModel.setCenterValue(0);
 
@@ -121,7 +126,8 @@ EnvelopeAndLfoParameters::EnvelopeAndLfoParameters(float _value_for_zero_amount,
 	updateSampleVars();
 }
 
-EnvelopeAndLfoParameters::~EnvelopeAndLfoParameters() {
+EnvelopeAndLfoParameters::~EnvelopeAndLfoParameters()
+{
 	m_predelayModel.disconnect(this);
 	m_attackModel.disconnect(this);
 	m_holdModel.disconnect(this);
@@ -148,7 +154,8 @@ EnvelopeAndLfoParameters::~EnvelopeAndLfoParameters() {
 	}
 }
 
-inline sample_t EnvelopeAndLfoParameters::lfoShapeSample(fpp_t _frame_offset) {
+inline sample_t EnvelopeAndLfoParameters::lfoShapeSample(fpp_t _frame_offset)
+{
 	f_cnt_t frame = (m_lfoFrame + _frame_offset) % m_lfoOscillationFrames;
 	const float phase = frame / static_cast<float>(m_lfoOscillationFrames);
 	sample_t shape_sample;
@@ -167,7 +174,8 @@ inline sample_t EnvelopeAndLfoParameters::lfoShapeSample(fpp_t _frame_offset) {
 	return shape_sample * m_lfoAmount;
 }
 
-void EnvelopeAndLfoParameters::updateLfoShapeData() {
+void EnvelopeAndLfoParameters::updateLfoShapeData()
+{
 	const fpp_t frames = Engine::audioEngine()->framesPerPeriod();
 	for (fpp_t offset = 0; offset < frames; ++offset) {
 		m_lfoShapeData[offset] = lfoShapeSample(offset);
@@ -175,7 +183,8 @@ void EnvelopeAndLfoParameters::updateLfoShapeData() {
 	m_bad_lfoShapeData = false;
 }
 
-inline void EnvelopeAndLfoParameters::fillLfoLevel(float* _buf, f_cnt_t _frame, const fpp_t _frames) {
+inline void EnvelopeAndLfoParameters::fillLfoLevel(float* _buf, f_cnt_t _frame, const fpp_t _frames)
+{
 	if (m_lfoAmountIsZero || _frame <= m_lfoPredelayFrames) {
 		for (fpp_t offset = 0; offset < _frames; ++offset) {
 			*_buf++ = 0.0f;
@@ -196,8 +205,8 @@ inline void EnvelopeAndLfoParameters::fillLfoLevel(float* _buf, f_cnt_t _frame, 
 	}
 }
 
-void EnvelopeAndLfoParameters::fillLevel(
-	float* _buf, f_cnt_t _frame, const f_cnt_t _release_begin, const fpp_t _frames) {
+void EnvelopeAndLfoParameters::fillLevel(float* _buf, f_cnt_t _frame, const f_cnt_t _release_begin, const fpp_t _frames)
+{
 	QMutexLocker m(&m_paramMutex);
 
 	if (_frame < 0 || _release_begin < 0) { return; }
@@ -224,7 +233,8 @@ void EnvelopeAndLfoParameters::fillLevel(
 	}
 }
 
-void EnvelopeAndLfoParameters::saveSettings(QDomDocument& _doc, QDomElement& _parent) {
+void EnvelopeAndLfoParameters::saveSettings(QDomDocument& _doc, QDomElement& _parent)
+{
 	m_predelayModel.saveSettings(_doc, _parent, "pdel");
 	m_attackModel.saveSettings(_doc, _parent, "att");
 	m_holdModel.saveSettings(_doc, _parent, "hold");
@@ -242,7 +252,8 @@ void EnvelopeAndLfoParameters::saveSettings(QDomDocument& _doc, QDomElement& _pa
 	_parent.setAttribute("userwavefile", m_userWave.audioFile());
 }
 
-void EnvelopeAndLfoParameters::loadSettings(const QDomElement& _this) {
+void EnvelopeAndLfoParameters::loadSettings(const QDomElement& _this)
+{
 	m_predelayModel.loadSettings(_this, "pdel");
 	m_attackModel.loadSettings(_this, "att");
 	m_holdModel.loadSettings(_this, "hold");
@@ -271,7 +282,8 @@ void EnvelopeAndLfoParameters::loadSettings(const QDomElement& _this) {
 	updateSampleVars();
 }
 
-void EnvelopeAndLfoParameters::updateSampleVars() {
+void EnvelopeAndLfoParameters::updateSampleVars()
+{
 	QMutexLocker m(&m_paramMutex);
 
 	const float frames_per_env_seg = SECS_PER_ENV_SEGMENT * Engine::audioEngine()->processingSampleRate();

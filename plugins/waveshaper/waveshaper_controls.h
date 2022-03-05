@@ -32,7 +32,8 @@
 
 class waveShaperEffect;
 
-class waveShaperControls : public EffectControls {
+class waveShaperControls : public EffectControls
+{
 	Q_OBJECT
 public:
 	waveShaperControls(waveShaperEffect* _eff);

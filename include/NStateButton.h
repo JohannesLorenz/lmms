@@ -31,7 +31,8 @@
 
 #include "ToolButton.h"
 
-class NStateButton : public ToolButton {
+class NStateButton : public ToolButton
+{
 	Q_OBJECT
 public:
 	NStateButton(QWidget* _parent);

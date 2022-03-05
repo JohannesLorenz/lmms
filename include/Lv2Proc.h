@@ -55,7 +55,8 @@ enum class Vis;
 
 //! Class representing one Lv2 processor, i.e. one Lv2 handle
 //! For Mono effects, 1 Lv2ControlBase references 2 Lv2Proc
-class Lv2Proc : public LinkedModelGroup {
+class Lv2Proc : public LinkedModelGroup
+{
 public:
 	static Plugin::PluginTypes check(const LilvPlugin* plugin, std::vector<PluginIssue>& issues);
 
@@ -70,7 +71,8 @@ public:
 	/*
 		port access
 	 */
-	struct StereoPortRef {
+	struct StereoPortRef
+	{
 		//! mono port or left port in case of stereo
 		Lv2Ports::Audio* m_left = nullptr;
 		//! unused, or right port in case of stereo
@@ -81,12 +83,14 @@ public:
 	const StereoPortRef& inPorts() const { return m_inPorts; }
 	StereoPortRef& outPorts() { return m_outPorts; }
 	const StereoPortRef& outPorts() const { return m_outPorts; }
-	template <class Functor> void foreach_port(const Functor& ftor) {
+	template <class Functor> void foreach_port(const Functor& ftor)
+	{
 		for (std::unique_ptr<Lv2Ports::PortBase>& port : m_ports) {
 			ftor(port.get());
 		}
 	}
-	template <class Functor> void foreach_port(const Functor& ftor) const {
+	template <class Functor> void foreach_port(const Functor& ftor) const
+	{
 		for (const std::unique_ptr<Lv2Ports::PortBase>& port : m_ports) {
 			ftor(port.get());
 		}

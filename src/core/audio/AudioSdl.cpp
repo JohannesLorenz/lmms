@@ -36,7 +36,8 @@
 
 AudioSdl::AudioSdl(bool& _success_ful, AudioEngine* _audioEngine)
 	: AudioDevice(DEFAULT_CHANNELS, _audioEngine)
-	, m_outBuf(new surroundSampleFrame[audioEngine()->framesPerPeriod()]) {
+	, m_outBuf(new surroundSampleFrame[audioEngine()->framesPerPeriod()])
+{
 	_success_ful = false;
 
 #ifdef LMMS_HAVE_SDL2
@@ -107,7 +108,8 @@ AudioSdl::AudioSdl(bool& _success_ful, AudioEngine* _audioEngine)
 #endif
 }
 
-AudioSdl::~AudioSdl() {
+AudioSdl::~AudioSdl()
+{
 	stopProcessing();
 
 #ifdef LMMS_HAVE_SDL2
@@ -123,7 +125,8 @@ AudioSdl::~AudioSdl() {
 	delete[] m_outBuf;
 }
 
-void AudioSdl::startProcessing() {
+void AudioSdl::startProcessing()
+{
 	m_stopped = false;
 
 #ifdef LMMS_HAVE_SDL2
@@ -134,7 +137,8 @@ void AudioSdl::startProcessing() {
 #endif
 }
 
-void AudioSdl::stopProcessing() {
+void AudioSdl::stopProcessing()
+{
 #ifdef LMMS_HAVE_SDL2
 	if (SDL_GetAudioDeviceStatus(m_outputDevice) == SDL_AUDIO_PLAYING)
 #else
@@ -161,7 +165,8 @@ void AudioSdl::stopProcessing() {
 	}
 }
 
-void AudioSdl::applyQualitySettings() {
+void AudioSdl::applyQualitySettings()
+{
 	// Better than if (0)
 #if 0
 	if( 0 )//hqAudio() )
@@ -185,13 +190,15 @@ void AudioSdl::applyQualitySettings() {
 	AudioDevice::applyQualitySettings();
 }
 
-void AudioSdl::sdlAudioCallback(void* _udata, Uint8* _buf, int _len) {
+void AudioSdl::sdlAudioCallback(void* _udata, Uint8* _buf, int _len)
+{
 	AudioSdl* _this = static_cast<AudioSdl*>(_udata);
 
 	_this->sdlAudioCallback(_buf, _len);
 }
 
-void AudioSdl::sdlAudioCallback(Uint8* _buf, int _len) {
+void AudioSdl::sdlAudioCallback(Uint8* _buf, int _len)
+{
 	if (m_stopped) {
 		memset(_buf, 0, _len);
 		return;
@@ -252,13 +259,15 @@ void AudioSdl::sdlAudioCallback(Uint8* _buf, int _len) {
 
 #ifdef LMMS_HAVE_SDL2
 
-void AudioSdl::sdlInputAudioCallback(void* _udata, Uint8* _buf, int _len) {
+void AudioSdl::sdlInputAudioCallback(void* _udata, Uint8* _buf, int _len)
+{
 	AudioSdl* _this = static_cast<AudioSdl*>(_udata);
 
 	_this->sdlInputAudioCallback(_buf, _len);
 }
 
-void AudioSdl::sdlInputAudioCallback(Uint8* _buf, int _len) {
+void AudioSdl::sdlInputAudioCallback(Uint8* _buf, int _len)
+{
 	sampleFrame* samples_buffer = (sampleFrame*)_buf;
 	fpp_t frames = _len / sizeof(sampleFrame);
 
@@ -268,7 +277,8 @@ void AudioSdl::sdlInputAudioCallback(Uint8* _buf, int _len) {
 #endif
 
 AudioSdl::setupWidget::setupWidget(QWidget* _parent)
-	: AudioDeviceSetupWidget(AudioSdl::name(), _parent) {
+	: AudioDeviceSetupWidget(AudioSdl::name(), _parent)
+{
 	QString dev = ConfigManager::inst()->value("audiosdl", "device");
 	m_device = new QLineEdit(dev, this);
 	m_device->setGeometry(10, 20, 160, 20);

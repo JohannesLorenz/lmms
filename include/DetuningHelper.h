@@ -29,12 +29,15 @@
 #include "InlineAutomation.h"
 #include "MemoryManager.h"
 
-class DetuningHelper : public InlineAutomation {
+class DetuningHelper : public InlineAutomation
+{
 	Q_OBJECT
 	MM_OPERATORS
 public:
 	DetuningHelper()
-		: InlineAutomation() {}
+		: InlineAutomation()
+	{
+	}
 
 	virtual ~DetuningHelper() {}
 

@@ -33,7 +33,8 @@
 class Analyzer;
 
 // Holds all the configuration values
-class SaControls : public EffectControls {
+class SaControls : public EffectControls
+{
 	Q_OBJECT
 public:
 	explicit SaControls(Analyzer* effect);

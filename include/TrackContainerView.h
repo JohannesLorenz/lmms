@@ -42,7 +42,8 @@ class Track;
 class TrackContainer;
 class TrackView;
 
-class TrackContainerView : public QWidget, public ModelView, public JournallingObject, public SerializingObjectHook {
+class TrackContainerView : public QWidget, public ModelView, public JournallingObject, public SerializingObjectHook
+{
 	Q_OBJECT
 public:
 	TrackContainerView(TrackContainer* tc);
@@ -113,9 +114,14 @@ protected:
 	TimePos m_currentPosition;
 
 private:
-	enum Actions { AddTrack, RemoveTrack };
+	enum Actions
+	{
+		AddTrack,
+		RemoveTrack
+	};
 
-	class scrollArea : public QScrollArea {
+	class scrollArea : public QScrollArea
+	{
 	public:
 		scrollArea(TrackContainerView* parent);
 		virtual ~scrollArea();
@@ -143,7 +149,8 @@ signals:
 	void positionChanged(const TimePos& _pos);
 };
 
-class InstrumentLoaderThread : public QThread {
+class InstrumentLoaderThread : public QThread
+{
 	Q_OBJECT
 public:
 	InstrumentLoaderThread(QObject* parent = 0, InstrumentTrack* it = 0, QString name = "");

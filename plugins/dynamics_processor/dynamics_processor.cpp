@@ -51,7 +51,8 @@ const double DNF_LOG = 5.0;
 
 dynProcEffect::dynProcEffect(Model* _parent, const Descriptor::SubPluginFeatures::Key* _key)
 	: Effect(&dynamicsprocessor_plugin_descriptor, _parent, _key)
-	, m_dpControls(this) {
+	, m_dpControls(this)
+{
 	m_currentPeak[0] = m_currentPeak[1] = DYN_NOISE_FLOOR;
 	m_rms[0] = new RmsHelper(64 * Engine::audioEngine()->processingSampleRate() / 44100);
 	m_rms[1] = new RmsHelper(64 * Engine::audioEngine()->processingSampleRate() / 44100);
@@ -59,22 +60,26 @@ dynProcEffect::dynProcEffect(Model* _parent, const Descriptor::SubPluginFeatures
 	calcRelease();
 }
 
-dynProcEffect::~dynProcEffect() {
+dynProcEffect::~dynProcEffect()
+{
 	delete m_rms[0];
 	delete m_rms[1];
 }
 
-inline void dynProcEffect::calcAttack() {
+inline void dynProcEffect::calcAttack()
+{
 	m_attCoeff = std::pow(
 		10.f, (DNF_LOG / (m_dpControls.m_attackModel.value() * 0.001)) / Engine::audioEngine()->processingSampleRate());
 }
 
-inline void dynProcEffect::calcRelease() {
+inline void dynProcEffect::calcRelease()
+{
 	m_relCoeff = std::pow(10.f,
 		(-DNF_LOG / (m_dpControls.m_releaseModel.value() * 0.001)) / Engine::audioEngine()->processingSampleRate());
 }
 
-bool dynProcEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames) {
+bool dynProcEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames)
+{
 	if (!isEnabled() || !isRunning()) {
 		// apparently we can't keep running after the decay value runs out so we'll just set the peaks to zero
 		m_currentPeak[0] = m_currentPeak[1] = DYN_NOISE_FLOOR;
@@ -186,7 +191,8 @@ bool dynProcEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames) {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data)
+{
 	return (new dynProcEffect(_parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(_data)));
 }
 }

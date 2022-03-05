@@ -44,7 +44,8 @@ TabWidget::TabWidget(const QString& caption, QWidget* parent, bool usePixmap, bo
 	, m_tabTitleText(0, 0, 0)
 	, m_tabSelected(0, 0, 0)
 	, m_tabBackground(0, 0, 0)
-	, m_tabBorder(0, 0, 0) {
+	, m_tabBorder(0, 0, 0)
+{
 
 	// Create taller tabbar when it's to display artwork tabs
 	m_tabbarHeight = usePixmap ? GRAPHIC_TAB_HEIGHT : TEXT_TAB_HEIGHT;
@@ -60,7 +61,8 @@ TabWidget::TabWidget(const QString& caption, QWidget* parent, bool usePixmap, bo
 	setPalette(pal);
 }
 
-void TabWidget::addTab(QWidget* w, const QString& name, const char* pixmap, int idx) {
+void TabWidget::addTab(QWidget* w, const QString& name, const char* pixmap, int idx)
+{
 	setFont(pointSize<8>(font()));
 
 	// Append tab when position is not given
@@ -89,7 +91,8 @@ void TabWidget::addTab(QWidget* w, const QString& name, const char* pixmap, int 
 	}
 }
 
-void TabWidget::setActiveTab(int idx) {
+void TabWidget::setActiveTab(int idx)
+{
 	if (m_widgets.contains(idx)) {
 		int old_active = m_activeTab;
 		m_activeTab = idx;
@@ -101,7 +104,8 @@ void TabWidget::setActiveTab(int idx) {
 }
 
 // Return the index of the tab at position "pos"
-int TabWidget::findTabAtPos(const QPoint* pos) {
+int TabWidget::findTabAtPos(const QPoint* pos)
+{
 
 	if (pos->y() > 1 && pos->y() < m_tabbarHeight - 1) {
 		int cx = ((m_caption == "") ? 4 : 14) + horizontalAdvance(fontMetrics(), m_caption);
@@ -118,7 +122,8 @@ int TabWidget::findTabAtPos(const QPoint* pos) {
 
 // Overload the QWidget::event handler to display tooltips (from
 // https://doc.qt.io/qt-4.8/qt-widgets-tooltips-example.html)
-bool TabWidget::event(QEvent* event) {
+bool TabWidget::event(QEvent* event)
+{
 
 	if (event->type() == QEvent::ToolTip) {
 		QHelpEvent* helpEvent = static_cast<QHelpEvent*>(event);
@@ -142,7 +147,8 @@ bool TabWidget::event(QEvent* event) {
 }
 
 // Activate tab when clicked
-void TabWidget::mousePressEvent(QMouseEvent* me) {
+void TabWidget::mousePressEvent(QMouseEvent* me)
+{
 
 	// Find index of tab that has been clicked
 	QPoint pos = me->pos();
@@ -156,7 +162,8 @@ void TabWidget::mousePressEvent(QMouseEvent* me) {
 	}
 }
 
-void TabWidget::resizeEvent(QResizeEvent*) {
+void TabWidget::resizeEvent(QResizeEvent*)
+{
 	if (!m_resizable) {
 		for (widgetStack::iterator it = m_widgets.begin(); it != m_widgets.end(); ++it) {
 			(*it).w->setFixedSize(width() - 4, height() - m_tabbarHeight);
@@ -164,7 +171,8 @@ void TabWidget::resizeEvent(QResizeEvent*) {
 	}
 }
 
-void TabWidget::paintEvent(QPaintEvent* pe) {
+void TabWidget::paintEvent(QPaintEvent* pe)
+{
 	QPainter p(this);
 	p.setFont(pointSize<7>(font()));
 
@@ -229,7 +237,8 @@ void TabWidget::paintEvent(QPaintEvent* pe) {
 }
 
 // Switch between tabs with mouse wheel
-void TabWidget::wheelEvent(QWheelEvent* we) {
+void TabWidget::wheelEvent(QWheelEvent* we)
+{
 	if (position(we).y() > m_tabheight) { return; }
 
 	we->accept();
@@ -243,7 +252,8 @@ void TabWidget::wheelEvent(QWheelEvent* we) {
 }
 
 // Let parent widgets know how much space this tab widget needs
-QSize TabWidget::minimumSizeHint() const {
+QSize TabWidget::minimumSizeHint() const
+{
 	if (m_resizable) {
 		int maxWidth = 0, maxHeight = 0;
 		for (widgetStack::const_iterator it = m_widgets.begin(); it != m_widgets.end(); ++it) {
@@ -259,7 +269,8 @@ QSize TabWidget::minimumSizeHint() const {
 	}
 }
 
-QSize TabWidget::sizeHint() const {
+QSize TabWidget::sizeHint() const
+{
 	if (m_resizable) {
 		int maxWidth = 0, maxHeight = 0;
 		for (widgetStack::const_iterator it = m_widgets.begin(); it != m_widgets.end(); ++it) {

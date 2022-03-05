@@ -7,7 +7,8 @@ class FloatModel;
 class MixerLine;
 class MixerView;
 
-class SendButtonIndicator : public QLabel {
+class SendButtonIndicator : public QLabel
+{
 public:
 	SendButtonIndicator(QWidget* _parent, MixerLine* _owner, MixerView* _mv);
 

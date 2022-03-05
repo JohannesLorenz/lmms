@@ -40,7 +40,8 @@ class AutomatableModel;
 		(justification: setting the wrong typed model to a widget will cause
 		hard-to-find runtime errors)
 */
-class Control {
+class Control
+{
 public:
 	virtual QWidget* topWidget() = 0;
 	virtual void setText(const QString& text) = 0;
@@ -52,7 +53,8 @@ public:
 	virtual ~Control();
 };
 
-class KnobControl : public Control {
+class KnobControl : public Control
+{
 	class Knob* m_knob;
 
 public:
@@ -67,7 +69,8 @@ public:
 	~KnobControl() override;
 };
 
-class ComboControl : public Control {
+class ComboControl : public Control
+{
 	QWidget* m_widget;
 	class ComboBox* m_combo;
 	class QLabel* m_label;
@@ -84,7 +87,8 @@ public:
 	~ComboControl() override;
 };
 
-class LcdControl : public Control {
+class LcdControl : public Control
+{
 	class LcdSpinBox* m_lcd;
 
 public:
@@ -99,7 +103,8 @@ public:
 	~LcdControl() override;
 };
 
-class CheckControl : public Control {
+class CheckControl : public Control
+{
 	QWidget* m_widget;
 	class LedCheckBox* m_checkBox;
 	QLabel* m_label;

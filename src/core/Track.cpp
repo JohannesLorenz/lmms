@@ -68,7 +68,8 @@ Track::Track(TrackTypes type, TrackContainer* tc)
 	, m_clips()
 	, /*!< The clips (segments) */
 	m_color(0, 0, 0)
-	, m_hasColor(false) {
+	, m_hasColor(false)
+{
 	m_trackContainer->addTrack(this);
 	m_height = -1;
 }
@@ -77,7 +78,8 @@ Track::Track(TrackTypes type, TrackContainer* tc)
  *
  *  Delete the clips and remove this track from the track container.
  */
-Track::~Track() {
+Track::~Track()
+{
 	lock();
 	emit destroyedTrack();
 
@@ -94,7 +96,8 @@ Track::~Track() {
  *  \param tt The type of track to create
  *  \param tc The track container to attach to
  */
-Track* Track::create(TrackTypes tt, TrackContainer* tc) {
+Track* Track::create(TrackTypes tt, TrackContainer* tc)
+{
 	Engine::audioEngine()->requestChangeInModel();
 
 	Track* t = nullptr;
@@ -126,7 +129,8 @@ Track* Track::create(TrackTypes tt, TrackContainer* tc) {
  *  \param element The QDomElement containing the type of track to create
  *  \param tc The track container to attach to
  */
-Track* Track::create(const QDomElement& element, TrackContainer* tc) {
+Track* Track::create(const QDomElement& element, TrackContainer* tc)
+{
 	Engine::audioEngine()->requestChangeInModel();
 
 	Track* t = create(static_cast<TrackTypes>(element.attribute("type").toInt()), tc);
@@ -140,7 +144,8 @@ Track* Track::create(const QDomElement& element, TrackContainer* tc) {
 /*! \brief Clone a track from this track
  *
  */
-Track* Track::clone() {
+Track* Track::clone()
+{
 	// Save track to temporary XML and load it to create a new identical track
 	QDomDocument doc;
 	QDomElement parent = doc.createElement("clonedtrack");
@@ -162,7 +167,8 @@ Track* Track::clone() {
  *  \todo Does this accurately describe the parameters?  I think not!?
  *  \todo Save the track height
  */
-void Track::saveSettings(QDomDocument& doc, QDomElement& element) {
+void Track::saveSettings(QDomDocument& doc, QDomElement& element)
+{
 	if (!m_simpleSerializingMode) { element.setTagName("track"); }
 	element.setAttribute("type", type());
 	element.setAttribute("name", name());
@@ -203,7 +209,8 @@ void Track::saveSettings(QDomDocument& doc, QDomElement& element) {
  *  \param element the QDomElement to load track settings from
  *  \todo Load the track height.
  */
-void Track::loadSettings(const QDomElement& element) {
+void Track::loadSettings(const QDomElement& element)
+{
 	if (element.attribute("type").toInt() != type()) {
 		qWarning("Current track-type does not match track-type of "
 				 "settings-node!\n");
@@ -265,7 +272,8 @@ void Track::loadSettings(const QDomElement& element) {
  *
  *  \param clip The Clip to attach to this track.
  */
-Clip* Track::addClip(Clip* clip) {
+Clip* Track::addClip(Clip* clip)
+{
 	m_clips.push_back(clip);
 
 	emit clipAdded(clip);
@@ -277,7 +285,8 @@ Clip* Track::addClip(Clip* clip) {
  *
  *  \param clip The Clip to remove from this track.
  */
-void Track::removeClip(Clip* clip) {
+void Track::removeClip(Clip* clip)
+{
 	clipVector::iterator it = std::find(m_clips.begin(), m_clips.end(), clip);
 	if (it != m_clips.end()) {
 		m_clips.erase(it);
@@ -289,7 +298,8 @@ void Track::removeClip(Clip* clip) {
 }
 
 /*! \brief Remove all Clips from this track */
-void Track::deleteClips() {
+void Track::deleteClips()
+{
 	while (!m_clips.isEmpty()) {
 		delete m_clips.first();
 	}
@@ -313,7 +323,8 @@ int Track::numOfClips() { return m_clips.size(); }
  *  \todo if we create a Clip here, should we somehow attach it to the
  *     track?
  */
-Clip* Track::getClip(int clipNum) {
+Clip* Track::getClip(int clipNum)
+{
 	if (clipNum < m_clips.size()) { return m_clips[clipNum]; }
 	printf("called Track::getClip( %d ), "
 		   "but Clip %d doesn't exist\n",
@@ -326,7 +337,8 @@ Clip* Track::getClip(int clipNum) {
  *  \param clip The Clip to search for.
  *  \return its number in our array.
  */
-int Track::getClipNum(const Clip* clip) {
+int Track::getClipNum(const Clip* clip)
+{
 	//	for( int i = 0; i < getTrackContentWidget()->numOfClips(); ++i )
 	clipVector::iterator it = std::find(m_clips.begin(), m_clips.end(), clip);
 	if (it != m_clips.end()) {
@@ -351,7 +363,8 @@ int Track::getClipNum(const Clip* clip) {
  *  \param start The MIDI start time of the range.
  *  \param end   The MIDI endi time of the range.
  */
-void Track::getClipsInRange(clipVector& clipV, const TimePos& start, const TimePos& end) {
+void Track::getClipsInRange(clipVector& clipV, const TimePos& start, const TimePos& end)
+{
 	for (Clip* clip : m_clips) {
 		int s = clip->startPosition();
 		int e = clip->endPosition();
@@ -371,7 +384,8 @@ void Track::getClipsInRange(clipVector& clipV, const TimePos& start, const TimeP
  *  \param clipNum1 The first Clip to swap.
  *  \param clipNum2 The second Clip to swap.
  */
-void Track::swapPositionOfClips(int clipNum1, int clipNum2) {
+void Track::swapPositionOfClips(int clipNum1, int clipNum2)
+{
 	qSwap(m_clips[clipNum1], m_clips[clipNum2]);
 
 	const TimePos pos = m_clips[clipNum1]->startPosition();
@@ -380,7 +394,8 @@ void Track::swapPositionOfClips(int clipNum1, int clipNum2) {
 	m_clips[clipNum2]->movePosition(pos);
 }
 
-void Track::createClipsForPattern(int pattern) {
+void Track::createClipsForPattern(int pattern)
+{
 	while (numOfClips() < pattern + 1) {
 		TimePos position = TimePos(numOfClips(), 0);
 		Clip* clip = createClip(position);
@@ -395,7 +410,8 @@ void Track::createClipsForPattern(int pattern) {
  *    in ascending order by Clip time, once we hit a Clip that was earlier
  *    than the insert time, we could fall out of the loop early.
  */
-void Track::insertBar(const TimePos& pos) {
+void Track::insertBar(const TimePos& pos)
+{
 	// we'll increase the position of every Clip, positioned behind pos, by
 	// one bar
 	for (clipVector::iterator it = m_clips.begin(); it != m_clips.end(); ++it) {
@@ -407,7 +423,8 @@ void Track::insertBar(const TimePos& pos) {
  *
  *  \param pos The time at which we want to remove the bar.
  */
-void Track::removeBar(const TimePos& pos) {
+void Track::removeBar(const TimePos& pos)
+{
 	// we'll decrease the position of every Clip, positioned behind pos, by
 	// one bar
 	for (clipVector::iterator it = m_clips.begin(); it != m_clips.end(); ++it) {
@@ -421,7 +438,8 @@ void Track::removeBar(const TimePos& pos) {
  *  keeping track of the latest time found in ticks.  Then we return
  *  that in bars by dividing by the number of ticks per bar.
  */
-bar_t Track::length() const {
+bar_t Track::length() const
+{
 	// find last end-position
 	tick_t last = 0;
 	for (clipVector::const_iterator it = m_clips.begin(); it != m_clips.end(); ++it) {
@@ -440,7 +458,8 @@ bar_t Track::length() const {
  *  is already soloed.  Then we have to save the mute state of all tracks,
  *  and set our mute state to on and all the others to off.
  */
-void Track::toggleSolo() {
+void Track::toggleSolo()
+{
 	const TrackContainer::TrackList& tl = m_trackContainer->tracks();
 
 	bool soloBefore = false;
@@ -476,13 +495,15 @@ void Track::toggleSolo() {
 	}
 }
 
-void Track::setColor(const QColor& c) {
+void Track::setColor(const QColor& c)
+{
 	m_hasColor = true;
 	m_color = c;
 	emit colorChanged();
 }
 
-void Track::resetColor() {
+void Track::resetColor()
+{
 	m_hasColor = false;
 	emit colorChanged();
 }

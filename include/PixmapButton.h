@@ -29,7 +29,8 @@
 
 #include "AutomatableButton.h"
 
-class LMMS_EXPORT PixmapButton : public AutomatableButton {
+class LMMS_EXPORT PixmapButton : public AutomatableButton
+{
 	Q_OBJECT
 public:
 	PixmapButton(QWidget* _parent, const QString& _name = QString());

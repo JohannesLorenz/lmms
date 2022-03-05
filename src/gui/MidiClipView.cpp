@@ -48,7 +48,8 @@ MidiClipView::MidiClipView(MidiClip* clip, TrackView* parent)
 	, m_mutedNoteBorderColor(100, 100, 100, 220)
 	,
 	// TODO if this option is ever added to the GUI, rename it to legacysepattern
-	m_legacySEPattern(ConfigManager::inst()->value("ui", "legacysebb", "0").toInt()) {
+	m_legacySEPattern(ConfigManager::inst()->value("ui", "legacysebb", "0").toInt())
+{
 	connect(getGUI()->pianoRoll(), SIGNAL(currentMidiClipChanged()), this, SLOT(update()));
 
 	if (s_stepBtnOn0 == nullptr) { s_stepBtnOn0 = new QPixmap(embed::getIconPixmap("step_btn_on_0")); }
@@ -66,20 +67,23 @@ MidiClipView::MidiClipView(MidiClip* clip, TrackView* parent)
 
 MidiClip* MidiClipView::getMidiClip() { return m_clip; }
 
-void MidiClipView::update() {
+void MidiClipView::update()
+{
 	ToolTip::add(this, m_clip->name());
 
 	ClipView::update();
 }
 
-void MidiClipView::openInPianoRoll() {
+void MidiClipView::openInPianoRoll()
+{
 	getGUI()->pianoRoll()->setCurrentMidiClip(m_clip);
 	getGUI()->pianoRoll()->parentWidget()->show();
 	getGUI()->pianoRoll()->show();
 	getGUI()->pianoRoll()->setFocus();
 }
 
-void MidiClipView::setGhostInPianoRoll() {
+void MidiClipView::setGhostInPianoRoll()
+{
 	getGUI()->pianoRoll()->setGhostMidiClip(m_clip);
 	getGUI()->pianoRoll()->parentWidget()->show();
 	getGUI()->pianoRoll()->show();
@@ -88,14 +92,16 @@ void MidiClipView::setGhostInPianoRoll() {
 
 void MidiClipView::resetName() { m_clip->setName(""); }
 
-void MidiClipView::changeName() {
+void MidiClipView::changeName()
+{
 	QString s = m_clip->name();
 	RenameDialog rename_dlg(s);
 	rename_dlg.exec();
 	m_clip->setName(s);
 }
 
-void MidiClipView::constructContextMenu(QMenu* _cm) {
+void MidiClipView::constructContextMenu(QMenu* _cm)
+{
 	QAction* a = new QAction(embed::getIconPixmap("piano"), tr("Open in piano-roll"), _cm);
 	_cm->insertAction(_cm->actions()[0], a);
 	connect(a, SIGNAL(triggered(bool)), this, SLOT(openInPianoRoll()));
@@ -122,7 +128,8 @@ void MidiClipView::constructContextMenu(QMenu* _cm) {
 	}
 }
 
-void MidiClipView::mousePressEvent(QMouseEvent* _me) {
+void MidiClipView::mousePressEvent(QMouseEvent* _me)
+{
 	bool displayPattern = fixedClips() || (pixelsPerBar() >= 96 && m_legacySEPattern);
 	if (_me->button() == Qt::LeftButton && m_clip->m_clipType == MidiClip::BeatClip && displayPattern
 		&& _me->y() > height() - s_stepBtnOff->height())
@@ -167,7 +174,8 @@ void MidiClipView::mousePressEvent(QMouseEvent* _me) {
 	}
 }
 
-void MidiClipView::mouseDoubleClickEvent(QMouseEvent* _me) {
+void MidiClipView::mouseDoubleClickEvent(QMouseEvent* _me)
+{
 	if (_me->button() != Qt::LeftButton) {
 		_me->ignore();
 		return;
@@ -175,7 +183,8 @@ void MidiClipView::mouseDoubleClickEvent(QMouseEvent* _me) {
 	if (m_clip->m_clipType == MidiClip::MelodyClip || !fixedClips()) { openInPianoRoll(); }
 }
 
-void MidiClipView::wheelEvent(QWheelEvent* we) {
+void MidiClipView::wheelEvent(QWheelEvent* we)
+{
 	if (m_clip->m_clipType == MidiClip::BeatClip && (fixedClips() || pixelsPerBar() >= 96)
 		&& position(we).y() > height() - s_stepBtnOff->height()) {
 		//	get the step number that was wheeled on and
@@ -213,7 +222,8 @@ void MidiClipView::wheelEvent(QWheelEvent* we) {
 
 static int computeNoteRange(int minKey, int maxKey) { return (maxKey - minKey) + 1; }
 
-void MidiClipView::paintEvent(QPaintEvent*) {
+void MidiClipView::paintEvent(QPaintEvent*)
+{
 	QPainter painter(this);
 
 	if (!needsUpdate()) {

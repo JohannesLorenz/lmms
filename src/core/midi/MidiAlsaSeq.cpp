@@ -34,7 +34,8 @@
 const int EventPollTimeOut = 250;
 
 // static helper functions
-static QString portName(snd_seq_client_info_t* _cinfo, snd_seq_port_info_t* _pinfo) {
+static QString portName(snd_seq_client_info_t* _cinfo, snd_seq_port_info_t* _pinfo)
+{
 	return QString("%1:%2 %3:%4")
 		.arg(snd_seq_port_info_get_client(_pinfo))
 		.arg(snd_seq_port_info_get_port(_pinfo))
@@ -42,7 +43,8 @@ static QString portName(snd_seq_client_info_t* _cinfo, snd_seq_port_info_t* _pin
 		.arg(snd_seq_port_info_get_name(_pinfo));
 }
 
-static QString portName(snd_seq_t* _seq, const snd_seq_addr_t* _addr) {
+static QString portName(snd_seq_t* _seq, const snd_seq_addr_t* _addr)
+{
 	snd_seq_client_info_t* cinfo;
 	snd_seq_port_info_t* pinfo;
 
@@ -66,7 +68,8 @@ MidiAlsaSeq::MidiAlsaSeq()
 	, m_seqHandle(nullptr)
 	, m_queueID(-1)
 	, m_quit(false)
-	, m_portListUpdateTimer(this) {
+	, m_portListUpdateTimer(this)
+{
 	int err;
 	if ((err = snd_seq_open(&m_seqHandle, probeDevice().toLatin1().constData(), SND_SEQ_OPEN_DUPLEX, 0)) < 0) {
 		fprintf(stderr, "cannot open sequencer: %s\n", snd_strerror(err));
@@ -99,7 +102,8 @@ MidiAlsaSeq::MidiAlsaSeq()
 	start(QThread::IdlePriority);
 }
 
-MidiAlsaSeq::~MidiAlsaSeq() {
+MidiAlsaSeq::~MidiAlsaSeq()
+{
 	if (isRunning()) {
 		m_quit = true;
 		wait(EventPollTimeOut * 2);
@@ -112,7 +116,8 @@ MidiAlsaSeq::~MidiAlsaSeq() {
 	}
 }
 
-QString MidiAlsaSeq::probeDevice() {
+QString MidiAlsaSeq::probeDevice()
+{
 	QString dev = ConfigManager::inst()->value("Midialsaseq", "device");
 	if (dev.isEmpty()) {
 		if (getenv("MIDIDEV") != nullptr) { return getenv("MIDIDEV"); }
@@ -121,7 +126,8 @@ QString MidiAlsaSeq::probeDevice() {
 	return dev;
 }
 
-void MidiAlsaSeq::processOutEvent(const MidiEvent& event, const TimePos& time, const MidiPort* port) {
+void MidiAlsaSeq::processOutEvent(const MidiEvent& event, const TimePos& time, const MidiPort* port)
+{
 	// HACK!!! - need a better solution which isn't that easy since we
 	// cannot store const-ptrs in our map because we need to call non-const
 	// methods of MIDI-port - it's a mess...
@@ -159,7 +165,8 @@ void MidiAlsaSeq::processOutEvent(const MidiEvent& event, const TimePos& time, c
 	m_seqMutex.unlock();
 }
 
-void MidiAlsaSeq::applyPortMode(MidiPort* _port) {
+void MidiAlsaSeq::applyPortMode(MidiPort* _port)
+{
 	m_seqMutex.lock();
 
 	// determine port-capabilities
@@ -202,7 +209,8 @@ void MidiAlsaSeq::applyPortMode(MidiPort* _port) {
 	m_seqMutex.unlock();
 }
 
-void MidiAlsaSeq::applyPortName(MidiPort* _port) {
+void MidiAlsaSeq::applyPortName(MidiPort* _port)
+{
 	m_seqMutex.lock();
 
 	for (int i = 0; i < 2; ++i) {
@@ -218,7 +226,8 @@ void MidiAlsaSeq::applyPortName(MidiPort* _port) {
 	m_seqMutex.unlock();
 }
 
-void MidiAlsaSeq::removePort(MidiPort* _port) {
+void MidiAlsaSeq::removePort(MidiPort* _port)
+{
 	if (m_portIDs.contains(_port)) {
 		m_seqMutex.lock();
 		snd_seq_delete_simple_port(m_seqHandle, m_portIDs[_port][0]);
@@ -230,7 +239,8 @@ void MidiAlsaSeq::removePort(MidiPort* _port) {
 	MidiClient::removePort(_port);
 }
 
-QString MidiAlsaSeq::sourcePortName(const MidiEvent& _event) const {
+QString MidiAlsaSeq::sourcePortName(const MidiEvent& _event) const
+{
 	if (_event.sourcePort()) {
 		const snd_seq_addr_t* addr = static_cast<const snd_seq_addr_t*>(_event.sourcePort());
 		return portName(m_seqHandle, addr);
@@ -238,7 +248,8 @@ QString MidiAlsaSeq::sourcePortName(const MidiEvent& _event) const {
 	return MidiClient::sourcePortName(_event);
 }
 
-void MidiAlsaSeq::subscribeReadablePort(MidiPort* _port, const QString& _dest, bool _subscribe) {
+void MidiAlsaSeq::subscribeReadablePort(MidiPort* _port, const QString& _dest, bool _subscribe)
+{
 	if (!m_portIDs.contains(_port) || m_portIDs[_port][0] < 0) { return; }
 
 	m_seqMutex.lock();
@@ -269,7 +280,8 @@ void MidiAlsaSeq::subscribeReadablePort(MidiPort* _port, const QString& _dest, b
 	m_seqMutex.unlock();
 }
 
-void MidiAlsaSeq::subscribeWritablePort(MidiPort* _port, const QString& _dest, bool _subscribe) {
+void MidiAlsaSeq::subscribeWritablePort(MidiPort* _port, const QString& _dest, bool _subscribe)
+{
 	if (!m_portIDs.contains(_port)) { return; }
 	const int pid = m_portIDs[_port][1] < 0 ? m_portIDs[_port][0] : m_portIDs[_port][1];
 	if (pid < 0) { return; }
@@ -300,7 +312,8 @@ void MidiAlsaSeq::subscribeWritablePort(MidiPort* _port, const QString& _dest, b
 	m_seqMutex.unlock();
 }
 
-void MidiAlsaSeq::run() {
+void MidiAlsaSeq::run()
+{
 	// watch the pipe and sequencer input events
 	int pollfd_count = snd_seq_poll_descriptors_count(m_seqHandle, POLLIN);
 	struct pollfd* pollfd_set = new struct pollfd[pollfd_count + 1];
@@ -411,7 +424,8 @@ void MidiAlsaSeq::run() {
 	delete[] pollfd_set;
 }
 
-void MidiAlsaSeq::changeQueueTempo(bpm_t _bpm) {
+void MidiAlsaSeq::changeQueueTempo(bpm_t _bpm)
+{
 	m_seqMutex.lock();
 
 	snd_seq_change_queue_tempo(m_seqHandle, m_queueID, 60000000 / (int)_bpm, nullptr);
@@ -420,7 +434,8 @@ void MidiAlsaSeq::changeQueueTempo(bpm_t _bpm) {
 	m_seqMutex.unlock();
 }
 
-void MidiAlsaSeq::updatePortList() {
+void MidiAlsaSeq::updatePortList()
+{
 	QStringList readablePorts;
 	QStringList writablePorts;
 

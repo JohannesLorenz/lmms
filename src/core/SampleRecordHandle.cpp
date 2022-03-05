@@ -37,9 +37,12 @@ SampleRecordHandle::SampleRecordHandle(SampleClip* clip)
 	, m_minLength(clip->length())
 	, m_track(clip->getTrack())
 	, m_patternTrack(nullptr)
-	, m_clip(clip) {}
+	, m_clip(clip)
+{
+}
 
-SampleRecordHandle::~SampleRecordHandle() {
+SampleRecordHandle::~SampleRecordHandle()
+{
 	if (!m_buffers.empty()) {
 		SampleBuffer* sb;
 		createSampleBuffer(&sb);
@@ -53,7 +56,8 @@ SampleRecordHandle::~SampleRecordHandle() {
 	m_clip->setRecord(false);
 }
 
-void SampleRecordHandle::play(sampleFrame* /*_working_buffer*/) {
+void SampleRecordHandle::play(sampleFrame* /*_working_buffer*/)
+{
 	const sampleFrame* recbuf = Engine::audioEngine()->inputBuffer();
 	const f_cnt_t frames = Engine::audioEngine()->inputBufferFrames();
 	writeBuffer(recbuf, frames);
@@ -68,13 +72,15 @@ void SampleRecordHandle::play(sampleFrame* /*_working_buffer*/) {
 
 bool SampleRecordHandle::isFinished() const { return false; }
 
-bool SampleRecordHandle::isFromTrack(const Track* _track) const {
+bool SampleRecordHandle::isFromTrack(const Track* _track) const
+{
 	return (m_track == _track || m_patternTrack == _track);
 }
 
 f_cnt_t SampleRecordHandle::framesRecorded() const { return (m_framesRecorded); }
 
-void SampleRecordHandle::createSampleBuffer(SampleBuffer** sampleBuf) {
+void SampleRecordHandle::createSampleBuffer(SampleBuffer** sampleBuf)
+{
 	const f_cnt_t frames = framesRecorded();
 	// create buffer to store all recorded buffers in
 	sampleFrame* data = new sampleFrame[frames];
@@ -94,7 +100,8 @@ void SampleRecordHandle::createSampleBuffer(SampleBuffer** sampleBuf) {
 	delete[] data;
 }
 
-void SampleRecordHandle::writeBuffer(const sampleFrame* _ab, const f_cnt_t _frames) {
+void SampleRecordHandle::writeBuffer(const sampleFrame* _ab, const f_cnt_t _frames)
+{
 	sampleFrame* buf = new sampleFrame[_frames];
 	for (f_cnt_t frame = 0; frame < _frames; ++frame) {
 		for (ch_cnt_t chnl = 0; chnl < DEFAULT_CHANNELS; ++chnl) {

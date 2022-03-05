@@ -38,7 +38,8 @@ Microtuner::Microtuner()
 	, m_enabledModel(false, this, tr("Microtuner on / off"))
 	, m_scaleModel(this, tr("Selected scale"))
 	, m_keymapModel(this, tr("Selected keyboard mapping"))
-	, m_keyRangeImportModel(true) {
+	, m_keyRangeImportModel(true)
+{
 	for (unsigned int i = 0; i < MaxScaleCount; i++) {
 		m_scaleModel.addItem(QString::number(i) + ": " + Engine::getSong()->getScale(i)->getDescription());
 	}
@@ -54,7 +55,8 @@ Microtuner::Microtuner()
  *  \param key A MIDI key number ranging from 0 to 127.
  *  \return Frequency in Hz; 0 if key is out of range or not mapped.
  */
-float Microtuner::keyToFreq(int key, int userBaseNote) const {
+float Microtuner::keyToFreq(int key, int userBaseNote) const
+{
 	if (key < 0 || key >= NumKeys) { return 0; }
 	Song* song = Engine::getSong();
 	if (!song) { return 0; }
@@ -103,7 +105,8 @@ float Microtuner::keyToFreq(int key, int userBaseNote) const {
  * \brief Update scale name displayed in the microtuner scale list.
  * \param index Index of the scale to update; update all scales if -1 or out of range.
  */
-void Microtuner::updateScaleList(int index) {
+void Microtuner::updateScaleList(int index)
+{
 	if (index >= 0 && index < MaxScaleCount) {
 		m_scaleModel.replaceItem(
 			index, QString::number(index) + ": " + Engine::getSong()->getScale(index)->getDescription());
@@ -118,7 +121,8 @@ void Microtuner::updateScaleList(int index) {
  * \brief Update keymap name displayed in the microtuner scale list.
  * \param index Index of the keymap to update; update all keymaps if -1 or out of range.
  */
-void Microtuner::updateKeymapList(int index) {
+void Microtuner::updateKeymapList(int index)
+{
 	if (index >= 0 && index < MaxKeymapCount) {
 		m_keymapModel.replaceItem(
 			index, QString::number(index) + ": " + Engine::getSong()->getKeymap(index)->getDescription());
@@ -129,14 +133,16 @@ void Microtuner::updateKeymapList(int index) {
 	}
 }
 
-void Microtuner::saveSettings(QDomDocument& document, QDomElement& element) {
+void Microtuner::saveSettings(QDomDocument& document, QDomElement& element)
+{
 	m_enabledModel.saveSettings(document, element, "enabled");
 	m_scaleModel.saveSettings(document, element, "scale");
 	m_keymapModel.saveSettings(document, element, "keymap");
 	m_keyRangeImportModel.saveSettings(document, element, "range_import");
 }
 
-void Microtuner::loadSettings(const QDomElement& element) {
+void Microtuner::loadSettings(const QDomElement& element)
+{
 	m_enabledModel.loadSettings(element, "enabled");
 	m_scaleModel.loadSettings(element, "scale");
 	m_keymapModel.loadSettings(element, "keymap");

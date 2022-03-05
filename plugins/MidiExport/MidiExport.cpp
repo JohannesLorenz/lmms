@@ -49,12 +49,15 @@ Plugin::Descriptor PLUGIN_EXPORT midiexport_plugin_descriptor = {
 }
 
 MidiExport::MidiExport()
-	: ExportFilter(&midiexport_plugin_descriptor) {}
+	: ExportFilter(&midiexport_plugin_descriptor)
+{
+}
 
 MidiExport::~MidiExport() {}
 
 bool MidiExport::tryExport(const TrackContainer::TrackList& tracks, const TrackContainer::TrackList& patternStoreTracks,
-	int tempo, int masterPitch, const QString& filename) {
+	int tempo, int masterPitch, const QString& filename)
+{
 	QFile f(filename);
 	f.open(QIODevice::WriteOnly);
 	QDataStream midiout(&f);
@@ -220,7 +223,8 @@ bool MidiExport::tryExport(const TrackContainer::TrackList& tracks, const TrackC
 }
 
 void MidiExport::writeMidiClip(
-	MidiNoteVector& midiClip, const QDomNode& n, int base_pitch, double base_volume, int base_time) {
+	MidiNoteVector& midiClip, const QDomNode& n, int base_pitch, double base_volume, int base_time)
+{
 	// TODO interpret steps="12" muted="0" type="1" name="Piano1"  len="2592"
 	for (QDomNode nn = n.firstChild(); !nn.isNull(); nn = nn.nextSibling()) {
 		QDomElement note = nn.toElement();
@@ -237,13 +241,15 @@ void MidiExport::writeMidiClip(
 	}
 }
 
-void MidiExport::writeMidiClipToTrack(MTrack& mtrack, MidiNoteVector& nv) {
+void MidiExport::writeMidiClipToTrack(MTrack& mtrack, MidiNoteVector& nv)
+{
 	for (auto it = nv.begin(); it != nv.end(); ++it) {
 		mtrack.addNote(it->pitch, it->volume, it->time / 48.0, it->duration / 48.0);
 	}
 }
 
-void MidiExport::writePatternClip(MidiNoteVector& src, MidiNoteVector& dst, int len, int base, int start, int end) {
+void MidiExport::writePatternClip(MidiNoteVector& src, MidiNoteVector& dst, int len, int base, int start, int end)
+{
 	if (start >= end) { return; }
 	start -= base;
 	end -= base;
@@ -260,7 +266,8 @@ void MidiExport::writePatternClip(MidiNoteVector& src, MidiNoteVector& dst, int 
 	}
 }
 
-void MidiExport::processPatternNotes(MidiNoteVector& nv, int cutPos) {
+void MidiExport::processPatternNotes(MidiNoteVector& nv, int cutPos)
+{
 	std::sort(nv.begin(), nv.end());
 	int cur = INT_MAX, next = INT_MAX;
 	for (auto it = nv.rbegin(); it != nv.rend(); ++it) {
@@ -272,7 +279,8 @@ void MidiExport::processPatternNotes(MidiNoteVector& nv, int cutPos) {
 	}
 }
 
-void MidiExport::error() {
+void MidiExport::error()
+{
 	// qDebug() << "MidiExport error: " << m_error ;
 }
 

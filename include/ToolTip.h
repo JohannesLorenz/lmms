@@ -31,7 +31,8 @@
 
 class QWidget;
 
-struct ToolTip {
+struct ToolTip
+{
 	static void LMMS_EXPORT add(QWidget* _w, const QString& _txt);
 };
 

@@ -34,7 +34,8 @@
 
 class MidiPort;
 
-class MidiController : public Controller, public MidiEventProcessor {
+class MidiController : public Controller, public MidiEventProcessor
+{
 	Q_OBJECT
 public:
 	MidiController(Model* _parent);
@@ -42,7 +43,8 @@ public:
 
 	virtual void processInEvent(const MidiEvent& _me, const TimePos& _time, f_cnt_t offset = 0) override;
 
-	virtual void processOutEvent(const MidiEvent& _me, const TimePos& _time, f_cnt_t offset = 0) override {
+	virtual void processOutEvent(const MidiEvent& _me, const TimePos& _time, f_cnt_t offset = 0) override
+	{
 		// No output yet
 	}
 

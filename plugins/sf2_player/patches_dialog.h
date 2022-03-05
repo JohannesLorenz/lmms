@@ -35,7 +35,8 @@ class QLabel;
 //----------------------------------------------------------------------------
 // qsynthPresetForm -- UI wrapper form.
 
-class patchesDialog : public QDialog, private Ui::patchesDialog {
+class patchesDialog : public QDialog, private Ui::patchesDialog
+{
 	Q_OBJECT
 
 public:

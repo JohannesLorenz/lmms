@@ -47,19 +47,22 @@ Plugin::Descriptor PLUGIN_EXPORT delay_plugin_descriptor = {
 
 DelayEffect::DelayEffect(Model* parent, const Plugin::Descriptor::SubPluginFeatures::Key* key)
 	: Effect(&delay_plugin_descriptor, parent, key)
-	, m_delayControls(this) {
+	, m_delayControls(this)
+{
 	m_delay = 0;
 	m_delay = new StereoDelay(20, Engine::audioEngine()->processingSampleRate());
 	m_lfo = new Lfo(Engine::audioEngine()->processingSampleRate());
 	m_outGain = 1.0;
 }
 
-DelayEffect::~DelayEffect() {
+DelayEffect::~DelayEffect()
+{
 	if (m_delay) { delete m_delay; }
 	if (m_lfo) { delete m_lfo; }
 }
 
-bool DelayEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
+bool DelayEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
+{
 	if (!isEnabled() || !isRunning()) { return (false); }
 	double outSum = 0.0;
 	const float sr = Engine::audioEngine()->processingSampleRate();
@@ -122,7 +125,8 @@ bool DelayEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
 	return isRunning();
 }
 
-void DelayEffect::changeSampleRate() {
+void DelayEffect::changeSampleRate()
+{
 	m_lfo->setSampleRate(Engine::audioEngine()->processingSampleRate());
 	m_delay->setSampleRate(Engine::audioEngine()->processingSampleRate());
 }
@@ -130,7 +134,8 @@ void DelayEffect::changeSampleRate() {
 extern "C" {
 
 // needed for getting plugin out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data)
+{
 	return new DelayEffect(parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(data));
 }
 }

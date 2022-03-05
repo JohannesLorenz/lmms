@@ -36,10 +36,16 @@
 class AutomationTrack;
 class TimePos;
 
-class LMMS_EXPORT AutomationClip : public Clip {
+class LMMS_EXPORT AutomationClip : public Clip
+{
 	Q_OBJECT
 public:
-	enum ProgressionTypes { DiscreteProgression, LinearProgression, CubicHermiteProgression };
+	enum ProgressionTypes
+	{
+		DiscreteProgression,
+		LinearProgression,
+		CubicHermiteProgression
+	};
 
 	typedef QMap<int, AutomationNode> timeMap;
 	typedef QVector<QPointer<AutomatableModel>> objectVector;

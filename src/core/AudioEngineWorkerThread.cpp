@@ -42,13 +42,15 @@ QWaitCondition* AudioEngineWorkerThread::queueReadyWaitCond = nullptr;
 QList<AudioEngineWorkerThread*> AudioEngineWorkerThread::workerThreads;
 
 // implementation of internal JobQueue
-void AudioEngineWorkerThread::JobQueue::reset(OperationMode _opMode) {
+void AudioEngineWorkerThread::JobQueue::reset(OperationMode _opMode)
+{
 	m_writeIndex = 0;
 	m_itemsDone = 0;
 	m_opMode = _opMode;
 }
 
-void AudioEngineWorkerThread::JobQueue::addJob(ThreadableJob* _job) {
+void AudioEngineWorkerThread::JobQueue::addJob(ThreadableJob* _job)
+{
 	if (_job->requiresProcessing()) {
 		// update job state
 		_job->queue();
@@ -63,7 +65,8 @@ void AudioEngineWorkerThread::JobQueue::addJob(ThreadableJob* _job) {
 	}
 }
 
-void AudioEngineWorkerThread::JobQueue::run() {
+void AudioEngineWorkerThread::JobQueue::run()
+{
 	bool processedJob = true;
 	while (processedJob && m_itemsDone < m_writeIndex) {
 		processedJob = false;
@@ -80,7 +83,8 @@ void AudioEngineWorkerThread::JobQueue::run() {
 	}
 }
 
-void AudioEngineWorkerThread::JobQueue::wait() {
+void AudioEngineWorkerThread::JobQueue::wait()
+{
 	while (m_itemsDone < m_writeIndex) {
 #ifdef __SSE__
 		_mm_pause();
@@ -92,7 +96,8 @@ void AudioEngineWorkerThread::JobQueue::wait() {
 
 AudioEngineWorkerThread::AudioEngineWorkerThread(AudioEngine* audioEngine)
 	: QThread(audioEngine)
-	, m_quit(false) {
+	, m_quit(false)
+{
 	// initialize global static data
 	if (queueReadyWaitCond == nullptr) { queueReadyWaitCond = new QWaitCondition; }
 
@@ -106,12 +111,14 @@ AudioEngineWorkerThread::AudioEngineWorkerThread(AudioEngine* audioEngine)
 
 AudioEngineWorkerThread::~AudioEngineWorkerThread() { workerThreads.removeAll(this); }
 
-void AudioEngineWorkerThread::quit() {
+void AudioEngineWorkerThread::quit()
+{
 	m_quit = true;
 	resetJobQueue();
 }
 
-void AudioEngineWorkerThread::startAndWaitForJobs() {
+void AudioEngineWorkerThread::startAndWaitForJobs()
+{
 	queueReadyWaitCond->wakeAll();
 	// The last worker-thread is never started. Instead it's processed "inline"
 	// i.e. within the global AudioEngine thread. This way we can reduce latencies
@@ -120,7 +127,8 @@ void AudioEngineWorkerThread::startAndWaitForJobs() {
 	globalJobQueue.wait();
 }
 
-void AudioEngineWorkerThread::run() {
+void AudioEngineWorkerThread::run()
+{
 	MemoryManager::ThreadGuard mmThreadGuard;
 	Q_UNUSED(mmThreadGuard);
 	disable_denormals();

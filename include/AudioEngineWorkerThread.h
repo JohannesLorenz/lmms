@@ -32,13 +32,16 @@ class AudioEngine;
 class QWaitCondition;
 class ThreadableJob;
 
-class AudioEngineWorkerThread : public QThread {
+class AudioEngineWorkerThread : public QThread
+{
 	Q_OBJECT
 public:
 	// internal representation of the job queue - all functions are thread-safe
-	class JobQueue {
+	class JobQueue
+	{
 	public:
-		enum OperationMode {
+		enum OperationMode
+		{
 			Static, // no jobs added while processing queue
 			Dynamic // jobs can be added while processing queue
 		};
@@ -49,7 +52,8 @@ public:
 			: m_items()
 			, m_writeIndex(0)
 			, m_itemsDone(0)
-			, m_opMode(Static) {
+			, m_opMode(Static)
+		{
 			std::fill(m_items, m_items + JOB_QUEUE_SIZE, nullptr);
 		}
 
@@ -78,7 +82,8 @@ public:
 
 	// a convenient helper function allowing to pass a container with pointers
 	// to ThreadableJob objects
-	template <typename T> static void fillJobQueue(const T& _vec, JobQueue::OperationMode _opMode = JobQueue::Static) {
+	template <typename T> static void fillJobQueue(const T& _vec, JobQueue::OperationMode _opMode = JobQueue::Static)
+	{
 		resetJobQueue(_opMode);
 		for (typename T::ConstIterator it = _vec.begin(); it != _vec.end(); ++it) {
 			addJob(*it);

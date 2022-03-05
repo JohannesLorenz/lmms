@@ -47,12 +47,19 @@ class QRect;
 // may need to be higher - conversely, to optimize, some may work with lower values
 const f_cnt_t MARGIN[] = {64, 64, 64, 4, 4};
 
-class LMMS_EXPORT SampleBuffer : public QObject, public sharedObject {
+class LMMS_EXPORT SampleBuffer : public QObject, public sharedObject
+{
 	Q_OBJECT
 	MM_OPERATORS
 public:
-	enum LoopMode { LoopOff = 0, LoopOn, LoopPingPong };
-	class LMMS_EXPORT handleState {
+	enum LoopMode
+	{
+		LoopOff = 0,
+		LoopOn,
+		LoopPingPong
+	};
+	class LMMS_EXPORT handleState
+	{
 		MM_OPERATORS
 	public:
 		handleState(bool varyingPitch = false, int interpolationMode = SRC_LINEAR);
@@ -95,7 +102,8 @@ public:
 		sampleFrame* ab, handleState* state, const fpp_t frames, const float freq, const LoopMode loopMode = LoopOff);
 
 	void visualize(QPainter& p, const QRect& dr, const QRect& clip, f_cnt_t fromFrame = 0, f_cnt_t toFrame = 0);
-	inline void visualize(QPainter& p, const QRect& dr, f_cnt_t fromFrame = 0, f_cnt_t toFrame = 0) {
+	inline void visualize(QPainter& p, const QRect& dr, f_cnt_t fromFrame = 0, f_cnt_t toFrame = 0)
+	{
 		visualize(p, dr, dr, fromFrame, toFrame);
 	}
 
@@ -113,7 +121,8 @@ public:
 
 	void setLoopEndFrame(f_cnt_t end) { m_loopEndFrame = end; }
 
-	void setAllPointFrames(f_cnt_t start, f_cnt_t end, f_cnt_t loopStart, f_cnt_t loopEnd) {
+	void setAllPointFrames(f_cnt_t start, f_cnt_t end, f_cnt_t loopStart, f_cnt_t loopEnd)
+	{
 		m_startFrame = start;
 		m_endFrame = end;
 		m_loopStartFrame = loopStart;
@@ -152,7 +161,8 @@ public:
 
 	// protect calls from the GUI to this function with dataReadLock() and
 	// dataUnlock(), out of loops for efficiency
-	inline sample_t userWaveSample(const float sample) const {
+	inline sample_t userWaveSample(const float sample) const
+	{
 		f_cnt_t frames = m_frames;
 		sampleFrame* data = m_data;
 		const float frame = sample * frames;

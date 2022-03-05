@@ -44,14 +44,16 @@ qint64 qHash(const QFileInfo& fi) { return qHash(fi.absoluteFilePath()); }
 
 std::unique_ptr<PluginFactory> PluginFactory::s_instance;
 
-PluginFactory::PluginFactory() {
+PluginFactory::PluginFactory()
+{
 	setupSearchPaths();
 	discoverPlugins();
 }
 
 PluginFactory::~PluginFactory() {}
 
-void PluginFactory::setupSearchPaths() {
+void PluginFactory::setupSearchPaths()
+{
 	// Adds a search path relative to the main executable if the path exists.
 	auto addRelativeIfExists = [](const QString& path) {
 		QDir dir(qApp->applicationDirPath());
@@ -81,7 +83,8 @@ void PluginFactory::setupSearchPaths() {
 	QDir::addSearchPath("plugins", ConfigManager::inst()->workingDir() + "plugins");
 }
 
-PluginFactory* PluginFactory::instance() {
+PluginFactory* PluginFactory::instance()
+{
 	if (s_instance == nullptr) s_instance = std::make_unique<PluginFactory>();
 
 	return s_instance.get();
@@ -91,29 +94,34 @@ PluginFactory* getPluginFactory() { return PluginFactory::instance(); }
 
 const Plugin::DescriptorList PluginFactory::descriptors() const { return m_descriptors.values(); }
 
-const Plugin::DescriptorList PluginFactory::descriptors(Plugin::PluginTypes type) const {
+const Plugin::DescriptorList PluginFactory::descriptors(Plugin::PluginTypes type) const
+{
 	return m_descriptors.values(type);
 }
 
 const PluginFactory::PluginInfoList& PluginFactory::pluginInfos() const { return m_pluginInfos; }
 
-const PluginFactory::PluginInfoAndKey PluginFactory::pluginSupportingExtension(const QString& ext) {
+const PluginFactory::PluginInfoAndKey PluginFactory::pluginSupportingExtension(const QString& ext)
+{
 	return m_pluginByExt.value(ext, PluginInfoAndKey());
 }
 
-const PluginFactory::PluginInfo PluginFactory::pluginInfo(const char* name) const {
+const PluginFactory::PluginInfo PluginFactory::pluginInfo(const char* name) const
+{
 	for (const PluginInfo& info : m_pluginInfos) {
 		if (qstrcmp(info.descriptor->name, name) == 0) return info;
 	}
 	return PluginInfo();
 }
 
-QString PluginFactory::errorString(QString pluginName) const {
+QString PluginFactory::errorString(QString pluginName) const
+{
 	static QString notfound = qApp->translate("PluginFactory", "Plugin not found.");
 	return m_errors.value(pluginName, notfound);
 }
 
-void PluginFactory::discoverPlugins() {
+void PluginFactory::discoverPlugins()
+{
 	DescriptorMap descriptors;
 	PluginInfoList pluginInfos;
 	m_pluginByExt.clear();

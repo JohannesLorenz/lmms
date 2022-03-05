@@ -43,7 +43,8 @@
 #include "embed.h"
 #include "gui_templates.h"
 
-bool MixerLine::eventFilter(QObject* dist, QEvent* event) {
+bool MixerLine::eventFilter(QObject* dist, QEvent* event)
+{
 	// If we are in a rename, capture the enter/return events and handle them
 	if (event->type() == QEvent::KeyPress) {
 		QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
@@ -71,7 +72,8 @@ MixerLine::MixerLine(QWidget* _parent, MixerView* _mv, int _channelIndex)
 	, m_strokeOuterInactive(0, 0, 0)
 	, m_strokeInnerActive(0, 0, 0)
 	, m_strokeInnerInactive(0, 0, 0)
-	, m_inRename(false) {
+	, m_inRename(false)
+{
 	if (!s_sendBgArrow) { s_sendBgArrow = new QPixmap(embed::getIconPixmap("send_bg_arrow", 29, 56)); }
 	if (!s_receiveBgArrow) { s_receiveBgArrow = new QPixmap(embed::getIconPixmap("receive_bg_arrow", 29, 56)); }
 
@@ -122,20 +124,23 @@ MixerLine::MixerLine(QWidget* _parent, MixerView* _mv, int _channelIndex)
 	connect(&Engine::mixer()->mixerChannel(m_channelIndex)->m_muteModel, SIGNAL(dataChanged()), this, SLOT(update()));
 }
 
-MixerLine::~MixerLine() {
+MixerLine::~MixerLine()
+{
 	delete m_sendKnob;
 	delete m_sendBtn;
 	delete m_lcd;
 }
 
-void MixerLine::setChannelIndex(int index) {
+void MixerLine::setChannelIndex(int index)
+{
 	m_channelIndex = index;
 	m_lcd->setValue(m_channelIndex);
 	m_lcd->update();
 }
 
 void MixerLine::drawMixerLine(
-	QPainter* p, const MixerLine* mixerLine, bool isActive, bool sendToThis, bool receiveFromThis) {
+	QPainter* p, const MixerLine* mixerLine, bool isActive, bool sendToThis, bool receiveFromThis)
+{
 	auto channel = Engine::mixer()->mixerChannel(m_channelIndex);
 	bool muted = channel->m_muteModel.value();
 	QString name = channel->m_name;
@@ -167,14 +172,16 @@ void MixerLine::drawMixerLine(
 	}
 }
 
-QString MixerLine::elideName(const QString& name) {
+QString MixerLine::elideName(const QString& name)
+{
 	const int maxTextHeight = 60;
 	QFontMetrics metrics(m_renameLineEdit->font());
 	QString elidedName = metrics.elidedText(name, Qt::ElideRight, maxTextHeight);
 	return elidedName;
 }
 
-void MixerLine::paintEvent(QPaintEvent*) {
+void MixerLine::paintEvent(QPaintEvent*)
+{
 	bool sendToThis
 		= Engine::mixer()->channelSendModel(m_mv->currentMixerLine()->m_channelIndex, m_channelIndex) != nullptr;
 	bool receiveFromThis
@@ -189,7 +196,8 @@ void MixerLine::mousePressEvent(QMouseEvent*) { m_mv->setCurrentMixerLine(this);
 
 void MixerLine::mouseDoubleClickEvent(QMouseEvent*) { renameChannel(); }
 
-void MixerLine::contextMenuEvent(QContextMenuEvent*) {
+void MixerLine::contextMenuEvent(QContextMenuEvent*)
+{
 	QPointer<CaptionMenu> contextMenu = new CaptionMenu(Engine::mixer()->mixerChannel(m_channelIndex)->m_name, this);
 	if (m_channelIndex != 0) // no move-options in master
 	{
@@ -219,7 +227,8 @@ void MixerLine::contextMenuEvent(QContextMenuEvent*) {
 	delete contextMenu;
 }
 
-void MixerLine::renameChannel() {
+void MixerLine::renameChannel()
+{
 	m_inRename = true;
 	setToolTip("");
 	m_renameLineEdit->setReadOnly(false);
@@ -231,7 +240,8 @@ void MixerLine::renameChannel() {
 	m_renameLineEdit->setFocus();
 }
 
-void MixerLine::renameFinished() {
+void MixerLine::renameFinished()
+{
 	m_inRename = false;
 	m_renameLineEdit->deselect();
 	m_renameLineEdit->setReadOnly(true);
@@ -248,22 +258,26 @@ void MixerLine::renameFinished() {
 	setToolTip(name);
 }
 
-void MixerLine::removeChannel() {
+void MixerLine::removeChannel()
+{
 	MixerView* mix = getGUI()->mixerView();
 	mix->deleteChannel(m_channelIndex);
 }
 
-void MixerLine::removeUnusedChannels() {
+void MixerLine::removeUnusedChannels()
+{
 	MixerView* mix = getGUI()->mixerView();
 	mix->deleteUnusedChannels();
 }
 
-void MixerLine::moveChannelLeft() {
+void MixerLine::moveChannelLeft()
+{
 	MixerView* mix = getGUI()->mixerView();
 	mix->moveChannelLeft(m_channelIndex);
 }
 
-void MixerLine::moveChannelRight() {
+void MixerLine::moveChannelRight()
+{
 	MixerView* mix = getGUI()->mixerView();
 	mix->moveChannelRight(m_channelIndex);
 }
@@ -289,7 +303,8 @@ QColor MixerLine::strokeInnerInactive() const { return m_strokeInnerInactive; }
 void MixerLine::setStrokeInnerInactive(const QColor& c) { m_strokeInnerInactive = c; }
 
 // Ask user for a color, and set it as the mixer line color
-void MixerLine::selectColor() {
+void MixerLine::selectColor()
+{
 	auto channel = Engine::mixer()->mixerChannel(m_channelIndex);
 	auto new_color = ColorChooser(this).withPalette(ColorChooser::Palette::Mixer)->getColor(channel->m_color);
 	if (!new_color.isValid()) { return; }
@@ -299,14 +314,16 @@ void MixerLine::selectColor() {
 }
 
 // Disable the usage of color on this mixer line
-void MixerLine::resetColor() {
+void MixerLine::resetColor()
+{
 	Engine::mixer()->mixerChannel(m_channelIndex)->m_hasColor = false;
 	Engine::getSong()->setModified();
 	update();
 }
 
 // Pick a random color from the mixer palette and set it as our color
-void MixerLine::randomizeColor() {
+void MixerLine::randomizeColor()
+{
 	auto channel = Engine::mixer()->mixerChannel(m_channelIndex);
 	channel->setColor(ColorChooser::getPalette(ColorChooser::Palette::Mixer)[rand() % 48]);
 	Engine::getSong()->setModified();

@@ -28,7 +28,8 @@
 #include "AudioPort.h"
 #include "Track.h"
 
-class SampleTrack : public Track {
+class SampleTrack : public Track
+{
 	Q_OBJECT
 public:
 	SampleTrack(TrackContainer* tc);
@@ -50,7 +51,8 @@ public:
 
 	bool isPlaying() { return m_isPlaying; }
 
-	void setPlaying(bool playing) {
+	void setPlaying(bool playing)
+	{
 		if (m_isPlaying != playing) { emit playingChanged(); }
 		m_isPlaying = playing;
 	}

@@ -41,7 +41,8 @@ Plugin::Descriptor PLUGIN_EXPORT carlapatchbay_plugin_descriptor = {
 	nullptr,
 };
 
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* m, void*) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* m, void*)
+{
 	return new CarlaInstrument(static_cast<InstrumentTrack*>(m), &carlapatchbay_plugin_descriptor, true);
 }
 }

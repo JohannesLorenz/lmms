@@ -42,7 +42,8 @@ AudioSndio::AudioSndio(bool& _success_ful, AudioEngine* _audioEngine)
 	: AudioDevice(qBound<ch_cnt_t>(DEFAULT_CHANNELS, ConfigManager::inst()->value("audiosndio", "channels").toInt(),
 					  SURROUND_CHANNELS),
 		_audioEngine)
-	, m_convertEndian(false) {
+	, m_convertEndian(false)
+{
 	_success_ful = false;
 
 	QString dev = ConfigManager::inst()->value("audiosndio", "device");
@@ -94,7 +95,8 @@ AudioSndio::AudioSndio(bool& _success_ful, AudioEngine* _audioEngine)
 	_success_ful = true;
 }
 
-AudioSndio::~AudioSndio() {
+AudioSndio::~AudioSndio()
+{
 	stopProcessing();
 	if (m_hdl != nullptr) {
 		sio_close(m_hdl);
@@ -102,13 +104,15 @@ AudioSndio::~AudioSndio() {
 	}
 }
 
-void AudioSndio::startProcessing(void) {
+void AudioSndio::startProcessing(void)
+{
 	if (!isRunning()) { start(QThread::HighPriority); }
 }
 
 void AudioSndio::stopProcessing(void) { stopProcessingThread(this); }
 
-void AudioSndio::applyQualitySettings(void) {
+void AudioSndio::applyQualitySettings(void)
+{
 	if (hqAudio()) {
 		setSampleRate(Engine::audioEngine()->processingSampleRate());
 
@@ -118,7 +122,8 @@ void AudioSndio::applyQualitySettings(void) {
 	AudioDevice::applyQualitySettings();
 }
 
-void AudioSndio::run(void) {
+void AudioSndio::run(void)
+{
 	surroundSampleFrame* temp = new surroundSampleFrame[audioEngine()->framesPerPeriod()];
 	int_sample_t* outbuf = new int_sample_t[audioEngine()->framesPerPeriod() * channels()];
 
@@ -135,7 +140,8 @@ void AudioSndio::run(void) {
 }
 
 AudioSndio::setupWidget::setupWidget(QWidget* _parent)
-	: AudioDeviceSetupWidget(AudioSndio::name(), _parent) {
+	: AudioDeviceSetupWidget(AudioSndio::name(), _parent)
+{
 	m_device = new QLineEdit("", this);
 	m_device->setGeometry(10, 20, 160, 20);
 
@@ -156,7 +162,8 @@ AudioSndio::setupWidget::setupWidget(QWidget* _parent)
 
 AudioSndio::setupWidget::~setupWidget() {}
 
-void AudioSndio::setupWidget::saveSettings(void) {
+void AudioSndio::setupWidget::saveSettings(void)
+{
 	ConfigManager::inst()->setValue("audiosndio", "device", m_device->text());
 	ConfigManager::inst()->setValue("audiosndio", "channels", QString::number(m_channels->value<int>()));
 }

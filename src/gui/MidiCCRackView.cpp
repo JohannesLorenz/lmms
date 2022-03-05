@@ -39,7 +39,8 @@
 
 MidiCCRackView::MidiCCRackView(InstrumentTrack* track)
 	: QWidget()
-	, m_track(track) {
+	, m_track(track)
+{
 	setWindowIcon(embed::getIconPixmap("midi_cc_rack"));
 	setWindowTitle(tr("MIDI CC Rack - %1").arg(m_track->name()));
 
@@ -103,7 +104,8 @@ MidiCCRackView::MidiCCRackView(InstrumentTrack* track)
 	mainLayout->addWidget(m_midiCCGroupBox);
 }
 
-MidiCCRackView::~MidiCCRackView() {
+MidiCCRackView::~MidiCCRackView()
+{
 	if (parentWidget()) {
 		parentWidget()->hide();
 		parentWidget()->deleteLater();

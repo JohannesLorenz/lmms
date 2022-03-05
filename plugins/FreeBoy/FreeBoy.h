@@ -37,7 +37,8 @@ class Knob;
 class NotePlayHandle;
 class PixmapButton;
 
-class FreeBoyInstrument : public Instrument {
+class FreeBoyInstrument : public Instrument
+{
 	Q_OBJECT
 public:
 	FreeBoyInstrument(InstrumentTrack* _instrument_track);
@@ -105,7 +106,8 @@ private:
 	friend class FreeBoyInstrumentView;
 };
 
-class FreeBoyInstrumentView : public InstrumentViewFixedSize {
+class FreeBoyInstrumentView : public InstrumentViewFixedSize
+{
 	Q_OBJECT
 public:
 	FreeBoyInstrumentView(Instrument* _instrument, QWidget* _parent);

@@ -29,18 +29,21 @@
 using std::move;
 using std::unique_ptr;
 
-void ComboBoxModel::addItem(QString item, unique_ptr<PixmapLoader> loader) {
+void ComboBoxModel::addItem(QString item, unique_ptr<PixmapLoader> loader)
+{
 	m_items.emplace_back(move(item), move(loader));
 	setRange(0, m_items.size() - 1);
 }
 
-void ComboBoxModel::replaceItem(std::size_t index, QString item, unique_ptr<PixmapLoader> loader) {
+void ComboBoxModel::replaceItem(std::size_t index, QString item, unique_ptr<PixmapLoader> loader)
+{
 	assert(index < m_items.size());
 	m_items[index] = Item(move(item), move(loader));
 	emit propertiesChanged();
 }
 
-void ComboBoxModel::clear() {
+void ComboBoxModel::clear()
+{
 	setRange(0, 0);
 
 	m_items.clear();
@@ -48,7 +51,8 @@ void ComboBoxModel::clear() {
 	emit propertiesChanged();
 }
 
-int ComboBoxModel::findText(const QString& txt) const {
+int ComboBoxModel::findText(const QString& txt) const
+{
 	for (auto it = m_items.begin(); it != m_items.end(); ++it) {
 		if ((*it).first == txt) { return it - m_items.begin(); }
 	}

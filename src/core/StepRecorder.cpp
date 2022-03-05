@@ -34,15 +34,18 @@ const int REMOVE_RELEASED_NOTE_TIME_THRESHOLD_MS = 70;
 StepRecorder::StepRecorder(PianoRoll& pianoRoll, StepRecorderWidget& stepRecorderWidget)
 	: m_pianoRoll(pianoRoll)
 	, m_stepRecorderWidget(stepRecorderWidget)
-	, m_midiClip(nullptr) {
+	, m_midiClip(nullptr)
+{
 	m_stepRecorderWidget.hide();
 }
 
-void StepRecorder::initialize() {
+void StepRecorder::initialize()
+{
 	connect(&m_updateReleasedTimer, SIGNAL(timeout()), this, SLOT(removeNotesReleasedForTooLong()));
 }
 
-void StepRecorder::start(const TimePos& currentPosition, const TimePos& stepLength) {
+void StepRecorder::start(const TimePos& currentPosition, const TimePos& stepLength)
+{
 	m_isRecording = true;
 
 	setStepsLength(stepLength);
@@ -63,12 +66,14 @@ void StepRecorder::start(const TimePos& currentPosition, const TimePos& stepLeng
 	prepareNewStep();
 }
 
-void StepRecorder::stop() {
+void StepRecorder::stop()
+{
 	m_stepRecorderWidget.hide();
 	m_isRecording = false;
 }
 
-void StepRecorder::notePressed(const Note& n) {
+void StepRecorder::notePressed(const Note& n)
+{
 	// if this is the first pressed note in step, advance position
 	if (!m_isStepInProgress) {
 		m_isStepInProgress = true;
@@ -87,7 +92,8 @@ void StepRecorder::notePressed(const Note& n) {
 	}
 }
 
-void StepRecorder::noteReleased(const Note& n) {
+void StepRecorder::noteReleased(const Note& n)
+{
 	StepNote* stepNote = findCurStepNote(n.key());
 
 	if (stepNote != nullptr && stepNote->isPressed()) {
@@ -109,7 +115,8 @@ void StepRecorder::noteReleased(const Note& n) {
 	}
 }
 
-bool StepRecorder::keyPressEvent(QKeyEvent* ke) {
+bool StepRecorder::keyPressEvent(QKeyEvent* ke)
+{
 	bool event_handled = false;
 
 	switch (ke->key()) {
@@ -129,7 +136,8 @@ bool StepRecorder::keyPressEvent(QKeyEvent* ke) {
 	return event_handled;
 }
 
-void StepRecorder::setStepsLength(const TimePos& newLength) {
+void StepRecorder::setStepsLength(const TimePos& newLength)
+{
 	if (m_isStepInProgress) {
 		// update current step length by the new amount : (number_of_steps * newLength)
 		m_curStepLength = (m_curStepLength / m_stepsLength) * newLength;
@@ -142,7 +150,8 @@ void StepRecorder::setStepsLength(const TimePos& newLength) {
 	updateWidget();
 }
 
-QVector<Note*> StepRecorder::getCurStepNotes() {
+QVector<Note*> StepRecorder::getCurStepNotes()
+{
 	QVector<Note*> notes;
 
 	if (m_isStepInProgress) {
@@ -154,7 +163,8 @@ QVector<Note*> StepRecorder::getCurStepNotes() {
 	return notes;
 }
 
-void StepRecorder::stepForwards() {
+void StepRecorder::stepForwards()
+{
 	if (m_isStepInProgress) {
 		m_curStepLength += m_stepsLength;
 
@@ -166,7 +176,8 @@ void StepRecorder::stepForwards() {
 	updateWidget();
 }
 
-void StepRecorder::stepBackwards() {
+void StepRecorder::stepBackwards()
+{
 	if (m_isStepInProgress) {
 		if (m_curStepLength > 0) {
 			m_curStepLength = max(m_curStepLength - m_stepsLength, 0);
@@ -183,7 +194,8 @@ void StepRecorder::stepBackwards() {
 	updateWidget();
 }
 
-void StepRecorder::applyStep() {
+void StepRecorder::applyStep()
+{
 	m_midiClip->addJournalCheckPoint();
 
 	for (const StepNote* stepNote : m_curStepNotes) {
@@ -198,13 +210,15 @@ void StepRecorder::applyStep() {
 	prepareNewStep();
 }
 
-void StepRecorder::dismissStep() {
+void StepRecorder::dismissStep()
+{
 	if (!m_isStepInProgress) { return; }
 
 	prepareNewStep();
 }
 
-void StepRecorder::prepareNewStep() {
+void StepRecorder::prepareNewStep()
+{
 	for (StepNote* stepNote : m_curStepNotes) {
 		delete stepNote;
 	}
@@ -218,13 +232,15 @@ void StepRecorder::prepareNewStep() {
 	updateWidget();
 }
 
-void StepRecorder::setCurrentMidiClip(MidiClip* newMidiClip) {
+void StepRecorder::setCurrentMidiClip(MidiClip* newMidiClip)
+{
 	if (m_midiClip != nullptr && m_midiClip != newMidiClip) { dismissStep(); }
 
 	m_midiClip = newMidiClip;
 }
 
-void StepRecorder::removeNotesReleasedForTooLong() {
+void StepRecorder::removeNotesReleasedForTooLong()
+{
 	int nextTimout = std::numeric_limits<int>::max();
 	bool notesRemoved = false;
 
@@ -257,20 +273,23 @@ void StepRecorder::removeNotesReleasedForTooLong() {
 
 TimePos StepRecorder::getCurStepEndPos() { return m_curStepStartPos + m_curStepLength; }
 
-void StepRecorder::updateCurStepNotes() {
+void StepRecorder::updateCurStepNotes()
+{
 	for (StepNote* stepNote : m_curStepNotes) {
 		stepNote->m_note.setLength(m_curStepLength);
 		stepNote->m_note.setPos(m_curStepStartPos);
 	}
 }
 
-void StepRecorder::updateWidget() {
+void StepRecorder::updateWidget()
+{
 	m_stepRecorderWidget.setStartPosition(m_curStepStartPos);
 	m_stepRecorderWidget.setEndPosition(getCurStepEndPos());
 	m_stepRecorderWidget.setStepsLength(m_stepsLength);
 }
 
-bool StepRecorder::allCurStepNotesReleased() {
+bool StepRecorder::allCurStepNotesReleased()
+{
 	for (const StepNote* stepNote : m_curStepNotes) {
 		if (stepNote->isPressed()) { return false; }
 	}
@@ -278,7 +297,8 @@ bool StepRecorder::allCurStepNotesReleased() {
 	return true;
 }
 
-StepRecorder::StepNote* StepRecorder::findCurStepNote(const int key) {
+StepRecorder::StepNote* StepRecorder::findCurStepNote(const int key)
+{
 	for (StepNote* stepNote : m_curStepNotes) {
 		if (stepNote->m_note.key() == key) { return stepNote; }
 	}

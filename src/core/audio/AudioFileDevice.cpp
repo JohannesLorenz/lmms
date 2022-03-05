@@ -34,7 +34,8 @@ AudioFileDevice::AudioFileDevice(
 	OutputSettings const& outputSettings, const ch_cnt_t _channels, const QString& _file, AudioEngine* _audioEngine)
 	: AudioDevice(_channels, _audioEngine)
 	, m_outputFile(_file)
-	, m_outputSettings(outputSettings) {
+	, m_outputSettings(outputSettings)
+{
 	setSampleRate(outputSettings.getSampleRate());
 
 	if (m_outputFile.open(QFile::WriteOnly | QFile::Truncate) == false) {
@@ -59,7 +60,8 @@ AudioFileDevice::AudioFileDevice(
 
 AudioFileDevice::~AudioFileDevice() { m_outputFile.close(); }
 
-int AudioFileDevice::writeData(const void* data, int len) {
+int AudioFileDevice::writeData(const void* data, int len)
+{
 	if (m_outputFile.isOpen()) { return m_outputFile.write((const char*)data, len); }
 
 	return -1;

@@ -34,7 +34,8 @@ MidiSetupWidget::MidiSetupWidget(
 	const QString& caption, const QString& configSection, const QString& devName, QWidget* parent)
 	: TabWidget(TabWidget::tr("Settings for %1").arg(tr(caption.toUtf8())), parent)
 	, m_configSection(configSection)
-	, m_device(nullptr) {
+	, m_device(nullptr)
+{
 	// supply devName=QString() (distinct from QString(""))
 	// to indicate that there is no editable device field
 	if (!devName.isNull()) {
@@ -47,13 +48,15 @@ MidiSetupWidget::MidiSetupWidget(
 	}
 }
 
-void MidiSetupWidget::saveSettings() {
+void MidiSetupWidget::saveSettings()
+{
 	if (!m_configSection.isEmpty() && m_device) {
 		ConfigManager::inst()->setValue(m_configSection, "device", m_device->text());
 	}
 }
 
-void MidiSetupWidget::show() {
+void MidiSetupWidget::show()
+{
 	// the setup widget should only be visible if the device has some configurable attributes
 	bool visible = !m_configSection.isEmpty();
 	parentWidget()->setVisible(visible);

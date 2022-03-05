@@ -37,7 +37,8 @@ EqAnalyser::EqAnalyser()
 	: m_framesFilledUp(0)
 	, m_energy(0)
 	, m_sampleRate(1)
-	, m_active(true) {
+	, m_active(true)
+{
 	m_inProgress = false;
 	m_specBuf = (fftwf_complex*)fftwf_malloc((FFT_BUFFER_SIZE + 1) * sizeof(fftwf_complex));
 	m_fftPlan = fftwf_plan_dft_r2c_1d(FFT_BUFFER_SIZE * 2, m_buffer, m_specBuf, FFTW_MEASURE);
@@ -57,12 +58,14 @@ EqAnalyser::EqAnalyser()
 	clear();
 }
 
-EqAnalyser::~EqAnalyser() {
+EqAnalyser::~EqAnalyser()
+{
 	fftwf_destroy_plan(m_fftPlan);
 	fftwf_free(m_specBuf);
 }
 
-void EqAnalyser::analyze(sampleFrame* buf, const fpp_t frames) {
+void EqAnalyser::analyze(sampleFrame* buf, const fpp_t frames)
+{
 	// only analyse if the view is visible
 	if (m_active) {
 		m_inProgress = true;
@@ -116,7 +119,8 @@ void EqAnalyser::setActive(bool active) { m_active = active; }
 
 bool EqAnalyser::getInProgress() { return m_inProgress; }
 
-void EqAnalyser::clear() {
+void EqAnalyser::clear()
+{
 	m_framesFilledUp = 0;
 	m_energy = 0;
 	memset(m_buffer, 0, sizeof(m_buffer));
@@ -126,7 +130,8 @@ void EqAnalyser::clear() {
 EqSpectrumView::EqSpectrumView(EqAnalyser* b, QWidget* _parent)
 	: QWidget(_parent)
 	, m_analyser(b)
-	, m_periodicalUpdate(false) {
+	, m_periodicalUpdate(false)
+{
 	setFixedSize(450, 200);
 	connect(getGUI()->mainWindow(), SIGNAL(periodicUpdate()), this, SLOT(periodicalUpdate()));
 	setAttribute(Qt::WA_TranslucentBackground, true);
@@ -140,7 +145,8 @@ EqSpectrumView::EqSpectrumView(EqAnalyser* b, QWidget* _parent)
 	}
 }
 
-void EqSpectrumView::paintEvent(QPaintEvent* event) {
+void EqSpectrumView::paintEvent(QPaintEvent* event)
+{
 	const float energy = m_analyser->getEnergy();
 	if (energy <= 0 && m_peakSum <= 0) {
 		// dont draw anything
@@ -199,7 +205,8 @@ void EqSpectrumView::setColor(const QColor& value) { m_color = value; }
 
 float EqSpectrumView::bandToFreq(int index) { return index * m_analyser->getSampleRate() / (MAX_BANDS * 2); }
 
-void EqSpectrumView::periodicalUpdate() {
+void EqSpectrumView::periodicalUpdate()
+{
 	m_periodicalUpdate = true;
 	m_analyser->setActive(isVisible());
 	update();

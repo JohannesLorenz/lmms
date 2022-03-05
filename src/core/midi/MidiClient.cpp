@@ -29,7 +29,8 @@
 
 MidiClient::MidiClient() {}
 
-MidiClient::~MidiClient() {
+MidiClient::~MidiClient()
+{
 	// TODO: noteOffAll(); / clear all ports
 	for (MidiPort* port : m_midiPorts) {
 		port->invalidateCilent();
@@ -42,7 +43,8 @@ void MidiClient::applyPortName(MidiPort*) {}
 
 void MidiClient::addPort(MidiPort* port) { m_midiPorts.push_back(port); }
 
-void MidiClient::removePort(MidiPort* port) {
+void MidiClient::removePort(MidiPort* port)
+{
 	if (!port) { return; }
 
 	QVector<MidiPort*>::Iterator it = std::find(m_midiPorts.begin(), m_midiPorts.end(), port);
@@ -57,7 +59,8 @@ MidiClientRaw::MidiClientRaw() {}
 
 MidiClientRaw::~MidiClientRaw() {}
 
-void MidiClientRaw::parseData(const unsigned char c) {
+void MidiClientRaw::parseData(const unsigned char c)
+{
 	/*********************************************************************/
 	/* 'Process' system real-time messages                               */
 	/*********************************************************************/
@@ -174,13 +177,15 @@ void MidiClientRaw::parseData(const unsigned char c) {
 	processParsedEvent();
 }
 
-void MidiClientRaw::processParsedEvent() {
+void MidiClientRaw::processParsedEvent()
+{
 	for (int i = 0; i < m_midiPorts.size(); ++i) {
 		m_midiPorts[i]->processInEvent(m_midiParseData.m_midiEvent);
 	}
 }
 
-void MidiClientRaw::processOutEvent(const MidiEvent& event, const TimePos&, const MidiPort* port) {
+void MidiClientRaw::processOutEvent(const MidiEvent& event, const TimePos&, const MidiPort* port)
+{
 	// TODO: also evaluate _time and queue event if necessary
 	switch (event.type()) {
 	case MidiNoteOn:
@@ -218,7 +223,8 @@ static const unsigned char REMAINS_80E0[] = {
 
 // Returns the length of the MIDI message starting with _event.
 // Taken from Nagano Daisuke's USB-MIDI driver
-int MidiClientRaw::eventLength(const unsigned char event) {
+int MidiClientRaw::eventLength(const unsigned char event)
+{
 	if (event < 0xF0) {
 		return REMAINS_80E0[((event - 0x80) >> 4) & 0x0F];
 	} else if (event < 0xF7) {

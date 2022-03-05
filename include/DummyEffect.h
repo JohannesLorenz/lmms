@@ -33,16 +33,22 @@
 
 class Knob;
 
-class DummyEffectControlDialog : public EffectControlDialog {
+class DummyEffectControlDialog : public EffectControlDialog
+{
 public:
 	DummyEffectControlDialog(EffectControls* _controls)
-		: EffectControlDialog(_controls) {}
+		: EffectControlDialog(_controls)
+	{
+	}
 };
 
-class DummyEffectControls : public EffectControls {
+class DummyEffectControls : public EffectControls
+{
 public:
 	DummyEffectControls(Effect* _eff)
-		: EffectControls(_eff) {}
+		: EffectControls(_eff)
+	{
+	}
 
 	virtual ~DummyEffectControls() {}
 
@@ -57,13 +63,15 @@ public:
 	EffectControlDialog* createView() override { return new DummyEffectControlDialog(this); }
 };
 
-class DummyEffect : public Effect {
+class DummyEffect : public Effect
+{
 	Q_OBJECT
 public:
 	DummyEffect(Model* _parent, const QDomElement& originalPluginData)
 		: Effect(nullptr, _parent, nullptr)
 		, m_controls(this)
-		, m_originalPluginData(originalPluginData) {
+		, m_originalPluginData(originalPluginData)
+	{
 		setName();
 	}
 
@@ -80,7 +88,8 @@ private:
 	const QDomElement m_originalPluginData;
 
 	// Parse the display name from the dom
-	virtual void setName() {
+	virtual void setName()
+	{
 		QDomNodeList keys = originalPluginData().elementsByTagName("key");
 		for (int i = 0; !keys.item(i).isNull(); ++i) {
 			QDomNodeList attributes = keys.item(i).toElement().elementsByTagName("attribute");

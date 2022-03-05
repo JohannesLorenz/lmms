@@ -42,13 +42,15 @@ MidiApple::MidiApple()
 	, m_inputDevices()
 	, m_outputDevices()
 	, m_inputSubs()
-	, m_outputSubs() {
+	, m_outputSubs()
+{
 	openDevices();
 }
 
 MidiApple::~MidiApple() { closeDevices(); }
 
-void MidiApple::processOutEvent(const MidiEvent& event, const TimePos& time, const MidiPort* port) {
+void MidiApple::processOutEvent(const MidiEvent& event, const TimePos& time, const MidiPort* port)
+{
 	qDebug("MidiApple:processOutEvent displayName:'%s'", port->displayName().toLatin1().constData());
 
 	QStringList outDevs;
@@ -66,13 +68,15 @@ void MidiApple::processOutEvent(const MidiEvent& event, const TimePos& time, con
 	}
 }
 
-void MidiApple::sendMidiOut(MIDIEndpointRef& endPointRef, const MidiEvent& event) {
+void MidiApple::sendMidiOut(MIDIEndpointRef& endPointRef, const MidiEvent& event)
+{
 	MIDIPacketList packetList = createMidiPacketList(event);
 	MIDIPortRef port = m_sourcePortRef.value(endPointRef);
 	MIDISend(port, endPointRef, &packetList);
 }
 
-MIDIPacketList MidiApple::createMidiPacketList(const MidiEvent& event) {
+MIDIPacketList MidiApple::createMidiPacketList(const MidiEvent& event)
+{
 	MIDIPacketList packetList;
 	packetList.numPackets = 1;
 	MIDIPacket* firstPacket = &packetList.packet[0];
@@ -84,7 +88,8 @@ MIDIPacketList MidiApple::createMidiPacketList(const MidiEvent& event) {
 	return packetList;
 }
 
-void MidiApple::applyPortMode(MidiPort* port) {
+void MidiApple::applyPortMode(MidiPort* port)
+{
 	qDebug("applyPortMode displayName:'%s'", port->displayName().toLatin1().constData());
 	// make sure no subscriptions exist which are not possible with
 	// current port-mode
@@ -101,7 +106,8 @@ void MidiApple::applyPortMode(MidiPort* port) {
 	}
 }
 
-void MidiApple::removePort(MidiPort* port) {
+void MidiApple::removePort(MidiPort* port)
+{
 	qDebug("removePort displayName:'%s'", port->displayName().toLatin1().constData());
 	for (SubMap::Iterator it = m_inputSubs.begin(); it != m_inputSubs.end(); ++it) {
 		it.value().removeAll(port);
@@ -114,7 +120,8 @@ void MidiApple::removePort(MidiPort* port) {
 	MidiClient::removePort(port);
 }
 
-QString MidiApple::sourcePortName(const MidiEvent& event) const {
+QString MidiApple::sourcePortName(const MidiEvent& event) const
+{
 	qDebug("sourcePortName return '%s'?\n", event.sourcePort());
 	/*
 	if( event.sourcePort() )
@@ -125,7 +132,8 @@ QString MidiApple::sourcePortName(const MidiEvent& event) const {
 	return MidiClient::sourcePortName(event);
 }
 
-void MidiApple::subscribeReadablePort(MidiPort* port, const QString& dest, bool subscribe) {
+void MidiApple::subscribeReadablePort(MidiPort* port, const QString& dest, bool subscribe)
+{
 	qDebug("subscribeReadablePort %s subscribe=%d", dest.toLatin1().constData(), subscribe);
 	if (subscribe && port->isInputEnabled() == false) {
 		qWarning("port %s can't be (un)subscribed!", port->displayName().toLatin1().constData());
@@ -142,7 +150,8 @@ void MidiApple::subscribeReadablePort(MidiPort* port, const QString& dest, bool 
 	}
 }
 
-void MidiApple::subscribeWritablePort(MidiPort* port, const QString& dest, bool subscribe) {
+void MidiApple::subscribeWritablePort(MidiPort* port, const QString& dest, bool subscribe)
+{
 	qDebug("subscribeWritablePort %s", port->displayName().toLatin1().constData());
 
 	if (subscribe && port->isOutputEnabled() == false) {
@@ -159,7 +168,8 @@ void MidiApple::subscribeWritablePort(MidiPort* port, const QString& dest, bool 
 	}
 }
 
-void MidiApple::ReadCallback(const MIDIPacketList* pktlist, void* readProcRefCon, void* srcConnRefCon) {
+void MidiApple::ReadCallback(const MIDIPacketList* pktlist, void* readProcRefCon, void* srcConnRefCon)
+{
 	MidiApple* caller = static_cast<MidiApple*>(readProcRefCon);
 	if (!caller) {
 		qDebug("Error: !caller: MidiApple::ReadCallback");
@@ -168,7 +178,8 @@ void MidiApple::ReadCallback(const MIDIPacketList* pktlist, void* readProcRefCon
 	caller->HandleReadCallback(pktlist, srcConnRefCon);
 }
 
-void MidiApple::HandleReadCallback(const MIDIPacketList* pktlist, void* srcConnRefCon) {
+void MidiApple::HandleReadCallback(const MIDIPacketList* pktlist, void* srcConnRefCon)
+{
 	const char* refName = (const char*)srcConnRefCon;
 
 	MIDIEndpointRef endPointRef = m_inputDevices.value(refName);
@@ -266,7 +277,8 @@ void MidiApple::HandleReadCallback(const MIDIPacketList* pktlist, void* srcConnR
 	}
 }
 
-void MidiApple::updateDeviceList() {
+void MidiApple::updateDeviceList()
+{
 	closeDevices();
 	openDevices();
 
@@ -274,7 +286,8 @@ void MidiApple::updateDeviceList() {
 	emit writablePortsChanged();
 }
 
-void MidiApple::closeDevices() {
+void MidiApple::closeDevices()
+{
 	m_inputSubs.clear();
 	m_outputSubs.clear();
 
@@ -292,13 +305,15 @@ void MidiApple::closeDevices() {
 	m_outputDevices.clear();
 }
 
-void MidiApple::midiInClose(MIDIEndpointRef reference) {
+void MidiApple::midiInClose(MIDIEndpointRef reference)
+{
 	qDebug("midiInClose '%s'", getFullName(reference));
 	MIDIPortRef portRef = m_sourcePortRef[reference];
 	MIDIPortDisconnectSource(portRef, reference);
 }
 
-char* getName(MIDIObjectRef& object) {
+char* getName(MIDIObjectRef& object)
+{
 	// Returns the name of a given MIDIObjectRef as char *
 	CFStringRef name = nullptr;
 	if (noErr != MIDIObjectGetStringProperty(object, kMIDIPropertyName, &name)) return nullptr;
@@ -310,7 +325,8 @@ char* getName(MIDIObjectRef& object) {
 	return value;
 }
 
-const void printQStringKeys(char const* mapName, const QMap<QString, MIDIEndpointRef>& inputMap) {
+const void printQStringKeys(char const* mapName, const QMap<QString, MIDIEndpointRef>& inputMap)
+{
 	qDebug("%s:", mapName);
 	QMapIterator<QString, MIDIEndpointRef> i(inputMap);
 	while (i.hasNext()) {
@@ -319,7 +335,8 @@ const void printQStringKeys(char const* mapName, const QMap<QString, MIDIEndpoin
 	}
 }
 
-void MidiApple::openDevices() {
+void MidiApple::openDevices()
+{
 	qDebug("openDevices");
 	m_inputDevices.clear();
 	// How many MIDI devices do we have?
@@ -378,7 +395,8 @@ void MidiApple::openDevices() {
 	printQStringKeys("m_outputDevices:", m_outputDevices);
 }
 
-void MidiApple::openMidiReference(MIDIEndpointRef reference, QString refName, bool isIn) {
+void MidiApple::openMidiReference(MIDIEndpointRef reference, QString refName, bool isIn)
+{
 	char* registeredName = (char*)malloc(refName.length() + 1);
 	sprintf(registeredName, "%s", refName.toLatin1().constData());
 	qDebug("openMidiReference refName '%s'", refName.toLatin1().constData());
@@ -398,7 +416,8 @@ void MidiApple::openMidiReference(MIDIEndpointRef reference, QString refName, bo
 	qDebug("openMidiReference registeredName '%s'", registeredName);
 }
 
-MIDIClientRef MidiApple::getMidiClientRef() {
+MIDIClientRef MidiApple::getMidiClientRef()
+{
 	if (mClient == 0) {
 		CFStringRef deviceClientName = CFSTR("MIDI In Device Client");
 		MIDIClientCreate(deviceClientName, NotifyCallback, this, &mClient);
@@ -407,13 +426,15 @@ MIDIClientRef MidiApple::getMidiClientRef() {
 	return mClient;
 }
 
-void MidiApple::notifyMidiPortList(MidiPortList l, MidiEvent event) {
+void MidiApple::notifyMidiPortList(MidiPortList l, MidiEvent event)
+{
 	for (MidiPortList::ConstIterator it = l.begin(); it != l.end(); ++it) {
 		(*it)->processInEvent(event);
 	}
 }
 
-void MidiApple::NotifyCallback(const MIDINotification* message, void* refCon) {
+void MidiApple::NotifyCallback(const MIDINotification* message, void* refCon)
+{
 	// refCon is a pointer to MidiApple class
 	MidiApple* midiApple = (MidiApple*)refCon;
 	qDebug("MidiApple::NotifyCallback '%d'", message->messageID);
@@ -469,7 +490,8 @@ void MidiApple::NotifyCallback(const MIDINotification* message, void* refCon) {
 	}
 }
 
-char* MidiApple::getFullName(MIDIEndpointRef& endpoint_ref) {
+char* MidiApple::getFullName(MIDIEndpointRef& endpoint_ref)
+{
 	MIDIEntityRef entity = 0;
 	MIDIEndpointGetEntity(endpoint_ref, &entity); // get the entity
 	MIDIDeviceRef device = 0;

@@ -33,7 +33,8 @@
 
 PatternTrackView::PatternTrackView(PatternTrack* pt, TrackContainerView* tcv)
 	: TrackView(pt, tcv)
-	, m_patternTrack(pt) {
+	, m_patternTrack(pt)
+{
 	setFixedHeight(32);
 	// drag'n'drop with pattern tracks only causes troubles (and makes no sense too), so disable it
 	setAcceptDrops(false);
@@ -46,16 +47,19 @@ PatternTrackView::PatternTrackView(PatternTrack* pt, TrackContainerView* tcv)
 	setModel(pt);
 }
 
-PatternTrackView::~PatternTrackView() {
+PatternTrackView::~PatternTrackView()
+{
 	getGUI()->patternEditor()->m_editor->removeViewsForPattern(PatternTrack::s_infoMap[m_patternTrack]);
 }
 
-bool PatternTrackView::close() {
+bool PatternTrackView::close()
+{
 	getGUI()->patternEditor()->m_editor->removeViewsForPattern(PatternTrack::s_infoMap[m_patternTrack]);
 	return TrackView::close();
 }
 
-void PatternTrackView::clickedTrackLabel() {
+void PatternTrackView::clickedTrackLabel()
+{
 	Engine::patternStore()->setCurrentPattern(m_patternTrack->patternIndex());
 	getGUI()->patternEditor()->parentWidget()->show();
 	getGUI()->patternEditor()->setFocus(Qt::ActiveWindowFocusReason);

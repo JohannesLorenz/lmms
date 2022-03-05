@@ -38,7 +38,8 @@ class automatableButtonGroup;
 class ComboBox;
 class PixmapButton;
 
-class audioFileProcessor : public Instrument {
+class audioFileProcessor : public Instrument
+{
 	Q_OBJECT
 public:
 	audioFileProcessor(InstrumentTrack* _instrument_track);
@@ -97,7 +98,8 @@ private:
 
 class AudioFileProcessorWaveView;
 
-class AudioFileProcessorView : public InstrumentViewFixedSize {
+class AudioFileProcessorView : public InstrumentViewFixedSize
+{
 	Q_OBJECT
 public:
 	AudioFileProcessorView(Instrument* _instrument, QWidget* _parent);
@@ -131,7 +133,8 @@ private:
 	ComboBox* m_interpBox;
 };
 
-class AudioFileProcessorWaveView : public QWidget {
+class AudioFileProcessorWaveView : public QWidget
+{
 	Q_OBJECT
 protected:
 	virtual void enterEvent(QEvent* _e);
@@ -143,9 +146,15 @@ protected:
 	virtual void paintEvent(QPaintEvent* _pe);
 
 public:
-	enum knobType { start, end, loop };
+	enum knobType
+	{
+		start,
+		end,
+		loop
+	};
 
-	class knob : public ::Knob {
+	class knob : public ::Knob
+	{
 		const AudioFileProcessorWaveView* m_waveView;
 		const Knob* m_relatedKnob;
 
@@ -153,7 +162,8 @@ public:
 		knob(QWidget* _parent)
 			: ::Knob(knobBright_26, _parent)
 			, m_waveView(0)
-			, m_relatedKnob(0) {
+			, m_relatedKnob(0)
+		{
 			setFixedSize(37, 47);
 		}
 
@@ -173,7 +183,8 @@ public:
 	};
 
 public slots:
-	void update() {
+	void update()
+	{
 		updateGraph();
 		QWidget::update();
 	}
@@ -183,7 +194,13 @@ public slots:
 private:
 	static const int s_padding = 2;
 
-	enum draggingType { wave, sample_start, sample_end, sample_loop };
+	enum draggingType
+	{
+		wave,
+		sample_start,
+		sample_end,
+		sample_loop
+	};
 
 	SampleBuffer& m_sampleBuffer;
 	QPixmap m_graph;

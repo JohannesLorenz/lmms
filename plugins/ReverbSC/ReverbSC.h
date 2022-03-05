@@ -34,7 +34,8 @@ extern "C" {
 #include "revsc.h"
 }
 
-class ReverbSCEffect : public Effect {
+class ReverbSCEffect : public Effect
+{
 public:
 	ReverbSCEffect(Model* parent, const Descriptor::SubPluginFeatures::Key* key);
 	virtual ~ReverbSCEffect();

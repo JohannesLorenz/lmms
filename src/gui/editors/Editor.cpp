@@ -31,22 +31,26 @@
 #include "Song.h"
 #include "embed.h"
 
-void Editor::setPauseIcon(bool displayPauseIcon) {
+void Editor::setPauseIcon(bool displayPauseIcon)
+{
 	// If we're playing, show a pause icon
 	if (displayPauseIcon) m_playAction->setIcon(embed::getIconPixmap("pause"));
 	else
 		m_playAction->setIcon(embed::getIconPixmap("play"));
 }
 
-DropToolBar* Editor::addDropToolBarToTop(QString const& windowTitle) {
+DropToolBar* Editor::addDropToolBarToTop(QString const& windowTitle)
+{
 	return addDropToolBar(Qt::TopToolBarArea, windowTitle);
 }
 
-DropToolBar* Editor::addDropToolBar(Qt::ToolBarArea whereToAdd, QString const& windowTitle) {
+DropToolBar* Editor::addDropToolBar(Qt::ToolBarArea whereToAdd, QString const& windowTitle)
+{
 	return addDropToolBar(this, whereToAdd, windowTitle);
 }
 
-DropToolBar* Editor::addDropToolBar(QWidget* parent, Qt::ToolBarArea whereToAdd, QString const& windowTitle) {
+DropToolBar* Editor::addDropToolBar(QWidget* parent, Qt::ToolBarArea whereToAdd, QString const& windowTitle)
+{
 	DropToolBar* toolBar = new DropToolBar(parent);
 	addToolBar(whereToAdd, toolBar);
 	toolBar->setMovable(false);
@@ -57,7 +61,8 @@ DropToolBar* Editor::addDropToolBar(QWidget* parent, Qt::ToolBarArea whereToAdd,
 	return toolBar;
 }
 
-void Editor::togglePlayStop() {
+void Editor::togglePlayStop()
+{
 	if (Engine::getSong()->isPlaying()) stop();
 	else
 		play();
@@ -73,7 +78,8 @@ Editor::Editor(bool record, bool stepRecord)
 	, m_recordAction(nullptr)
 	, m_recordAccompanyAction(nullptr)
 	, m_toggleStepRecordingAction(nullptr)
-	, m_stopAction(nullptr) {
+	, m_stopAction(nullptr)
+{
 	m_toolBar = addDropToolBarToTop(tr("Transport controls"));
 
 	auto addButton = [this](QAction* action, QString objectName) {
@@ -114,7 +120,8 @@ Editor::~Editor() {}
 
 QAction* Editor::playAction() const { return m_playAction; }
 
-void Editor::closeEvent(QCloseEvent* _ce) {
+void Editor::closeEvent(QCloseEvent* _ce)
+{
 	if (parentWidget()) {
 		parentWidget()->hide();
 	} else {
@@ -124,7 +131,8 @@ void Editor::closeEvent(QCloseEvent* _ce) {
 }
 
 DropToolBar::DropToolBar(QWidget* parent)
-	: QToolBar(parent) {
+	: QToolBar(parent)
+{
 	setAcceptDrops(true);
 }
 

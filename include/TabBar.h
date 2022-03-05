@@ -33,7 +33,8 @@
 
 class TabButton;
 
-class LMMS_EXPORT TabBar : public QWidget {
+class LMMS_EXPORT TabBar : public QWidget
+{
 	Q_OBJECT
 public:
 	TabBar(QWidget* _parent, QBoxLayout::Direction _dir = QBoxLayout::LeftToRight);

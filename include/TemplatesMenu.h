@@ -4,7 +4,8 @@
 #include <QDir>
 #include <QMenu>
 
-class TemplatesMenu : public QMenu {
+class TemplatesMenu : public QMenu
+{
 	Q_OBJECT
 public:
 	TemplatesMenu(QWidget* parent = nullptr);

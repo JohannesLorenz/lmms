@@ -31,7 +31,8 @@
 
 PatternStore::PatternStore()
 	: TrackContainer()
-	, m_patternComboBoxModel(this) {
+	, m_patternComboBoxModel(this)
+{
 	connect(&m_patternComboBoxModel, SIGNAL(dataChanged()), this, SLOT(currentPatternChanged()));
 	// we *always* want to receive updates even in case pattern actually did
 	// not change upon setCurrentPattern()-call
@@ -41,7 +42,8 @@ PatternStore::PatternStore()
 
 PatternStore::~PatternStore() {}
 
-bool PatternStore::play(TimePos start, fpp_t frames, f_cnt_t offset, int clipNum) {
+bool PatternStore::play(TimePos start, fpp_t frames, f_cnt_t offset, int clipNum)
+{
 	bool notePlayed = false;
 
 	if (lengthOfPattern(clipNum) <= 0) { return false; }
@@ -56,11 +58,13 @@ bool PatternStore::play(TimePos start, fpp_t frames, f_cnt_t offset, int clipNum
 	return notePlayed;
 }
 
-void PatternStore::updateAfterTrackAdd() {
+void PatternStore::updateAfterTrackAdd()
+{
 	if (numOfPatterns() == 0 && !Engine::getSong()->isLoadingProject()) { Engine::getSong()->addPatternTrack(); }
 }
 
-bar_t PatternStore::lengthOfPattern(int pattern) const {
+bar_t PatternStore::lengthOfPattern(int pattern) const
+{
 	TimePos maxLength = TimePos::ticksPerBar();
 
 	const TrackList& tl = tracks();
@@ -74,7 +78,8 @@ bar_t PatternStore::lengthOfPattern(int pattern) const {
 
 int PatternStore::numOfPatterns() const { return Engine::getSong()->countTracks(Track::PatternTrack); }
 
-void PatternStore::removePattern(int pattern) {
+void PatternStore::removePattern(int pattern)
+{
 	TrackList tl = tracks();
 	for (Track* t : tl) {
 		delete t->getClip(pattern);
@@ -83,7 +88,8 @@ void PatternStore::removePattern(int pattern) {
 	if (pattern <= currentPattern()) { setCurrentPattern(qMax(currentPattern() - 1, 0)); }
 }
 
-void PatternStore::swapPattern(int pattern1, int pattern2) {
+void PatternStore::swapPattern(int pattern1, int pattern2)
+{
 	TrackList tl = tracks();
 	for (Track* t : tl) {
 		t->swapPositionOfClips(pattern1, pattern2);
@@ -91,12 +97,14 @@ void PatternStore::swapPattern(int pattern1, int pattern2) {
 	updateComboBox();
 }
 
-void PatternStore::updatePatternTrack(Clip* clip) {
+void PatternStore::updatePatternTrack(Clip* clip)
+{
 	PatternTrack* t = PatternTrack::findPatternTrack(clip->startPosition() / DefaultTicksPerBar);
 	if (t != nullptr) { t->dataChanged(); }
 }
 
-void PatternStore::fixIncorrectPositions() {
+void PatternStore::fixIncorrectPositions()
+{
 	TrackList tl = tracks();
 	for (Track* t : tl) {
 		for (int i = 0; i < numOfPatterns(); ++i) {
@@ -105,7 +113,8 @@ void PatternStore::fixIncorrectPositions() {
 	}
 }
 
-void PatternStore::play() {
+void PatternStore::play()
+{
 	if (Engine::getSong()->playMode() != Song::Mode_PlayPattern) {
 		Engine::getSong()->playPattern();
 	} else {
@@ -115,7 +124,8 @@ void PatternStore::play() {
 
 void PatternStore::stop() { Engine::getSong()->stop(); }
 
-void PatternStore::updateComboBox() {
+void PatternStore::updateComboBox()
+{
 	const int curPattern = currentPattern();
 
 	m_patternComboBoxModel.clear();
@@ -127,7 +137,8 @@ void PatternStore::updateComboBox() {
 	setCurrentPattern(curPattern);
 }
 
-void PatternStore::currentPatternChanged() {
+void PatternStore::currentPatternChanged()
+{
 	// now update all track-labels (the current one has to become white, the others gray)
 	TrackList tl = Engine::getSong()->tracks();
 	for (Track* t : tl) {
@@ -135,14 +146,16 @@ void PatternStore::currentPatternChanged() {
 	}
 }
 
-void PatternStore::createClipsForPattern(int pattern) {
+void PatternStore::createClipsForPattern(int pattern)
+{
 	TrackList tl = tracks();
 	for (Track* t : tl) {
 		t->createClipsForPattern(pattern);
 	}
 }
 
-AutomatedValueMap PatternStore::automatedValuesAt(TimePos time, int clipNum) const {
+AutomatedValueMap PatternStore::automatedValuesAt(TimePos time, int clipNum) const
+{
 	Q_ASSERT(clipNum >= 0);
 	Q_ASSERT(time.getTicks() >= 0);
 

@@ -33,14 +33,18 @@
 #include "Instrument.h"
 #include "InstrumentView.h"
 
-class DummyInstrument : public Instrument {
+class DummyInstrument : public Instrument
+{
 public:
 	DummyInstrument(InstrumentTrack* _instrument_track)
-		: Instrument(_instrument_track, nullptr) {}
+		: Instrument(_instrument_track, nullptr)
+	{
+	}
 
 	virtual ~DummyInstrument() {}
 
-	void playNote(NotePlayHandle*, sampleFrame* buffer) override {
+	void playNote(NotePlayHandle*, sampleFrame* buffer) override
+	{
 		memset(buffer, 0, sizeof(sampleFrame) * Engine::audioEngine()->framesPerPeriod());
 	}
 

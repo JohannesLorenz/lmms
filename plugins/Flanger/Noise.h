@@ -25,7 +25,8 @@
 #ifndef NOISE_H
 #define NOISE_H
 
-class Noise {
+class Noise
+{
 public:
 	Noise();
 	float tick();

@@ -8,28 +8,32 @@
 #include "embed.h"
 
 TemplatesMenu::TemplatesMenu(QWidget* parent)
-	: QMenu(tr("New from template"), parent) {
+	: QMenu(tr("New from template"), parent)
+{
 	setIcon(embed::getIconPixmap("project_new"));
 
 	connect(this, SIGNAL(aboutToShow()), SLOT(fillTemplatesMenu()));
 	connect(this, SIGNAL(triggered(QAction*)), SLOT(createNewProjectFromTemplate(QAction*)));
 }
 
-void TemplatesMenu::createNewProjectFromTemplate(QAction* _action) {
+void TemplatesMenu::createNewProjectFromTemplate(QAction* _action)
+{
 	if (getGUI()->mainWindow()->mayChangeProject(true)) {
 		const QString& templateFilePath = _action->data().toString();
 		Engine::getSong()->createNewProjectFromTemplate(templateFilePath);
 	}
 }
 
-void TemplatesMenu::fillTemplatesMenu() {
+void TemplatesMenu::fillTemplatesMenu()
+{
 	clear();
 
 	addTemplatesFromDir(ConfigManager::inst()->userTemplateDir());
 	addTemplatesFromDir(ConfigManager::inst()->factoryProjectsDir() + "templates");
 }
 
-void TemplatesMenu::addTemplatesFromDir(const QDir& dir) {
+void TemplatesMenu::addTemplatesFromDir(const QDir& dir)
+{
 	QFileInfoList templates = dir.entryInfoList(QStringList("*.mpt"), QDir::Files | QDir::Readable);
 
 	if (!templates.empty() && !actions().isEmpty()) { addSeparator(); }

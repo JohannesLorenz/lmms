@@ -35,7 +35,8 @@ AudioDevice::AudioDevice(const ch_cnt_t _channels, AudioEngine* _audioEngine)
 	, m_sampleRate(_audioEngine->processingSampleRate())
 	, m_channels(_channels)
 	, m_audioEngine(_audioEngine)
-	, m_buffer(new surroundSampleFrame[audioEngine()->framesPerPeriod()]) {
+	, m_buffer(new surroundSampleFrame[audioEngine()->framesPerPeriod()])
+{
 	int error;
 	if ((m_srcState = src_new(audioEngine()->currentQualitySettings().libsrcInterpolation(), SURROUND_CHANNELS, &error))
 		== nullptr) {
@@ -43,7 +44,8 @@ AudioDevice::AudioDevice(const ch_cnt_t _channels, AudioEngine* _audioEngine)
 	}
 }
 
-AudioDevice::~AudioDevice() {
+AudioDevice::~AudioDevice()
+{
 	src_delete(m_srcState);
 	delete[] m_buffer;
 
@@ -51,7 +53,8 @@ AudioDevice::~AudioDevice() {
 	unlock();
 }
 
-void AudioDevice::processNextBuffer() {
+void AudioDevice::processNextBuffer()
+{
 	const fpp_t frames = getNextBuffer(m_buffer);
 	if (frames) {
 		writeBuffer(m_buffer, frames, audioEngine()->masterGain());
@@ -60,7 +63,8 @@ void AudioDevice::processNextBuffer() {
 	}
 }
 
-fpp_t AudioDevice::getNextBuffer(surroundSampleFrame* _ab) {
+fpp_t AudioDevice::getNextBuffer(surroundSampleFrame* _ab)
+{
 	fpp_t frames = audioEngine()->framesPerPeriod();
 	const surroundSampleFrame* b = audioEngine()->nextBuffer();
 	if (!b) { return 0; }
@@ -83,7 +87,8 @@ fpp_t AudioDevice::getNextBuffer(surroundSampleFrame* _ab) {
 	return frames;
 }
 
-void AudioDevice::stopProcessing() {
+void AudioDevice::stopProcessing()
+{
 	if (audioEngine()->hasFifoWriter()) {
 		while (m_inProcess) {
 			processNextBuffer();
@@ -91,7 +96,8 @@ void AudioDevice::stopProcessing() {
 	}
 }
 
-void AudioDevice::stopProcessingThread(QThread* thread) {
+void AudioDevice::stopProcessingThread(QThread* thread)
+{
 	if (!thread->wait(30000)) {
 		fprintf(stderr, "Terminating audio device thread\n");
 		thread->terminate();
@@ -99,7 +105,8 @@ void AudioDevice::stopProcessingThread(QThread* thread) {
 	}
 }
 
-void AudioDevice::applyQualitySettings() {
+void AudioDevice::applyQualitySettings()
+{
 	src_delete(m_srcState);
 
 	int error;
@@ -116,7 +123,8 @@ void AudioDevice::unregisterPort(AudioPort* _port) {}
 void AudioDevice::renamePort(AudioPort*) {}
 
 fpp_t AudioDevice::resample(const surroundSampleFrame* _src, const fpp_t _frames, surroundSampleFrame* _dst,
-	const sample_rate_t _src_sr, const sample_rate_t _dst_sr) {
+	const sample_rate_t _src_sr, const sample_rate_t _dst_sr)
+{
 	if (m_srcState == nullptr) { return _frames; }
 	m_srcData.input_frames = _frames;
 	m_srcData.output_frames = _frames;
@@ -132,7 +140,8 @@ fpp_t AudioDevice::resample(const surroundSampleFrame* _src, const fpp_t _frames
 }
 
 int AudioDevice::convertToS16(const surroundSampleFrame* _ab, const fpp_t _frames, const float _master_gain,
-	int_sample_t* _output_buffer, const bool _convert_endian) {
+	int_sample_t* _output_buffer, const bool _convert_endian)
+{
 	if (_convert_endian) {
 		int_sample_t temp;
 		for (fpp_t frame = 0; frame < _frames; ++frame) {
@@ -155,7 +164,8 @@ int AudioDevice::convertToS16(const surroundSampleFrame* _ab, const fpp_t _frame
 	return _frames * channels() * BYTES_PER_INT_SAMPLE;
 }
 
-void AudioDevice::clearS16Buffer(int_sample_t* _outbuf, const fpp_t _frames) {
+void AudioDevice::clearS16Buffer(int_sample_t* _outbuf, const fpp_t _frames)
+{
 
 	assert(_outbuf != nullptr);
 

@@ -33,7 +33,8 @@
 #include "embed.h"
 
 ToolPluginView::ToolPluginView(ToolPlugin* _toolPlugin)
-	: PluginView(_toolPlugin, nullptr) {
+	: PluginView(_toolPlugin, nullptr)
+{
 	getGUI()->mainWindow()->addWindowedWidget(this);
 	parentWidget()->setAttribute(Qt::WA_DeleteOnClose, false);
 

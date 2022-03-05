@@ -28,6 +28,7 @@
 
 InstrumentPlayHandle::InstrumentPlayHandle(Instrument* instrument, InstrumentTrack* instrumentTrack)
 	: PlayHandle(TypeInstrumentPlayHandle)
-	, m_instrument(instrument) {
+	, m_instrument(instrument)
+{
 	setAudioPort(instrumentTrack->audioPort());
 }

@@ -37,7 +37,8 @@ EffectSelectDialog::EffectSelectDialog(QWidget* _parent)
 	, ui(new Ui::EffectSelectDialog)
 	, m_sourceModel()
 	, m_model()
-	, m_descriptionWidget(nullptr) {
+	, m_descriptionWidget(nullptr)
+{
 	ui->setupUi(this);
 
 	setWindowIcon(embed::getIconPixmap("setup_audio"));
@@ -108,7 +109,8 @@ EffectSelectDialog::EffectSelectDialog(QWidget* _parent)
 
 EffectSelectDialog::~EffectSelectDialog() { delete ui; }
 
-Effect* EffectSelectDialog::instantiateSelectedPlugin(EffectChain* _parent) {
+Effect* EffectSelectDialog::instantiateSelectedPlugin(EffectChain* _parent)
+{
 	Effect* result = nullptr;
 	if (!m_currentSelection.name.isEmpty() && m_currentSelection.desc) {
 		result = Effect::instantiate(m_currentSelection.desc->name, _parent, &m_currentSelection);
@@ -117,11 +119,13 @@ Effect* EffectSelectDialog::instantiateSelectedPlugin(EffectChain* _parent) {
 	return result;
 }
 
-void EffectSelectDialog::acceptSelection() {
+void EffectSelectDialog::acceptSelection()
+{
 	if (m_currentSelection.isValid()) { accept(); }
 }
 
-void EffectSelectDialog::rowChanged(const QModelIndex& _idx, const QModelIndex&) {
+void EffectSelectDialog::rowChanged(const QModelIndex& _idx, const QModelIndex&)
+{
 	delete m_descriptionWidget;
 	m_descriptionWidget = nullptr;
 
@@ -185,7 +189,8 @@ void EffectSelectDialog::rowChanged(const QModelIndex& _idx, const QModelIndex&)
 
 void EffectSelectDialog::sortAgain() { ui->pluginList->setSortingEnabled(ui->pluginList->isSortingEnabled()); }
 
-void EffectSelectDialog::updateSelection() {
+void EffectSelectDialog::updateSelection()
+{
 	// no valid selection anymore due to changed filter?
 	if (ui->pluginList->selectionModel()->selection().size() <= 0) {
 		// then select our first item

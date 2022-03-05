@@ -62,14 +62,18 @@ Knob::Knob(knobTypes _knob_num, QWidget* _parent, const QString& _name)
 	, m_angle(-10)
 	, m_lineWidth(0)
 	, m_textColor(255, 255, 255)
-	, m_knobNum(_knob_num) {
+	, m_knobNum(_knob_num)
+{
 	initUi(_name);
 }
 
 Knob::Knob(QWidget* _parent, const QString& _name)
-	: Knob(knobBright_26, _parent, _name) {}
+	: Knob(knobBright_26, _parent, _name)
+{
+}
 
-void Knob::initUi(const QString& _name) {
+void Knob::initUi(const QString& _name)
+{
 	if (s_textFloat == nullptr) { s_textFloat = new TextFloat; }
 
 	setWindowTitle(_name);
@@ -106,7 +110,8 @@ void Knob::initUi(const QString& _name) {
 	doConnections();
 }
 
-void Knob::onKnobNumUpdated() {
+void Knob::onKnobNumUpdated()
+{
 	if (m_knobNum != knobStyled) {
 		QString knobFilename;
 		switch (m_knobNum) {
@@ -125,7 +130,8 @@ void Knob::onKnobNumUpdated() {
 	}
 }
 
-void Knob::setLabel(const QString& txt) {
+void Knob::setLabel(const QString& txt)
+{
 	m_label = txt;
 	m_isHtmlLabel = false;
 	if (m_knobPixmap) {
@@ -137,7 +143,8 @@ void Knob::setLabel(const QString& txt) {
 	update();
 }
 
-void Knob::setHtmlLabel(const QString& htmltxt) {
+void Knob::setHtmlLabel(const QString& htmltxt)
+{
 	m_label = htmltxt;
 	m_isHtmlLabel = true;
 	// Put the rendered HTML content into cache
@@ -150,7 +157,8 @@ void Knob::setHtmlLabel(const QString& htmltxt) {
 	update();
 }
 
-void Knob::setTotalAngle(float angle) {
+void Knob::setTotalAngle(float angle)
+{
 	if (angle < 10.0) {
 		m_totalAngle = 10.0;
 	} else {
@@ -170,7 +178,8 @@ void Knob::setOuterRadius(float r) { m_outerRadius = r; }
 
 knobTypes Knob::knobNum() const { return m_knobNum; }
 
-void Knob::setknobNum(knobTypes k) {
+void Knob::setknobNum(knobTypes k)
+{
 	if (m_knobNum != k) {
 		m_knobNum = k;
 		onKnobNumUpdated();
@@ -199,7 +208,8 @@ QColor Knob::textColor() const { return m_textColor; }
 
 void Knob::setTextColor(const QColor& c) { m_textColor = c; }
 
-QLineF Knob::calculateLine(const QPointF& _mid, float _radius, float _innerRadius) const {
+QLineF Knob::calculateLine(const QPointF& _mid, float _radius, float _innerRadius) const
+{
 	const float rarc = m_angle * F_PI / 180.0;
 	const float ca = cos(rarc);
 	const float sa = -sin(rarc);
@@ -208,7 +218,8 @@ QLineF Knob::calculateLine(const QPointF& _mid, float _radius, float _innerRadiu
 		_mid.x() - sa * _innerRadius, _mid.y() - ca * _innerRadius, _mid.x() - sa * _radius, _mid.y() - ca * _radius);
 }
 
-bool Knob::updateAngle() {
+bool Knob::updateAngle()
+{
 	int angle = 0;
 	if (model() && model()->maxValue() != model()->minValue()) {
 		angle = angleFromValue(
@@ -221,7 +232,8 @@ bool Knob::updateAngle() {
 	return false;
 }
 
-void Knob::drawKnob(QPainter* _p) {
+void Knob::drawKnob(QPainter* _p)
+{
 	bool enabled = this->isEnabled();
 	QColor currentArcColor = enabled ? m_arcActiveColor : m_arcInactiveColor;
 	QColor currentLineColor = enabled ? m_lineActiveColor : m_lineInactiveColor;
@@ -312,7 +324,8 @@ void Knob::drawKnob(QPainter* _p) {
 	_p->drawImage(0, 0, m_cache);
 }
 
-float Knob::getValue(const QPoint& _p) {
+float Knob::getValue(const QPoint& _p)
+{
 	float value;
 
 	// knob value increase is linear to mouse movement
@@ -326,7 +339,8 @@ float Knob::getValue(const QPoint& _p) {
 	return value * pageSize();
 }
 
-void Knob::contextMenuEvent(QContextMenuEvent*) {
+void Knob::contextMenuEvent(QContextMenuEvent*)
+{
 	// for the case, the user clicked right while pressing left mouse-
 	// button, the context-menu appears while mouse-cursor is still hidden
 	// and it isn't shown again until user does something which causes
@@ -341,18 +355,21 @@ void Knob::contextMenuEvent(QContextMenuEvent*) {
 	contextMenu.exec(QCursor::pos());
 }
 
-void Knob::toggleScale() {
+void Knob::toggleScale()
+{
 	model()->setScaleLogarithmic(!model()->isScaleLogarithmic());
 	update();
 }
 
-void Knob::dragEnterEvent(QDragEnterEvent* _dee) {
+void Knob::dragEnterEvent(QDragEnterEvent* _dee)
+{
 	StringPairDrag::processDragEnterEvent(_dee,
 		"float_value,"
 		"automatable_model");
 }
 
-void Knob::dropEvent(QDropEvent* _de) {
+void Knob::dropEvent(QDropEvent* _de)
+{
 	QString type = StringPairDrag::decodeKey(_de);
 	QString val = StringPairDrag::decodeValue(_de);
 	if (type == "float_value") {
@@ -368,7 +385,8 @@ void Knob::dropEvent(QDropEvent* _de) {
 	}
 }
 
-void Knob::mousePressEvent(QMouseEvent* _me) {
+void Knob::mousePressEvent(QMouseEvent* _me)
+{
 	if (_me->button() == Qt::LeftButton && !(_me->modifiers() & Qt::ControlModifier)
 		&& !(_me->modifiers() & Qt::ShiftModifier)) {
 		AutomatableModel* thisModel = model();
@@ -394,7 +412,8 @@ void Knob::mousePressEvent(QMouseEvent* _me) {
 	}
 }
 
-void Knob::mouseMoveEvent(QMouseEvent* _me) {
+void Knob::mouseMoveEvent(QMouseEvent* _me)
+{
 	if (m_buttonPressed && _me->pos() != m_lastMousePos) {
 		// knob position is changed depending on last mouse position
 		setPosition(_me->pos() - m_lastMousePos);
@@ -405,7 +424,8 @@ void Knob::mouseMoveEvent(QMouseEvent* _me) {
 	s_textFloat->setText(displayValue());
 }
 
-void Knob::mouseReleaseEvent(QMouseEvent* event) {
+void Knob::mouseReleaseEvent(QMouseEvent* event)
+{
 	if (event && event->button() == Qt::LeftButton) {
 		AutomatableModel* thisModel = model();
 		if (thisModel) { thisModel->restoreJournallingState(); }
@@ -420,7 +440,8 @@ void Knob::mouseReleaseEvent(QMouseEvent* event) {
 	s_textFloat->hide();
 }
 
-void Knob::focusOutEvent(QFocusEvent* _fe) {
+void Knob::focusOutEvent(QFocusEvent* _fe)
+{
 	// make sure we don't loose mouse release event
 	mouseReleaseEvent(nullptr);
 	QWidget::focusOutEvent(_fe);
@@ -428,7 +449,8 @@ void Knob::focusOutEvent(QFocusEvent* _fe) {
 
 void Knob::mouseDoubleClickEvent(QMouseEvent*) { enterValue(); }
 
-void Knob::paintEvent(QPaintEvent* _me) {
+void Knob::paintEvent(QPaintEvent* _me)
+{
 	QPainter p(this);
 
 	drawKnob(&p);
@@ -445,7 +467,8 @@ void Knob::paintEvent(QPaintEvent* _me) {
 	}
 }
 
-void Knob::wheelEvent(QWheelEvent* we) {
+void Knob::wheelEvent(QWheelEvent* we)
+{
 	we->accept();
 	const float stepMult = model()->range() / 2000 / model()->step<float>();
 	const int inc = ((we->angleDelta().y() > 0) ? 1 : -1) * ((stepMult < 1) ? 1 : stepMult);
@@ -458,7 +481,8 @@ void Knob::wheelEvent(QWheelEvent* we) {
 	emit sliderMoved(model()->value());
 }
 
-void Knob::setPosition(const QPoint& _p) {
+void Knob::setPosition(const QPoint& _p)
+{
 	const float value = getValue(_p) + m_leftOver;
 	const float step = model()->step<float>();
 	const float oldValue = model()->value();
@@ -491,7 +515,8 @@ void Knob::setPosition(const QPoint& _p) {
 	}
 }
 
-void Knob::enterValue() {
+void Knob::enterValue()
+{
 	bool ok;
 	float new_val;
 
@@ -517,7 +542,8 @@ void Knob::enterValue() {
 	if (ok) { model()->setValue(new_val); }
 }
 
-void Knob::friendlyUpdate() {
+void Knob::friendlyUpdate()
+{
 	if (model()
 		&& (model()->controllerConnection() == nullptr
 			|| model()->controllerConnection()->getController()->frequentUpdates() == false
@@ -526,7 +552,8 @@ void Knob::friendlyUpdate() {
 	}
 }
 
-QString Knob::displayValue() const {
+QString Knob::displayValue() const
+{
 	if (isVolumeKnob() && ConfigManager::inst()->value("app", "displaydbfs").toInt()) {
 		return m_description.trimmed()
 			+ QString(" %1 dBFS").arg(ampToDbfs(model()->getRoundedValue() / volumeRatio()), 3, 'f', 2);
@@ -534,7 +561,8 @@ QString Knob::displayValue() const {
 	return m_description.trimmed() + QString(" %1").arg(model()->getRoundedValue()) + m_unit;
 }
 
-void Knob::doConnections() {
+void Knob::doConnections()
+{
 	if (model() != nullptr) {
 		QObject::connect(model(), SIGNAL(dataChanged()), this, SLOT(friendlyUpdate()));
 
@@ -542,7 +570,8 @@ void Knob::doConnections() {
 	}
 }
 
-void Knob::changeEvent(QEvent* ev) {
+void Knob::changeEvent(QEvent* ev)
+{
 	if (ev->type() == QEvent::EnabledChange) {
 		onKnobNumUpdated();
 		if (!m_label.isEmpty()) { setLabel(m_label); }
@@ -551,7 +580,8 @@ void Knob::changeEvent(QEvent* ev) {
 	}
 }
 
-void convertPixmapToGrayScale(QPixmap& pixMap) {
+void convertPixmapToGrayScale(QPixmap& pixMap)
+{
 	QImage temp = pixMap.toImage().convertToFormat(QImage::Format_ARGB32);
 	for (int i = 0; i < temp.height(); ++i) {
 		for (int j = 0; j < temp.width(); ++j) {

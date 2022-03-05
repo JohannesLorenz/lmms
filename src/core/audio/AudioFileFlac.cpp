@@ -34,13 +34,15 @@
 AudioFileFlac::AudioFileFlac(OutputSettings const& outputSettings, ch_cnt_t const channels, bool& successful,
 	QString const& file, AudioEngine* audioEngine)
 	: AudioFileDevice(outputSettings, channels, file, audioEngine)
-	, m_sf(nullptr) {
+	, m_sf(nullptr)
+{
 	successful = outputFileOpened() && startEncoding();
 }
 
 AudioFileFlac::~AudioFileFlac() { finishEncoding(); }
 
-bool AudioFileFlac::startEncoding() {
+bool AudioFileFlac::startEncoding()
+{
 	m_sfinfo.samplerate = sampleRate();
 	m_sfinfo.channels = channels();
 	m_sfinfo.frames = audioEngine()->framesPerPeriod();
@@ -78,7 +80,8 @@ bool AudioFileFlac::startEncoding() {
 	return true;
 }
 
-void AudioFileFlac::writeBuffer(surroundSampleFrame const* _ab, fpp_t const frames, float master_gain) {
+void AudioFileFlac::writeBuffer(surroundSampleFrame const* _ab, fpp_t const frames, float master_gain)
+{
 	OutputSettings::BitDepth depth = getOutputSettings().getBitDepth();
 	float clipvalue = std::nextafterf(-1.0f, 0.0f);
 
@@ -102,7 +105,8 @@ void AudioFileFlac::writeBuffer(surroundSampleFrame const* _ab, fpp_t const fram
 	}
 }
 
-void AudioFileFlac::finishEncoding() {
+void AudioFileFlac::finishEncoding()
+{
 	if (m_sf) {
 		sf_write_sync(m_sf);
 		sf_close(m_sf);

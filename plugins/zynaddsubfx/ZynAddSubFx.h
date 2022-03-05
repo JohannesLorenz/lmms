@@ -42,7 +42,8 @@ class NotePlayHandle;
 class Knob;
 class LedCheckBox;
 
-class ZynAddSubFxRemotePlugin : public RemotePlugin {
+class ZynAddSubFxRemotePlugin : public RemotePlugin
+{
 	Q_OBJECT
 public:
 	ZynAddSubFxRemotePlugin();
@@ -54,7 +55,8 @@ signals:
 	void clickedCloseButton();
 };
 
-class ZynAddSubFxInstrument : public Instrument {
+class ZynAddSubFxInstrument : public Instrument
+{
 	Q_OBJECT
 public:
 	ZynAddSubFxInstrument(InstrumentTrack* _instrument_track);
@@ -114,7 +116,8 @@ signals:
 	void settingsChanged();
 };
 
-class ZynAddSubFxView : public InstrumentViewFixedSize {
+class ZynAddSubFxView : public InstrumentViewFixedSize
+{
 	Q_OBJECT
 public:
 	ZynAddSubFxView(Instrument* _instrument, QWidget* _parent);

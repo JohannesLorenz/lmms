@@ -42,7 +42,8 @@ InstrumentMidiIOView::InstrumentMidiIOView(QWidget* parent)
 	: QWidget(parent)
 	, ModelView(nullptr, this)
 	, m_rpBtn(nullptr)
-	, m_wpBtn(nullptr) {
+	, m_wpBtn(nullptr)
+{
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setMargin(5);
 	m_midiInputGroupBox = new GroupBox(tr("ENABLE MIDI INPUT"));
@@ -163,7 +164,8 @@ InstrumentMidiIOView::InstrumentMidiIOView(QWidget* parent)
 
 InstrumentMidiIOView::~InstrumentMidiIOView() {}
 
-void InstrumentMidiIOView::modelChanged() {
+void InstrumentMidiIOView::modelChanged()
+{
 	MidiPort* mp = castModel<MidiPort>();
 
 	m_midiInputGroupBox->setModel(&mp->m_readableModel);

@@ -46,7 +46,8 @@ class QLabel;
 
 struct SF2PluginData;
 
-class sf2Instrument : public Instrument {
+class sf2Instrument : public Instrument
+{
 	Q_OBJECT
 	mapPropertyFromModel(int, getBank, setBank, m_bankNum);
 	mapPropertyFromModel(int, getPatch, setPatch, m_patchNum);
@@ -155,7 +156,8 @@ signals:
 };
 
 // A soundfont in our font-map
-class sf2Font {
+class sf2Font
+{
 	MM_OPERATORS
 public:
 	sf2Font(fluid_sfont_t* f)
@@ -166,7 +168,8 @@ public:
 	int refCount;
 };
 
-class sf2InstrumentView : public InstrumentViewFixedSize {
+class sf2InstrumentView : public InstrumentViewFixedSize
+{
 	Q_OBJECT
 public:
 	sf2InstrumentView(Instrument* _instrument, QWidget* _parent);

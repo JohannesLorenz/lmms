@@ -30,9 +30,11 @@ Plugin::Descriptor PLUGIN_EXPORT hydrogenimport_plugin_descriptor = {
 }
 
 QString filename;
-class NoteKey {
+class NoteKey
+{
 public:
-	enum Key {
+	enum Key
+	{
 		C = 0,
 		Cs,
 		D,
@@ -47,7 +49,8 @@ public:
 		B,
 	};
 
-	static int stringToNoteKey(const QString& str) {
+	static int stringToNoteKey(const QString& str)
+	{
 		int m_key = NoteKey::C;
 
 		QString sKey = str.left(str.length() - 1);
@@ -90,13 +93,15 @@ public:
 	}
 };
 HydrogenImport::HydrogenImport(const QString& _file)
-	: ImportFilter(_file, &hydrogenimport_plugin_descriptor) {
+	: ImportFilter(_file, &hydrogenimport_plugin_descriptor)
+{
 	filename = _file;
 }
 
 HydrogenImport::~HydrogenImport() {}
 Instrument* ins;
-bool HydrogenImport::readSong() {
+bool HydrogenImport::readSong()
+{
 	QHash<QString, InstrumentTrack*> drum_track;
 	QHash<QString, int> pattern_length;
 	QHash<QString, int> pattern_id;
@@ -256,7 +261,8 @@ bool HydrogenImport::readSong() {
 	if (pattern_count == 0) { return false; }
 	return true;
 }
-bool HydrogenImport::tryImport(TrackContainer* tc) {
+bool HydrogenImport::tryImport(TrackContainer* tc)
+{
 	if (openFile() == false) { return false; }
 	return readSong();
 }
@@ -264,7 +270,8 @@ bool HydrogenImport::tryImport(TrackContainer* tc) {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model*, void* _data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model*, void* _data)
+{
 	return new HydrogenImport(QString::fromUtf8(static_cast<const char*>(_data)));
 }
 }

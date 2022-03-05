@@ -32,7 +32,8 @@ MidiAlsaRaw::MidiAlsaRaw()
 	: MidiClientRaw()
 	, m_inputp(&m_input)
 	, m_outputp(&m_output)
-	, m_quit(false) {
+	, m_quit(false)
+{
 	int err;
 	if ((err = snd_rawmidi_open(m_inputp, m_outputp, probeDevice().toLatin1().constData(), 0)) < 0) {
 		printf("cannot open MIDI-device: %s\n", snd_strerror(err));
@@ -49,7 +50,8 @@ MidiAlsaRaw::MidiAlsaRaw()
 	start(QThread::LowPriority);
 }
 
-MidiAlsaRaw::~MidiAlsaRaw() {
+MidiAlsaRaw::~MidiAlsaRaw()
+{
 	if (isRunning()) {
 		m_quit = true;
 		wait(1000);
@@ -61,7 +63,8 @@ MidiAlsaRaw::~MidiAlsaRaw() {
 	}
 }
 
-QString MidiAlsaRaw::probeDevice() {
+QString MidiAlsaRaw::probeDevice()
+{
 	QString dev = ConfigManager::inst()->value("MidiAlsaRaw", "device");
 	if (dev == "") {
 		if (getenv("MIDIDEV") != nullptr) { return getenv("MIDIDEV"); }
@@ -72,7 +75,8 @@ QString MidiAlsaRaw::probeDevice() {
 
 void MidiAlsaRaw::sendByte(unsigned char c) { snd_rawmidi_write(m_output, &c, sizeof(c)); }
 
-void MidiAlsaRaw::run() {
+void MidiAlsaRaw::run()
+{
 	unsigned char buf[128];
 	// int cnt = 0;
 	while (m_quit == false) {

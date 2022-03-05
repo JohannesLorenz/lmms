@@ -31,7 +31,8 @@
 
 class BitcrushEffect;
 
-class BitcrushControls : public EffectControls {
+class BitcrushControls : public EffectControls
+{
 	Q_OBJECT
 public:
 	BitcrushControls(BitcrushEffect* eff);

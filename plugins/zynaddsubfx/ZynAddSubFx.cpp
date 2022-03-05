@@ -66,13 +66,15 @@ Plugin::Descriptor PLUGIN_EXPORT zynaddsubfx_plugin_descriptor = {
 }
 
 ZynAddSubFxRemotePlugin::ZynAddSubFxRemotePlugin()
-	: RemotePlugin() {
+	: RemotePlugin()
+{
 	init("RemoteZynAddSubFx", false);
 }
 
 ZynAddSubFxRemotePlugin::~ZynAddSubFxRemotePlugin() {}
 
-bool ZynAddSubFxRemotePlugin::processMessage(const message& _m) {
+bool ZynAddSubFxRemotePlugin::processMessage(const message& _m)
+{
 	switch (_m.id) {
 	case IdHideUI: emit clickedCloseButton(); return true;
 	default: break;
@@ -93,7 +95,8 @@ ZynAddSubFxInstrument::ZynAddSubFxInstrument(InstrumentTrack* _instrumentTrack)
 	, m_fmGainModel(127, 0, 127, 1, this, tr("FM gain"))
 	, m_resCenterFreqModel(64, 0, 127, 1, this, tr("Resonance center frequency"))
 	, m_resBandwidthModel(64, 0, 127, 1, this, tr("Resonance bandwidth"))
-	, m_forwardMidiCcModel(true, this, tr("Forward MIDI control change events")) {
+	, m_forwardMidiCcModel(true, this, tr("Forward MIDI control change events"))
+{
 	initPlugin();
 
 	connect(&m_portamentoModel, SIGNAL(dataChanged()), this, SLOT(updatePortamento()), Qt::DirectConnection);
@@ -114,7 +117,8 @@ ZynAddSubFxInstrument::ZynAddSubFxInstrument(InstrumentTrack* _instrumentTrack)
 		Qt::DirectConnection);
 }
 
-ZynAddSubFxInstrument::~ZynAddSubFxInstrument() {
+ZynAddSubFxInstrument::~ZynAddSubFxInstrument()
+{
 	Engine::audioEngine()->removePlayHandlesOfTypes(
 		instrumentTrack(), PlayHandle::TypeNotePlayHandle | PlayHandle::TypeInstrumentPlayHandle);
 
@@ -126,7 +130,8 @@ ZynAddSubFxInstrument::~ZynAddSubFxInstrument() {
 	m_pluginMutex.unlock();
 }
 
-void ZynAddSubFxInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void ZynAddSubFxInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	m_portamentoModel.saveSettings(_doc, _this, "portamento");
 	m_filterFreqModel.saveSettings(_doc, _this, "filterfreq");
 	m_filterQModel.saveSettings(_doc, _this, "filterq");
@@ -165,7 +170,8 @@ void ZynAddSubFxInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this)
 	}
 }
 
-void ZynAddSubFxInstrument::loadSettings(const QDomElement& _this) {
+void ZynAddSubFxInstrument::loadSettings(const QDomElement& _this)
+{
 	if (!_this.hasChildNodes()) { return; }
 
 	m_portamentoModel.loadSettings(_this, "portamento");
@@ -221,7 +227,8 @@ void ZynAddSubFxInstrument::loadSettings(const QDomElement& _this) {
 	emit instrumentTrack()->pitchModel()->dataChanged();
 }
 
-void ZynAddSubFxInstrument::loadFile(const QString& _file) {
+void ZynAddSubFxInstrument::loadFile(const QString& _file)
+{
 	const std::string fn = QSTR_TO_STDSTR(_file);
 	if (m_remotePlugin) {
 		m_remotePlugin->lock();
@@ -243,7 +250,8 @@ void ZynAddSubFxInstrument::loadFile(const QString& _file) {
 
 QString ZynAddSubFxInstrument::nodeName() const { return zynaddsubfx_plugin_descriptor.name; }
 
-void ZynAddSubFxInstrument::play(sampleFrame* _buf) {
+void ZynAddSubFxInstrument::play(sampleFrame* _buf)
+{
 	if (!m_pluginMutex.tryLock(Engine::getSong()->isExporting() ? -1 : 0)) { return; }
 	if (m_remotePlugin) {
 		m_remotePlugin->process(nullptr, _buf);
@@ -254,7 +262,8 @@ void ZynAddSubFxInstrument::play(sampleFrame* _buf) {
 	instrumentTrack()->processAudioBuffer(_buf, Engine::audioEngine()->framesPerPeriod(), nullptr);
 }
 
-bool ZynAddSubFxInstrument::handleMidiEvent(const MidiEvent& event, const TimePos& time, f_cnt_t offset) {
+bool ZynAddSubFxInstrument::handleMidiEvent(const MidiEvent& event, const TimePos& time, f_cnt_t offset)
+{
 	// do not forward external MIDI Control Change events if the according
 	// LED is not checked
 	if (event.type() == MidiControlChange && event.sourcePort() != this && m_forwardMidiCcModel.value() == false) {
@@ -274,7 +283,8 @@ bool ZynAddSubFxInstrument::handleMidiEvent(const MidiEvent& event, const TimePo
 	return true;
 }
 
-void ZynAddSubFxInstrument::reloadPlugin() {
+void ZynAddSubFxInstrument::reloadPlugin()
+{
 	// save state of current plugin instance
 	DataFile m(DataFile::InstrumentTrackSettings);
 	saveSettings(m, m.content());
@@ -286,7 +296,8 @@ void ZynAddSubFxInstrument::reloadPlugin() {
 	loadSettings(m.content());
 }
 
-void ZynAddSubFxInstrument::updatePitchRange() {
+void ZynAddSubFxInstrument::updatePitchRange()
+{
 	m_pluginMutex.lock();
 	if (m_remotePlugin) {
 		m_remotePlugin->sendMessage(
@@ -298,7 +309,8 @@ void ZynAddSubFxInstrument::updatePitchRange() {
 }
 
 #define GEN_CC_SLOT(slotname, midictl, modelname) \
-	void ZynAddSubFxInstrument::slotname() { \
+	void ZynAddSubFxInstrument::slotname() \
+	{ \
 		sendControlChange(midictl, modelname.value()); \
 		m_modifiedControllers[midictl] = true; \
 	}
@@ -311,7 +323,8 @@ GEN_CC_SLOT(updateFmGain, C_fmamp, m_fmGainModel);
 GEN_CC_SLOT(updateResCenterFreq, C_resonance_center, m_resCenterFreqModel);
 GEN_CC_SLOT(updateResBandwidth, C_resonance_bandwidth, m_resBandwidthModel);
 
-void ZynAddSubFxInstrument::initPlugin() {
+void ZynAddSubFxInstrument::initPlugin()
+{
 	m_pluginMutex.lock();
 	delete m_plugin;
 	delete m_remotePlugin;
@@ -348,7 +361,8 @@ void ZynAddSubFxInstrument::initPlugin() {
 	m_pluginMutex.unlock();
 }
 
-void ZynAddSubFxInstrument::sendControlChange(MidiControllers midiCtl, float value) {
+void ZynAddSubFxInstrument::sendControlChange(MidiControllers midiCtl, float value)
+{
 	handleMidiEvent(
 		MidiEvent(MidiControlChange, instrumentTrack()->midiPort()->realOutputChannel(), midiCtl, (int)value, this));
 }
@@ -356,7 +370,8 @@ void ZynAddSubFxInstrument::sendControlChange(MidiControllers midiCtl, float val
 PluginView* ZynAddSubFxInstrument::instantiateView(QWidget* _parent) { return new ZynAddSubFxView(this, _parent); }
 
 ZynAddSubFxView::ZynAddSubFxView(Instrument* _instrument, QWidget* _parent)
-	: InstrumentViewFixedSize(_instrument, _parent) {
+	: InstrumentViewFixedSize(_instrument, _parent)
+{
 	setAutoFillBackground(true);
 	QPalette pal;
 	pal.setBrush(backgroundRole(), PLUGIN_NAME::getIconPixmap("artwork"));
@@ -423,7 +438,8 @@ ZynAddSubFxView::ZynAddSubFxView(Instrument* _instrument, QWidget* _parent)
 
 ZynAddSubFxView::~ZynAddSubFxView() {}
 
-void ZynAddSubFxView::dragEnterEvent(QDragEnterEvent* _dee) {
+void ZynAddSubFxView::dragEnterEvent(QDragEnterEvent* _dee)
+{
 	// For mimeType() and MimeType enum class
 	using namespace Clipboard;
 
@@ -439,7 +455,8 @@ void ZynAddSubFxView::dragEnterEvent(QDragEnterEvent* _dee) {
 	}
 }
 
-void ZynAddSubFxView::dropEvent(QDropEvent* _de) {
+void ZynAddSubFxView::dropEvent(QDropEvent* _de)
+{
 	const QString type = StringPairDrag::decodeKey(_de);
 	const QString value = StringPairDrag::decodeValue(_de);
 	if (type == "pluginpresetfile") {
@@ -450,7 +467,8 @@ void ZynAddSubFxView::dropEvent(QDropEvent* _de) {
 	_de->ignore();
 }
 
-void ZynAddSubFxView::modelChanged() {
+void ZynAddSubFxView::modelChanged()
+{
 	ZynAddSubFxInstrument* m = castModel<ZynAddSubFxInstrument>();
 
 	// set models for controller knobs
@@ -467,7 +485,8 @@ void ZynAddSubFxView::modelChanged() {
 	m_toggleUIButton->setChecked(m->m_hasGUI);
 }
 
-void ZynAddSubFxView::toggleUI() {
+void ZynAddSubFxView::toggleUI()
+{
 	ZynAddSubFxInstrument* model = castModel<ZynAddSubFxInstrument>();
 	if (model->m_hasGUI != m_toggleUIButton->isChecked()) {
 		model->m_hasGUI = m_toggleUIButton->isChecked();
@@ -482,7 +501,8 @@ void ZynAddSubFxView::toggleUI() {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* m, void*) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* m, void*)
+{
 	return new ZynAddSubFxInstrument(static_cast<InstrumentTrack*>(m));
 }
 }

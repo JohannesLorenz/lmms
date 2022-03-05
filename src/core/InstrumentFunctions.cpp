@@ -137,7 +137,8 @@ InstrumentFunctionNoteStacking::ChordTable::Init InstrumentFunctionNoteStacking:
 		{QT_TRANSLATE_NOOP("InstrumentFunctionNoteStacking", "Persian"), {0, 1, 4, 5, 6, 8, 11, -1}}};
 
 InstrumentFunctionNoteStacking::Chord::Chord(const char* n, const ChordSemiTones& semi_tones)
-	: m_name(InstrumentFunctionNoteStacking::tr(n)) {
+	: m_name(InstrumentFunctionNoteStacking::tr(n))
+{
 	for (m_size = 0; m_size < MAX_CHORD_POLYPHONY; m_size++) {
 		if (semi_tones[m_size] == -1) { break; }
 
@@ -145,7 +146,8 @@ InstrumentFunctionNoteStacking::Chord::Chord(const char* n, const ChordSemiTones
 	}
 }
 
-bool InstrumentFunctionNoteStacking::Chord::hasSemiTone(int8_t semi_tone) const {
+bool InstrumentFunctionNoteStacking::Chord::hasSemiTone(int8_t semi_tone) const
+{
 	for (int i = 0; i < size(); ++i) {
 		if (semi_tone == m_semiTones[i]) { return true; }
 	}
@@ -153,14 +155,16 @@ bool InstrumentFunctionNoteStacking::Chord::hasSemiTone(int8_t semi_tone) const 
 }
 
 InstrumentFunctionNoteStacking::ChordTable::ChordTable()
-	: QVector<Chord>() {
+	: QVector<Chord>()
+{
 	for (int i = 0; i < static_cast<int>(sizeof s_initTable / sizeof *s_initTable); i++) {
 		push_back(Chord(s_initTable[i].m_name, s_initTable[i].m_semiTones));
 	}
 }
 
 const InstrumentFunctionNoteStacking::Chord& InstrumentFunctionNoteStacking::ChordTable::getByName(
-	const QString& name, bool is_scale) const {
+	const QString& name, bool is_scale) const
+{
 	for (int i = 0; i < size(); i++) {
 		if (at(i).getName() == name && is_scale == at(i).isScale()) return at(i);
 	}
@@ -173,7 +177,8 @@ InstrumentFunctionNoteStacking::InstrumentFunctionNoteStacking(Model* _parent)
 	: Model(_parent, tr("Chords"))
 	, m_chordsEnabledModel(false, this)
 	, m_chordsModel(this, tr("Chord type"))
-	, m_chordRangeModel(1.0f, 1.0f, 9.0f, 1.0f, this, tr("Chord range")) {
+	, m_chordRangeModel(1.0f, 1.0f, 9.0f, 1.0f, this, tr("Chord range"))
+{
 	const ChordTable& chord_table = ChordTable::getInstance();
 	for (int i = 0; i < chord_table.size(); ++i) {
 		m_chordsModel.addItem(chord_table[i].getName());
@@ -182,7 +187,8 @@ InstrumentFunctionNoteStacking::InstrumentFunctionNoteStacking(Model* _parent)
 
 InstrumentFunctionNoteStacking::~InstrumentFunctionNoteStacking() {}
 
-void InstrumentFunctionNoteStacking::processNote(NotePlayHandle* _n) {
+void InstrumentFunctionNoteStacking::processNote(NotePlayHandle* _n)
+{
 	const int base_note_key = _n->key();
 	const ChordTable& chord_table = ChordTable::getInstance();
 	// we add chord-subnotes to note if either note is a base-note and
@@ -218,13 +224,15 @@ void InstrumentFunctionNoteStacking::processNote(NotePlayHandle* _n) {
 	}
 }
 
-void InstrumentFunctionNoteStacking::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void InstrumentFunctionNoteStacking::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	m_chordsEnabledModel.saveSettings(_doc, _this, "chord-enabled");
 	m_chordsModel.saveSettings(_doc, _this, "chord");
 	m_chordRangeModel.saveSettings(_doc, _this, "chordrange");
 }
 
-void InstrumentFunctionNoteStacking::loadSettings(const QDomElement& _this) {
+void InstrumentFunctionNoteStacking::loadSettings(const QDomElement& _this)
+{
 	m_chordsEnabledModel.loadSettings(_this, "chord-enabled");
 	m_chordsModel.loadSettings(_this, "chord");
 	m_chordRangeModel.loadSettings(_this, "chordrange");
@@ -242,7 +250,8 @@ InstrumentFunctionArpeggio::InstrumentFunctionArpeggio(Model* _parent)
 	, m_arpTimeModel(200.0f, 25.0f, 2000.0f, 1.0f, 2000, this, tr("Arpeggio time"))
 	, m_arpGateModel(100.0f, 1.0f, 200.0f, 1.0f, this, tr("Arpeggio gate"))
 	, m_arpDirectionModel(this, tr("Arpeggio direction"))
-	, m_arpModeModel(this, tr("Arpeggio mode")) {
+	, m_arpModeModel(this, tr("Arpeggio mode"))
+{
 	const InstrumentFunctionNoteStacking::ChordTable& chord_table
 		= InstrumentFunctionNoteStacking::ChordTable::getInstance();
 	for (int i = 0; i < chord_table.size(); ++i) {
@@ -263,7 +272,8 @@ InstrumentFunctionArpeggio::InstrumentFunctionArpeggio(Model* _parent)
 
 InstrumentFunctionArpeggio::~InstrumentFunctionArpeggio() {}
 
-void InstrumentFunctionArpeggio::processNote(NotePlayHandle* _n) {
+void InstrumentFunctionArpeggio::processNote(NotePlayHandle* _n)
+{
 	const int base_note_key = _n->key();
 	if (_n->origin() == NotePlayHandle::OriginArpeggio || _n->origin() == NotePlayHandle::OriginNoteStacking
 		|| !m_arpEnabledModel.value() || _n->isReleased()) {
@@ -406,7 +416,8 @@ void InstrumentFunctionArpeggio::processNote(NotePlayHandle* _n) {
 	}
 }
 
-void InstrumentFunctionArpeggio::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void InstrumentFunctionArpeggio::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	m_arpEnabledModel.saveSettings(_doc, _this, "arp-enabled");
 	m_arpModel.saveSettings(_doc, _this, "arp");
 	m_arpRangeModel.saveSettings(_doc, _this, "arprange");
@@ -420,7 +431,8 @@ void InstrumentFunctionArpeggio::saveSettings(QDomDocument& _doc, QDomElement& _
 	m_arpModeModel.saveSettings(_doc, _this, "arpmode");
 }
 
-void InstrumentFunctionArpeggio::loadSettings(const QDomElement& _this) {
+void InstrumentFunctionArpeggio::loadSettings(const QDomElement& _this)
+{
 	m_arpEnabledModel.loadSettings(_this, "arp-enabled");
 	m_arpModel.loadSettings(_this, "arp");
 	m_arpRangeModel.loadSettings(_this, "arprange");

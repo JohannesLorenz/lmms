@@ -34,7 +34,8 @@ class GroupBox;
 class InstrumentTrack;
 class LedCheckBox;
 
-class InstrumentMiscView : public QWidget {
+class InstrumentMiscView : public QWidget
+{
 	Q_OBJECT
 public:
 	InstrumentMiscView(InstrumentTrack* it, QWidget* parent);

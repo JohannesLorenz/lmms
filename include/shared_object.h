@@ -28,14 +28,18 @@
 
 #include <atomic>
 
-class sharedObject {
+class sharedObject
+{
 public:
 	sharedObject()
-		: m_referenceCount(1) {}
+		: m_referenceCount(1)
+	{
+	}
 
 	virtual ~sharedObject() {}
 
-	template <class T> static T* ref(T* object) {
+	template <class T> static T* ref(T* object)
+	{
 		// Incrementing an atomic reference count can be relaxed since no action
 		// is ever taken as a result of increasing the count.
 		// Other loads and stores can be reordered around this without consequence.
@@ -43,7 +47,8 @@ public:
 		return object;
 	}
 
-	template <class T> static void unref(T* object) {
+	template <class T> static void unref(T* object)
+	{
 		// When decrementing an atomic reference count, we need to provide
 		// two ordering guarantees:
 		// 1. All reads and writes to the referenced object occur before

@@ -38,10 +38,12 @@ class ControllerConnection;
 
 typedef QVector<Controller*> ControllerVector;
 
-class LMMS_EXPORT Controller : public Model, public JournallingObject {
+class LMMS_EXPORT Controller : public Model, public JournallingObject
+{
 	Q_OBJECT
 public:
-	enum ControllerTypes {
+	enum ControllerTypes
+	{
 		DummyController,
 		LfoController,
 		MidiController,
@@ -69,7 +71,8 @@ public:
 
 	// return whether this controller updates models frequently - used for
 	// determining when to update GUI
-	inline bool frequentUpdates() const {
+	inline bool frequentUpdates() const
+	{
 		switch (m_type) {
 		case LfoController: return (true);
 		case PeakController: return (true);

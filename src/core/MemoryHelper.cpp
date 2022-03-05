@@ -31,7 +31,8 @@
  * Allocate a number of bytes and return them.
  * @param byteNum is the number of bytes
  */
-void* MemoryHelper::alignedMalloc(size_t byteNum) {
+void* MemoryHelper::alignedMalloc(size_t byteNum)
+{
 	char *ptr, *ptr2, *aligned_ptr;
 	int align_mask = LMMS_ALIGN_SIZE - 1;
 
@@ -52,7 +53,8 @@ void* MemoryHelper::alignedMalloc(size_t byteNum) {
  * Free an aligned buffer
  * @param _buffer is the buffer to free
  */
-void MemoryHelper::alignedFree(void* _buffer) {
+void MemoryHelper::alignedFree(void* _buffer)
+{
 	if (_buffer) {
 		int* ptr2 = static_cast<int*>(_buffer) - 1;
 		_buffer = static_cast<char*>(_buffer) - *ptr2;

@@ -40,7 +40,8 @@
 TrackLabelButton::TrackLabelButton(TrackView* _tv, QWidget* _parent)
 	: QToolButton(_parent)
 	, m_trackView(_tv)
-	, m_iconName() {
+	, m_iconName()
+{
 	setAttribute(Qt::WA_OpaquePaintEvent, true);
 	setAcceptDrops(true);
 	setCursor(QCursor(embed::getIconPixmap("hand"), 3, 3));
@@ -64,7 +65,8 @@ TrackLabelButton::TrackLabelButton(TrackView* _tv, QWidget* _parent)
 
 TrackLabelButton::~TrackLabelButton() {}
 
-void TrackLabelButton::rename() {
+void TrackLabelButton::rename()
+{
 	if (ConfigManager::inst()->value("ui", "compacttrackbuttons").toInt()) {
 		QString txt = m_trackView->getTrack()->name();
 		RenameDialog renameDlg(txt);
@@ -82,7 +84,8 @@ void TrackLabelButton::rename() {
 	}
 }
 
-void TrackLabelButton::renameFinished() {
+void TrackLabelButton::renameFinished()
+{
 	if (!(ConfigManager::inst()->value("ui", "compacttrackbuttons").toInt())) {
 		m_renameLineEdit->hide();
 		if (m_renameLineEdit->text() != "") {
@@ -99,12 +102,14 @@ void TrackLabelButton::nameChanged() { setText(elideName(m_trackView->getTrack()
 
 void TrackLabelButton::dragEnterEvent(QDragEnterEvent* _dee) { m_trackView->dragEnterEvent(_dee); }
 
-void TrackLabelButton::dropEvent(QDropEvent* _de) {
+void TrackLabelButton::dropEvent(QDropEvent* _de)
+{
 	m_trackView->dropEvent(_de);
 	setChecked(true);
 }
 
-void TrackLabelButton::mousePressEvent(QMouseEvent* _me) {
+void TrackLabelButton::mousePressEvent(QMouseEvent* _me)
+{
 	if (_me->button() == Qt::RightButton) {
 		rename();
 	} else {
@@ -115,7 +120,8 @@ void TrackLabelButton::mousePressEvent(QMouseEvent* _me) {
 
 void TrackLabelButton::mouseDoubleClickEvent(QMouseEvent* _me) { rename(); }
 
-void TrackLabelButton::mouseReleaseEvent(QMouseEvent* _me) {
+void TrackLabelButton::mouseReleaseEvent(QMouseEvent* _me)
+{
 	if (m_buttonRect.contains(_me->globalPos(), true) && m_renameLineEdit->isHidden()) {
 		QToolButton::mousePressEvent(_me);
 	}
@@ -123,7 +129,8 @@ void TrackLabelButton::mouseReleaseEvent(QMouseEvent* _me) {
 	_me->ignore();
 }
 
-void TrackLabelButton::paintEvent(QPaintEvent* _pe) {
+void TrackLabelButton::paintEvent(QPaintEvent* _pe)
+{
 	if (m_trackView->getTrack()->type() == Track::InstrumentTrack) {
 		InstrumentTrack* it = dynamic_cast<InstrumentTrack*>(m_trackView->getTrack());
 		const PixmapLoader* pl;
@@ -143,7 +150,8 @@ void TrackLabelButton::paintEvent(QPaintEvent* _pe) {
 
 void TrackLabelButton::resizeEvent(QResizeEvent* _re) { setText(elideName(m_trackView->getTrack()->displayName())); }
 
-QString TrackLabelButton::elideName(const QString& name) {
+QString TrackLabelButton::elideName(const QString& name)
+{
 	const int spacing = 16;
 	const int maxTextWidth = width() - spacing - iconSize().width();
 	if (maxTextWidth < 1) {

@@ -79,7 +79,8 @@ QPixmap* EnvelopeAndLfoView::s_lfoGraph = nullptr;
 EnvelopeAndLfoView::EnvelopeAndLfoView(QWidget* _parent)
 	: QWidget(_parent)
 	, ModelView(nullptr, this)
-	, m_params(nullptr) {
+	, m_params(nullptr)
+{
 	if (s_envGraph == nullptr) { s_envGraph = new QPixmap(embed::getIconPixmap("envelope_graph")); }
 	if (s_lfoGraph == nullptr) { s_lfoGraph = new QPixmap(embed::getIconPixmap("lfo_graph")); }
 
@@ -193,7 +194,8 @@ EnvelopeAndLfoView::EnvelopeAndLfoView(QWidget* _parent)
 
 EnvelopeAndLfoView::~EnvelopeAndLfoView() { delete m_lfoWaveBtnGrp; }
 
-void EnvelopeAndLfoView::modelChanged() {
+void EnvelopeAndLfoView::modelChanged()
+{
 	m_params = castModel<EnvelopeAndLfoParameters>();
 	m_predelayKnob->setModel(&m_params->m_predelayModel);
 	m_attackKnob->setModel(&m_params->m_attackModel);
@@ -211,7 +213,8 @@ void EnvelopeAndLfoView::modelChanged() {
 	m_controlEnvAmountCb->setModel(&m_params->m_controlEnvAmountModel);
 }
 
-void EnvelopeAndLfoView::mousePressEvent(QMouseEvent* _me) {
+void EnvelopeAndLfoView::mousePressEvent(QMouseEvent* _me)
+{
 	if (_me->button() != Qt::LeftButton) { return; }
 
 	if (QRect(ENV_GRAPH_X, ENV_GRAPH_Y, s_envGraph->width(), s_envGraph->height()).contains(_me->pos()) == true) {
@@ -230,11 +233,13 @@ void EnvelopeAndLfoView::mousePressEvent(QMouseEvent* _me) {
 	}
 }
 
-void EnvelopeAndLfoView::dragEnterEvent(QDragEnterEvent* _dee) {
+void EnvelopeAndLfoView::dragEnterEvent(QDragEnterEvent* _dee)
+{
 	StringPairDrag::processDragEnterEvent(_dee, QString("samplefile,clip_%1").arg(Track::SampleTrack));
 }
 
-void EnvelopeAndLfoView::dropEvent(QDropEvent* _de) {
+void EnvelopeAndLfoView::dropEvent(QDropEvent* _de)
+{
 	QString type = StringPairDrag::decodeKey(_de);
 	QString value = StringPairDrag::decodeValue(_de);
 	if (type == "samplefile") {
@@ -254,7 +259,8 @@ void EnvelopeAndLfoView::dropEvent(QDropEvent* _de) {
 	}
 }
 
-void EnvelopeAndLfoView::paintEvent(QPaintEvent*) {
+void EnvelopeAndLfoView::paintEvent(QPaintEvent*)
+{
 	QPainter p(this);
 	p.setRenderHint(QPainter::Antialiasing);
 
@@ -372,7 +378,8 @@ void EnvelopeAndLfoView::paintEvent(QPaintEvent*) {
 	p.drawText(LFO_GRAPH_X + 52, LFO_GRAPH_Y + s_lfoGraph->height() - 6, QString::number(ms_per_osc));
 }
 
-void EnvelopeAndLfoView::lfoUserWaveChanged() {
+void EnvelopeAndLfoView::lfoUserWaveChanged()
+{
 	if (m_params->m_lfoWaveModel.value() == EnvelopeAndLfoParameters::UserDefinedWave) {
 		if (m_params->m_userWave.frames() <= 1) {
 			TextFloat::displayMessage(

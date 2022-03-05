@@ -105,11 +105,14 @@ FreeBoyInstrument::FreeBoyInstrument(InstrumentTrack* _instrument_track)
 	m_graphModel(0, 15, 32, this, false, 1)
 	,
 
-	m_time(0) {}
+	m_time(0)
+{
+}
 
 FreeBoyInstrument::~FreeBoyInstrument() {}
 
-void FreeBoyInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void FreeBoyInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	m_ch1SweepTimeModel.saveSettings(_doc, _this, "st");
 	m_ch1SweepDirModel.saveSettings(_doc, _this, "sd");
 	m_ch1SweepRtShiftModel.saveSettings(_doc, _this, "srs");
@@ -149,7 +152,8 @@ void FreeBoyInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 	_this.setAttribute("sampleShape", sampleString);
 }
 
-void FreeBoyInstrument::loadSettings(const QDomElement& _this) {
+void FreeBoyInstrument::loadSettings(const QDomElement& _this)
+{
 	m_ch1SweepTimeModel.loadSettings(_this, "st");
 	m_ch1SweepDirModel.loadSettings(_this, "sd");
 	m_ch1SweepRtShiftModel.loadSettings(_this, "srs");
@@ -207,7 +211,8 @@ QString FreeBoyInstrument::nodeName() const { return (freeboy_plugin_descriptor.
 
 f_cnt_t FreeBoyInstrument::desiredReleaseFrames() const { return f_cnt_t(1000); }
 
-void FreeBoyInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer) {
+void FreeBoyInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
+{
 	const f_cnt_t tfp = _n->totalFramesPlayed();
 	const int samplerate = Engine::audioEngine()->processingSampleRate();
 	const fpp_t frames = _n->framesLeftForCurrentPeriod();
@@ -371,16 +376,19 @@ void FreeBoyInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffe
 	instrumentTrack()->processAudioBuffer(_working_buffer, frames + offset, _n);
 }
 
-void FreeBoyInstrument::deleteNotePluginData(NotePlayHandle* _n) {
+void FreeBoyInstrument::deleteNotePluginData(NotePlayHandle* _n)
+{
 	delete static_cast<Gb_Apu_Buffer*>(_n->m_pluginData);
 }
 
 PluginView* FreeBoyInstrument::instantiateView(QWidget* _parent) { return (new FreeBoyInstrumentView(this, _parent)); }
 
-class FreeBoyKnob : public Knob {
+class FreeBoyKnob : public Knob
+{
 public:
 	FreeBoyKnob(QWidget* _parent)
-		: Knob(knobStyled, _parent) {
+		: Knob(knobStyled, _parent)
+	{
 		setFixedSize(30, 30);
 		setCenterPointX(15.0);
 		setCenterPointY(15.0);
@@ -393,7 +401,8 @@ public:
 };
 
 FreeBoyInstrumentView::FreeBoyInstrumentView(Instrument* _instrument, QWidget* _parent)
-	: InstrumentViewFixedSize(_instrument, _parent) {
+	: InstrumentViewFixedSize(_instrument, _parent)
+{
 
 	setAutoFillBackground(true);
 	QPalette pal;
@@ -581,7 +590,8 @@ FreeBoyInstrumentView::FreeBoyInstrumentView(Instrument* _instrument, QWidget* _
 
 FreeBoyInstrumentView::~FreeBoyInstrumentView() {}
 
-void FreeBoyInstrumentView::modelChanged() {
+void FreeBoyInstrumentView::modelChanged()
+{
 	FreeBoyInstrument* p = castModel<FreeBoyInstrument>();
 
 	m_ch1SweepTimeKnob->setModel(&p->m_ch1SweepTimeModel);
@@ -623,7 +633,8 @@ void FreeBoyInstrumentView::modelChanged() {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* m, void*) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* m, void*)
+{
 	return (new FreeBoyInstrument(static_cast<InstrumentTrack*>(m)));
 }
 }

@@ -46,7 +46,8 @@ Plugin::Plugin(const Descriptor* descriptor, Model* parent, const Descriptor::Su
 	: Model(parent)
 	, JournallingObject()
 	, m_descriptor(descriptor)
-	, m_key(key ? *key : Descriptor::SubPluginFeatures::Key(m_descriptor)) {
+	, m_key(key ? *key : Descriptor::SubPluginFeatures::Key(m_descriptor))
+{
 	if (m_descriptor == nullptr) { m_descriptor = &dummyPluginDescriptor; }
 }
 
@@ -56,7 +57,8 @@ template <class T> T use_this_or(T this_param, T or_param) { return this_param ?
 
 QString use_this_or(QString this_param, QString or_param) { return this_param.isNull() ? or_param : this_param; }
 
-QString Plugin::displayName() const {
+QString Plugin::displayName() const
+{
 	return Model::displayName().isEmpty() // currently always empty
 		? (m_descriptor->subPluginFeatures && m_key.isValid())
 			// get from sub plugin
@@ -66,11 +68,13 @@ QString Plugin::displayName() const {
 		: Model::displayName();
 }
 
-const PixmapLoader* Plugin::logo() const {
+const PixmapLoader* Plugin::logo() const
+{
 	return (m_descriptor->subPluginFeatures && m_key.isValid()) ? m_key.logo() : m_descriptor->logo;
 }
 
-QString Plugin::Descriptor::SubPluginFeatures::Key::additionalFileExtensions() const {
+QString Plugin::Descriptor::SubPluginFeatures::Key::additionalFileExtensions() const
+{
 	Q_ASSERT(isValid());
 	return desc->subPluginFeatures
 		// get from sub plugin
@@ -79,7 +83,8 @@ QString Plugin::Descriptor::SubPluginFeatures::Key::additionalFileExtensions() c
 		: QString();
 }
 
-QString Plugin::Descriptor::SubPluginFeatures::Key::displayName() const {
+QString Plugin::Descriptor::SubPluginFeatures::Key::displayName() const
+{
 	Q_ASSERT(isValid());
 	return desc->subPluginFeatures
 		// get from sub plugin
@@ -88,12 +93,14 @@ QString Plugin::Descriptor::SubPluginFeatures::Key::displayName() const {
 		: desc->displayName;
 }
 
-const PixmapLoader* Plugin::Descriptor::SubPluginFeatures::Key::logo() const {
+const PixmapLoader* Plugin::Descriptor::SubPluginFeatures::Key::logo() const
+{
 	Q_ASSERT(isValid());
 	return desc->subPluginFeatures ? use_this_or(desc->subPluginFeatures->logo(*this), desc->logo) : desc->logo;
 }
 
-QString Plugin::Descriptor::SubPluginFeatures::Key::description() const {
+QString Plugin::Descriptor::SubPluginFeatures::Key::description() const
+{
 	Q_ASSERT(isValid());
 	return desc->subPluginFeatures
 		? use_this_or(desc->subPluginFeatures->description(*this), QString::fromUtf8(desc->description))
@@ -102,14 +109,16 @@ QString Plugin::Descriptor::SubPluginFeatures::Key::description() const {
 
 void Plugin::loadFile(const QString&) {}
 
-AutomatableModel* Plugin::childModel(const QString&) {
+AutomatableModel* Plugin::childModel(const QString&)
+{
 	static FloatModel fm;
 	return &fm;
 }
 
 #include "PluginFactory.h"
 Plugin* Plugin::instantiateWithKey(
-	const QString& pluginName, Model* parent, const Descriptor::SubPluginFeatures::Key* key, bool keyFromDnd) {
+	const QString& pluginName, Model* parent, const Descriptor::SubPluginFeatures::Key* key, bool keyFromDnd)
+{
 	if (keyFromDnd) Q_ASSERT(!key);
 	const Descriptor::SubPluginFeatures::Key* keyPtr
 		= keyFromDnd ? static_cast<Plugin::Descriptor::SubPluginFeatures::Key*>(Engine::pickDndPluginKey()) : key;
@@ -125,7 +134,8 @@ Plugin* Plugin::instantiateWithKey(
 			const_cast<Descriptor::SubPluginFeatures::Key*>(keyPtr));
 }
 
-Plugin* Plugin::instantiate(const QString& pluginName, Model* parent, void* data) {
+Plugin* Plugin::instantiate(const QString& pluginName, Model* parent, void* data)
+{
 	const PluginFactory::PluginInfo& pi = getPluginFactory()->pluginInfo(pluginName.toUtf8());
 
 	Plugin* inst;
@@ -157,7 +167,8 @@ Plugin* Plugin::instantiate(const QString& pluginName, Model* parent, void* data
 
 void Plugin::collectErrorForUI(QString errMsg) { Engine::getSong()->collectError(errMsg); }
 
-PluginView* Plugin::createView(QWidget* parent) {
+PluginView* Plugin::createView(QWidget* parent)
+{
 	PluginView* pv = instantiateView(parent);
 	if (pv != nullptr) { pv->setModel(this); }
 	return pv;
@@ -166,7 +177,8 @@ PluginView* Plugin::createView(QWidget* parent) {
 Plugin::Descriptor::SubPluginFeatures::Key::Key(const QDomElement& key)
 	: desc(nullptr)
 	, name(key.attribute("key"))
-	, attributes() {
+	, attributes()
+{
 	QDomNodeList l = key.elementsByTagName("attribute");
 	for (int i = 0; !l.item(i).isNull(); ++i) {
 		QDomElement e = l.item(i).toElement();
@@ -174,7 +186,8 @@ Plugin::Descriptor::SubPluginFeatures::Key::Key(const QDomElement& key)
 	}
 }
 
-QDomElement Plugin::Descriptor::SubPluginFeatures::Key::saveXML(QDomDocument& doc) const {
+QDomElement Plugin::Descriptor::SubPluginFeatures::Key::saveXML(QDomDocument& doc) const
+{
 	QDomElement e = doc.createElement("key");
 	for (AttributeMap::ConstIterator it = attributes.begin(); it != attributes.end(); ++it) {
 		QDomElement a = doc.createElement("attribute");

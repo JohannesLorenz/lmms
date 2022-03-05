@@ -36,7 +36,8 @@
 class MixerRoute;
 typedef QVector<MixerRoute*> MixerRouteVector;
 
-class MixerChannel : public ThreadableJob {
+class MixerChannel : public ThreadableJob
+{
 public:
 	MixerChannel(int idx, Model* _parent);
 	virtual ~MixerChannel();
@@ -70,7 +71,8 @@ public:
 	bool requiresProcessing() const override { return true; }
 	void unmuteForSolo();
 
-	void setColor(QColor newColor) {
+	void setColor(QColor newColor)
+	{
 		m_color = newColor;
 		m_hasColor = true;
 	}
@@ -87,7 +89,8 @@ private:
 	void doProcessing() override;
 };
 
-class MixerRoute : public QObject {
+class MixerRoute : public QObject
+{
 	Q_OBJECT
 public:
 	MixerRoute(MixerChannel* from, MixerChannel* to, float amount);
@@ -111,7 +114,8 @@ private:
 	FloatModel m_amount;
 };
 
-class LMMS_EXPORT Mixer : public Model, public JournallingObject {
+class LMMS_EXPORT Mixer : public Model, public JournallingObject
+{
 	Q_OBJECT
 public:
 	Mixer();

@@ -33,7 +33,8 @@ LadspaControls::LadspaControls(LadspaEffect* _eff)
 	, m_effect(_eff)
 	, m_processors(_eff->processorCount())
 	, m_noLink(false)
-	, m_stereoLinkModel(true, this) {
+	, m_stereoLinkModel(true, this)
+{
 
 	connect(&m_stereoLinkModel, SIGNAL(dataChanged()), this, SLOT(updateLinkStatesFromGlobal()), Qt::DirectConnection);
 
@@ -69,14 +70,16 @@ LadspaControls::LadspaControls(LadspaEffect* _eff)
 	}
 }
 
-LadspaControls::~LadspaControls() {
+LadspaControls::~LadspaControls()
+{
 	for (ch_cnt_t proc = 0; proc < m_processors; proc++) {
 		m_controls[proc].clear();
 	}
 	m_controls.clear();
 }
 
-void LadspaControls::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void LadspaControls::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	if (m_processors > 1) { _this.setAttribute("link", m_stereoLinkModel.value()); }
 
 	multi_proc_t controls = m_effect->getPortControls();
@@ -87,7 +90,8 @@ void LadspaControls::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 	}
 }
 
-void LadspaControls::loadSettings(const QDomElement& _this) {
+void LadspaControls::loadSettings(const QDomElement& _this)
+{
 	if (m_processors > 1) { m_stereoLinkModel.setValue(_this.attribute("link").toInt()); }
 
 	multi_proc_t controls = m_effect->getPortControls();
@@ -97,7 +101,8 @@ void LadspaControls::loadSettings(const QDomElement& _this) {
 	}
 }
 
-void LadspaControls::linkPort(int _port, bool _state) {
+void LadspaControls::linkPort(int _port, bool _state)
+{
 	LadspaControl* first = m_controls[0][_port];
 	if (_state) {
 		for (ch_cnt_t proc = 1; proc < m_processors; proc++) {
@@ -115,7 +120,8 @@ void LadspaControls::linkPort(int _port, bool _state) {
 	}
 }
 
-void LadspaControls::updateLinkStatesFromGlobal() {
+void LadspaControls::updateLinkStatesFromGlobal()
+{
 	if (m_stereoLinkModel.value()) {
 		for (int port = 0; port < m_controlCount / m_processors; port++) {
 			m_controls[0][port]->setLink(true);

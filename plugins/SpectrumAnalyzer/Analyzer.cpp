@@ -58,18 +58,21 @@ Analyzer::Analyzer(Model* parent, const Plugin::Descriptor::SubPluginFeatures::K
 	,
 	// Buffer is sized to cover 4* the current maximum LMMS audio buffer size,
 	// so that it has some reserve space in case data processor is busy.
-	m_inputBuffer(4 * m_maxBufferSize) {
+	m_inputBuffer(4 * m_maxBufferSize)
+{
 	m_processorThread.start();
 }
 
-Analyzer::~Analyzer() {
+Analyzer::~Analyzer()
+{
 	m_processor.terminate();
 	m_inputBuffer.wakeAll();
 	m_processorThread.wait();
 }
 
 // Take audio data and pass them to the spectrum processor.
-bool Analyzer::processAudioBuffer(sampleFrame* buffer, const fpp_t frame_count) {
+bool Analyzer::processAudioBuffer(sampleFrame* buffer, const fpp_t frame_count)
+{
 // Measure time spent in audio thread; both average and peak should be well under 1 ms.
 #ifdef SA_DEBUG
 	unsigned int audio_time = std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -102,7 +105,8 @@ bool Analyzer::processAudioBuffer(sampleFrame* buffer, const fpp_t frame_count) 
 
 extern "C" {
 // needed for getting plugin out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data)
+{
 	return new Analyzer(parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(data));
 }
 }

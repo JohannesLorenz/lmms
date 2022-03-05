@@ -43,7 +43,8 @@ Oscilloscope::Oscilloscope(QWidget* _p)
 	, m_points(new QPointF[Engine::audioEngine()->framesPerPeriod()])
 	, m_active(false)
 	, m_normalColor(71, 253, 133)
-	, m_clippingColor(255, 64, 64) {
+	, m_clippingColor(255, 64, 64)
+{
 	setFixedSize(m_background.width(), m_background.height());
 	setAttribute(Qt::WA_OpaquePaintEvent, true);
 	setActive(ConfigManager::inst()->value("ui", "displaywaveform").toInt());
@@ -56,19 +57,22 @@ Oscilloscope::Oscilloscope(QWidget* _p)
 	ToolTip::add(this, tr("Oscilloscope"));
 }
 
-Oscilloscope::~Oscilloscope() {
+Oscilloscope::~Oscilloscope()
+{
 	delete[] m_buffer;
 	delete[] m_points;
 }
 
-void Oscilloscope::updateAudioBuffer(const surroundSampleFrame* buffer) {
+void Oscilloscope::updateAudioBuffer(const surroundSampleFrame* buffer)
+{
 	if (!Engine::getSong()->isExporting()) {
 		const fpp_t fpp = Engine::audioEngine()->framesPerPeriod();
 		memcpy(m_buffer, buffer, sizeof(surroundSampleFrame) * fpp);
 	}
 }
 
-void Oscilloscope::setActive(bool _active) {
+void Oscilloscope::setActive(bool _active)
+{
 	m_active = _active;
 	if (m_active) {
 		connect(getGUI()->mainWindow(), SIGNAL(periodicUpdate()), this, SLOT(update()));
@@ -92,7 +96,8 @@ QColor const& Oscilloscope::clippingColor() const { return m_clippingColor; }
 
 void Oscilloscope::setClippingColor(QColor const& clippingColor) { m_clippingColor = clippingColor; }
 
-void Oscilloscope::paintEvent(QPaintEvent*) {
+void Oscilloscope::paintEvent(QPaintEvent*)
+{
 	QPainter p(this);
 
 	p.drawPixmap(0, 0, m_background);
@@ -134,11 +139,13 @@ void Oscilloscope::paintEvent(QPaintEvent*) {
 	}
 }
 
-void Oscilloscope::mousePressEvent(QMouseEvent* _me) {
+void Oscilloscope::mousePressEvent(QMouseEvent* _me)
+{
 	if (_me->button() == Qt::LeftButton) { setActive(!m_active); }
 }
 
-QColor const& Oscilloscope::determineLineColor(float level) const {
+QColor const& Oscilloscope::determineLineColor(float level) const
+{
 	if (level <= 1.0f) {
 		return normalColor();
 	} else {

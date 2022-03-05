@@ -31,14 +31,16 @@
 PositionLine::PositionLine(QWidget* parent)
 	: QWidget(parent)
 	, m_hasTailGradient(false)
-	, m_lineColor(0, 0, 0, 0) {
+	, m_lineColor(0, 0, 0, 0)
+{
 	resize(8, height());
 
 	setAttribute(Qt::WA_NoSystemBackground, true);
 	setAttribute(Qt::WA_TransparentForMouseEvents);
 }
 
-void PositionLine::paintEvent(QPaintEvent* pe) {
+void PositionLine::paintEvent(QPaintEvent* pe)
+{
 	QPainter p(this);
 	QColor c = QColor(m_lineColor);
 
@@ -77,7 +79,8 @@ void PositionLine::paintEvent(QPaintEvent* pe) {
 
 // NOTE: the move() implementation fixes a bug where the position line would appear
 // in an unexpected location when positioned at the start of the track
-void PositionLine::zoomChange(float zoom) {
+void PositionLine::zoomChange(float zoom)
+{
 	int playHeadPos = x() + width() - 1;
 
 	resize(8.0 * zoom, height());

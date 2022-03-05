@@ -29,7 +29,8 @@
 #include "MemoryManager.h"
 #include "vibrating_string.h"
 
-class stringContainer {
+class stringContainer
+{
 	MM_OPERATORS
 public:
 	stringContainer(
@@ -40,7 +41,8 @@ public:
 
 	bool exists(int _id) const { return m_exists[_id]; }
 
-	~stringContainer() {
+	~stringContainer()
+	{
 		int strings = m_strings.count();
 		for (int i = 0; i < strings; i++) {
 			delete m_strings[i];

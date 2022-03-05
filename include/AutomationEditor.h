@@ -44,7 +44,8 @@ class Knob;
 class NotePlayHandle;
 class TimeLineWidget;
 
-class AutomationEditor : public QWidget, public JournallingObject {
+class AutomationEditor : public QWidget, public JournallingObject
+{
 	Q_OBJECT
 	Q_PROPERTY(QColor barLineColor MEMBER m_barLineColor)
 	Q_PROPERTY(QColor beatLineColor MEMBER m_beatLineColor)
@@ -66,7 +67,12 @@ public:
 	void loadSettings(const QDomElement& parent) override;
 	QString nodeName() const override { return "automationeditor"; }
 
-	enum EditModes { DRAW, ERASE, DRAW_OUTVALUES };
+	enum EditModes
+	{
+		DRAW,
+		ERASE,
+		DRAW_OUTVALUES
+	};
 
 public slots:
 	void update();
@@ -118,7 +124,15 @@ protected slots:
 	void setQuantization();
 
 private:
-	enum Actions { NONE, MOVE_VALUE, ERASE_VALUES, MOVE_OUTVALUE, RESET_OUTVALUES, DRAW_LINE };
+	enum Actions
+	{
+		NONE,
+		MOVE_VALUE,
+		ERASE_VALUES,
+		MOVE_OUTVALUE,
+		RESET_OUTVALUES,
+		DRAW_LINE
+	};
 
 	// some constants...
 	static const int SCROLLBAR_SIZE = 12;
@@ -208,7 +222,8 @@ signals:
 	void positionChanged(const TimePos&);
 };
 
-class AutomationEditorWindow : public Editor {
+class AutomationEditorWindow : public Editor
+{
 	Q_OBJECT
 
 	static const int INITIAL_WIDTH = 860;

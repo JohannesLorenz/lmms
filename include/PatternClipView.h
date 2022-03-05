@@ -31,7 +31,8 @@
 
 class PatternClip;
 
-class PatternClipView : public ClipView {
+class PatternClipView : public ClipView
+{
 	Q_OBJECT
 public:
 	PatternClipView(Clip* clip, TrackView* tv);

@@ -32,7 +32,8 @@
 
 #include "SerializingObject.h"
 
-class Interval : public SerializingObject {
+class Interval : public SerializingObject
+{
 public:
 	Interval()
 		: m_numerator(1)
@@ -44,7 +45,8 @@ public:
 
 	float getRatio() const { return m_ratio; }
 
-	QString getString() const {
+	QString getString() const
+	{
 		if (m_denominator) {
 			return QString::number(m_numerator) + "/" + QString::number(m_denominator);
 		} else {
@@ -64,7 +66,8 @@ private:
 	float m_ratio;			//!< precomputed output value for better performance
 };
 
-class Scale : public QObject, public SerializingObject {
+class Scale : public QObject, public SerializingObject
+{
 	Q_OBJECT
 public:
 	Scale();

@@ -31,7 +31,8 @@
 #include "CrossoverEQControls.h"
 #include "Effect.h"
 
-class CrossoverEQEffect : public Effect {
+class CrossoverEQEffect : public Effect
+{
 public:
 	CrossoverEQEffect(Model* parent, const Descriptor::SubPluginFeatures::Key* key);
 	virtual ~CrossoverEQEffect();

@@ -82,7 +82,8 @@ OscillatorObject::OscillatorObject(Model* _parent, int _idx)
 	, m_detuningRight(0.0f)
 	, m_phaseOffsetLeft(0.0f)
 	, m_phaseOffsetRight(0.0f)
-	, m_useWaveTable(true) {
+	, m_useWaveTable(true)
+{
 	// Connect knobs with Oscillators' inputs
 	connect(&m_volumeModel, SIGNAL(dataChanged()), this, SLOT(updateVolume()), Qt::DirectConnection);
 	connect(&m_panModel, SIGNAL(dataChanged()), this, SLOT(updateVolume()), Qt::DirectConnection);
@@ -107,7 +108,8 @@ OscillatorObject::OscillatorObject(Model* _parent, int _idx)
 
 OscillatorObject::~OscillatorObject() { sharedObject::unref(m_sampleBuffer); }
 
-void OscillatorObject::oscUserDefWaveDblClick() {
+void OscillatorObject::oscUserDefWaveDblClick()
+{
 	QString af = m_sampleBuffer->openAndSetWaveformFile();
 	if (af != "") {
 		// TODO:
@@ -115,7 +117,8 @@ void OscillatorObject::oscUserDefWaveDblClick() {
 	}
 }
 
-void OscillatorObject::updateVolume() {
+void OscillatorObject::updateVolume()
+{
 	if (m_panModel.value() >= 0.0f) {
 		const float panningFactorLeft = 1.0f - m_panModel.value() / (float)PanningRight;
 		m_volumeLeft = panningFactorLeft * m_volumeModel.value() / 100.0f;
@@ -127,17 +130,20 @@ void OscillatorObject::updateVolume() {
 	}
 }
 
-void OscillatorObject::updateDetuningLeft() {
+void OscillatorObject::updateDetuningLeft()
+{
 	m_detuningLeft = powf(2.0f, ((float)m_coarseModel.value() * 100.0f + (float)m_fineLeftModel.value()) / 1200.0f)
 		/ Engine::audioEngine()->processingSampleRate();
 }
 
-void OscillatorObject::updateDetuningRight() {
+void OscillatorObject::updateDetuningRight()
+{
 	m_detuningRight = powf(2.0f, ((float)m_coarseModel.value() * 100.0f + (float)m_fineRightModel.value()) / 1200.0f)
 		/ Engine::audioEngine()->processingSampleRate();
 }
 
-void OscillatorObject::updatePhaseOffsetLeft() {
+void OscillatorObject::updatePhaseOffsetLeft()
+{
 	m_phaseOffsetLeft = (m_phaseOffsetModel.value() + m_stereoPhaseDetuningModel.value()) / 360.0f;
 }
 
@@ -146,7 +152,8 @@ void OscillatorObject::updatePhaseOffsetRight() { m_phaseOffsetRight = m_phaseOf
 void OscillatorObject::updateUseWaveTable() { m_useWaveTable = m_useWaveTableModel.value(); }
 
 TripleOscillator::TripleOscillator(InstrumentTrack* _instrument_track)
-	: Instrument(_instrument_track, &tripleoscillator_plugin_descriptor) {
+	: Instrument(_instrument_track, &tripleoscillator_plugin_descriptor)
+{
 	for (int i = 0; i < NUM_OF_OSCILLATORS; ++i) {
 		m_osc[i] = new OscillatorObject(this, i);
 	}
@@ -156,7 +163,8 @@ TripleOscillator::TripleOscillator(InstrumentTrack* _instrument_track)
 
 TripleOscillator::~TripleOscillator() {}
 
-void TripleOscillator::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void TripleOscillator::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	for (int i = 0; i < NUM_OF_OSCILLATORS; ++i) {
 		QString is = QString::number(i);
 		m_osc[i]->m_volumeModel.saveSettings(_doc, _this, "vol" + is);
@@ -173,7 +181,8 @@ void TripleOscillator::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 	}
 }
 
-void TripleOscillator::loadSettings(const QDomElement& _this) {
+void TripleOscillator::loadSettings(const QDomElement& _this)
+{
 	for (int i = 0; i < NUM_OF_OSCILLATORS; ++i) {
 		const QString is = QString::number(i);
 		m_osc[i]->m_volumeModel.loadSettings(_this, "vol" + is);
@@ -192,7 +201,8 @@ void TripleOscillator::loadSettings(const QDomElement& _this) {
 
 QString TripleOscillator::nodeName() const { return (tripleoscillator_plugin_descriptor.name); }
 
-void TripleOscillator::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer) {
+void TripleOscillator::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
+{
 	if (_n->totalFramesPlayed() == 0 || _n->m_pluginData == nullptr) {
 		Oscillator* oscs_l[NUM_OF_OSCILLATORS];
 		Oscillator* oscs_r[NUM_OF_OSCILLATORS];
@@ -242,7 +252,8 @@ void TripleOscillator::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer
 	instrumentTrack()->processAudioBuffer(_working_buffer, frames + offset, _n);
 }
 
-void TripleOscillator::deleteNotePluginData(NotePlayHandle* _n) {
+void TripleOscillator::deleteNotePluginData(NotePlayHandle* _n)
+{
 	delete static_cast<Oscillator*>(static_cast<oscPtr*>(_n->m_pluginData)->oscLeft);
 	delete static_cast<Oscillator*>(static_cast<oscPtr*>(_n->m_pluginData)->oscRight);
 	delete static_cast<oscPtr*>(_n->m_pluginData);
@@ -250,17 +261,20 @@ void TripleOscillator::deleteNotePluginData(NotePlayHandle* _n) {
 
 PluginView* TripleOscillator::instantiateView(QWidget* _parent) { return new TripleOscillatorView(this, _parent); }
 
-void TripleOscillator::updateAllDetuning() {
+void TripleOscillator::updateAllDetuning()
+{
 	for (int i = 0; i < NUM_OF_OSCILLATORS; ++i) {
 		m_osc[i]->updateDetuningLeft();
 		m_osc[i]->updateDetuningRight();
 	}
 }
 
-class TripleOscKnob : public Knob {
+class TripleOscKnob : public Knob
+{
 public:
 	TripleOscKnob(QWidget* _parent)
-		: Knob(knobStyled, _parent) {
+		: Knob(knobStyled, _parent)
+	{
 		setFixedSize(28, 35);
 	}
 };
@@ -268,7 +282,8 @@ public:
 // 82, 109
 
 TripleOscillatorView::TripleOscillatorView(Instrument* _instrument, QWidget* _parent)
-	: InstrumentViewFixedSize(_instrument, _parent) {
+	: InstrumentViewFixedSize(_instrument, _parent)
+{
 	setAutoFillBackground(true);
 	QPalette pal;
 	pal.setBrush(backgroundRole(), PLUGIN_NAME::getIconPixmap("artwork"));
@@ -472,7 +487,8 @@ TripleOscillatorView::TripleOscillatorView(Instrument* _instrument, QWidget* _pa
 
 TripleOscillatorView::~TripleOscillatorView() {}
 
-void TripleOscillatorView::modelChanged() {
+void TripleOscillatorView::modelChanged()
+{
 	TripleOscillator* t = castModel<TripleOscillator>();
 	m_mod1BtnGrp->setModel(&t->m_osc[0]->m_modulationAlgoModel);
 	m_mod2BtnGrp->setModel(&t->m_osc[1]->m_modulationAlgoModel);
@@ -495,7 +511,8 @@ void TripleOscillatorView::modelChanged() {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* model, void*) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* model, void*)
+{
 	return new TripleOscillator(static_cast<InstrumentTrack*>(model));
 }
 }

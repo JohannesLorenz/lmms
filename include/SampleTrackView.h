@@ -32,7 +32,8 @@ class SampleTrack;
 class SampleTrackWindow;
 class TrackLabelButton;
 
-class SampleTrackView : public TrackView {
+class SampleTrackView : public TrackView
+{
 	Q_OBJECT
 public:
 	SampleTrackView(SampleTrack* Track, TrackContainerView* tcv);

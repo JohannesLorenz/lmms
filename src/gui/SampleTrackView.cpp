@@ -42,7 +42,8 @@
 #include "embed.h"
 
 SampleTrackView::SampleTrackView(SampleTrack* _t, TrackContainerView* tcv)
-	: TrackView(_t, tcv) {
+	: TrackView(_t, tcv)
+{
 	setFixedHeight(32);
 
 	m_tlb = new TrackLabelButton(this, getTrackSettingsWidget());
@@ -84,7 +85,8 @@ SampleTrackView::SampleTrackView(SampleTrack* _t, TrackContainerView* tcv)
 	m_window->toggleVisibility(false);
 }
 
-void SampleTrackView::updateIndicator() {
+void SampleTrackView::updateIndicator()
+{
 	if (model()->isPlaying()) {
 		m_activityIndicator->activateOnce();
 	} else {
@@ -92,7 +94,8 @@ void SampleTrackView::updateIndicator() {
 	}
 }
 
-SampleTrackView::~SampleTrackView() {
+SampleTrackView::~SampleTrackView()
+{
 	if (m_window != nullptr) {
 		m_window->setSampleTrackView(nullptr);
 		m_window->parentWidget()->hide();
@@ -101,7 +104,8 @@ SampleTrackView::~SampleTrackView() {
 }
 
 // FIXME: This is identical to InstrumentTrackView::createMixerMenu
-QMenu* SampleTrackView::createMixerMenu(QString title, QString newMixerLabel) {
+QMenu* SampleTrackView::createMixerMenu(QString title, QString newMixerLabel)
+{
 	int channelIndex = model()->mixerChannelModel()->value();
 
 	MixerChannel* mixerChannel = Engine::mixer()->mixerChannel(channelIndex);
@@ -129,18 +133,21 @@ QMenu* SampleTrackView::createMixerMenu(QString title, QString newMixerLabel) {
 
 void SampleTrackView::showEffects() { m_window->toggleVisibility(m_window->parentWidget()->isHidden()); }
 
-void SampleTrackView::modelChanged() {
+void SampleTrackView::modelChanged()
+{
 	SampleTrack* st = castModel<SampleTrack>();
 	m_volumeKnob->setModel(&st->m_volumeModel);
 
 	TrackView::modelChanged();
 }
 
-void SampleTrackView::dragEnterEvent(QDragEnterEvent* dee) {
+void SampleTrackView::dragEnterEvent(QDragEnterEvent* dee)
+{
 	StringPairDrag::processDragEnterEvent(dee, QString("samplefile"));
 }
 
-void SampleTrackView::dropEvent(QDropEvent* de) {
+void SampleTrackView::dropEvent(QDropEvent* de)
+{
 	QString type = StringPairDrag::decodeKey(de);
 	QString value = StringPairDrag::decodeValue(de);
 
@@ -163,7 +170,8 @@ void SampleTrackView::dropEvent(QDropEvent* de) {
 }
 
 /*! \brief Create and assign a new mixer Channel for this track */
-void SampleTrackView::createMixerLine() {
+void SampleTrackView::createMixerLine()
+{
 	int channelIndex = getGUI()->mixerView()->addNewChannel();
 	auto channel = Engine::mixer()->mixerChannel(channelIndex);
 
@@ -174,7 +182,8 @@ void SampleTrackView::createMixerLine() {
 }
 
 /*! \brief Assign a specific mixer Channel for this track */
-void SampleTrackView::assignMixerLine(int channelIndex) {
+void SampleTrackView::assignMixerLine(int channelIndex)
+{
 	model()->mixerChannelModel()->setValue(channelIndex);
 
 	getGUI()->mixerView()->setCurrentMixerLine(channelIndex);

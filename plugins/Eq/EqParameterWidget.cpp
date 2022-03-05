@@ -77,7 +77,8 @@ EqParameterWidget::EqParameterWidget(QWidget* parent, EqControls* controls)
 	}
 }
 
-EqParameterWidget::~EqParameterWidget() {
+EqParameterWidget::~EqParameterWidget()
+{
 	if (m_bands) {
 		delete[] m_bands;
 		m_bands = 0;
@@ -86,7 +87,8 @@ EqParameterWidget::~EqParameterWidget() {
 
 EqBand* EqParameterWidget::getBandModels(int i) { return &m_bands[i]; }
 
-void EqParameterWidget::updateHandle() {
+void EqParameterWidget::updateHandle()
+{
 	m_eqcurve->setModelChanged(true);
 	for (int i = 0; i < bandCount(); i++) {
 		if (!m_handleList->at(i)->mousePressed()) // prevents a short circuit between handle and data model
@@ -114,7 +116,8 @@ void EqParameterWidget::updateHandle() {
 	if (m_bands[7].lp48->value()) m_handleList->at(7)->setlp48();
 }
 
-void EqParameterWidget::changeHandle(int i) {
+void EqParameterWidget::changeHandle(int i)
+{
 	// fill x, y, and bw with data from model
 	float x = EqHandle::freqToXPixel(m_bands[i].freq->value(), m_displayWidth);
 	float y = m_handleList->at(i)->y();
@@ -171,7 +174,8 @@ void EqParameterWidget::changeHandle(int i) {
 }
 
 // this is called if a handle is moved
-void EqParameterWidget::updateModels() {
+void EqParameterWidget::updateModels()
+{
 	for (int i = 0; i < bandCount(); i++) {
 		m_bands[i].freq->setValue(EqHandle::xPixelToFreq(m_handleList->at(i)->x(), m_displayWidth));
 
@@ -196,4 +200,6 @@ EqBand::EqBand()
 	, y(0)
 	, name(QString(""))
 	, peakL(0)
-	, peakR(0) {}
+	, peakR(0)
+{
+}

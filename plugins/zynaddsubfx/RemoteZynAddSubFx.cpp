@@ -39,7 +39,8 @@
 #include "zynaddsubfx/src/Nio/Nio.h"
 #include "zynaddsubfx/src/UI/MasterUI.h"
 
-class RemoteZynAddSubFx : public RemotePluginClient, public LocalZynAddSubFx {
+class RemoteZynAddSubFx : public RemotePluginClient, public LocalZynAddSubFx
+{
 public:
 #ifdef SYNC_WITH_SHM_FIFO
 	RemoteZynAddSubFx(int _shm_in, int _shm_out)
@@ -52,7 +53,8 @@ public:
 #endif
 		LocalZynAddSubFx()
 		, m_guiSleepTime(100)
-		, m_guiExit(false) {
+		, m_guiExit(false)
+	{
 		Nio::start();
 
 		setInputCount(0);
@@ -69,7 +71,8 @@ public:
 
 	virtual void updateBufferSize() { LocalZynAddSubFx::setBufferSize(bufferSize()); }
 
-	void messageLoop() {
+	void messageLoop()
+	{
 		message m;
 		while ((m = receiveMessage()).id != IdQuit) {
 			pthread_mutex_lock(&m_master->mutex);
@@ -79,7 +82,8 @@ public:
 		m_guiExit = true;
 	}
 
-	virtual bool processMessage(const message& _m) {
+	virtual bool processMessage(const message& _m)
+	{
 		switch (_m.id) {
 		case IdQuit: break;
 
@@ -110,13 +114,15 @@ public:
 	}
 
 	// all functions are called while m_master->mutex is held
-	virtual void processMidiEvent(const MidiEvent& event, const f_cnt_t /* _offset */) {
+	virtual void processMidiEvent(const MidiEvent& event, const f_cnt_t /* _offset */)
+	{
 		LocalZynAddSubFx::processMidiEvent(event);
 	}
 
 	virtual void process(const sampleFrame* _in, sampleFrame* _out) { LocalZynAddSubFx::processAudio(_out); }
 
-	static void* messageLoop(void* _arg) {
+	static void* messageLoop(void* _arg)
+	{
 		RemoteZynAddSubFx* _this = static_cast<RemoteZynAddSubFx*>(_arg);
 
 		_this->messageLoop();
@@ -135,7 +141,8 @@ private:
 	bool m_guiExit;
 };
 
-void RemoteZynAddSubFx::guiLoop() {
+void RemoteZynAddSubFx::guiLoop()
+{
 	int exitProgram = 0;
 	MasterUI* ui = nullptr;
 
@@ -202,7 +209,8 @@ void RemoteZynAddSubFx::guiLoop() {
 	delete ui;
 }
 
-int main(int _argc, char** _argv) {
+int main(int _argc, char** _argv)
+{
 #ifdef SYNC_WITH_SHM_FIFO
 	if (_argc < 3)
 #else
@@ -245,7 +253,8 @@ int main(int _argc, char** _argv) {
 static Fl_Tiled_Image* module_backdrop;
 #endif
 
-void set_module_parameters(Fl_Widget* o) {
+void set_module_parameters(Fl_Widget* o)
+{
 #ifdef NTK_GUI
 	o->box(FL_DOWN_FRAME);
 	o->align(o->align() | FL_ALIGN_IMAGE_BACKDROP);

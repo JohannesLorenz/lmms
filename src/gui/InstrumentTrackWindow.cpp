@@ -78,7 +78,8 @@ InstrumentTrackWindow::InstrumentTrackWindow(InstrumentTrackView* _itv)
 	, ModelView(nullptr, this)
 	, m_track(_itv->model())
 	, m_itv(_itv)
-	, m_instrumentView(nullptr) {
+	, m_instrumentView(nullptr)
+{
 	setAcceptDrops(true);
 
 	// init own layout + widgets
@@ -275,7 +276,8 @@ InstrumentTrackWindow::InstrumentTrackWindow(InstrumentTrackView* _itv)
 	subWin->hide();
 }
 
-InstrumentTrackWindow::~InstrumentTrackWindow() {
+InstrumentTrackWindow::~InstrumentTrackWindow()
+{
 	delete m_instrumentView;
 
 	if (parentWidget()) {
@@ -284,14 +286,16 @@ InstrumentTrackWindow::~InstrumentTrackWindow() {
 	}
 }
 
-void InstrumentTrackWindow::setInstrumentTrackView(InstrumentTrackView* view) {
+void InstrumentTrackWindow::setInstrumentTrackView(InstrumentTrackView* view)
+{
 	if (m_itv && view) { m_itv->m_tlb->setChecked(false); }
 
 	m_itv = view;
 	m_mixerChannelNumber->setTrackView(m_itv);
 }
 
-void InstrumentTrackWindow::modelChanged() {
+void InstrumentTrackWindow::modelChanged()
+{
 	m_track = castModel<InstrumentTrack>();
 
 	m_nameLineEdit->setText(m_track->name());
@@ -342,7 +346,8 @@ void InstrumentTrackWindow::modelChanged() {
 	updateName();
 }
 
-void InstrumentTrackWindow::saveSettingsBtnClicked() {
+void InstrumentTrackWindow::saveSettingsBtnClicked()
+{
 	FileDialog sfd(this, tr("Save preset"), "", tr("XML preset file (*.xpf)"));
 
 	QString presetRoot = ConfigManager::inst()->userPresetsDir();
@@ -371,13 +376,15 @@ void InstrumentTrackWindow::saveSettingsBtnClicked() {
 	}
 }
 
-void InstrumentTrackWindow::updateName() {
+void InstrumentTrackWindow::updateName()
+{
 	setWindowTitle(m_track->name().length() > 25 ? (m_track->name().left(24) + "...") : m_track->name());
 
 	if (m_nameLineEdit->text() != m_track->name()) { m_nameLineEdit->setText(m_track->name()); }
 }
 
-void InstrumentTrackWindow::updateInstrumentView() {
+void InstrumentTrackWindow::updateInstrumentView()
+{
 	delete m_instrumentView;
 	if (m_track->m_instrument != nullptr) {
 		m_instrumentView = m_track->m_instrument->createView(m_tabWidget);
@@ -400,12 +407,14 @@ void InstrumentTrackWindow::updateInstrumentView() {
 	}
 }
 
-void InstrumentTrackWindow::textChanged(const QString& newName) {
+void InstrumentTrackWindow::textChanged(const QString& newName)
+{
 	m_track->setName(newName);
 	Engine::getSong()->setModified();
 }
 
-void InstrumentTrackWindow::toggleVisibility(bool on) {
+void InstrumentTrackWindow::toggleVisibility(bool on)
+{
 	if (on) {
 		show();
 		parentWidget()->show();
@@ -415,7 +424,8 @@ void InstrumentTrackWindow::toggleVisibility(bool on) {
 	}
 }
 
-void InstrumentTrackWindow::closeEvent(QCloseEvent* event) {
+void InstrumentTrackWindow::closeEvent(QCloseEvent* event)
+{
 	event->ignore();
 
 	if (getGUI()->mainWindow()->workspace()) {
@@ -428,17 +438,20 @@ void InstrumentTrackWindow::closeEvent(QCloseEvent* event) {
 	m_itv->m_tlb->setChecked(false);
 }
 
-void InstrumentTrackWindow::focusInEvent(QFocusEvent*) {
+void InstrumentTrackWindow::focusInEvent(QFocusEvent*)
+{
 	if (m_pianoView->isVisible()) { m_pianoView->setFocus(); }
 }
 
-void InstrumentTrackWindow::dragEnterEventGeneric(QDragEnterEvent* event) {
+void InstrumentTrackWindow::dragEnterEventGeneric(QDragEnterEvent* event)
+{
 	StringPairDrag::processDragEnterEvent(event, "instrument,presetfile,pluginpresetfile");
 }
 
 void InstrumentTrackWindow::dragEnterEvent(QDragEnterEvent* event) { dragEnterEventGeneric(event); }
 
-void InstrumentTrackWindow::dropEvent(QDropEvent* event) {
+void InstrumentTrackWindow::dropEvent(QDropEvent* event)
+{
 	QString type = StringPairDrag::decodeKey(event);
 	QString value = StringPairDrag::decodeValue(event);
 
@@ -470,18 +483,21 @@ void InstrumentTrackWindow::dropEvent(QDropEvent* event) {
 	}
 }
 
-void InstrumentTrackWindow::saveSettings(QDomDocument& doc, QDomElement& thisElement) {
+void InstrumentTrackWindow::saveSettings(QDomDocument& doc, QDomElement& thisElement)
+{
 	thisElement.setAttribute("tab", m_tabWidget->activeTab());
 	MainWindow::saveWidgetState(this, thisElement);
 }
 
-void InstrumentTrackWindow::loadSettings(const QDomElement& thisElement) {
+void InstrumentTrackWindow::loadSettings(const QDomElement& thisElement)
+{
 	m_tabWidget->setActiveTab(thisElement.attribute("tab").toInt());
 	MainWindow::restoreWidgetState(this, thisElement);
 	if (isVisible()) { m_itv->m_tlb->setChecked(true); }
 }
 
-void InstrumentTrackWindow::viewInstrumentInDirection(int d) {
+void InstrumentTrackWindow::viewInstrumentInDirection(int d)
+{
 	// helper routine for viewNextInstrument, viewPrevInstrument
 	// d=-1 to view the previous instrument,
 	// d=+1 to view the next instrument
@@ -528,7 +544,8 @@ void InstrumentTrackWindow::viewInstrumentInDirection(int d) {
 void InstrumentTrackWindow::viewNextInstrument() { viewInstrumentInDirection(+1); }
 void InstrumentTrackWindow::viewPrevInstrument() { viewInstrumentInDirection(-1); }
 
-void InstrumentTrackWindow::adjustTabSize(QWidget* w) {
+void InstrumentTrackWindow::adjustTabSize(QWidget* w)
+{
 	// "-1" :
 	// in "TabWidget::addTab", under "Position tab's window", the widget is
 	// moved up by 1 pixel

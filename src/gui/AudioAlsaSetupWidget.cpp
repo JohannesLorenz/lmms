@@ -35,7 +35,8 @@
 
 AudioAlsaSetupWidget::AudioAlsaSetupWidget(QWidget* _parent)
 	: AudioDeviceSetupWidget(AudioAlsa::name(), _parent)
-	, m_selectedDevice(-1) {
+	, m_selectedDevice(-1)
+{
 	m_deviceInfos = AudioAlsa::getAvailableDevices();
 
 	QString deviceText = ConfigManager::inst()->value("audioalsa", "device");
@@ -74,7 +75,8 @@ AudioAlsaSetupWidget::AudioAlsaSetupWidget(QWidget* _parent)
 
 AudioAlsaSetupWidget::~AudioAlsaSetupWidget() { delete m_channels->model(); }
 
-void AudioAlsaSetupWidget::saveSettings() {
+void AudioAlsaSetupWidget::saveSettings()
+{
 	QString deviceText;
 
 	if (m_selectedDevice != -1) {

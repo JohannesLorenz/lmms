@@ -36,7 +36,8 @@
 
 EffectRackView::EffectRackView(EffectChain* model, QWidget* parent)
 	: QWidget(parent)
-	, ModelView(nullptr, this) {
+	, ModelView(nullptr, this)
+{
 	QVBoxLayout* mainLayout = new QVBoxLayout(this);
 	mainLayout->setMargin(5);
 
@@ -70,7 +71,8 @@ EffectRackView::EffectRackView(EffectChain* model, QWidget* parent)
 
 EffectRackView::~EffectRackView() { clearViews(); }
 
-void EffectRackView::clearViews() {
+void EffectRackView::clearViews()
+{
 	while (m_effectViews.size()) {
 		EffectView* e = m_effectViews[m_effectViews.size() - 1];
 		m_effectViews.pop_back();
@@ -78,7 +80,8 @@ void EffectRackView::clearViews() {
 	}
 }
 
-void EffectRackView::moveUp(EffectView* view) {
+void EffectRackView::moveUp(EffectView* view)
+{
 	fxChain()->moveUp(view->effect());
 	if (view != m_effectViews.first()) {
 		int i = 0;
@@ -95,14 +98,16 @@ void EffectRackView::moveUp(EffectView* view) {
 	}
 }
 
-void EffectRackView::moveDown(EffectView* view) {
+void EffectRackView::moveDown(EffectView* view)
+{
 	if (view != m_effectViews.last()) {
 		// moving next effect up is the same
 		moveUp(*(std::find(m_effectViews.begin(), m_effectViews.end(), view) + 1));
 	}
 }
 
-void EffectRackView::deletePlugin(EffectView* view) {
+void EffectRackView::deletePlugin(EffectView* view)
+{
 	Effect* e = view->effect();
 	m_effectViews.erase(std::find(m_effectViews.begin(), m_effectViews.end(), view));
 	delete view;
@@ -111,7 +116,8 @@ void EffectRackView::deletePlugin(EffectView* view) {
 	update();
 }
 
-void EffectRackView::update() {
+void EffectRackView::update()
+{
 	QWidget* w = m_scrollArea->widget();
 	QVector<bool> view_map(qMax<int>(fxChain()->m_effects.size(), m_effectViews.size()), false);
 
@@ -161,7 +167,8 @@ void EffectRackView::update() {
 	QWidget::update();
 }
 
-void EffectRackView::addEffect() {
+void EffectRackView::addEffect()
+{
 	EffectSelectDialog esd(this);
 	esd.exec();
 
@@ -182,7 +189,8 @@ void EffectRackView::addEffect() {
 	}
 }
 
-void EffectRackView::modelChanged() {
+void EffectRackView::modelChanged()
+{
 	// clearViews();
 	m_effectsGroupBox->setModel(&fxChain()->m_enabledModel);
 	connect(fxChain(), SIGNAL(aboutToClear()), this, SLOT(clearViews()));

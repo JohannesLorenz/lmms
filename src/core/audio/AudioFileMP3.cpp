@@ -31,7 +31,8 @@
 
 AudioFileMP3::AudioFileMP3(OutputSettings const& outputSettings, const ch_cnt_t channels, bool& successful,
 	const QString& file, AudioEngine* audioEngine)
-	: AudioFileDevice(outputSettings, channels, file, audioEngine) {
+	: AudioFileDevice(outputSettings, channels, file, audioEngine)
+{
 	successful = true;
 	// For now only accept stereo sources
 	successful &= channels == 2;
@@ -39,12 +40,14 @@ AudioFileMP3::AudioFileMP3(OutputSettings const& outputSettings, const ch_cnt_t 
 	successful &= outputFileOpened();
 }
 
-AudioFileMP3::~AudioFileMP3() {
+AudioFileMP3::~AudioFileMP3()
+{
 	flushRemainingBuffers();
 	tearDownEncoder();
 }
 
-void AudioFileMP3::writeBuffer(const surroundSampleFrame* _buf, const fpp_t _frames, const float _master_gain) {
+void AudioFileMP3::writeBuffer(const surroundSampleFrame* _buf, const fpp_t _frames, const float _master_gain)
+{
 	if (_frames < 1) { return; }
 
 	// TODO Why isn't the gain applied by the driver but inside the device?
@@ -64,7 +67,8 @@ void AudioFileMP3::writeBuffer(const surroundSampleFrame* _buf, const fpp_t _fra
 	writeData(&encodingBuffer[0], bytesWritten);
 }
 
-void AudioFileMP3::flushRemainingBuffers() {
+void AudioFileMP3::flushRemainingBuffers()
+{
 	// The documentation states that flush should have at least 7200 bytes. So let's be generous.
 	std::vector<unsigned char> encodingBuffer(7200 * 4);
 
@@ -74,7 +78,8 @@ void AudioFileMP3::flushRemainingBuffers() {
 	writeData(&encodingBuffer[0], bytesWritten);
 }
 
-MPEG_mode mapToMPEG_mode(OutputSettings::StereoMode stereoMode) {
+MPEG_mode mapToMPEG_mode(OutputSettings::StereoMode stereoMode)
+{
 	switch (stereoMode) {
 	case OutputSettings::StereoMode_Stereo: return STEREO;
 	case OutputSettings::StereoMode_JointStereo: return JOINT_STEREO;
@@ -83,7 +88,8 @@ MPEG_mode mapToMPEG_mode(OutputSettings::StereoMode stereoMode) {
 	}
 }
 
-bool AudioFileMP3::initEncoder() {
+bool AudioFileMP3::initEncoder()
+{
 	m_lame = lame_init();
 
 	// Handle stereo/joint/mono settings

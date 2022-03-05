@@ -27,11 +27,14 @@
 AudioEngineProfiler::AudioEngineProfiler()
 	: m_periodTimer()
 	, m_cpuLoad(0)
-	, m_outputFile() {}
+	, m_outputFile()
+{
+}
 
 AudioEngineProfiler::~AudioEngineProfiler() {}
 
-void AudioEngineProfiler::finishPeriod(sample_rate_t sampleRate, fpp_t framesPerPeriod) {
+void AudioEngineProfiler::finishPeriod(sample_rate_t sampleRate, fpp_t framesPerPeriod)
+{
 	int periodElapsed = m_periodTimer.elapsed();
 
 	const float newCpuLoad = periodElapsed / 10000.0f * sampleRate / framesPerPeriod;
@@ -40,7 +43,8 @@ void AudioEngineProfiler::finishPeriod(sample_rate_t sampleRate, fpp_t framesPer
 	if (m_outputFile.isOpen()) { m_outputFile.write(QString("%1\n").arg(periodElapsed).toLatin1()); }
 }
 
-void AudioEngineProfiler::setOutputFile(const QString& outputFile) {
+void AudioEngineProfiler::setOutputFile(const QString& outputFile)
+{
 	m_outputFile.close();
 	m_outputFile.setFileName(outputFile);
 	m_outputFile.open(QFile::WriteOnly | QFile::Truncate);

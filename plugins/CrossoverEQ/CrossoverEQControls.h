@@ -32,7 +32,8 @@
 
 class CrossoverEQEffect;
 
-class CrossoverEQControls : public EffectControls {
+class CrossoverEQControls : public EffectControls
+{
 	Q_OBJECT
 public:
 	CrossoverEQControls(CrossoverEQEffect* eff);

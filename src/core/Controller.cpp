@@ -43,7 +43,8 @@ Controller::Controller(ControllerTypes _type, Model* _parent, const QString& _di
 	, m_valueBuffer(Engine::audioEngine()->framesPerPeriod())
 	, m_bufferLastUpdated(-1)
 	, m_connectionCount(0)
-	, m_type(_type) {
+	, m_type(_type)
+{
 	if (_type != DummyController && _type != MidiController) {
 		s_controllers.append(this);
 		// Determine which name to use
@@ -67,7 +68,8 @@ Controller::Controller(ControllerTypes _type, Model* _parent, const QString& _di
 	updateValueBuffer();
 }
 
-Controller::~Controller() {
+Controller::~Controller()
+{
 	int idx = s_controllers.indexOf(this);
 	if (idx >= 0) { s_controllers.remove(idx); }
 
@@ -76,23 +78,27 @@ Controller::~Controller() {
 }
 
 // Get current value, with an offset into the current buffer for sample exactness
-float Controller::currentValue(int _offset) {
+float Controller::currentValue(int _offset)
+{
 	if (_offset == 0 || isSampleExact()) { m_currentValue = fittedValue(value(_offset)); }
 
 	return m_currentValue;
 }
 
-float Controller::value(int offset) {
+float Controller::value(int offset)
+{
 	if (m_bufferLastUpdated != s_periods) { updateValueBuffer(); }
 	return m_valueBuffer.values()[offset];
 }
 
-ValueBuffer* Controller::valueBuffer() {
+ValueBuffer* Controller::valueBuffer()
+{
 	if (m_bufferLastUpdated != s_periods) { updateValueBuffer(); }
 	return &m_valueBuffer;
 }
 
-void Controller::updateValueBuffer() {
+void Controller::updateValueBuffer()
+{
 	m_valueBuffer.fill(0.5f);
 	m_bufferLastUpdated = s_periods;
 }
@@ -103,7 +109,8 @@ unsigned int Controller::runningFrames() { return s_periods * Engine::audioEngin
 // Get position in seconds
 float Controller::runningTime() { return runningFrames() / Engine::audioEngine()->processingSampleRate(); }
 
-void Controller::triggerFrameCounter() {
+void Controller::triggerFrameCounter()
+{
 	for (Controller* controller : s_controllers) {
 		// This signal is for updating values for both stubborn knobs and for
 		// painting.  If we ever get all the widgets to use or at least check
@@ -116,14 +123,16 @@ void Controller::triggerFrameCounter() {
 	// emit s_signaler.triggerValueChanged();
 }
 
-void Controller::resetFrameCounter() {
+void Controller::resetFrameCounter()
+{
 	for (Controller* controller : s_controllers) {
 		controller->m_bufferLastUpdated = 0;
 	}
 	s_periods = 0;
 }
 
-Controller* Controller::create(ControllerTypes _ct, Model* _parent) {
+Controller* Controller::create(ControllerTypes _ct, Model* _parent)
+{
 	static Controller* dummy = nullptr;
 	Controller* c = nullptr;
 
@@ -148,7 +157,8 @@ Controller* Controller::create(ControllerTypes _ct, Model* _parent) {
 	return (c);
 }
 
-Controller* Controller::create(const QDomElement& _this, Model* _parent) {
+Controller* Controller::create(const QDomElement& _this, Model* _parent)
+{
 	Controller* c;
 	if (_this.attribute("type").toInt() == Controller::PeakController) {
 		c = PeakController::getControllerBySetting(_this);
@@ -161,7 +171,8 @@ Controller* Controller::create(const QDomElement& _this, Model* _parent) {
 	return (c);
 }
 
-bool Controller::hasModel(const Model* m) const {
+bool Controller::hasModel(const Model* m) const
+{
 	for (QObject* c : children()) {
 		AutomatableModel* am = qobject_cast<AutomatableModel*>(c);
 		if (am != nullptr) {
@@ -175,12 +186,14 @@ bool Controller::hasModel(const Model* m) const {
 	return false;
 }
 
-void Controller::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void Controller::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	_this.setAttribute("type", type());
 	_this.setAttribute("name", name());
 }
 
-void Controller::loadSettings(const QDomElement& _this) {
+void Controller::loadSettings(const QDomElement& _this)
+{
 	if (_this.attribute("type").toInt() != type()) {
 		qWarning("controller-type does not match controller-type of "
 				 "settings-node!\n");
@@ -191,7 +204,8 @@ void Controller::loadSettings(const QDomElement& _this) {
 
 QString Controller::nodeName() const { return ("Controller"); }
 
-ControllerDialog* Controller::createDialog(QWidget* _parent) {
+ControllerDialog* Controller::createDialog(QWidget* _parent)
+{
 	ControllerDialog* d = new ControllerDialog(this, _parent);
 
 	return d;
@@ -199,7 +213,8 @@ ControllerDialog* Controller::createDialog(QWidget* _parent) {
 
 void Controller::addConnection(ControllerConnection*) { m_connectionCount++; }
 
-void Controller::removeConnection(ControllerConnection*) {
+void Controller::removeConnection(ControllerConnection*)
+{
 	m_connectionCount--;
 	Q_ASSERT(m_connectionCount >= 0);
 }

@@ -36,12 +36,14 @@
 #include "TrackContainer.h"
 
 // invisible track-container which is needed as parent for preview-channels
-class PreviewTrackContainer : public TrackContainer {
+class PreviewTrackContainer : public TrackContainer
+{
 public:
 	PreviewTrackContainer()
 		: m_previewInstrumentTrack(nullptr)
 		, m_previewNote(nullptr)
-		, m_dataMutex() {
+		, m_dataMutex()
+	{
 		setJournalling(false);
 		m_previewInstrumentTrack = dynamic_cast<InstrumentTrack*>(Track::create(Track::InstrumentTrack, this));
 		m_previewInstrumentTrack->setJournalling(false);
@@ -58,7 +60,8 @@ public:
 
 	void setPreviewNote(NotePlayHandle* _note) { m_previewNote.store(_note, std::memory_order_release); }
 
-	bool testAndSetPreviewNote(NotePlayHandle* expectedVal, NotePlayHandle* newVal) {
+	bool testAndSetPreviewNote(NotePlayHandle* expectedVal, NotePlayHandle* newVal)
+	{
 		return m_previewNote.compare_exchange_strong(expectedVal, newVal);
 	}
 
@@ -66,7 +69,8 @@ public:
 
 	void unlockData() { m_dataMutex.unlock(); }
 
-	bool isPreviewing() {
+	bool isPreviewing()
+	{
 		bool ret = !m_dataMutex.tryLock();
 		if (ret == false) { m_dataMutex.unlock(); }
 		return ret;
@@ -84,7 +88,8 @@ PreviewTrackContainer* PresetPreviewPlayHandle::s_previewTC;
 
 PresetPreviewPlayHandle::PresetPreviewPlayHandle(const QString& _preset_file, bool _load_by_plugin, DataFile* dataFile)
 	: PlayHandle(TypePresetPreviewHandle)
-	, m_previewNote(nullptr) {
+	, m_previewNote(nullptr)
+{
 	setUsesBuffer(false);
 
 	s_previewTC->lockData();
@@ -137,34 +142,40 @@ PresetPreviewPlayHandle::PresetPreviewPlayHandle(const QString& _preset_file, bo
 	Engine::projectJournal()->setJournalling(j);
 }
 
-PresetPreviewPlayHandle::~PresetPreviewPlayHandle() {
+PresetPreviewPlayHandle::~PresetPreviewPlayHandle()
+{
 	Engine::audioEngine()->requestChangeInModel();
 	// not muted by other preset-preview-handle?
 	if (s_previewTC->testAndSetPreviewNote(m_previewNote, nullptr)) { m_previewNote->noteOff(); }
 	Engine::audioEngine()->doneChangeInModel();
 }
 
-void PresetPreviewPlayHandle::play(sampleFrame* _working_buffer) {
+void PresetPreviewPlayHandle::play(sampleFrame* _working_buffer)
+{
 	// Do nothing; the preview instrument is played by m_previewNote, which
 	// has been added to the audio engine
 }
 
 bool PresetPreviewPlayHandle::isFinished() const { return m_previewNote->isMuted(); }
 
-bool PresetPreviewPlayHandle::isFromTrack(const Track* _track) const {
+bool PresetPreviewPlayHandle::isFromTrack(const Track* _track) const
+{
 	return s_previewTC && s_previewTC->previewInstrumentTrack() == _track;
 }
 
-void PresetPreviewPlayHandle::init() {
+void PresetPreviewPlayHandle::init()
+{
 	if (!s_previewTC) { s_previewTC = new PreviewTrackContainer; }
 }
 
-void PresetPreviewPlayHandle::cleanup() {
+void PresetPreviewPlayHandle::cleanup()
+{
 	delete s_previewTC;
 	s_previewTC = nullptr;
 }
 
-ConstNotePlayHandleList PresetPreviewPlayHandle::nphsOfInstrumentTrack(const InstrumentTrack* _it) {
+ConstNotePlayHandleList PresetPreviewPlayHandle::nphsOfInstrumentTrack(const InstrumentTrack* _it)
+{
 	ConstNotePlayHandleList cnphv;
 	if (s_previewTC->previewNote() != nullptr && s_previewTC->previewNote()->instrumentTrack() == _it) {
 		cnphv.push_back(s_previewTC->previewNote());
@@ -172,7 +183,8 @@ ConstNotePlayHandleList PresetPreviewPlayHandle::nphsOfInstrumentTrack(const Ins
 	return cnphv;
 }
 
-bool PresetPreviewPlayHandle::isPreviewing() {
+bool PresetPreviewPlayHandle::isPreviewing()
+{
 	if (s_previewTC) { return s_previewTC->isPreviewing(); }
 	return false;
 }

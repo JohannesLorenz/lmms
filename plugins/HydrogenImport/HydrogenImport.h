@@ -5,7 +5,8 @@
 
 #include "ImportFilter.h"
 
-class HydrogenImport : public ImportFilter {
+class HydrogenImport : public ImportFilter
+{
 public:
 	HydrogenImport(const QString& _file);
 	bool readSong();

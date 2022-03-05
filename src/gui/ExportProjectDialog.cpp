@@ -38,7 +38,8 @@ ExportProjectDialog::ExportProjectDialog(const QString& _file_name, QWidget* _pa
 	, m_fileName(_file_name)
 	, m_fileExtension()
 	, m_multiExport(multi_export)
-	, m_renderManager(nullptr) {
+	, m_renderManager(nullptr)
+{
 	setupUi(this);
 	setWindowTitle(tr("Export project to %1").arg(QFileInfo(_file_name).fileName()));
 
@@ -88,28 +89,32 @@ ExportProjectDialog::ExportProjectDialog(const QString& _file_name, QWidget* _pa
 	connect(startButton, SIGNAL(clicked()), this, SLOT(startBtnClicked()));
 }
 
-void ExportProjectDialog::reject() {
+void ExportProjectDialog::reject()
+{
 	if (m_renderManager) { m_renderManager->abortProcessing(); }
 	m_renderManager.reset(nullptr);
 
 	QDialog::reject();
 }
 
-void ExportProjectDialog::accept() {
+void ExportProjectDialog::accept()
+{
 	m_renderManager.reset(nullptr);
 	QDialog::accept();
 
 	getGUI()->mainWindow()->resetWindowTitle();
 }
 
-void ExportProjectDialog::closeEvent(QCloseEvent* _ce) {
+void ExportProjectDialog::closeEvent(QCloseEvent* _ce)
+{
 	Engine::getSong()->setLoopRenderCount(1);
 	if (m_renderManager) { m_renderManager->abortProcessing(); }
 
 	QDialog::closeEvent(_ce);
 }
 
-OutputSettings::StereoMode mapToStereoMode(int index) {
+OutputSettings::StereoMode mapToStereoMode(int index)
+{
 	switch (index) {
 	case 0: return OutputSettings::StereoMode_Mono;
 	case 1: return OutputSettings::StereoMode_Stereo;
@@ -118,7 +123,8 @@ OutputSettings::StereoMode mapToStereoMode(int index) {
 	}
 }
 
-void ExportProjectDialog::startExport() {
+void ExportProjectDialog::startExport()
+{
 	AudioEngine::qualitySettings qs = AudioEngine::qualitySettings(
 		static_cast<AudioEngine::qualitySettings::Interpolation>(interpolationCB->currentIndex()),
 		static_cast<AudioEngine::qualitySettings::Oversampling>(oversamplingCB->currentIndex()));
@@ -162,7 +168,8 @@ void ExportProjectDialog::startExport() {
 	}
 }
 
-void ExportProjectDialog::onFileFormatChanged(int index) {
+void ExportProjectDialog::onFileFormatChanged(int index)
+{
 	// Extract the format tag from the currently selected item,
 	// and adjust the UI properly.
 	QVariant format_tag = fileFormatCB->itemData(index);
@@ -197,7 +204,8 @@ void ExportProjectDialog::onFileFormatChanged(int index) {
 	depthWidget->setVisible(bitDepthControlEnabled);
 }
 
-void ExportProjectDialog::startBtnClicked() {
+void ExportProjectDialog::startBtnClicked()
+{
 	m_ft = ProjectRenderer::NumFileFormats;
 
 	// Get file format from current menu selection.
@@ -230,6 +238,7 @@ void ExportProjectDialog::startBtnClicked() {
 	startExport();
 }
 
-void ExportProjectDialog::updateTitleBar(int _prog) {
+void ExportProjectDialog::updateTitleBar(int _prog)
+{
 	getGUI()->mainWindow()->setWindowTitle(tr("Rendering: %1%").arg(_prog));
 }

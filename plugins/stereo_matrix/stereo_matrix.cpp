@@ -44,11 +44,14 @@ Plugin::Descriptor PLUGIN_EXPORT stereomatrix_plugin_descriptor = {
 
 stereoMatrixEffect::stereoMatrixEffect(Model* _parent, const Descriptor::SubPluginFeatures::Key* _key)
 	: Effect(&stereomatrix_plugin_descriptor, _parent, _key)
-	, m_smControls(this) {}
+	, m_smControls(this)
+{
+}
 
 stereoMatrixEffect::~stereoMatrixEffect() {}
 
-bool stereoMatrixEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames) {
+bool stereoMatrixEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames)
+{
 
 	// This appears to be used for determining whether or not to continue processing
 	// audio with this effect
@@ -82,7 +85,8 @@ bool stereoMatrixEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _fram
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data)
+{
 	return (new stereoMatrixEffect(_parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(_data)));
 }
 }

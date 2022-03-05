@@ -32,8 +32,10 @@ class FloatModel;
 class ComboBoxModel;
 class TempoSyncKnobModel;
 
-class ModelVisitor {
-	template <class ParentType = AutomatableModel, class ModelType> void up(ModelType& m) {
+class ModelVisitor
+{
+	template <class ParentType = AutomatableModel, class ModelType> void up(ModelType& m)
+	{
 		visit(static_cast<ParentType&>(m));
 	}
 
@@ -47,8 +49,10 @@ public:
 	virtual ~ModelVisitor();
 };
 
-class ConstModelVisitor {
-	template <class ParentType = AutomatableModel, class ModelType> void up(const ModelType& m) {
+class ConstModelVisitor
+{
+	template <class ParentType = AutomatableModel, class ModelType> void up(const ModelType& m)
+	{
 		visit(static_cast<const ParentType&>(m));
 	}
 

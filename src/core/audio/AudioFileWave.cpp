@@ -31,13 +31,15 @@
 AudioFileWave::AudioFileWave(OutputSettings const& outputSettings, const ch_cnt_t channels, bool& successful,
 	const QString& file, AudioEngine* audioEngine)
 	: AudioFileDevice(outputSettings, channels, file, audioEngine)
-	, m_sf(nullptr) {
+	, m_sf(nullptr)
+{
 	successful = outputFileOpened() && startEncoding();
 }
 
 AudioFileWave::~AudioFileWave() { finishEncoding(); }
 
-bool AudioFileWave::startEncoding() {
+bool AudioFileWave::startEncoding()
+{
 	m_si.samplerate = sampleRate();
 	m_si.channels = channels();
 	m_si.frames = audioEngine()->framesPerPeriod();
@@ -69,7 +71,8 @@ bool AudioFileWave::startEncoding() {
 	return true;
 }
 
-void AudioFileWave::writeBuffer(const surroundSampleFrame* _ab, const fpp_t _frames, const float _master_gain) {
+void AudioFileWave::writeBuffer(const surroundSampleFrame* _ab, const fpp_t _frames, const float _master_gain)
+{
 	OutputSettings::BitDepth bitDepth = getOutputSettings().getBitDepth();
 
 	if (bitDepth == OutputSettings::Depth_32Bit || bitDepth == OutputSettings::Depth_24Bit) {
@@ -90,6 +93,7 @@ void AudioFileWave::writeBuffer(const surroundSampleFrame* _ab, const fpp_t _fra
 	}
 }
 
-void AudioFileWave::finishEncoding() {
+void AudioFileWave::finishEncoding()
+{
 	if (m_sf) { sf_close(m_sf); }
 }

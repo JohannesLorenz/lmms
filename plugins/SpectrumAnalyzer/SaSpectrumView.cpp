@@ -54,7 +54,8 @@ SaSpectrumView::SaSpectrumView(SaControls* controls, SaProcessor* processor, QWi
 	, m_cachedLogX(true)
 	, m_cachedDisplayWidth(0)
 	, m_cachedBinCount(0)
-	, m_cachedSampleRate(0) {
+	, m_cachedSampleRate(0)
+{
 	setMinimumSize(360, 170);
 	setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
@@ -86,7 +87,8 @@ SaSpectrumView::SaSpectrumView(SaControls* controls, SaProcessor* processor, QWi
 // Compose and draw all the content; periodically called by Qt.
 // NOTE: Performance sensitive! If the drawing takes too long, it will drag
 // the FPS down for the entire program! Use SA_DEBUG to display timings.
-void SaSpectrumView::paintEvent(QPaintEvent* event) {
+void SaSpectrumView::paintEvent(QPaintEvent* event)
+{
 #ifdef SA_DEBUG
 	int total_time = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 #endif
@@ -154,7 +156,8 @@ void SaSpectrumView::paintEvent(QPaintEvent* event) {
 }
 
 // Refresh data and draw the spectrum.
-void SaSpectrumView::drawSpectrum(QPainter& painter) {
+void SaSpectrumView::drawSpectrum(QPainter& painter)
+{
 #ifdef SA_DEBUG
 	int draw_time = 0;
 #endif
@@ -200,7 +203,8 @@ void SaSpectrumView::drawSpectrum(QPainter& painter) {
 
 // Read newest FFT results from SaProcessor, update local display buffers
 // and build QPainter paths.
-void SaSpectrumView::refreshPaths() {
+void SaSpectrumView::refreshPaths()
+{
 	// Reallocation lock is required for the entire function, to keep display
 	// buffer size consistent with block size.
 	QMutexLocker reloc_lock(&m_processor->m_reallocationAccess);
@@ -267,7 +271,8 @@ void SaSpectrumView::refreshPaths() {
 // reallocation access lock! Data access lock is not needed: the final result
 // buffer is updated very quickly and the worst case is that one frame will be
 // part new, part old. At reasonable frame rate, such difference is invisible..
-void SaSpectrumView::updateBuffers(const float* spectrum, float* displayBuffer, float* peakBuffer) {
+void SaSpectrumView::updateBuffers(const float* spectrum, float* displayBuffer, float* peakBuffer)
+{
 	for (int n = 0; n < m_processor->binCount(); n++) {
 		// Update the exponential average if enabled, or simply copy the value.
 		if (!m_controls->m_pauseModel.value()) {
@@ -301,7 +306,8 @@ void SaSpectrumView::updateBuffers(const float* spectrum, float* displayBuffer, 
 // Resolution controls the performance / quality tradeoff; the value specifies
 // number of points in x axis per device pixel. Values over 1.0 still
 // contribute to quality and accuracy thanks to anti-aliasing.
-QPainterPath SaSpectrumView::makePath(std::vector<float>& displayBuffer, float resolution = 1.0) {
+QPainterPath SaSpectrumView::makePath(std::vector<float>& displayBuffer, float resolution = 1.0)
+{
 	// convert resolution to number of path points per logical pixel
 	float pixel_limit = resolution * window()->devicePixelRatio();
 
@@ -372,7 +378,8 @@ QPainterPath SaSpectrumView::makePath(std::vector<float>& displayBuffer, float r
 }
 
 // Draw background, grid and associated frequency and amplitude labels.
-void SaSpectrumView::drawGrid(QPainter& painter) {
+void SaSpectrumView::drawGrid(QPainter& painter)
+{
 	std::vector<std::pair<int, std::string>>* freqTics = nullptr;
 	std::vector<std::pair<float, std::string>>* ampTics = nullptr;
 	float pos = 0;
@@ -469,7 +476,8 @@ void SaSpectrumView::drawGrid(QPainter& painter) {
 }
 
 // Draw cursor and its coordinates if it is within display bounds.
-void SaSpectrumView::drawCursor(QPainter& painter) {
+void SaSpectrumView::drawCursor(QPainter& painter)
+{
 	if (m_cursor.x() >= m_displayLeft && m_cursor.x() <= m_displayRight && m_cursor.y() >= m_displayTop
 		&& m_cursor.y() <= m_displayBottom) {
 		// cursor lines
@@ -513,17 +521,20 @@ void SaSpectrumView::drawCursor(QPainter& painter) {
 // Wrappers for most used SaProcessor helpers (to make local code more compact).
 float SaSpectrumView::binToFreq(unsigned int bin_index) { return m_processor->binToFreq(bin_index); }
 
-float SaSpectrumView::freqToXPixel(float frequency, unsigned int width) {
+float SaSpectrumView::freqToXPixel(float frequency, unsigned int width)
+{
 	return m_processor->freqToXPixel(frequency, width);
 }
 
-float SaSpectrumView::ampToYPixel(float amplitude, unsigned int height) {
+float SaSpectrumView::ampToYPixel(float amplitude, unsigned int height)
+{
 	return m_processor->ampToYPixel(amplitude, height);
 }
 
 // Generate labels suitable for logarithmic frequency scale.
 // Low / high limits are in Hz. Lowest possible label is 10 Hz.
-std::vector<std::pair<int, std::string>> SaSpectrumView::makeLogFreqTics(int low, int high) {
+std::vector<std::pair<int, std::string>> SaSpectrumView::makeLogFreqTics(int low, int high)
+{
 	std::vector<std::pair<int, std::string>> result;
 	int i, j;
 	int a[] = {10, 20, 50}; // sparse series multipliers
@@ -555,7 +566,8 @@ std::vector<std::pair<int, std::string>> SaSpectrumView::makeLogFreqTics(int low
 
 // Generate labels suitable for linear frequency scale.
 // Low / high limits are in Hz.
-std::vector<std::pair<int, std::string>> SaSpectrumView::makeLinearFreqTics(int low, int high) {
+std::vector<std::pair<int, std::string>> SaSpectrumView::makeLinearFreqTics(int low, int high)
+{
 	std::vector<std::pair<int, std::string>> result;
 	int i, increment;
 
@@ -586,7 +598,8 @@ std::vector<std::pair<int, std::string>> SaSpectrumView::makeLinearFreqTics(int 
 // Generate labels suitable for logarithmic (dB) amplitude scale.
 // Low / high limits are in dB; 0 dB amplitude = 1.0 linear.
 // Treating results as power ratio, i.e., 3 dB should be about twice as loud.
-std::vector<std::pair<float, std::string>> SaSpectrumView::makeLogAmpTics(int low, int high) {
+std::vector<std::pair<float, std::string>> SaSpectrumView::makeLogAmpTics(int low, int high)
+{
 	std::vector<std::pair<float, std::string>> result;
 	float i;
 	double increment;
@@ -615,7 +628,8 @@ std::vector<std::pair<float, std::string>> SaSpectrumView::makeLogAmpTics(int lo
 // of useful labels; going lower or higher would require increasing margin size
 // so that the text can fit. That would be a waste of space -- the linear scale
 // would only make the experience worse for the main, logarithmic (dB) scale.
-std::vector<std::pair<float, std::string>> SaSpectrumView::makeLinearAmpTics(int low, int high) {
+std::vector<std::pair<float, std::string>> SaSpectrumView::makeLinearAmpTics(int low, int high)
+{
 	std::vector<std::pair<float, std::string>> result;
 	double i, nearest;
 
@@ -653,7 +667,8 @@ std::vector<std::pair<float, std::string>> SaSpectrumView::makeLinearAmpTics(int
 }
 
 // Periodic update is called by LMMS.
-void SaSpectrumView::periodicUpdate() {
+void SaSpectrumView::periodicUpdate()
+{
 	// check if the widget is visible; if it is not, processing can be paused
 	m_processor->setSpectrumActive(isVisible());
 	// tell Qt it is time for repaint
@@ -663,18 +678,21 @@ void SaSpectrumView::periodicUpdate() {
 // Handle mouse input: set new cursor position.
 // For some reason (a bug?), localPos() only returns integers. As a workaround
 // the fractional part is taken from windowPos() (which works correctly).
-void SaSpectrumView::mouseMoveEvent(QMouseEvent* event) {
+void SaSpectrumView::mouseMoveEvent(QMouseEvent* event)
+{
 	m_cursor = QPointF(event->localPos().x() - (event->windowPos().x() - (long)event->windowPos().x()),
 		event->localPos().y() - (event->windowPos().y() - (long)event->windowPos().y()));
 }
 
-void SaSpectrumView::mousePressEvent(QMouseEvent* event) {
+void SaSpectrumView::mousePressEvent(QMouseEvent* event)
+{
 	m_cursor = QPointF(event->localPos().x() - (event->windowPos().x() - (long)event->windowPos().x()),
 		event->localPos().y() - (event->windowPos().y() - (long)event->windowPos().y()));
 }
 
 // Handle resize event: rebuild grid and labels
-void SaSpectrumView::resizeEvent(QResizeEvent* event) {
+void SaSpectrumView::resizeEvent(QResizeEvent* event)
+{
 	// frequency does not change density with size
 	// amplitude does: rebuild labels
 	m_logAmpTics = makeLogAmpTics(m_processor->getAmpRangeMin(), m_processor->getAmpRangeMax());

@@ -34,7 +34,8 @@
 #include "MainWindow.h"
 
 StringPairDrag::StringPairDrag(const QString& _key, const QString& _value, const QPixmap& _icon, QWidget* _w)
-	: QDrag(_w) {
+	: QDrag(_w)
+{
 	// For mimeType() and MimeType enum class
 	using namespace Clipboard;
 
@@ -50,13 +51,15 @@ StringPairDrag::StringPairDrag(const QString& _key, const QString& _value, const
 	exec(Qt::LinkAction, Qt::LinkAction);
 }
 
-StringPairDrag::~StringPairDrag() {
+StringPairDrag::~StringPairDrag()
+{
 	// during a drag, we might have lost key-press-events, so reset
 	// modifiers of main-win
 	if (getGUI()->mainWindow()) { getGUI()->mainWindow()->clearKeyModifiers(); }
 }
 
-bool StringPairDrag::processDragEnterEvent(QDragEnterEvent* _dee, const QString& _allowed_keys) {
+bool StringPairDrag::processDragEnterEvent(QDragEnterEvent* _dee, const QString& _allowed_keys)
+{
 	// For mimeType() and MimeType enum class
 	using namespace Clipboard;
 

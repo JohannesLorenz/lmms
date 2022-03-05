@@ -36,7 +36,8 @@
 #include "gui_templates.h"
 
 InstrumentMiscView::InstrumentMiscView(InstrumentTrack* it, QWidget* parent)
-	: QWidget(parent) {
+	: QWidget(parent)
+{
 	QVBoxLayout* layout = new QVBoxLayout(this);
 	layout->setMargin(5);
 

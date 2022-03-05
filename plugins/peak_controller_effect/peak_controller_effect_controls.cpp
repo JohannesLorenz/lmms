@@ -40,9 +40,12 @@ PeakControllerEffectControls::PeakControllerEffectControls(PeakControllerEffect*
 	, m_tresholdModel(0, 0, 1.0, 0.001, this, tr("Treshold"))
 	, m_muteModel(false, this, tr("Mute output"))
 	, m_absModel(true, this, tr("Absolute value"))
-	, m_amountMultModel(1.0, 0, 32, 0.2, this, tr("Amount multiplicator")) {}
+	, m_amountMultModel(1.0, 0, 32, 0.2, this, tr("Amount multiplicator"))
+{
+}
 
-void PeakControllerEffectControls::loadSettings(const QDomElement& _this) {
+void PeakControllerEffectControls::loadSettings(const QDomElement& _this)
+{
 	m_baseModel.loadSettings(_this, "base");
 	m_effect->m_lastSample = m_baseModel.value(); // Set initial Peak Controller output to Base
 	m_amountModel.loadSettings(_this, "amount");
@@ -71,7 +74,8 @@ void PeakControllerEffectControls::loadSettings(const QDomElement& _this) {
 	}
 }
 
-void PeakControllerEffectControls::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void PeakControllerEffectControls::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	_this.setAttribute("effectId", m_effect->m_effectId);
 
 	m_baseModel.saveSettings(_doc, _this, "base");

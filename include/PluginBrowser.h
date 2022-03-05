@@ -33,7 +33,8 @@
 class QLineEdit;
 class QTreeWidget;
 
-class PluginBrowser : public SideBarWidget {
+class PluginBrowser : public SideBarWidget
+{
 	Q_OBJECT
 public:
 	PluginBrowser(QWidget* _parent);
@@ -51,7 +52,8 @@ private:
 	QTreeWidget* m_descTree;
 };
 
-class PluginDescWidget : public QWidget {
+class PluginDescWidget : public QWidget
+{
 	Q_OBJECT
 public:
 	typedef Plugin::Descriptor::SubPluginFeatures::Key PluginKey;

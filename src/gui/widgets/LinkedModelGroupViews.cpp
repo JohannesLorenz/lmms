@@ -38,7 +38,8 @@ LinkedModelGroupView::LinkedModelGroupView(QWidget* parent, LinkedModelGroup* mo
 	: QWidget(parent)
 	, m_model(model)
 	, m_colNum(colNum)
-	, m_layout(new ControlLayout(this)) {
+	, m_layout(new ControlLayout(this))
+{
 	// This is required to remove the focus of the line edit
 	// when e.g. another spin box is being clicked.
 	// Removing the focus is wanted because in many cases, the user wants to
@@ -48,7 +49,8 @@ LinkedModelGroupView::LinkedModelGroupView(QWidget* parent, LinkedModelGroup* mo
 
 LinkedModelGroupView::~LinkedModelGroupView() {}
 
-void LinkedModelGroupView::modelChanged(LinkedModelGroup* group) {
+void LinkedModelGroupView::modelChanged(LinkedModelGroup* group)
+{
 	// reconnect models
 	group->foreach_model([this](const std::string& str, const LinkedModelGroup::ModelInfo& minf) {
 		auto itr = m_widgets.find(str);
@@ -65,8 +67,8 @@ void LinkedModelGroupView::modelChanged(LinkedModelGroup* group) {
 	m_model = group;
 }
 
-void LinkedModelGroupView::addControl(
-	Control* ctrl, const std::string& id, const std::string& display, bool removable) {
+void LinkedModelGroupView::addControl(Control* ctrl, const std::string& id, const std::string& display, bool removable)
+{
 	if (ctrl) {
 		QWidget* box = new QWidget(this);
 		QHBoxLayout* boxLayout = new QHBoxLayout(box);
@@ -100,7 +102,8 @@ void LinkedModelGroupView::addControl(
 	if (isHidden()) { setHidden(false); }
 }
 
-void LinkedModelGroupView::removeControl(const QString& key) {
+void LinkedModelGroupView::removeControl(const QString& key)
+{
 	auto itr = m_widgets.find(key.toStdString());
 	if (itr != m_widgets.end()) {
 		QLayoutItem* item = m_layout->itemByString(key);
@@ -125,7 +128,8 @@ void LinkedModelGroupView::removeFocusFromSearchBar() { m_layout->removeFocusFro
 	LinkedModelGroupsViewBase
 */
 
-void LinkedModelGroupsView::modelChanged(LinkedModelGroups* groups) {
+void LinkedModelGroupsView::modelChanged(LinkedModelGroups* groups)
+{
 	LinkedModelGroupView* groupView = getGroupView();
 	LinkedModelGroup* group0 = groups->getGroup(0);
 	if (group0 && groupView) { groupView->modelChanged(group0); }

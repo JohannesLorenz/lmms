@@ -101,7 +101,8 @@ AutomationEditor::AutomationEditor()
 	, m_nodeOutValueColor(0, 0, 0)
 	, m_scaleColor(Qt::SolidPattern)
 	, m_crossColor(0, 0, 0)
-	, m_backgroundShade(0, 0, 0) {
+	, m_backgroundShade(0, 0, 0)
+{
 	connect(this, SIGNAL(currentClipChanged()), this, SLOT(updateAfterClipChange()), Qt::QueuedConnection);
 	connect(Engine::getSong(), SIGNAL(timeSignatureChanged(int, int)), this, SLOT(update()));
 
@@ -153,7 +154,8 @@ AutomationEditor::AutomationEditor()
 	setFocus();
 }
 
-AutomationEditor::~AutomationEditor() {
+AutomationEditor::~AutomationEditor()
+{
 	m_zoomingXModel.disconnect();
 	m_zoomingYModel.disconnect();
 	m_quantizeModel.disconnect();
@@ -162,7 +164,8 @@ AutomationEditor::~AutomationEditor() {
 	delete m_tensionModel;
 }
 
-void AutomationEditor::setCurrentClip(AutomationClip* new_clip) {
+void AutomationEditor::setCurrentClip(AutomationClip* new_clip)
+{
 	if (m_clip) { m_clip->disconnect(this); }
 
 	m_clip = new_clip;
@@ -172,15 +175,18 @@ void AutomationEditor::setCurrentClip(AutomationClip* new_clip) {
 	emit currentClipChanged();
 }
 
-void AutomationEditor::saveSettings(QDomDocument& doc, QDomElement& dom_parent) {
+void AutomationEditor::saveSettings(QDomDocument& doc, QDomElement& dom_parent)
+{
 	MainWindow::saveWidgetState(parentWidget(), dom_parent);
 }
 
-void AutomationEditor::loadSettings(const QDomElement& dom_parent) {
+void AutomationEditor::loadSettings(const QDomElement& dom_parent)
+{
 	MainWindow::restoreWidgetState(parentWidget(), dom_parent);
 }
 
-void AutomationEditor::updateAfterClipChange() {
+void AutomationEditor::updateAfterClipChange()
+{
 	m_currentPosition = 0;
 
 	if (!validClip()) {
@@ -204,14 +210,16 @@ void AutomationEditor::updateAfterClipChange() {
 	update();
 }
 
-void AutomationEditor::update() {
+void AutomationEditor::update()
+{
 	QWidget::update();
 
 	// Note detuning?
 	if (m_clip && !m_clip->getTrack()) { getGUI()->pianoRoll()->update(); }
 }
 
-void AutomationEditor::keyPressEvent(QKeyEvent* ke) {
+void AutomationEditor::keyPressEvent(QKeyEvent* ke)
+{
 	switch (ke->key()) {
 	case Qt::Key_Up:
 		m_topBottomScroll->setValue(m_topBottomScroll->value() - 1);
@@ -245,7 +253,8 @@ void AutomationEditor::keyPressEvent(QKeyEvent* ke) {
 	}
 }
 
-void AutomationEditor::leaveEvent(QEvent* e) {
+void AutomationEditor::leaveEvent(QEvent* e)
+{
 	while (QApplication::overrideCursor() != nullptr) {
 		QApplication::restoreOverrideCursor();
 	}
@@ -253,7 +262,8 @@ void AutomationEditor::leaveEvent(QEvent* e) {
 	update();
 }
 
-void AutomationEditor::drawLine(int x0In, float y0, int x1In, float y1) {
+void AutomationEditor::drawLine(int x0In, float y0, int x1In, float y1)
+{
 	int x0 = Note::quantized(x0In, AutomationClip::quantization());
 	int x1 = Note::quantized(x1In, AutomationClip::quantization());
 	int deltax = qAbs(x1 - x0);
@@ -295,7 +305,8 @@ void AutomationEditor::drawLine(int x0In, float y0, int x1In, float y1) {
 	}
 }
 
-bool AutomationEditor::fineTuneValue(timeMap::iterator node, bool editingOutValue) {
+bool AutomationEditor::fineTuneValue(timeMap::iterator node, bool editingOutValue)
+{
 	if (node == m_clip->getTimeMap().end()) { return false; }
 
 	// Display dialog to edit the value
@@ -321,7 +332,8 @@ bool AutomationEditor::fineTuneValue(timeMap::iterator node, bool editingOutValu
 	return true;
 }
 
-void AutomationEditor::mousePressEvent(QMouseEvent* mouseEvent) {
+void AutomationEditor::mousePressEvent(QMouseEvent* mouseEvent)
+{
 	if (!validClip()) { return; }
 
 	// Some helper lambda functions to avoid repetition of code
@@ -497,7 +509,8 @@ void AutomationEditor::mousePressEvent(QMouseEvent* mouseEvent) {
 	}
 }
 
-void AutomationEditor::mouseDoubleClickEvent(QMouseEvent* mouseEvent) {
+void AutomationEditor::mouseDoubleClickEvent(QMouseEvent* mouseEvent)
+{
 	if (!validClip()) { return; }
 
 	// If we double clicked outside the AutomationEditor viewport return
@@ -516,7 +529,8 @@ void AutomationEditor::mouseDoubleClickEvent(QMouseEvent* mouseEvent) {
 	}
 }
 
-void AutomationEditor::mouseReleaseEvent(QMouseEvent* mouseEvent) {
+void AutomationEditor::mouseReleaseEvent(QMouseEvent* mouseEvent)
+{
 	bool mustRepaint = false;
 
 	if (mouseEvent->button() == Qt::LeftButton) {
@@ -542,7 +556,8 @@ void AutomationEditor::mouseReleaseEvent(QMouseEvent* mouseEvent) {
 	if (mustRepaint) { repaint(); }
 }
 
-void AutomationEditor::mouseMoveEvent(QMouseEvent* mouseEvent) {
+void AutomationEditor::mouseMoveEvent(QMouseEvent* mouseEvent)
+{
 	if (!validClip()) {
 		update();
 		return;
@@ -666,7 +681,8 @@ void AutomationEditor::mouseMoveEvent(QMouseEvent* mouseEvent) {
 	update();
 }
 
-inline void AutomationEditor::drawCross(QPainter& p) {
+inline void AutomationEditor::drawCross(QPainter& p)
+{
 	QPoint mouse_pos = mapFromGlobal(QCursor::pos());
 	int grid_bottom = height() - SCROLLBAR_SIZE - 1;
 	float level = getLevel(mouse_pos.y());
@@ -691,7 +707,8 @@ inline void AutomationEditor::drawCross(QPainter& p) {
 	}
 }
 
-inline void AutomationEditor::drawAutomationPoint(QPainter& p, timeMap::iterator it) {
+inline void AutomationEditor::drawAutomationPoint(QPainter& p, timeMap::iterator it)
+{
 	int x = xCoordOfTick(POS(it));
 	int y;
 	// Below (m_ppb * AutomationClip::quantization() / 576) is used because:
@@ -714,7 +731,8 @@ inline void AutomationEditor::drawAutomationPoint(QPainter& p, timeMap::iterator
 	p.drawEllipse(x - outerRadius, y - outerRadius, outerRadius * 2, outerRadius * 2);
 }
 
-void AutomationEditor::paintEvent(QPaintEvent* pe) {
+void AutomationEditor::paintEvent(QPaintEvent* pe)
+{
 	QStyleOption opt;
 	opt.initFrom(this);
 	QPainter p(this);
@@ -979,11 +997,13 @@ void AutomationEditor::paintEvent(QPaintEvent* pe) {
 	}
 }
 
-int AutomationEditor::xCoordOfTick(int tick) {
+int AutomationEditor::xCoordOfTick(int tick)
+{
 	return VALUES_WIDTH + ((tick - m_currentPosition) * m_ppb / TimePos::ticksPerBar());
 }
 
-float AutomationEditor::yCoordOfLevel(float level) {
+float AutomationEditor::yCoordOfLevel(float level)
+{
 	int grid_bottom = height() - SCROLLBAR_SIZE - 1;
 	if (m_y_auto) {
 		return (grid_bottom - (grid_bottom - TOP_MARGIN) * (level - m_minLevel) / (m_maxLevel - m_minLevel));
@@ -992,7 +1012,8 @@ float AutomationEditor::yCoordOfLevel(float level) {
 	}
 }
 
-void AutomationEditor::drawLevelTick(QPainter& p, int tick, float value) {
+void AutomationEditor::drawLevelTick(QPainter& p, int tick, float value)
+{
 	int grid_bottom = height() - SCROLLBAR_SIZE - 1;
 	const int x = xCoordOfTick(tick);
 	int rect_width = xCoordOfTick(tick + 1) - x;
@@ -1023,7 +1044,8 @@ void AutomationEditor::drawLevelTick(QPainter& p, int tick, float value) {
 }
 
 // Center the vertical scroll position on the first object's inValue
-void AutomationEditor::centerTopBottomScroll() {
+void AutomationEditor::centerTopBottomScroll()
+{
 	// default to the m_scrollLevel position
 	int pos = static_cast<int>(m_scrollLevel);
 	// If a clip exists...
@@ -1041,7 +1063,8 @@ void AutomationEditor::centerTopBottomScroll() {
 }
 
 // responsible for moving/resizing scrollbars after window-resizing
-void AutomationEditor::resizeEvent(QResizeEvent* re) {
+void AutomationEditor::resizeEvent(QResizeEvent* re)
+{
 	m_leftRightScroll->setGeometry(VALUES_WIDTH, height() - SCROLLBAR_SIZE, width() - VALUES_WIDTH, SCROLLBAR_SIZE);
 
 	int grid_height = height() - TOP_MARGIN - SCROLLBAR_SIZE;
@@ -1067,7 +1090,8 @@ void AutomationEditor::resizeEvent(QResizeEvent* re) {
 }
 
 // TODO: Move this method up so it's closer to the other mouse events
-void AutomationEditor::wheelEvent(QWheelEvent* we) {
+void AutomationEditor::wheelEvent(QWheelEvent* we)
+{
 	we->accept();
 	if (we->modifiers() & Qt::ControlModifier && we->modifiers() & Qt::ShiftModifier) {
 		int y = m_zoomingYModel.value();
@@ -1122,7 +1146,8 @@ void AutomationEditor::wheelEvent(QWheelEvent* we) {
 	}
 }
 
-float AutomationEditor::getLevel(int y) {
+float AutomationEditor::getLevel(int y)
+{
 	int level_line_y = height() - SCROLLBAR_SIZE - 1;
 	// pressed level
 	float level = roundf((m_bottomLevel
@@ -1137,11 +1162,13 @@ float AutomationEditor::getLevel(int y) {
 	return (level);
 }
 
-inline bool AutomationEditor::inPatternEditor() {
+inline bool AutomationEditor::inPatternEditor()
+{
 	return (validClip() && m_clip->getTrack()->trackContainer() == Engine::patternStore());
 }
 
-void AutomationEditor::play() {
+void AutomationEditor::play()
+{
 	if (!validClip()) { return; }
 
 	if (!m_clip->getTrack()) {
@@ -1164,7 +1191,8 @@ void AutomationEditor::play() {
 	}
 }
 
-void AutomationEditor::stop() {
+void AutomationEditor::stop()
+{
 	if (!validClip()) { return; }
 	if (m_clip->getTrack() && inPatternEditor()) {
 		Engine::patternStore()->stop();
@@ -1174,19 +1202,22 @@ void AutomationEditor::stop() {
 	m_scrollBack = true;
 }
 
-void AutomationEditor::horScrolled(int new_pos) {
+void AutomationEditor::horScrolled(int new_pos)
+{
 	m_currentPosition = new_pos;
 	emit positionChanged(m_currentPosition);
 	update();
 }
 
-void AutomationEditor::verScrolled(int new_pos) {
+void AutomationEditor::verScrolled(int new_pos)
+{
 	m_scrollLevel = new_pos;
 	updateTopBottomLevels();
 	update();
 }
 
-void AutomationEditor::setEditMode(AutomationEditor::EditModes mode) {
+void AutomationEditor::setEditMode(AutomationEditor::EditModes mode)
+{
 	if (m_editMode == mode) return;
 
 	m_editMode = mode;
@@ -1196,7 +1227,8 @@ void AutomationEditor::setEditMode(AutomationEditor::EditModes mode) {
 
 void AutomationEditor::setEditMode(int mode) { setEditMode((AutomationEditor::EditModes)mode); }
 
-void AutomationEditor::setProgressionType(AutomationClip::ProgressionTypes type) {
+void AutomationEditor::setProgressionType(AutomationClip::ProgressionTypes type)
+{
 	if (validClip()) {
 		m_clip->addJournalCheckPoint();
 		m_clip->setProgressionType(type);
@@ -1207,14 +1239,16 @@ void AutomationEditor::setProgressionType(AutomationClip::ProgressionTypes type)
 
 void AutomationEditor::setProgressionType(int type) { setProgressionType((AutomationClip::ProgressionTypes)type); }
 
-void AutomationEditor::setTension() {
+void AutomationEditor::setTension()
+{
 	if (m_clip) {
 		m_clip->setTension(QString::number(m_tensionModel->value()));
 		update();
 	}
 }
 
-void AutomationEditor::updatePosition(const TimePos& t) {
+void AutomationEditor::updatePosition(const TimePos& t)
+{
 	if ((Engine::getSong()->isPlaying() && Engine::getSong()->playMode() == Song::Mode_PlayAutomationClip)
 		|| m_scrollBack == true) {
 		const int w = width() - VALUES_WIDTH;
@@ -1228,7 +1262,8 @@ void AutomationEditor::updatePosition(const TimePos& t) {
 	}
 }
 
-void AutomationEditor::zoomingXChanged() {
+void AutomationEditor::zoomingXChanged()
+{
 	m_ppb = m_zoomXLevels[m_zoomingXModel.value()] * DEFAULT_PPB;
 
 	assert(m_ppb > 0);
@@ -1237,7 +1272,8 @@ void AutomationEditor::zoomingXChanged() {
 	update();
 }
 
-void AutomationEditor::zoomingYChanged() {
+void AutomationEditor::zoomingYChanged()
+{
 	const QString& zfac = m_zoomingYModel.currentText();
 	m_y_auto = zfac == "Auto";
 	if (!m_y_auto) { m_y_delta = zfac.left(zfac.length() - 1).toInt() * DEFAULT_Y_DELTA / 100; }
@@ -1247,13 +1283,15 @@ void AutomationEditor::zoomingYChanged() {
 	resizeEvent(nullptr);
 }
 
-void AutomationEditor::setQuantization() {
+void AutomationEditor::setQuantization()
+{
 	AutomationClip::setQuantization(DefaultTicksPerBar / Quantizations[m_quantizeModel.value()]);
 
 	update();
 }
 
-void AutomationEditor::updateTopBottomLevels() {
+void AutomationEditor::updateTopBottomLevels()
+{
 	if (m_y_auto) {
 		m_bottomLevel = m_minLevel;
 		m_topLevel = m_maxLevel;
@@ -1297,7 +1335,8 @@ void AutomationEditor::updateTopBottomLevels() {
  * @return timeMap::iterator with the clicked node, or timeMap.end() if none was clicked.
  */
 AutomationEditor::timeMap::iterator AutomationEditor::getNodeAt(
-	int x, int y, bool outValue /* = false */, int r /* = 5 */) {
+	int x, int y, bool outValue /* = false */, int r /* = 5 */)
+{
 	// Remove the VALUES_WIDTH from the x position, so we have the actual viewport x
 	x -= VALUES_WIDTH;
 	// Convert the x position to the position in ticks
@@ -1330,7 +1369,8 @@ AutomationEditor::timeMap::iterator AutomationEditor::getNodeAt(
 
 AutomationEditorWindow::AutomationEditorWindow()
 	: Editor()
-	, m_editor(new AutomationEditor()) {
+	, m_editor(new AutomationEditor())
+{
 	setCentralWidget(m_editor);
 
 	// Play/stop buttons
@@ -1464,7 +1504,8 @@ AutomationEditorWindow::AutomationEditorWindow()
 
 AutomationEditorWindow::~AutomationEditorWindow() {}
 
-void AutomationEditorWindow::setCurrentClip(AutomationClip* clip) {
+void AutomationEditorWindow::setCurrentClip(AutomationClip* clip)
+{
 	// Disconnect our old clip
 	if (currentClip() != nullptr) {
 		m_editor->m_clip->disconnect(this);
@@ -1512,7 +1553,8 @@ void AutomationEditorWindow::setCurrentClip(AutomationClip* clip) {
 
 const AutomationClip* AutomationEditorWindow::currentClip() { return m_editor->currentClip(); }
 
-void AutomationEditorWindow::dropEvent(QDropEvent* _de) {
+void AutomationEditorWindow::dropEvent(QDropEvent* _de)
+{
 	QString type = StringPairDrag::decodeKey(_de);
 	QString val = StringPairDrag::decodeValue(_de);
 	if (type == "automatable_model") {
@@ -1533,12 +1575,14 @@ void AutomationEditorWindow::dropEvent(QDropEvent* _de) {
 	update();
 }
 
-void AutomationEditorWindow::dragEnterEvent(QDragEnterEvent* _dee) {
+void AutomationEditorWindow::dragEnterEvent(QDragEnterEvent* _dee)
+{
 	if (!m_editor->validClip()) { return; }
 	StringPairDrag::processDragEnterEvent(_dee, "automatable_model");
 }
 
-void AutomationEditorWindow::open(AutomationClip* clip) {
+void AutomationEditorWindow::open(AutomationClip* clip)
+{
 	setCurrentClip(clip);
 	parentWidget()->show();
 	show();
@@ -1547,21 +1591,24 @@ void AutomationEditorWindow::open(AutomationClip* clip) {
 
 QSize AutomationEditorWindow::sizeHint() const { return {INITIAL_WIDTH, INITIAL_HEIGHT}; }
 
-void AutomationEditorWindow::clearCurrentClip() {
+void AutomationEditorWindow::clearCurrentClip()
+{
 	m_editor->m_clip = nullptr;
 	setCurrentClip(nullptr);
 }
 
 void AutomationEditorWindow::focusInEvent(QFocusEvent* event) { m_editor->setFocus(event->reason()); }
 
-void AutomationEditorWindow::play() {
+void AutomationEditorWindow::play()
+{
 	m_editor->play();
 	setPauseIcon(Engine::getSong()->isPlaying());
 }
 
 void AutomationEditorWindow::stop() { m_editor->stop(); }
 
-void AutomationEditorWindow::updateWindowTitle() {
+void AutomationEditorWindow::updateWindowTitle()
+{
 	if (m_editor->m_clip == nullptr) {
 		setWindowTitle(tr("Automation Editor - no clip"));
 		return;

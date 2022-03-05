@@ -35,16 +35,19 @@ RenderManager::RenderManager(const AudioEngine::qualitySettings& qualitySettings
 	, m_oldQualitySettings(Engine::audioEngine()->currentQualitySettings())
 	, m_outputSettings(outputSettings)
 	, m_format(fmt)
-	, m_outputPath(outputPath) {
+	, m_outputPath(outputPath)
+{
 	Engine::audioEngine()->storeAudioDevice();
 }
 
-RenderManager::~RenderManager() {
+RenderManager::~RenderManager()
+{
 	Engine::audioEngine()->restoreAudioDevice(); // Also deletes audio dev.
 	Engine::audioEngine()->changeQuality(m_oldQualitySettings);
 }
 
-void RenderManager::abortProcessing() {
+void RenderManager::abortProcessing()
+{
 	if (m_activeRenderer) {
 		disconnect(m_activeRenderer.get(), SIGNAL(finished()), this, SLOT(renderNextTrack()));
 		m_activeRenderer->abortProcessing();
@@ -53,7 +56,8 @@ void RenderManager::abortProcessing() {
 }
 
 // Called to render each new track when rendering tracks individually.
-void RenderManager::renderNextTrack() {
+void RenderManager::renderNextTrack()
+{
 	m_activeRenderer.reset();
 
 	if (m_tracksToRender.isEmpty()) {
@@ -78,7 +82,8 @@ void RenderManager::renderNextTrack() {
 }
 
 // Render the song into individual tracks
-void RenderManager::renderTracks() {
+void RenderManager::renderTracks()
+{
 	const TrackContainer::TrackList& tl = Engine::getSong()->tracks();
 
 	// find all currently unnmuted tracks -- we want to render these.
@@ -113,7 +118,8 @@ void RenderManager::renderTracks() {
 // Render the song into a single track
 void RenderManager::renderProject() { render(m_outputPath); }
 
-void RenderManager::render(QString outputPath) {
+void RenderManager::render(QString outputPath)
+{
 	m_activeRenderer = std::make_unique<ProjectRenderer>(m_qualitySettings, m_outputSettings, m_format, outputPath);
 
 	if (m_activeRenderer->isReady()) {
@@ -132,7 +138,8 @@ void RenderManager::render(QString outputPath) {
 }
 
 // Unmute all tracks that were muted while rendering tracks
-void RenderManager::restoreMutedState() {
+void RenderManager::restoreMutedState()
+{
 	while (!m_unmuted.isEmpty()) {
 		Track* restoreTrack = m_unmuted.back();
 		m_unmuted.pop_back();
@@ -141,7 +148,8 @@ void RenderManager::restoreMutedState() {
 }
 
 // Determine the output path for a track when rendering tracks individually
-QString RenderManager::pathForTrack(const Track* track, int num) {
+QString RenderManager::pathForTrack(const Track* track, int num)
+{
 	QString extension = ProjectRenderer::getFileExtensionFromFormat(m_format);
 	QString name = track->name();
 	name = name.remove(QRegExp(FILENAME_FILTER));
@@ -149,7 +157,8 @@ QString RenderManager::pathForTrack(const Track* track, int num) {
 	return QDir(m_outputPath).filePath(name);
 }
 
-void RenderManager::updateConsoleProgress() {
+void RenderManager::updateConsoleProgress()
+{
 	if (m_activeRenderer) {
 		m_activeRenderer->updateConsoleProgress();
 

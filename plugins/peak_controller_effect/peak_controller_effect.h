@@ -30,7 +30,8 @@
 
 class PeakController;
 
-class PeakControllerEffect : public Effect {
+class PeakControllerEffect : public Effect
+{
 public:
 	PeakControllerEffect(Model* parent, const Descriptor::SubPluginFeatures::Key* _key);
 	virtual ~PeakControllerEffect();

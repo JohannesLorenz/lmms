@@ -47,11 +47,14 @@ Plugin::Descriptor PLUGIN_EXPORT waveshaper_plugin_descriptor = {
 
 waveShaperEffect::waveShaperEffect(Model* _parent, const Descriptor::SubPluginFeatures::Key* _key)
 	: Effect(&waveshaper_plugin_descriptor, _parent, _key)
-	, m_wsControls(this) {}
+	, m_wsControls(this)
+{
+}
 
 waveShaperEffect::~waveShaperEffect() {}
 
-bool waveShaperEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames) {
+bool waveShaperEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames)
+{
 	if (!isEnabled() || !isRunning()) { return (false); }
 
 	// variables for effect
@@ -124,7 +127,8 @@ bool waveShaperEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data)
+{
 	return (new waveShaperEffect(_parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(_data)));
 }
 }

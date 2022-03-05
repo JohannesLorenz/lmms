@@ -31,7 +31,8 @@
 #include "OutputSettings.h"
 #include "ProjectRenderer.h"
 
-class RenderManager : public QObject {
+class RenderManager : public QObject
+{
 	Q_OBJECT
 public:
 	RenderManager(const AudioEngine::qualitySettings& qualitySettings, const OutputSettings& outputSettings,

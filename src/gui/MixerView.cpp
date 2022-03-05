@@ -48,7 +48,8 @@
 MixerView::MixerView()
 	: QWidget()
 	, ModelView(nullptr, this)
-	, SerializingObjectHook() {
+	, SerializingObjectHook()
+{
 	Mixer* m = Engine::mixer();
 	m->setHook(this);
 
@@ -101,11 +102,14 @@ MixerView::MixerView()
 
 	// add the scrolling section to the main layout
 	// class solely for scroll area to pass key presses down
-	class ChannelArea : public QScrollArea {
+	class ChannelArea : public QScrollArea
+	{
 	public:
 		ChannelArea(QWidget* parent, MixerView* mv)
 			: QScrollArea(parent)
-			, m_mv(mv) {}
+			, m_mv(mv)
+		{
+		}
 		~ChannelArea() {}
 		void keyPressEvent(QKeyEvent* e) override { m_mv->keyPressEvent(e); }
 
@@ -153,13 +157,15 @@ MixerView::MixerView()
 	setModel(m);
 }
 
-MixerView::~MixerView() {
+MixerView::~MixerView()
+{
 	for (int i = 0; i < m_mixerChannelViews.size(); i++) {
 		delete m_mixerChannelViews.at(i);
 	}
 }
 
-int MixerView::addNewChannel() {
+int MixerView::addNewChannel()
+{
 	// add new mixer channel and redraw the form.
 	Mixer* mix = Engine::mixer();
 
@@ -175,7 +181,8 @@ int MixerView::addNewChannel() {
 	return newChannelIndex;
 }
 
-void MixerView::refreshDisplay() {
+void MixerView::refreshDisplay()
+{
 	// delete all views and re-add them
 	for (int i = 1; i < m_mixerChannelViews.size(); ++i) {
 		chLayout->removeWidget(m_mixerChannelViews[i]->m_mixerLine);
@@ -209,7 +216,8 @@ void MixerView::refreshDisplay() {
 }
 
 // update the and max. channel number for every instrument
-void MixerView::updateMaxChannelSelector() {
+void MixerView::updateMaxChannelSelector()
+{
 	TrackContainer::TrackList songTracks = Engine::getSong()->tracks();
 	TrackContainer::TrackList patternStoreTracks = Engine::patternStore()->tracks();
 
@@ -232,7 +240,8 @@ void MixerView::saveSettings(QDomDocument& _doc, QDomElement& _this) { MainWindo
 
 void MixerView::loadSettings(const QDomElement& _this) { MainWindow::restoreWidgetState(this, _this); }
 
-MixerView::MixerChannelView::MixerChannelView(QWidget* _parent, MixerView* _mv, int channelIndex) {
+MixerView::MixerChannelView::MixerChannelView(QWidget* _parent, MixerView* _mv, int channelIndex)
+{
 	m_mixerLine = new MixerLine(_parent, _mv, channelIndex);
 
 	MixerChannel* mixerChannel = Engine::mixer()->mixerChannel(channelIndex);
@@ -266,7 +275,8 @@ MixerView::MixerChannelView::MixerChannelView(QWidget* _parent, MixerView* _mv, 
 	m_rackView->setFixedSize(EffectRackView::DEFAULT_WIDTH, MixerLine::MixerLineHeight);
 }
 
-void MixerView::MixerChannelView::setChannelIndex(int index) {
+void MixerView::MixerChannelView::setChannelIndex(int index)
+{
 	MixerChannel* mixerChannel = Engine::mixer()->mixerChannel(index);
 
 	m_fader->setModel(&mixerChannel->m_volumeModel);
@@ -277,7 +287,8 @@ void MixerView::MixerChannelView::setChannelIndex(int index) {
 
 void MixerView::toggledSolo() { Engine::mixer()->toggledSolo(); }
 
-void MixerView::setCurrentMixerLine(MixerLine* _line) {
+void MixerView::setCurrentMixerLine(MixerLine* _line)
+{
 	// select
 	m_currentMixerLine = _line;
 	m_racksLayout->setCurrentWidget(m_mixerChannelViews[_line->channelIndex()]->m_rackView);
@@ -288,7 +299,8 @@ void MixerView::setCurrentMixerLine(MixerLine* _line) {
 	}
 }
 
-void MixerView::updateMixerLine(int index) {
+void MixerView::updateMixerLine(int index)
+{
 	Mixer* mix = Engine::mixer();
 
 	// does current channel send to this channel?
@@ -312,7 +324,8 @@ void MixerView::updateMixerLine(int index) {
 	thisLine->update();
 }
 
-void MixerView::deleteChannel(int index) {
+void MixerView::deleteChannel(int index)
+{
 	// can't delete master
 	if (index == 0) return;
 
@@ -352,7 +365,8 @@ void MixerView::deleteChannel(int index) {
 	updateMaxChannelSelector();
 }
 
-void MixerView::deleteUnusedChannels() {
+void MixerView::deleteUnusedChannels()
+{
 	TrackContainer::TrackList tracks;
 	tracks += Engine::getSong()->tracks();
 	tracks += Engine::patternStore()->tracks();
@@ -380,7 +394,8 @@ void MixerView::deleteUnusedChannels() {
 	}
 }
 
-void MixerView::moveChannelLeft(int index, int focusIndex) {
+void MixerView::moveChannelLeft(int index, int focusIndex)
+{
 	// can't move master or first channel left or last channel right
 	if (index <= 1 || index >= m_mixerChannelViews.size()) return;
 
@@ -403,7 +418,8 @@ void MixerView::moveChannelRight(int index) { moveChannelLeft(index + 1, index +
 
 void MixerView::renameChannel(int index) { m_mixerChannelViews[index]->m_mixerLine->renameChannel(); }
 
-void MixerView::keyPressEvent(QKeyEvent* e) {
+void MixerView::keyPressEvent(QKeyEvent* e)
+{
 	switch (e->key()) {
 	case Qt::Key_Delete: deleteChannel(m_currentMixerLine->channelIndex()); break;
 	case Qt::Key_Left:
@@ -431,7 +447,8 @@ void MixerView::keyPressEvent(QKeyEvent* e) {
 	}
 }
 
-void MixerView::closeEvent(QCloseEvent* _ce) {
+void MixerView::closeEvent(QCloseEvent* _ce)
+{
 	if (parentWidget()) {
 		parentWidget()->hide();
 	} else {
@@ -440,19 +457,22 @@ void MixerView::closeEvent(QCloseEvent* _ce) {
 	_ce->ignore();
 }
 
-void MixerView::setCurrentMixerLine(int _line) {
+void MixerView::setCurrentMixerLine(int _line)
+{
 	if (_line >= 0 && _line < m_mixerChannelViews.size()) {
 		setCurrentMixerLine(m_mixerChannelViews[_line]->m_mixerLine);
 	}
 }
 
-void MixerView::clear() {
+void MixerView::clear()
+{
 	Engine::mixer()->clear();
 
 	refreshDisplay();
 }
 
-void MixerView::updateFaders() {
+void MixerView::updateFaders()
+{
 	Mixer* m = Engine::mixer();
 
 	// apply master gain

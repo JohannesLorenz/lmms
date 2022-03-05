@@ -37,7 +37,8 @@ LadspaControl::LadspaControl(Model* _parent, port_desc_t* _port, bool _link)
 	, m_linkEnabledModel(_link, this, tr("Link channels"))
 	, m_toggledModel(false, this, m_port->name)
 	, m_knobModel(0, 0, 0, 1, this, m_port->name)
-	, m_tempoSyncKnobModel(0, 0, 0, 1, m_port->max, this, m_port->name) {
+	, m_tempoSyncKnobModel(0, 0, 0, 1, m_port->max, this, m_port->name)
+{
 	if (m_link) {
 		connect(&m_linkEnabledModel, SIGNAL(dataChanged()), this, SLOT(linkStateChanged()), Qt::DirectConnection);
 	}
@@ -87,7 +88,8 @@ LadspaControl::LadspaControl(Model* _parent, port_desc_t* _port, bool _link)
 
 LadspaControl::~LadspaControl() {}
 
-LADSPA_Data LadspaControl::value() {
+LADSPA_Data LadspaControl::value()
+{
 	switch (m_port->data_type) {
 	case TOGGLED: return static_cast<LADSPA_Data>(m_toggledModel.value());
 	case INTEGER:
@@ -100,7 +102,8 @@ LADSPA_Data LadspaControl::value() {
 	return 0;
 }
 
-ValueBuffer* LadspaControl::valueBuffer() {
+ValueBuffer* LadspaControl::valueBuffer()
+{
 	switch (m_port->data_type) {
 	case TOGGLED:
 	case INTEGER:
@@ -113,7 +116,8 @@ ValueBuffer* LadspaControl::valueBuffer() {
 	return nullptr;
 }
 
-void LadspaControl::setValue(LADSPA_Data _value) {
+void LadspaControl::setValue(LADSPA_Data _value)
+{
 	switch (m_port->data_type) {
 	case TOGGLED: m_toggledModel.setValue(static_cast<bool>(_value)); break;
 	case INTEGER:
@@ -124,7 +128,8 @@ void LadspaControl::setValue(LADSPA_Data _value) {
 	}
 }
 
-void LadspaControl::saveSettings(QDomDocument& doc, QDomElement& parent, const QString& name) {
+void LadspaControl::saveSettings(QDomDocument& doc, QDomElement& parent, const QString& name)
+{
 	QDomElement e = doc.createElement(name);
 
 	if (m_link) { m_linkEnabledModel.saveSettings(doc, e, "link"); }
@@ -140,7 +145,8 @@ void LadspaControl::saveSettings(QDomDocument& doc, QDomElement& parent, const Q
 	parent.appendChild(e);
 }
 
-void LadspaControl::loadSettings(const QDomElement& parent, const QString& name) {
+void LadspaControl::loadSettings(const QDomElement& parent, const QString& name)
+{
 	QString dataModelName = "data";
 	QString linkModelName = "link";
 	QDomElement e = parent.namedItem(name).toElement();
@@ -180,7 +186,8 @@ void LadspaControl::loadSettings(const QDomElement& parent, const QString& name)
 	}
 }
 
-void LadspaControl::linkControls(LadspaControl* _control) {
+void LadspaControl::linkControls(LadspaControl* _control)
+{
 	switch (m_port->data_type) {
 	case TOGGLED: BoolModel::linkModels(&m_toggledModel, _control->toggledModel()); break;
 	case INTEGER:
@@ -195,11 +202,13 @@ void LadspaControl::ledChanged() { emit changed(m_port->port_id, static_cast<LAD
 
 void LadspaControl::knobChanged() { emit changed(m_port->port_id, static_cast<LADSPA_Data>(m_knobModel.value())); }
 
-void LadspaControl::tempoKnobChanged() {
+void LadspaControl::tempoKnobChanged()
+{
 	emit changed(m_port->port_id, static_cast<LADSPA_Data>(m_tempoSyncKnobModel.value()));
 }
 
-void LadspaControl::unlinkControls(LadspaControl* _control) {
+void LadspaControl::unlinkControls(LadspaControl* _control)
+{
 	switch (m_port->data_type) {
 	case TOGGLED: BoolModel::unlinkModels(&m_toggledModel, _control->toggledModel()); break;
 	case INTEGER:

@@ -39,7 +39,8 @@
 AudioSoundIo::AudioSoundIo(bool& outSuccessful, AudioEngine* _audioEngine)
 	: AudioDevice(qBound<ch_cnt_t>(DEFAULT_CHANNELS, ConfigManager::inst()->value("audiosoundio", "channels").toInt(),
 					  SURROUND_CHANNELS),
-		_audioEngine) {
+		_audioEngine)
+{
 	outSuccessful = false;
 	m_soundio = nullptr;
 	m_outstream = nullptr;
@@ -170,7 +171,8 @@ AudioSoundIo::AudioSoundIo(bool& outSuccessful, AudioEngine* _audioEngine)
 
 void AudioSoundIo::onBackendDisconnect(int err) { m_disconnectErr = err; }
 
-AudioSoundIo::~AudioSoundIo() {
+AudioSoundIo::~AudioSoundIo()
+{
 	stopProcessing();
 
 	if (m_outstream) { soundio_outstream_destroy(m_outstream); }
@@ -181,7 +183,8 @@ AudioSoundIo::~AudioSoundIo() {
 	}
 }
 
-void AudioSoundIo::startProcessing() {
+void AudioSoundIo::startProcessing()
+{
 	int err;
 
 	m_outBufFrameIndex = 0;
@@ -207,7 +210,8 @@ void AudioSoundIo::startProcessing() {
 	}
 }
 
-void AudioSoundIo::stopProcessing() {
+void AudioSoundIo::stopProcessing()
+{
 	int err;
 
 	m_stopped = true;
@@ -227,7 +231,8 @@ void AudioSoundIo::errorCallback(int err) { fprintf(stderr, "soundio: error stre
 
 void AudioSoundIo::underflowCallback() { fprintf(stderr, "soundio: buffer underflow reported\n"); }
 
-void AudioSoundIo::writeCallback(int frameCountMin, int frameCountMax) {
+void AudioSoundIo::writeCallback(int frameCountMin, int frameCountMax)
+{
 	if (m_stopped) { return; }
 	const struct SoundIoChannelLayout* layout = &m_outstream->layout;
 	SoundIoChannelArea* areas;
@@ -288,17 +293,20 @@ void AudioSoundIoSetupUtil::reconnectSoundIo() { ((AudioSoundIo::setupWidget*)m_
 
 void AudioSoundIoSetupUtil::updateDevices() { ((AudioSoundIo::setupWidget*)m_setupWidget)->updateDevices(); }
 
-static void setupWidgetOnBackendDisconnect(SoundIo* soundio, int err) {
+static void setupWidgetOnBackendDisconnect(SoundIo* soundio, int err)
+{
 	AudioSoundIo::setupWidget* setupWidget = (AudioSoundIo::setupWidget*)soundio->userdata;
 	setupWidget->reconnectSoundIo();
 }
 
-static void setup_widget_on_devices_change(SoundIo* soundio) {
+static void setup_widget_on_devices_change(SoundIo* soundio)
+{
 	AudioSoundIo::setupWidget* setupWidget = (AudioSoundIo::setupWidget*)soundio->userdata;
 	setupWidget->updateDevices();
 }
 
-void AudioSoundIo::setupWidget::reconnectSoundIo() {
+void AudioSoundIo::setupWidget::reconnectSoundIo()
+{
 	const QString& configBackend
 		= m_isFirst ? ConfigManager::inst()->value("audiosoundio", "backend") : m_backendModel.currentText();
 	m_isFirst = false;
@@ -347,7 +355,8 @@ void AudioSoundIo::setupWidget::reconnectSoundIo() {
 	m_deviceModel.setValue(deviceIndex);
 }
 
-void AudioSoundIo::setupWidget::updateDevices() {
+void AudioSoundIo::setupWidget::updateDevices()
+{
 	m_defaultOutIndex = soundio_default_output_device_index(m_soundio);
 
 	// get devices for selected backend
@@ -366,7 +375,8 @@ void AudioSoundIo::setupWidget::updateDevices() {
 }
 
 AudioSoundIo::setupWidget::setupWidget(QWidget* _parent)
-	: AudioDeviceSetupWidget(AudioSoundIo::name(), _parent) {
+	: AudioDeviceSetupWidget(AudioSoundIo::name(), _parent)
+{
 	m_setupUtil.m_setupWidget = this;
 
 	m_backend = new ComboBox(this, "BACKEND");
@@ -411,7 +421,8 @@ AudioSoundIo::setupWidget::setupWidget(QWidget* _parent)
 	m_device->setModel(&m_deviceModel);
 }
 
-AudioSoundIo::setupWidget::~setupWidget() {
+AudioSoundIo::setupWidget::~setupWidget()
+{
 	bool ok = disconnect(&m_backendModel, SIGNAL(dataChanged()), &m_setupUtil, SLOT(reconnectSoundIo()));
 	assert(ok);
 	if (m_soundio) {
@@ -420,7 +431,8 @@ AudioSoundIo::setupWidget::~setupWidget() {
 	}
 }
 
-void AudioSoundIo::setupWidget::saveSettings() {
+void AudioSoundIo::setupWidget::saveSettings()
+{
 	int deviceIndex = m_deviceModel.value();
 	const DeviceId* deviceId = &m_deviceList.at(deviceIndex);
 

@@ -79,7 +79,8 @@
 #endif
 
 #ifdef LMMS_DEBUG_FPE
-void signalHandler(int signum) {
+void signalHandler(int signum)
+{
 
 	// Get a back trace
 	void* array[10];
@@ -97,7 +98,8 @@ void signalHandler(int signum) {
 }
 #endif
 
-static inline QString baseName(const QString& file) {
+static inline QString baseName(const QString& file)
+{
 	return QFileInfo(file).absolutePath() + "/" + QFileInfo(file).completeBaseName();
 }
 
@@ -108,20 +110,23 @@ extern "C" _CRTIMP errno_t __cdecl freopen_s(FILE** _File, const char* _Filename
 #endif
 
 // For qInstallMessageHandler
-void consoleMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg) {
+void consoleMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg)
+{
 	QByteArray localMsg = msg.toLocal8Bit();
 	fprintf(stderr, "%s\n", localMsg.constData());
 }
 #endif
 
-inline void loadTranslation(const QString& tname, const QString& dir = ConfigManager::inst()->localeDir()) {
+inline void loadTranslation(const QString& tname, const QString& dir = ConfigManager::inst()->localeDir())
+{
 	QTranslator* t = new QTranslator(QCoreApplication::instance());
 	QString name = tname + ".qm";
 
 	if (t->load(name, dir)) { QCoreApplication::instance()->installTranslator(t); }
 }
 
-void printVersion(char* executableName) {
+void printVersion(char* executableName)
+{
 	printf("LMMS %s\n(%s %s, Qt %s, %s)\n\n"
 		   "Copyright (c) %s\n\n"
 		   "This program is free software; you can redistribute it and/or\n"
@@ -133,7 +138,8 @@ void printVersion(char* executableName) {
 		LMMS_PROJECT_COPYRIGHT, executableName);
 }
 
-void printHelp() {
+void printHelp()
+{
 	printf("LMMS %s\n"
 		   "Copyright (c) %s\n\n"
 		   "Usage: lmms [global options...] [<action> [action parameters...]]\n\n"
@@ -194,7 +200,8 @@ void printHelp() {
 		LMMS_VERSION, LMMS_PROJECT_COPYRIGHT);
 }
 
-void fileCheck(QString& file) {
+void fileCheck(QString& file)
+{
 	QFileInfo fileToCheck(file);
 
 	if (!fileToCheck.size()) {
@@ -206,7 +213,8 @@ void fileCheck(QString& file) {
 	}
 }
 
-int usageError(const QString& message) {
+int usageError(const QString& message)
+{
 	qCritical().noquote()
 		<< QString("\n%1.\n\nTry \"%2 --help\" for more information.\n\n").arg(message).arg(qApp->arguments()[0]);
 	return EXIT_FAILURE;
@@ -214,7 +222,8 @@ int usageError(const QString& message) {
 
 int noInputFileError() { return usageError("No input file specified"); }
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
 #ifdef LMMS_DEBUG_FPE
 	// Enable exceptions for certain floating point results
 	// FE_UNDERFLOW is disabled for the time being

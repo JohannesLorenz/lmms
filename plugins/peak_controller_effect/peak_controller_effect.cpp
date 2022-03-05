@@ -58,7 +58,8 @@ PeakControllerEffect::PeakControllerEffect(Model* _parent, const Descriptor::Sub
 	, m_effectId(rand())
 	, m_peakControls(this)
 	, m_lastSample(0)
-	, m_autoController(nullptr) {
+	, m_autoController(nullptr)
+{
 	m_autoController = new PeakController(Engine::getSong(), this);
 	if (!Engine::getSong()->isLoadingProject() && !PresetPreviewPlayHandle::isPreviewing()) {
 		Engine::getSong()->addController(m_autoController);
@@ -66,7 +67,8 @@ PeakControllerEffect::PeakControllerEffect(Model* _parent, const Descriptor::Sub
 	PeakController::s_effects.append(this);
 }
 
-PeakControllerEffect::~PeakControllerEffect() {
+PeakControllerEffect::~PeakControllerEffect()
+{
 	int idx = PeakController::s_effects.indexOf(this);
 	if (idx >= 0) {
 		PeakController::s_effects.remove(idx);
@@ -74,7 +76,8 @@ PeakControllerEffect::~PeakControllerEffect() {
 	}
 }
 
-bool PeakControllerEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames) {
+bool PeakControllerEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames)
+{
 	PeakControllerEffectControls& c = m_peakControls;
 
 	// This appears to be used for determining whether or not to continue processing
@@ -117,7 +120,8 @@ bool PeakControllerEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _fr
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data)
+{
 	return new PeakControllerEffect(_parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(_data));
 }
 }

@@ -29,7 +29,8 @@
 
 class SampleBuffer;
 
-class SampleClip : public Clip {
+class SampleClip : public Clip
+{
 	Q_OBJECT
 	mapPropertyFromModel(bool, isRecord, setRecord, m_recordModel);
 

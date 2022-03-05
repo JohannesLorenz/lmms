@@ -115,7 +115,8 @@ TrackView::~TrackView() {}
  *
  *  \param re the Resize Event to handle.
  */
-void TrackView::resizeEvent(QResizeEvent* re) {
+void TrackView::resizeEvent(QResizeEvent* re)
+{
 	if (ConfigManager::inst()->value("ui", "compacttrackbuttons").toInt()) {
 		m_trackOperationsWidget.setFixedSize(TRACK_OP_WIDTH_COMPACT, height() - 1);
 		m_trackSettingsWidget.setFixedSize(DEFAULT_SETTINGS_WIDGET_WIDTH_COMPACT, height() - 1);
@@ -129,7 +130,8 @@ void TrackView::resizeEvent(QResizeEvent* re) {
 /*! \brief Update this track View and all its content objects.
  *
  */
-void TrackView::update() {
+void TrackView::update()
+{
 	m_trackContentWidget.update();
 	if (!m_trackContainerView->fixedClips()) { m_trackContentWidget.changePosition(); }
 	QWidget::update();
@@ -138,7 +140,8 @@ void TrackView::update() {
 /*! \brief Create a menu for assigning/creating channels for this track.
  *
  */
-QMenu* TrackView::createMixerMenu(QString title, QString newMixerLabel) {
+QMenu* TrackView::createMixerMenu(QString title, QString newMixerLabel)
+{
 	Q_UNUSED(title)
 	Q_UNUSED(newMixerLabel)
 	return nullptr;
@@ -147,7 +150,8 @@ QMenu* TrackView::createMixerMenu(QString title, QString newMixerLabel) {
 /*! \brief Close this track View.
  *
  */
-bool TrackView::close() {
+bool TrackView::close()
+{
 	m_trackContainerView->removeTrackView(this);
 	return QWidget::close();
 }
@@ -155,7 +159,8 @@ bool TrackView::close() {
 /*! \brief Register that the model of this track View has changed.
  *
  */
-void TrackView::modelChanged() {
+void TrackView::modelChanged()
+{
 	m_track = castModel<Track>();
 	Q_ASSERT(m_track != nullptr);
 	connect(m_track, SIGNAL(destroyedTrack()), this, SLOT(close()));
@@ -169,7 +174,8 @@ void TrackView::modelChanged() {
  *
  *  \param dee the DragEnterEvent to start.
  */
-void TrackView::dragEnterEvent(QDragEnterEvent* dee) {
+void TrackView::dragEnterEvent(QDragEnterEvent* dee)
+{
 	StringPairDrag::processDragEnterEvent(dee, "track_" + QString::number(m_track->type()));
 }
 
@@ -181,7 +187,8 @@ void TrackView::dragEnterEvent(QDragEnterEvent* dee) {
  *
  *  \param de the DropEvent to handle.
  */
-void TrackView::dropEvent(QDropEvent* de) {
+void TrackView::dropEvent(QDropEvent* de)
+{
 	QString type = StringPairDrag::decodeKey(de);
 	QString value = StringPairDrag::decodeValue(de);
 	if (type == ("track_" + QString::number(m_track->type()))) {
@@ -208,7 +215,8 @@ void TrackView::dropEvent(QDropEvent* de) {
  *
  *  \param me the MouseEvent to handle.
  */
-void TrackView::mousePressEvent(QMouseEvent* me) {
+void TrackView::mousePressEvent(QMouseEvent* me)
+{
 
 	// If previously dragged too small, restore on shift-leftclick
 	if (height() < DEFAULT_TRACK_HEIGHT && me->modifiers() & Qt::ShiftModifier && me->button() == Qt::LeftButton) {
@@ -265,7 +273,8 @@ void TrackView::mousePressEvent(QMouseEvent* me) {
  *
  *  \param me the MouseEvent to handle.
  */
-void TrackView::mouseMoveEvent(QMouseEvent* me) {
+void TrackView::mouseMoveEvent(QMouseEvent* me)
+{
 	int widgetTotal = ConfigManager::inst()->value("ui", "compacttrackbuttons").toInt() == 1
 		? DEFAULT_SETTINGS_WIDGET_WIDTH_COMPACT + TRACK_OP_WIDTH_COMPACT
 		: DEFAULT_SETTINGS_WIDGET_WIDTH + TRACK_OP_WIDTH;
@@ -301,7 +310,8 @@ void TrackView::mouseMoveEvent(QMouseEvent* me) {
  *
  *  \param me the MouseEvent to handle.
  */
-void TrackView::mouseReleaseEvent(QMouseEvent* me) {
+void TrackView::mouseReleaseEvent(QMouseEvent* me)
+{
 	m_action = NoAction;
 	while (QApplication::overrideCursor() != nullptr) {
 		QApplication::restoreOverrideCursor();
@@ -315,7 +325,8 @@ void TrackView::mouseReleaseEvent(QMouseEvent* me) {
  *
  *  \param pe the PaintEvent to start.
  */
-void TrackView::paintEvent(QPaintEvent* pe) {
+void TrackView::paintEvent(QPaintEvent* pe)
+{
 	QStyleOption opt;
 	opt.initFrom(this);
 	QPainter p(this);
@@ -327,18 +338,21 @@ void TrackView::paintEvent(QPaintEvent* pe) {
  *  \param clip the Clip to create the view for.
  *  \todo is this a good description for what this method does?
  */
-void TrackView::createClipView(Clip* clip) {
+void TrackView::createClipView(Clip* clip)
+{
 	ClipView* tv = clip->createView(this);
 	if (clip->getSelectViewOnCreate() == true) { tv->setSelected(true); }
 	clip->selectViewOnCreate(false);
 }
 
-void TrackView::muteChanged() {
+void TrackView::muteChanged()
+{
 	FadeButton* indicator = getActivityIndicator();
 	if (indicator) { setIndicatorMute(indicator, m_track->m_mutedModel.value()); }
 }
 
-void TrackView::setIndicatorMute(FadeButton* indicator, bool muted) {
+void TrackView::setIndicatorMute(FadeButton* indicator, bool muted)
+{
 	QPalette::ColorRole role = muted ? QPalette::Highlight : QPalette::BrightText;
 	indicator->setActiveColor(QApplication::palette().color(QPalette::Active, role));
 }

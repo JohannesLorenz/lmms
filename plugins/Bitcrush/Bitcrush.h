@@ -30,7 +30,8 @@
 #include "BitcrushControls.h"
 #include "Effect.h"
 
-class BitcrushEffect : public Effect {
+class BitcrushEffect : public Effect
+{
 public:
 	BitcrushEffect(Model* parent, const Descriptor::SubPluginFeatures::Key* key);
 	virtual ~BitcrushEffect();

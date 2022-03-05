@@ -31,7 +31,8 @@
 
 #include "LcdWidget.h"
 
-class TimeDisplayWidget : public QWidget {
+class TimeDisplayWidget : public QWidget
+{
 	Q_OBJECT
 public:
 	TimeDisplayWidget();
@@ -44,7 +45,12 @@ private slots:
 	void updateTime();
 
 private:
-	enum DisplayModes { MinutesSeconds, BarsTicks, DisplayModeCount };
+	enum DisplayModes
+	{
+		MinutesSeconds,
+		BarsTicks,
+		DisplayModeCount
+	};
 	typedef DisplayModes DisplayMode;
 
 	void setDisplayMode(DisplayMode displayMode);

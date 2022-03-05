@@ -29,7 +29,8 @@
 
 #include "PixmapButton.h"
 
-class LeftRightNav : public QWidget {
+class LeftRightNav : public QWidget
+{
 	Q_OBJECT
 public:
 	LeftRightNav(QWidget* parent = nullptr);

@@ -37,7 +37,9 @@ LcdSpinBox::LcdSpinBox(int numDigits, QWidget* parent, const QString& name)
 	, m_remainder(0.f)
 	, m_mouseMoving(false)
 	, m_lastMousePos()
-	, m_displayOffset(0) {}
+	, m_displayOffset(0)
+{
+}
 
 LcdSpinBox::LcdSpinBox(int numDigits, const QString& style, QWidget* parent, const QString& name)
 	: LcdWidget(numDigits, style, parent, name)
@@ -45,21 +47,26 @@ LcdSpinBox::LcdSpinBox(int numDigits, const QString& style, QWidget* parent, con
 	, m_remainder(0.f)
 	, m_mouseMoving(false)
 	, m_lastMousePos()
-	, m_displayOffset(0) {}
+	, m_displayOffset(0)
+{
+}
 
-void LcdSpinBox::update() {
+void LcdSpinBox::update()
+{
 	setValue(model()->value() + m_displayOffset);
 
 	QWidget::update();
 }
 
-void LcdSpinBox::contextMenuEvent(QContextMenuEvent* event) {
+void LcdSpinBox::contextMenuEvent(QContextMenuEvent* event)
+{
 	CaptionMenu contextMenu(model()->displayName());
 	addDefaultActions(&contextMenu);
 	contextMenu.exec(QCursor::pos());
 }
 
-void LcdSpinBox::mousePressEvent(QMouseEvent* event) {
+void LcdSpinBox::mousePressEvent(QMouseEvent* event)
+{
 	if (event->button() == Qt::LeftButton && !(event->modifiers() & Qt::ControlModifier)
 		&& event->y() < cellHeight() + 2) {
 		m_mouseMoving = true;
@@ -75,7 +82,8 @@ void LcdSpinBox::mousePressEvent(QMouseEvent* event) {
 	}
 }
 
-void LcdSpinBox::mouseMoveEvent(QMouseEvent* event) {
+void LcdSpinBox::mouseMoveEvent(QMouseEvent* event)
+{
 	if (m_mouseMoving) {
 		int dy = event->globalY() - m_lastMousePos.y();
 		if (dy) {
@@ -91,14 +99,16 @@ void LcdSpinBox::mouseMoveEvent(QMouseEvent* event) {
 	}
 }
 
-void LcdSpinBox::mouseReleaseEvent(QMouseEvent*) {
+void LcdSpinBox::mouseReleaseEvent(QMouseEvent*)
+{
 	if (m_mouseMoving) {
 		model()->restoreJournallingState();
 		m_mouseMoving = false;
 	}
 }
 
-void LcdSpinBox::wheelEvent(QWheelEvent* we) {
+void LcdSpinBox::wheelEvent(QWheelEvent* we)
+{
 	we->accept();
 	model()->setValue(model()->value() + ((we->angleDelta().y() > 0) ? 1 : -1) * model()->step<int>());
 	emit manualChange();
@@ -106,7 +116,8 @@ void LcdSpinBox::wheelEvent(QWheelEvent* we) {
 
 void LcdSpinBox::mouseDoubleClickEvent(QMouseEvent*) { enterValue(); }
 
-void LcdSpinBox::enterValue() {
+void LcdSpinBox::enterValue()
+{
 	bool ok;
 	int new_val;
 

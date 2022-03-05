@@ -35,7 +35,8 @@
 #include "embed.h"
 
 AutomationTrackView::AutomationTrackView(AutomationTrack* _at, TrackContainerView* tcv)
-	: TrackView(_at, tcv) {
+	: TrackView(_at, tcv)
+{
 	setFixedHeight(32);
 	TrackLabelButton* tlb = new TrackLabelButton(this, getTrackSettingsWidget());
 	tlb->setIcon(embed::getIconPixmap("automation_track"));
@@ -44,11 +45,13 @@ AutomationTrackView::AutomationTrackView(AutomationTrack* _at, TrackContainerVie
 	setModel(_at);
 }
 
-void AutomationTrackView::dragEnterEvent(QDragEnterEvent* _dee) {
+void AutomationTrackView::dragEnterEvent(QDragEnterEvent* _dee)
+{
 	StringPairDrag::processDragEnterEvent(_dee, "automatable_model");
 }
 
-void AutomationTrackView::dropEvent(QDropEvent* _de) {
+void AutomationTrackView::dropEvent(QDropEvent* _de)
+{
 	QString type = StringPairDrag::decodeKey(_de);
 	QString val = StringPairDrag::decodeValue(_de);
 	if (type == "automatable_model") {

@@ -28,7 +28,8 @@ stringContainer::stringContainer(
 	const float _pitch, const sample_rate_t _sample_rate, const int _buffer_length, const int _strings)
 	: m_pitch(_pitch)
 	, m_sampleRate(_sample_rate)
-	, m_bufferLength(_buffer_length) {
+	, m_bufferLength(_buffer_length)
+{
 	for (int i = 0; i < _strings; i++) {
 		m_exists.append(false);
 	}
@@ -36,7 +37,8 @@ stringContainer::stringContainer(
 
 void stringContainer::addString(int _harm, const float _pick, const float _pickup, const float* _impulse,
 	const float _randomize, const float _string_loss, const float _detune, const int _oversample, const bool _state,
-	const int _id) {
+	const int _id)
+{
 	float harm;
 	switch (_harm) {
 	case 0: harm = 0.25f; break;

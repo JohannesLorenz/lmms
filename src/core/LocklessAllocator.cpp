@@ -35,13 +35,15 @@
 
 static const size_t SIZEOF_SET = sizeof(int) * 8;
 
-static size_t align(size_t size, size_t alignment) {
+static size_t align(size_t size, size_t alignment)
+{
 	size_t misalignment = size % alignment;
 	if (misalignment) { size += alignment - misalignment; }
 	return size;
 }
 
-LocklessAllocator::LocklessAllocator(size_t nmemb, size_t size) {
+LocklessAllocator::LocklessAllocator(size_t nmemb, size_t size)
+{
 	m_capacity = align(nmemb, SIZEOF_SET);
 	m_elementSize = align(size, sizeof(void*));
 	m_pool = new char[m_capacity * m_elementSize];
@@ -54,7 +56,8 @@ LocklessAllocator::LocklessAllocator(size_t nmemb, size_t size) {
 	m_startIndex = 0;
 }
 
-LocklessAllocator::~LocklessAllocator() {
+LocklessAllocator::~LocklessAllocator()
+{
 	int available = m_available;
 	if (available != m_capacity) {
 		fprintf(stderr,
@@ -67,7 +70,8 @@ LocklessAllocator::~LocklessAllocator() {
 }
 
 #ifdef LMMS_BUILD_WIN32
-static int ffs(int i) {
+static int ffs(int i)
+{
 	if (!i) { return 0; }
 	for (int j = 0;;) {
 		if (i & 1 << j++) { return j; }
@@ -75,7 +79,8 @@ static int ffs(int i) {
 }
 #endif
 
-void* LocklessAllocator::alloc() {
+void* LocklessAllocator::alloc()
+{
 	// Some of these CAS loops could probably use relaxed atomics, as discussed
 	// in http://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange.
 	// Let's use sequentially-consistent ops to be safe for now.
@@ -98,7 +103,8 @@ void* LocklessAllocator::alloc() {
 	}
 }
 
-void LocklessAllocator::free(void* ptr) {
+void LocklessAllocator::free(void* ptr)
+{
 	ptrdiff_t diff = (char*)ptr - m_pool;
 	if (diff < 0 || diff % m_elementSize) {
 	invalid:

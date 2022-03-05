@@ -31,15 +31,19 @@
 NStateButton::NStateButton(QWidget* _parent)
 	: ToolButton(_parent)
 	, m_generalToolTip("")
-	, m_curState(-1) {}
+	, m_curState(-1)
+{
+}
 
-NStateButton::~NStateButton() {
+NStateButton::~NStateButton()
+{
 	while (m_states.size()) {
 		m_states.erase(m_states.begin());
 	}
 }
 
-void NStateButton::addState(const QPixmap& _pm, const QString& _tooltip) {
+void NStateButton::addState(const QPixmap& _pm, const QString& _tooltip)
+{
 	m_states.push_back(qMakePair(_pm, _tooltip));
 	// first inserted pixmap?
 	if (m_states.size() == 1) {
@@ -48,7 +52,8 @@ void NStateButton::addState(const QPixmap& _pm, const QString& _tooltip) {
 	}
 }
 
-void NStateButton::changeState(int _n) {
+void NStateButton::changeState(int _n)
+{
 	if (_n >= 0 && _n < (int)m_states.size()) {
 		m_curState = _n;
 
@@ -61,7 +66,8 @@ void NStateButton::changeState(int _n) {
 	}
 }
 
-void NStateButton::mousePressEvent(QMouseEvent* _me) {
+void NStateButton::mousePressEvent(QMouseEvent* _me)
+{
 	if (_me->button() == Qt::LeftButton && m_states.size()) { changeState((++m_curState) % m_states.size()); }
 	ToolButton::mousePressEvent(_me);
 }

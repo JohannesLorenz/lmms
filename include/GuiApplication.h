@@ -42,7 +42,8 @@ class PianoRollWindow;
 class ProjectNotes;
 class SongEditorWindow;
 
-class LMMS_EXPORT GuiApplication : public QObject {
+class LMMS_EXPORT GuiApplication : public QObject
+{
 	Q_OBJECT;
 
 public:

@@ -39,9 +39,12 @@ Plugin::Descriptor PLUGIN_EXPORT lv2effect_plugin_descriptor = {STRINGIFY(PLUGIN
 Lv2Effect::Lv2Effect(Model* parent, const Descriptor::SubPluginFeatures::Key* key)
 	: Effect(&lv2effect_plugin_descriptor, parent, key)
 	, m_controls(this, key->attributes["uri"])
-	, m_tmpOutputSmps(Engine::audioEngine()->framesPerPeriod()) {}
+	, m_tmpOutputSmps(Engine::audioEngine()->framesPerPeriod())
+{
+}
 
-bool Lv2Effect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
+bool Lv2Effect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
+{
 	if (!isEnabled() || !isRunning()) { return false; }
 	Q_ASSERT(frames <= static_cast<fpp_t>(m_tmpOutputSmps.size()));
 
@@ -74,7 +77,8 @@ bool Lv2Effect::processAudioBuffer(sampleFrame* buf, const fpp_t frames) {
 extern "C" {
 
 // necessary for getting instance out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data)
+{
 	using KeyType = Plugin::Descriptor::SubPluginFeatures::Key;
 	Lv2Effect* eff = new Lv2Effect(_parent, static_cast<const KeyType*>(_data));
 	if (!eff->isValid()) {

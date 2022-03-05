@@ -37,7 +37,8 @@
 class LcdSpinBox;
 class QLineEdit;
 
-class AudioOss : public QThread, public AudioDevice {
+class AudioOss : public QThread, public AudioDevice
+{
 	Q_OBJECT
 public:
 	AudioOss(bool& _success_ful, AudioEngine* audioEngine);
@@ -47,7 +48,8 @@ public:
 
 	static QString probeDevice();
 
-	class setupWidget : public AudioDeviceSetupWidget {
+	class setupWidget : public AudioDeviceSetupWidget
+	{
 	public:
 		setupWidget(QWidget* _parent);
 		virtual ~setupWidget();

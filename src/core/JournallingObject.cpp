@@ -34,17 +34,22 @@ JournallingObject::JournallingObject()
 	: SerializingObject()
 	, m_id(Engine::projectJournal()->allocID(this))
 	, m_journalling(true)
-	, m_journallingStateStack() {}
+	, m_journallingStateStack()
+{
+}
 
-JournallingObject::~JournallingObject() {
+JournallingObject::~JournallingObject()
+{
 	if (Engine::projectJournal()) { Engine::projectJournal()->freeID(id()); }
 }
 
-void JournallingObject::addJournalCheckPoint() {
+void JournallingObject::addJournalCheckPoint()
+{
 	if (isJournalling()) { Engine::projectJournal()->addJournalCheckPoint(this); }
 }
 
-QDomElement JournallingObject::saveState(QDomDocument& _doc, QDomElement& _parent) {
+QDomElement JournallingObject::saveState(QDomDocument& _doc, QDomElement& _parent)
+{
 	if (isJournalling()) {
 		QDomElement _this = SerializingObject::saveState(_doc, _parent);
 
@@ -59,7 +64,8 @@ QDomElement JournallingObject::saveState(QDomDocument& _doc, QDomElement& _paren
 	}
 }
 
-void JournallingObject::restoreState(const QDomElement& _this) {
+void JournallingObject::restoreState(const QDomElement& _this)
+{
 	SerializingObject::restoreState(_this);
 
 	saveJournallingState(false);
@@ -77,7 +83,8 @@ void JournallingObject::restoreState(const QDomElement& _this) {
 	restoreJournallingState();
 }
 
-void JournallingObject::changeID(jo_id_t _id) {
+void JournallingObject::changeID(jo_id_t _id)
+{
 	if (id() != _id) {
 		JournallingObject* jo = Engine::projectJournal()->journallingObject(_id);
 		if (jo != nullptr) {

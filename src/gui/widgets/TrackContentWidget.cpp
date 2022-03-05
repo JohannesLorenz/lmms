@@ -61,7 +61,8 @@ TrackContentWidget::TrackContentWidget(TrackView* parent)
 	, m_darkerColor(Qt::SolidPattern)
 	, m_lighterColor(Qt::SolidPattern)
 	, m_gridColor(Qt::SolidPattern)
-	, m_embossColor(Qt::SolidPattern) {
+	, m_embossColor(Qt::SolidPattern)
+{
 	setAcceptDrops(true);
 
 	connect(parent->trackContainerView(), SIGNAL(positionChanged(const TimePos&)), this,
@@ -78,7 +79,8 @@ TrackContentWidget::TrackContentWidget(TrackView* parent)
  */
 TrackContentWidget::~TrackContentWidget() {}
 
-void TrackContentWidget::updateBackground() {
+void TrackContentWidget::updateBackground()
+{
 	const TrackContainerView* tcv = m_trackView->trackContainerView();
 
 	// Assume even-pixels-per-bar. Makes sense, should be like this anyways
@@ -121,7 +123,8 @@ void TrackContentWidget::updateBackground() {
  *
  * \param clipv The ClipView to add.
  */
-void TrackContentWidget::addClipView(ClipView* clipv) {
+void TrackContentWidget::addClipView(ClipView* clipv)
+{
 	Clip* clip = clipv->getClip();
 
 	m_clipViews.push_back(clipv);
@@ -137,7 +140,8 @@ void TrackContentWidget::addClipView(ClipView* clipv) {
  *
  * \param clipv The ClipView to add.
  */
-void TrackContentWidget::removeClipView(ClipView* clipv) {
+void TrackContentWidget::removeClipView(ClipView* clipv)
+{
 	clipViewVector::iterator it = std::find(m_clipViews.begin(), m_clipViews.end(), clipv);
 	if (it != m_clipViews.end()) {
 		m_clipViews.erase(it);
@@ -148,7 +152,8 @@ void TrackContentWidget::removeClipView(ClipView* clipv) {
 /*! \brief Update ourselves by updating all the ClipViews attached.
  *
  */
-void TrackContentWidget::update() {
+void TrackContentWidget::update()
+{
 	for (clipViewVector::iterator it = m_clipViews.begin(); it != m_clipViews.end(); ++it) {
 		(*it)->setFixedHeight(height() - 1);
 		(*it)->update();
@@ -162,7 +167,8 @@ void TrackContentWidget::update() {
  *
  * \param newPos The MIDI time to move to.
  */
-void TrackContentWidget::changePosition(const TimePos& newPos) {
+void TrackContentWidget::changePosition(const TimePos& newPos)
+{
 	if (m_trackView->trackContainerView() == getGUI()->patternEditor()->m_editor) {
 		const int curPattern = Engine::patternStore()->currentPattern();
 		setUpdatesEnabled(false);
@@ -218,7 +224,8 @@ void TrackContentWidget::changePosition(const TimePos& newPos) {
  *
  * \param mouseX the mouse's current X position in pixels.
  */
-TimePos TrackContentWidget::getPosition(int mouseX) {
+TimePos TrackContentWidget::getPosition(int mouseX)
+{
 	TrackContainerView* tv = m_trackView->trackContainerView();
 	return TimePos(tv->currentPosition() + mouseX * TimePos::ticksPerBar() / static_cast<int>(tv->pixelsPerBar()));
 }
@@ -227,7 +234,8 @@ TimePos TrackContentWidget::getPosition(int mouseX) {
  *
  * \param dee the Drag Enter Event to respond to
  */
-void TrackContentWidget::dragEnterEvent(QDragEnterEvent* dee) {
+void TrackContentWidget::dragEnterEvent(QDragEnterEvent* dee)
+{
 	TimePos clipPos = getPosition(dee->pos().x());
 	if (canPasteSelection(clipPos, dee) == false) {
 		dee->ignore();
@@ -241,7 +249,8 @@ void TrackContentWidget::dragEnterEvent(QDragEnterEvent* dee) {
  * \param clipPos the position of the Clip slot being pasted on
  * \param de the DropEvent generated
  */
-bool TrackContentWidget::canPasteSelection(TimePos clipPos, const QDropEvent* de) {
+bool TrackContentWidget::canPasteSelection(TimePos clipPos, const QDropEvent* de)
+{
 	const QMimeData* mimeData = de->mimeData();
 
 	// If the source of the DropEvent is the current instance of LMMS we don't allow pasting in the same bar
@@ -250,7 +259,8 @@ bool TrackContentWidget::canPasteSelection(TimePos clipPos, const QDropEvent* de
 }
 
 // Overloaded method to make it possible to call this method without a Drag&Drop event
-bool TrackContentWidget::canPasteSelection(TimePos clipPos, const QMimeData* md, bool allowSameBar) {
+bool TrackContentWidget::canPasteSelection(TimePos clipPos, const QMimeData* md, bool allowSameBar)
+{
 	// For decodeKey() and decodeValue()
 	using namespace Clipboard;
 
@@ -314,7 +324,8 @@ bool TrackContentWidget::canPasteSelection(TimePos clipPos, const QMimeData* md,
  * \param clipPos the position of the Clip slot being pasted on
  * \param de the DropEvent generated
  */
-bool TrackContentWidget::pasteSelection(TimePos clipPos, QDropEvent* de) {
+bool TrackContentWidget::pasteSelection(TimePos clipPos, QDropEvent* de)
+{
 	const QMimeData* mimeData = de->mimeData();
 
 	if (canPasteSelection(clipPos, de) == false) { return false; }
@@ -324,7 +335,8 @@ bool TrackContentWidget::pasteSelection(TimePos clipPos, QDropEvent* de) {
 }
 
 // Overloaded method so we can call it without a Drag&Drop event
-bool TrackContentWidget::pasteSelection(TimePos clipPos, const QMimeData* md, bool skipSafetyCheck) {
+bool TrackContentWidget::pasteSelection(TimePos clipPos, const QMimeData* md, bool skipSafetyCheck)
+{
 	// For decodeKey() and decodeValue()
 	using namespace Clipboard;
 
@@ -415,7 +427,8 @@ bool TrackContentWidget::pasteSelection(TimePos clipPos, const QMimeData* md, bo
  *
  * \param de the Drop Event to respond to
  */
-void TrackContentWidget::dropEvent(QDropEvent* de) {
+void TrackContentWidget::dropEvent(QDropEvent* de)
+{
 	TimePos clipPos = TimePos(getPosition(de->pos().x()));
 	if (pasteSelection(clipPos, de) == true) { de->accept(); }
 }
@@ -424,7 +437,8 @@ void TrackContentWidget::dropEvent(QDropEvent* de) {
  *
  * \param me the mouse press event to respond to
  */
-void TrackContentWidget::mousePressEvent(QMouseEvent* me) {
+void TrackContentWidget::mousePressEvent(QMouseEvent* me)
+{
 	// Enable box select if control is held when clicking an empty space
 	// (If we had clicked a Clip it would have intercepted the mouse event)
 	if (me->modifiers() & Qt::ControlModifier) {
@@ -450,7 +464,8 @@ void TrackContentWidget::mousePressEvent(QMouseEvent* me) {
 	}
 }
 
-void TrackContentWidget::mouseReleaseEvent(QMouseEvent* me) {
+void TrackContentWidget::mouseReleaseEvent(QMouseEvent* me)
+{
 	getGUI()->songEditor()->syncEditMode();
 	QWidget::mouseReleaseEvent(me);
 }
@@ -459,7 +474,8 @@ void TrackContentWidget::mouseReleaseEvent(QMouseEvent* me) {
  *
  * \param pe the Paint Event to respond to
  */
-void TrackContentWidget::paintEvent(QPaintEvent* pe) {
+void TrackContentWidget::paintEvent(QPaintEvent* pe)
+{
 	// Assume even-pixels-per-bar. Makes sense, should be like this anyways
 	const TrackContainerView* tcv = m_trackView->trackContainerView();
 	int ppb = static_cast<int>(tcv->pixelsPerBar());
@@ -474,7 +490,8 @@ void TrackContentWidget::paintEvent(QPaintEvent* pe) {
  *
  * \param resizeEvent the resize event to pass to base class
  */
-void TrackContentWidget::resizeEvent(QResizeEvent* resizeEvent) {
+void TrackContentWidget::resizeEvent(QResizeEvent* resizeEvent)
+{
 	// Update backgroud
 	updateBackground();
 	// Force redraw
@@ -490,13 +507,15 @@ Track* TrackContentWidget::getTrack() { return m_trackView->getTrack(); }
  *
  * \param posStart the starting position of the Widget (from getPosition())
  */
-TimePos TrackContentWidget::endPosition(const TimePos& posStart) {
+TimePos TrackContentWidget::endPosition(const TimePos& posStart)
+{
 	const float ppb = m_trackView->trackContainerView()->pixelsPerBar();
 	const int w = width();
 	return posStart + static_cast<int>(w * TimePos::ticksPerBar() / ppb);
 }
 
-void TrackContentWidget::contextMenuEvent(QContextMenuEvent* cme) {
+void TrackContentWidget::contextMenuEvent(QContextMenuEvent* cme)
+{
 	// For hasFormat(), MimeType enum class and getMimeData()
 	using namespace Clipboard;
 
@@ -515,7 +534,8 @@ void TrackContentWidget::contextMenuEvent(QContextMenuEvent* cme) {
 	contextMenu.exec(QCursor::pos());
 }
 
-void TrackContentWidget::contextMenuAction(QContextMenuEvent* cme, ContextMenuAction action) {
+void TrackContentWidget::contextMenuAction(QContextMenuEvent* cme, ContextMenuAction action)
+{
 	// For getMimeData()
 	using namespace Clipboard;
 

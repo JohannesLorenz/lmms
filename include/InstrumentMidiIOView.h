@@ -36,7 +36,8 @@ class QToolButton;
 class LedCheckBox;
 class InstrumentTrack;
 
-class InstrumentMidiIOView : public QWidget, public ModelView {
+class InstrumentMidiIOView : public QWidget, public ModelView
+{
 	Q_OBJECT
 public:
 	InstrumentMidiIOView(QWidget* parent);

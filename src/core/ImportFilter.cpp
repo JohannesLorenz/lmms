@@ -36,11 +36,14 @@ using std::unique_ptr;
 
 ImportFilter::ImportFilter(const QString& _file_name, const Descriptor* _descriptor)
 	: Plugin(_descriptor, nullptr)
-	, m_file(_file_name) {}
+	, m_file(_file_name)
+{
+}
 
 ImportFilter::~ImportFilter() {}
 
-void ImportFilter::import(const QString& _file_to_import, TrackContainer* tc) {
+void ImportFilter::import(const QString& _file_to_import, TrackContainer* tc)
+{
 	bool successful = false;
 
 	QByteArray s = _file_to_import.toUtf8();
@@ -72,7 +75,8 @@ void ImportFilter::import(const QString& _file_to_import, TrackContainer* tc) {
 	}
 }
 
-bool ImportFilter::openFile() {
+bool ImportFilter::openFile()
+{
 	if (m_file.open(QFile::ReadOnly) == false) {
 		QMessageBox::critical(nullptr, TrackContainer::tr("Couldn't open file"),
 			TrackContainer::tr("Couldn't open file %1 "

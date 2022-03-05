@@ -41,7 +41,8 @@
 class Instrument;
 class DataFile;
 
-class LMMS_EXPORT InstrumentTrack : public Track, public MidiEventProcessor {
+class LMMS_EXPORT InstrumentTrack : public Track, public MidiEventProcessor
+{
 	Q_OBJECT
 	MM_OPERATORS
 	mapPropertyFromModel(int, getVolume, setVolume, m_volumeModel);
@@ -83,7 +84,8 @@ public:
 	int masterKey(int _midi_key) const;
 
 	// translate pitch to midi-pitch [0,16383]
-	int midiPitch() const {
+	int midiPitch() const
+	{
 		return static_cast<int>(
 			((m_pitchModel.value() + m_pitchModel.range() / 2) * MidiMaxPitchBend) / m_pitchModel.range());
 	}

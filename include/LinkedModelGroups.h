@@ -43,7 +43,8 @@
 	* Models are stored by their QObject::objectName
 	* Models are linked automatically
 */
-class LinkedModelGroup : public Model {
+class LinkedModelGroup : public Model
+{
 	Q_OBJECT
 public:
 	/*
@@ -51,7 +52,9 @@ public:
 	*/
 	//! @param parent model of the LinkedModelGroups class
 	LinkedModelGroup(Model* parent)
-		: Model(parent) {}
+		: Model(parent)
+	{
+	}
 
 	/*
 		Linking (initially only)
@@ -61,24 +64,30 @@ public:
 	/*
 		Models
 	*/
-	struct ModelInfo {
+	struct ModelInfo
+	{
 		QString m_name;
 		class AutomatableModel* m_model;
-		ModelInfo() { /* hopefully no one will use this */
-		}			  // TODO: remove?
+		ModelInfo()
+		{ /* hopefully no one will use this */
+		} // TODO: remove?
 		ModelInfo(const QString& name, AutomatableModel* model)
 			: m_name(name)
-			, m_model(model) {}
+			, m_model(model)
+		{
+		}
 	};
 
 	// TODO: refactor those 2
-	template <class Functor> void foreach_model(const Functor& ftor) {
+	template <class Functor> void foreach_model(const Functor& ftor)
+	{
 		for (auto itr = m_models.begin(); itr != m_models.end(); ++itr) {
 			ftor(itr->first, itr->second);
 		}
 	}
 
-	template <class Functor> void foreach_model(const Functor& ftor) const {
+	template <class Functor> void foreach_model(const Functor& ftor) const
+	{
 		for (auto itr = m_models.cbegin(); itr != m_models.cend(); ++itr) {
 			ftor(itr->first, itr->second);
 		}
@@ -103,7 +112,8 @@ signals:
 	void modelRemoved(AutomatableModel* removed);
 
 public:
-	AutomatableModel* getModel(const std::string& s) {
+	AutomatableModel* getModel(const std::string& s)
+	{
 		auto itr = m_models.find(s);
 		return (itr == m_models.end()) ? nullptr : itr->second.m_model;
 	}
@@ -136,7 +146,8 @@ private:
 	@note Though called "container", this class does not contain, but only
 	know the single groups. The inheriting classes are responsible for storage.
 */
-class LinkedModelGroups {
+class LinkedModelGroups
+{
 public:
 	virtual ~LinkedModelGroups();
 

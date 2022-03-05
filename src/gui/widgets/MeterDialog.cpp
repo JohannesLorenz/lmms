@@ -36,7 +36,8 @@
 
 MeterDialog::MeterDialog(QWidget* _parent, bool _simple)
 	: QWidget(_parent)
-	, ModelView(nullptr, this) {
+	, ModelView(nullptr, this)
+{
 	QVBoxLayout* vlayout = new QVBoxLayout(this);
 	vlayout->setSpacing(0);
 	vlayout->setMargin(0);
@@ -89,7 +90,8 @@ MeterDialog::MeterDialog(QWidget* _parent, bool _simple)
 
 MeterDialog::~MeterDialog() {}
 
-void MeterDialog::modelChanged() {
+void MeterDialog::modelChanged()
+{
 	MeterModel* mm = castModel<MeterModel>();
 	m_numerator->setModel(&mm->numeratorModel());
 	m_denominator->setModel(&mm->denominatorModel());

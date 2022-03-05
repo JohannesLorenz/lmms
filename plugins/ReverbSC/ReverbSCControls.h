@@ -30,7 +30,8 @@
 
 class ReverbSCEffect;
 
-class ReverbSCControls : public EffectControls {
+class ReverbSCControls : public EffectControls
+{
 	Q_OBJECT
 public:
 	ReverbSCControls(ReverbSCEffect* effect);

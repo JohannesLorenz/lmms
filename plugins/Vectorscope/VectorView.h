@@ -32,7 +32,8 @@ class VecControls;
 //#define VEC_DEBUG
 
 // Widget that displays a vectorscope visualization of stereo signal.
-class VectorView : public QWidget {
+class VectorView : public QWidget
+{
 	Q_OBJECT
 public:
 	explicit VectorView(VecControls* controls, LocklessRingBuffer<sampleFrame>* inputBuffer, unsigned short displaySize,

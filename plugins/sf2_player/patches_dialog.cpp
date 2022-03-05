@@ -32,14 +32,18 @@
 #include "fluidsynthshims.h"
 
 // Custom list-view item (as for numerical sort purposes...)
-class patchItem : public QTreeWidgetItem {
+class patchItem : public QTreeWidgetItem
+{
 public:
 	// Constructor.
 	patchItem(QTreeWidget* pListView, QTreeWidgetItem* pItemAfter)
-		: QTreeWidgetItem(pListView, pItemAfter) {}
+		: QTreeWidgetItem(pListView, pItemAfter)
+	{
+	}
 
 	// Sort/compare overriden method.
-	bool operator<(const QTreeWidgetItem& other) const {
+	bool operator<(const QTreeWidgetItem& other) const
+	{
 		int iColumn = QTreeWidgetItem::treeWidget()->sortColumn();
 		const QString& s1 = text(iColumn);
 		const QString& s2 = other.text(iColumn);
@@ -53,7 +57,8 @@ public:
 
 // Constructor.
 patchesDialog::patchesDialog(QWidget* pParent, Qt::WindowFlags wflags)
-	: QDialog(pParent, wflags) {
+	: QDialog(pParent, wflags)
+{
 	// Setup UI struct...
 	setupUi(this);
 
@@ -92,7 +97,8 @@ patchesDialog::~patchesDialog() {}
 
 // Dialog setup loader.
 void patchesDialog::setup(fluid_synth_t* pSynth, int iChan, const QString& _chanName, LcdSpinBoxModel* _bankModel,
-	LcdSpinBoxModel* _progModel, QLabel* _patchLabel) {
+	LcdSpinBoxModel* _progModel, QLabel* _patchLabel)
+{
 
 	// We'll going to changes the whole thing...
 	m_dirty = 0;
@@ -173,7 +179,8 @@ void patchesDialog::setup(fluid_synth_t* pSynth, int iChan, const QString& _chan
 void patchesDialog::stabilizeForm() { m_okButton->setEnabled(validateForm()); }
 
 // Validate form fields.
-bool patchesDialog::validateForm() {
+bool patchesDialog::validateForm()
+{
 	bool bValid = true;
 
 	bValid = bValid && (m_bankListView->currentItem() != nullptr);
@@ -183,7 +190,8 @@ bool patchesDialog::validateForm() {
 }
 
 // Realize a bank-program selection preset.
-void patchesDialog::setBankProg(int iBank, int iProg) {
+void patchesDialog::setBankProg(int iBank, int iProg)
+{
 	if (m_pSynth == nullptr) return;
 
 	// just select the synth's program preset...
@@ -194,7 +202,8 @@ void patchesDialog::setBankProg(int iBank, int iProg) {
 }
 
 // Validate form fields and accept it valid.
-void patchesDialog::accept() {
+void patchesDialog::accept()
+{
 	if (validateForm()) {
 		// Unload from current selected dialog items.
 		int iBank = (m_bankListView->currentItem())->text(0).toInt();
@@ -217,7 +226,8 @@ void patchesDialog::accept() {
 }
 
 // Reject settings (Cancel button slot).
-void patchesDialog::reject(void) {
+void patchesDialog::reject(void)
+{
 	// Reset selection to initial selection, if applicable...
 	if (m_dirty > 0) setBankProg(m_bankModel->value(), m_progModel->value());
 	// Done (hopefully nothing).
@@ -225,7 +235,8 @@ void patchesDialog::reject(void) {
 }
 
 // Find the bank item of given bank number id.
-QTreeWidgetItem* patchesDialog::findBankItem(int iBank) {
+QTreeWidgetItem* patchesDialog::findBankItem(int iBank)
+{
 	QList<QTreeWidgetItem*> banks = m_bankListView->findItems(QString::number(iBank), Qt::MatchExactly, 0);
 
 	QListIterator<QTreeWidgetItem*> iter(banks);
@@ -235,7 +246,8 @@ QTreeWidgetItem* patchesDialog::findBankItem(int iBank) {
 }
 
 // Find the program item of given program number id.
-QTreeWidgetItem* patchesDialog::findProgItem(int iProg) {
+QTreeWidgetItem* patchesDialog::findProgItem(int iProg)
+{
 	QList<QTreeWidgetItem*> progs = m_progListView->findItems(QString::number(iProg), Qt::MatchExactly, 0);
 
 	QListIterator<QTreeWidgetItem*> iter(progs);
@@ -245,7 +257,8 @@ QTreeWidgetItem* patchesDialog::findProgItem(int iProg) {
 }
 
 // Bank change slot.
-void patchesDialog::bankChanged(void) {
+void patchesDialog::bankChanged(void)
+{
 	if (m_pSynth == nullptr) return;
 
 	QTreeWidgetItem* pBankItem = m_bankListView->currentItem();
@@ -298,7 +311,8 @@ void patchesDialog::bankChanged(void) {
 }
 
 // Program change slot.
-void patchesDialog::progChanged(QTreeWidgetItem* _curr, QTreeWidgetItem* _prev) {
+void patchesDialog::progChanged(QTreeWidgetItem* _curr, QTreeWidgetItem* _prev)
+{
 	if (m_pSynth == nullptr || _curr == nullptr) return;
 
 	// Which preview state...

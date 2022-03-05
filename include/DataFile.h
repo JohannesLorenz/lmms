@@ -35,13 +35,15 @@
 class ProjectVersion;
 class QTextStream;
 
-class LMMS_EXPORT DataFile : public QDomDocument {
+class LMMS_EXPORT DataFile : public QDomDocument
+{
 	MM_OPERATORS
 
 	using UpgradeMethod = void (DataFile::*)();
 
 public:
-	enum Types {
+	enum Types
+	{
 		UnknownType,
 		SongProject,
 		SongProjectTemplate,
@@ -127,7 +129,8 @@ private:
 
 	void loadData(const QByteArray& _data, const QString& _sourceFile);
 
-	struct LMMS_EXPORT typeDescStruct {
+	struct LMMS_EXPORT typeDescStruct
+	{
 		Type m_type;
 		QString m_name;
 	};

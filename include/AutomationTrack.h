@@ -29,7 +29,8 @@
 
 #include "Track.h"
 
-class AutomationTrack : public Track {
+class AutomationTrack : public Track
+{
 	Q_OBJECT
 public:
 	AutomationTrack(TrackContainer* tc, bool _hidden = false);

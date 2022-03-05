@@ -49,14 +49,16 @@ AudioJack::AudioJack(bool& _success_ful, AudioEngine* _audioEngine)
 	, m_tempOutBufs(new jack_default_audio_sample_t*[channels()])
 	, m_outBuf(new surroundSampleFrame[audioEngine()->framesPerPeriod()])
 	, m_framesDoneInCurBuf(0)
-	, m_framesToDoInCurBuf(0) {
+	, m_framesToDoInCurBuf(0)
+{
 	m_stopped = true;
 
 	_success_ful = initJackClient();
 	if (_success_ful) { connect(this, SIGNAL(zombified()), this, SLOT(restartAfterZombified()), Qt::QueuedConnection); }
 }
 
-AudioJack::~AudioJack() {
+AudioJack::~AudioJack()
+{
 	stopProcessing();
 #ifdef AUDIO_PORT_SUPPORT
 	while (m_portMap.size()) {
@@ -74,7 +76,8 @@ AudioJack::~AudioJack() {
 	delete[] m_outBuf;
 }
 
-void AudioJack::restartAfterZombified() {
+void AudioJack::restartAfterZombified()
+{
 	if (initJackClient()) {
 		m_active = false;
 		startProcessing();
@@ -93,7 +96,8 @@ void AudioJack::restartAfterZombified() {
 	}
 }
 
-AudioJack* AudioJack::addMidiClient(MidiJack* midiClient) {
+AudioJack* AudioJack::addMidiClient(MidiJack* midiClient)
+{
 	if (m_client == nullptr) return nullptr;
 
 	m_midiClient = midiClient;
@@ -101,7 +105,8 @@ AudioJack* AudioJack::addMidiClient(MidiJack* midiClient) {
 	return this;
 }
 
-bool AudioJack::initJackClient() {
+bool AudioJack::initJackClient()
+{
 	QString clientName = ConfigManager::inst()->value("audiojack", "clientname");
 	if (clientName.isEmpty()) { clientName = "lmms"; }
 
@@ -140,7 +145,8 @@ bool AudioJack::initJackClient() {
 	return true;
 }
 
-void AudioJack::startProcessing() {
+void AudioJack::startProcessing()
+{
 	if (m_active || m_client == nullptr) {
 		m_stopped = false;
 		return;
@@ -175,7 +181,8 @@ void AudioJack::startProcessing() {
 
 void AudioJack::stopProcessing() { m_stopped = true; }
 
-void AudioJack::applyQualitySettings() {
+void AudioJack::applyQualitySettings()
+{
 	if (hqAudio()) {
 		setSampleRate(Engine::audioEngine()->processingSampleRate());
 
@@ -185,7 +192,8 @@ void AudioJack::applyQualitySettings() {
 	AudioDevice::applyQualitySettings();
 }
 
-void AudioJack::registerPort(AudioPort* _port) {
+void AudioJack::registerPort(AudioPort* _port)
+{
 #ifdef AUDIO_PORT_SUPPORT
 	// make sure, port is not already registered
 	unregisterPort(_port);
@@ -198,7 +206,8 @@ void AudioJack::registerPort(AudioPort* _port) {
 #endif
 }
 
-void AudioJack::unregisterPort(AudioPort* _port) {
+void AudioJack::unregisterPort(AudioPort* _port)
+{
 #ifdef AUDIO_PORT_SUPPORT
 	if (m_portMap.contains(_port)) {
 		for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch) {
@@ -209,7 +218,8 @@ void AudioJack::unregisterPort(AudioPort* _port) {
 #endif
 }
 
-void AudioJack::renamePort(AudioPort* _port) {
+void AudioJack::renamePort(AudioPort* _port)
+{
 #ifdef AUDIO_PORT_SUPPORT
 	if (m_portMap.contains(_port)) {
 		const QString name[2] = {_port->name() + " L", _port->name() + " R"};
@@ -224,7 +234,8 @@ void AudioJack::renamePort(AudioPort* _port) {
 #endif
 }
 
-int AudioJack::processCallback(jack_nframes_t _nframes, void* _udata) {
+int AudioJack::processCallback(jack_nframes_t _nframes, void* _udata)
+{
 
 	// do midi processing first so that midi input can
 	// add to the following sound processing
@@ -283,18 +294,21 @@ int AudioJack::processCallback(jack_nframes_t _nframes, void* _udata) {
 	return 0;
 }
 
-int AudioJack::staticProcessCallback(jack_nframes_t _nframes, void* _udata) {
+int AudioJack::staticProcessCallback(jack_nframes_t _nframes, void* _udata)
+{
 	return static_cast<AudioJack*>(_udata)->processCallback(_nframes, _udata);
 }
 
-void AudioJack::shutdownCallback(void* _udata) {
+void AudioJack::shutdownCallback(void* _udata)
+{
 	AudioJack* _this = static_cast<AudioJack*>(_udata);
 	_this->m_client = nullptr;
 	_this->zombified();
 }
 
 AudioJack::setupWidget::setupWidget(QWidget* _parent)
-	: AudioDeviceSetupWidget(AudioJack::name(), _parent) {
+	: AudioDeviceSetupWidget(AudioJack::name(), _parent)
+{
 	QString cn = ConfigManager::inst()->value("audiojack", "clientname");
 	if (cn.isEmpty()) { cn = "lmms"; }
 	m_clientName = new QLineEdit(cn, this);
@@ -317,7 +331,8 @@ AudioJack::setupWidget::setupWidget(QWidget* _parent)
 
 AudioJack::setupWidget::~setupWidget() { delete m_channels->model(); }
 
-void AudioJack::setupWidget::saveSettings() {
+void AudioJack::setupWidget::saveSettings()
+{
 	ConfigManager::inst()->setValue("audiojack", "clientname", m_clientName->text());
 	ConfigManager::inst()->setValue("audiojack", "channels", QString::number(m_channels->value<int>()));
 }

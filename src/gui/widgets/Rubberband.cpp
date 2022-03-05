@@ -26,11 +26,14 @@
 #include "Rubberband.h"
 
 RubberBand::RubberBand(QWidget* _parent)
-	: QRubberBand(Rectangle, _parent) {}
+	: QRubberBand(Rectangle, _parent)
+{
+}
 
 RubberBand::~RubberBand() {}
 
-QVector<selectableObject*> RubberBand::selectedObjects() const {
+QVector<selectableObject*> RubberBand::selectedObjects() const
+{
 	QVector<selectableObject*> so = selectableObjects();
 	for (QVector<selectableObject*>::iterator it = so.begin(); it != so.end();) {
 		if ((*it)->isSelected() == false) {
@@ -44,7 +47,8 @@ QVector<selectableObject*> RubberBand::selectedObjects() const {
 
 void RubberBand::resizeEvent(QResizeEvent* _re) { QRubberBand::resizeEvent(_re); }
 
-QVector<selectableObject*> RubberBand::selectableObjects() const {
+QVector<selectableObject*> RubberBand::selectableObjects() const
+{
 	QVector<selectableObject*> so;
 	if (parentWidget() == nullptr) { return (so); }
 

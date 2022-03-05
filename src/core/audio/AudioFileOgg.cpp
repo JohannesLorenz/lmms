@@ -40,19 +40,22 @@
 
 AudioFileOgg::AudioFileOgg(OutputSettings const& outputSettings, const ch_cnt_t channels, bool& successful,
 	const QString& file, AudioEngine* audioEngine)
-	: AudioFileDevice(outputSettings, channels, file, audioEngine) {
+	: AudioFileDevice(outputSettings, channels, file, audioEngine)
+{
 	m_ok = successful = outputFileOpened() && startEncoding();
 }
 
 AudioFileOgg::~AudioFileOgg() { finishEncoding(); }
 
-inline int AudioFileOgg::writePage() {
+inline int AudioFileOgg::writePage()
+{
 	int written = writeData(m_og.header, m_og.header_len);
 	written += writeData(m_og.body, m_og.body_len);
 	return written;
 }
 
-bool AudioFileOgg::startEncoding() {
+bool AudioFileOgg::startEncoding()
+{
 	vorbis_comment vc;
 	const char* comments = "Cool=This song has been made using LMMS";
 	std::string user_comments_str(comments);
@@ -149,7 +152,8 @@ bool AudioFileOgg::startEncoding() {
 	return true;
 }
 
-void AudioFileOgg::writeBuffer(const surroundSampleFrame* _ab, const fpp_t _frames, const float _master_gain) {
+void AudioFileOgg::writeBuffer(const surroundSampleFrame* _ab, const fpp_t _frames, const float _master_gain)
+{
 	int eos = 0;
 
 	float** buffer = vorbis_analysis_buffer(&m_vd, _frames * BYTES_PER_SAMPLE * channels());
@@ -192,7 +196,8 @@ void AudioFileOgg::writeBuffer(const surroundSampleFrame* _ab, const fpp_t _fram
 	}
 }
 
-void AudioFileOgg::finishEncoding() {
+void AudioFileOgg::finishEncoding()
+{
 	if (m_ok) {
 		// just for flushing buffers...
 		writeBuffer(nullptr, 0, 0.0f);

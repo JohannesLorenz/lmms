@@ -47,7 +47,8 @@
 		lilv_plugin_instantiate
 	4. access the latter
 */
-class Lv2Features {
+class Lv2Features
+{
 public:
 	//! Return if a feature is supported by LMMS
 	static bool isFeatureSupported(const char* featName);

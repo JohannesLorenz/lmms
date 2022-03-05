@@ -47,10 +47,13 @@ Vectorscope::Vectorscope(Model* parent, const Plugin::Descriptor::SubPluginFeatu
 	,
 	// Buffer is sized to cover 4* the current maximum LMMS audio buffer size,
 	// so that it has some reserve space in case GUI thresd is busy.
-	m_inputBuffer(4 * m_maxBufferSize) {}
+	m_inputBuffer(4 * m_maxBufferSize)
+{
+}
 
 // Take audio data and store them for processing and display in the GUI thread.
-bool Vectorscope::processAudioBuffer(sampleFrame* buffer, const fpp_t frame_count) {
+bool Vectorscope::processAudioBuffer(sampleFrame* buffer, const fpp_t frame_count)
+{
 	if (!isEnabled() || !isRunning()) { return false; }
 
 	// Skip processing if the controls dialog isn't visible, it would only waste CPU cycles.
@@ -64,7 +67,8 @@ bool Vectorscope::processAudioBuffer(sampleFrame* buffer, const fpp_t frame_coun
 
 extern "C" {
 // needed for getting plugin out of shared lib
-PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data) {
+PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* parent, void* data)
+{
 	return new Vectorscope(parent, static_cast<const Plugin::Descriptor::SubPluginFeatures::Key*>(data));
 }
 }

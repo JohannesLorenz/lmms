@@ -37,7 +37,8 @@ class Lv2Proc;
 class Lv2ControlBase;
 
 //! View for one processor, Lv2ViewBase contains 2 of those for mono plugins
-class Lv2ViewProc : public LinkedModelGroupView {
+class Lv2ViewProc : public LinkedModelGroupView
+{
 public:
 	//! @param colNum numbers of columns for the controls
 	Lv2ViewProc(QWidget* parent, Lv2Proc* ctrlBase, int colNum);
@@ -48,7 +49,8 @@ private:
 };
 
 //! Base class for view for one Lv2 plugin
-class LMMS_EXPORT Lv2ViewBase : public LinkedModelGroupsView {
+class LMMS_EXPORT Lv2ViewBase : public LinkedModelGroupsView
+{
 protected:
 	//! @param pluginWidget A child class which inherits QWidget
 	Lv2ViewBase(class QWidget* pluginWidget, Lv2ControlBase* ctrlBase);
@@ -67,7 +69,12 @@ protected:
 	void modelChanged(Lv2ControlBase* ctrlBase);
 
 private:
-	enum Rows { ButtonRow, ProcRow, LinkChannelsRow };
+	enum Rows
+	{
+		ButtonRow,
+		ProcRow,
+		LinkChannelsRow
+	};
 
 	static AutoLilvNode uri(const char* uriStr);
 	LinkedModelGroupView* getGroupView() override { return m_procView; }

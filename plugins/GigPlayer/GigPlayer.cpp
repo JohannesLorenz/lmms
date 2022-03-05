@@ -79,7 +79,8 @@ GigInstrument::GigInstrument(InstrumentTrack* _instrument_track)
 	, m_gain(1.0f, 0.0f, 5.0f, 0.01f, this, tr("Gain"))
 	, m_interpolation(SRC_LINEAR)
 	, m_RandomSeed(0)
-	, m_currentKeyDimension(0) {
+	, m_currentKeyDimension(0)
+{
 	InstrumentPlayHandle* iph = new InstrumentPlayHandle(this, _instrument_track);
 	Engine::audioEngine()->addPlayHandle(iph);
 
@@ -90,13 +91,15 @@ GigInstrument::GigInstrument(InstrumentTrack* _instrument_track)
 	connect(Engine::audioEngine(), SIGNAL(sampleRateChanged()), this, SLOT(updateSampleRate()));
 }
 
-GigInstrument::~GigInstrument() {
+GigInstrument::~GigInstrument()
+{
 	Engine::audioEngine()->removePlayHandlesOfTypes(
 		instrumentTrack(), PlayHandle::TypeNotePlayHandle | PlayHandle::TypeInstrumentPlayHandle);
 	freeInstance();
 }
 
-void GigInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this) {
+void GigInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this)
+{
 	_this.setAttribute("src", m_filename);
 	m_patchNum.saveSettings(_doc, _this, "patch");
 	m_bankNum.saveSettings(_doc, _this, "bank");
@@ -104,7 +107,8 @@ void GigInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this) {
 	m_gain.saveSettings(_doc, _this, "gain");
 }
 
-void GigInstrument::loadSettings(const QDomElement& _this) {
+void GigInstrument::loadSettings(const QDomElement& _this)
+{
 	openFile(_this.attribute("src"), false);
 	m_patchNum.loadSettings(_this, "patch");
 	m_bankNum.loadSettings(_this, "bank");
@@ -114,7 +118,8 @@ void GigInstrument::loadSettings(const QDomElement& _this) {
 	updatePatch();
 }
 
-void GigInstrument::loadFile(const QString& _file) {
+void GigInstrument::loadFile(const QString& _file)
+{
 	if (!_file.isEmpty() && QFileInfo(_file).exists()) {
 		openFile(_file, false);
 		updatePatch();
@@ -122,7 +127,8 @@ void GigInstrument::loadFile(const QString& _file) {
 	}
 }
 
-AutomatableModel* GigInstrument::childModel(const QString& _modelName) {
+AutomatableModel* GigInstrument::childModel(const QString& _modelName)
+{
 	if (_modelName == "bank") {
 		return &m_bankNum;
 	} else if (_modelName == "patch") {
@@ -136,7 +142,8 @@ AutomatableModel* GigInstrument::childModel(const QString& _modelName) {
 
 QString GigInstrument::nodeName() const { return gigplayer_plugin_descriptor.name; }
 
-void GigInstrument::freeInstance() {
+void GigInstrument::freeInstance()
+{
 	QMutexLocker synthLock(&m_synthMutex);
 	QMutexLocker notesLock(&m_notesMutex);
 
@@ -152,7 +159,8 @@ void GigInstrument::freeInstance() {
 	}
 }
 
-void GigInstrument::openFile(const QString& _gigFile, bool updateTrackName) {
+void GigInstrument::openFile(const QString& _gigFile, bool updateTrackName)
+{
 	emit fileLoading();
 
 	// Remove the current instrument if one is selected
@@ -178,11 +186,13 @@ void GigInstrument::openFile(const QString& _gigFile, bool updateTrackName) {
 	}
 }
 
-void GigInstrument::updatePatch() {
+void GigInstrument::updatePatch()
+{
 	if (m_bankNum.value() >= 0 && m_patchNum.value() >= 0) { getInstrument(); }
 }
 
-QString GigInstrument::getCurrentPatchName() {
+QString GigInstrument::getCurrentPatchName()
+{
 	QMutexLocker locker(&m_synthMutex);
 
 	if (m_instance == nullptr) { return ""; }
@@ -211,7 +221,8 @@ QString GigInstrument::getCurrentPatchName() {
 }
 
 // A key has been pressed
-void GigInstrument::playNote(NotePlayHandle* _n, sampleFrame*) {
+void GigInstrument::playNote(NotePlayHandle* _n, sampleFrame*)
+{
 	const float LOG440 = 2.643452676f;
 
 	const f_cnt_t tfp = _n->totalFramesPlayed();
@@ -236,7 +247,8 @@ void GigInstrument::playNote(NotePlayHandle* _n, sampleFrame*) {
 
 // Process the notes and output a certain number of frames (e.g. 256, set in
 // the preferences)
-void GigInstrument::play(sampleFrame* _working_buffer) {
+void GigInstrument::play(sampleFrame* _working_buffer)
+{
 	const fpp_t frames = Engine::audioEngine()->framesPerPeriod();
 	const int rate = Engine::audioEngine()->processingSampleRate();
 
@@ -377,7 +389,8 @@ void GigInstrument::play(sampleFrame* _working_buffer) {
 	instrumentTrack()->processAudioBuffer(_working_buffer, frames, nullptr);
 }
 
-void GigInstrument::loadSample(GigSample& sample, sampleFrame* sampleData, f_cnt_t samples) {
+void GigInstrument::loadSample(GigSample& sample, sampleFrame* sampleData, f_cnt_t samples)
+{
 	if (sampleData == nullptr || samples < 1) { return; }
 
 	// Determine if we need to loop part of this sample
@@ -480,13 +493,15 @@ void GigInstrument::loadSample(GigSample& sample, sampleFrame* sampleData, f_cnt
 }
 
 // These two loop index functions taken from SampleBuffer.cpp
-f_cnt_t GigInstrument::getLoopedIndex(f_cnt_t index, f_cnt_t startf, f_cnt_t endf) const {
+f_cnt_t GigInstrument::getLoopedIndex(f_cnt_t index, f_cnt_t startf, f_cnt_t endf) const
+{
 	if (index < endf) { return index; }
 
 	return startf + (index - startf) % (endf - startf);
 }
 
-f_cnt_t GigInstrument::getPingPongIndex(f_cnt_t index, f_cnt_t startf, f_cnt_t endf) const {
+f_cnt_t GigInstrument::getPingPongIndex(f_cnt_t index, f_cnt_t startf, f_cnt_t endf) const
+{
 	if (index < endf) { return index; }
 
 	const f_cnt_t looplen = endf - startf;
@@ -496,7 +511,8 @@ f_cnt_t GigInstrument::getPingPongIndex(f_cnt_t index, f_cnt_t startf, f_cnt_t e
 }
 
 // A key has been released
-void GigInstrument::deleteNotePluginData(NotePlayHandle* _n) {
+void GigInstrument::deleteNotePluginData(NotePlayHandle* _n)
+{
 	GIGPluginData* pluginData = static_cast<GIGPluginData*>(_n->m_pluginData);
 	QMutexLocker locker(&m_notesMutex);
 
@@ -519,7 +535,8 @@ PluginView* GigInstrument::instantiateView(QWidget* _parent) { return new GigIns
 //
 // Note: not thread safe since libgig stores current region position data in
 // the instrument object
-void GigInstrument::addSamples(GigNote& gignote, bool wantReleaseSample) {
+void GigInstrument::addSamples(GigNote& gignote, bool wantReleaseSample)
+{
 	// Change key dimension, e.g. change samples based on what key is pressed
 	// in a certain range. From LinuxSampler
 	if (wantReleaseSample == true && gignote.midiNote >= m_instrument->DimensionKeyRange.low
@@ -572,7 +589,8 @@ void GigInstrument::addSamples(GigNote& gignote, bool wantReleaseSample) {
 // Based on our input parameters, generate a "dimension" that specifies which
 // note we wish to select from the GIG file with libgig. libgig will use this
 // information to select the sample.
-Dimension GigInstrument::getDimensions(gig::Region* pRegion, int velocity, bool release) {
+Dimension GigInstrument::getDimensions(gig::Region* pRegion, int velocity, bool release)
+{
 	Dimension dim;
 
 	if (pRegion == nullptr) { return dim; }
@@ -636,7 +654,8 @@ Dimension GigInstrument::getDimensions(gig::Region* pRegion, int velocity, bool 
 
 // Get the selected instrument from the GIG file we opened if we haven't gotten
 // it already. This is based on the bank and patch numbers.
-void GigInstrument::getInstrument() {
+void GigInstrument::getInstrument()
+{
 	// Find instrument
 	int iBankSelected = m_bankNum.value();
 	int iProgSelected = m_patchNum.value();
@@ -662,21 +681,25 @@ void GigInstrument::getInstrument() {
 // Since the sample rate changes when we start an export, clear all the
 // currently-playing notes when we get this signal. Then, the export won't
 // include leftover notes that were playing in the program.
-void GigInstrument::updateSampleRate() {
+void GigInstrument::updateSampleRate()
+{
 	QMutexLocker locker(&m_notesMutex);
 	m_notes.clear();
 }
 
-class gigKnob : public Knob {
+class gigKnob : public Knob
+{
 public:
 	gigKnob(QWidget* _parent)
-		: Knob(knobBright_26, _parent) {
+		: Knob(knobBright_26, _parent)
+	{
 		setFixedSize(31, 38);
 	}
 };
 
 GigInstrumentView::GigInstrumentView(Instrument* _instrument, QWidget* _parent)
-	: InstrumentViewFixedSize(_instrument, _parent) {
+	: InstrumentViewFixedSize(_instrument, _parent)
+{
 	GigInstrument* k = castModel<GigInstrument>();
 
 	connect(&k->m_bankNum, SIGNAL(dataChanged()), this, SLOT(updatePatchName()));
@@ -733,7 +756,8 @@ GigInstrumentView::GigInstrumentView(Instrument* _instrument, QWidget* _parent)
 
 GigInstrumentView::~GigInstrumentView() {}
 
-void GigInstrumentView::modelChanged() {
+void GigInstrumentView::modelChanged()
+{
 	GigInstrument* k = castModel<GigInstrument>();
 	m_bankNumLcd->setModel(&k->m_bankNum);
 	m_patchNumLcd->setModel(&k->m_patchNum);
@@ -746,7 +770,8 @@ void GigInstrumentView::modelChanged() {
 	updateFilename();
 }
 
-void GigInstrumentView::updateFilename() {
+void GigInstrumentView::updateFilename()
+{
 	GigInstrument* i = castModel<GigInstrument>();
 	QFontMetrics fm(m_filenameLabel->font());
 	QString file = i->m_filename.endsWith(".gig", Qt::CaseInsensitive) ? i->m_filename.left(i->m_filename.length() - 4)
@@ -759,7 +784,8 @@ void GigInstrumentView::updateFilename() {
 	update();
 }
 
-void GigInstrumentView::updatePatchName() {
+void GigInstrumentView::updatePatchName()
+{
 	GigInstrument* i = castModel<GigInstrument>();
 	QFontMetrics fm(font());
 	QString patch = i->getCurrentPatchName();
@@ -770,7 +796,8 @@ void GigInstrumentView::updatePatchName() {
 
 void GigInstrumentView::invalidateFile() { m_patchDialogButton->setEnabled(false); }
 
-void GigInstrumentView::showFileDialog() {
+void GigInstrumentView::showFileDialog()
+{
 	GigInstrument* k = castModel<GigInstrument>();
 
 	FileDialog ofd(nullptr, tr("Open GIG file"));
@@ -802,7 +829,8 @@ void GigInstrumentView::showFileDialog() {
 	m_fileDialogButton->setEnabled(true);
 }
 
-void GigInstrumentView::showPatchDialog() {
+void GigInstrumentView::showPatchDialog()
+{
 	GigInstrument* k = castModel<GigInstrument>();
 	PatchesDialog pd(this);
 	pd.setup(k->m_instance, 1, k->instrumentTrack()->name(), &k->m_bankNum, &k->m_patchNum, m_patchLabel);
@@ -819,7 +847,8 @@ GigSample::GigSample(
 	, interpolation(interpolation)
 	, srcState(nullptr)
 	, sampleFreq(0)
-	, freqFactor(1) {
+	, freqFactor(1)
+{
 	if (sample != nullptr && region != nullptr) {
 		// Note: we don't create the libsamplerate object here since we always
 		// also call the copy constructor when appending to the end of the
@@ -841,7 +870,8 @@ GigSample::GigSample(
 	}
 }
 
-GigSample::~GigSample() {
+GigSample::~GigSample()
+{
 	if (srcState != nullptr) { src_delete(srcState); }
 }
 
@@ -854,12 +884,14 @@ GigSample::GigSample(const GigSample& g)
 	, interpolation(g.interpolation)
 	, srcState(nullptr)
 	, sampleFreq(g.sampleFreq)
-	, freqFactor(g.freqFactor) {
+	, freqFactor(g.freqFactor)
+{
 	// On the copy, we want to create the object
 	updateSampleRate();
 }
 
-GigSample& GigSample::operator=(const GigSample& g) {
+GigSample& GigSample::operator=(const GigSample& g)
+{
 	sample = g.sample;
 	region = g.region;
 	attenuation = g.attenuation;
@@ -875,7 +907,8 @@ GigSample& GigSample::operator=(const GigSample& g) {
 	return *this;
 }
 
-void GigSample::updateSampleRate() {
+void GigSample::updateSampleRate()
+{
 	if (srcState != nullptr) { src_delete(srcState); }
 
 	int error = 0;
@@ -887,7 +920,8 @@ void GigSample::updateSampleRate() {
 }
 
 bool GigSample::convertSampleRate(
-	sampleFrame& oldBuf, sampleFrame& newBuf, f_cnt_t oldSize, f_cnt_t newSize, float freq_factor, f_cnt_t& used) {
+	sampleFrame& oldBuf, sampleFrame& newBuf, f_cnt_t oldSize, f_cnt_t newSize, float freq_factor, f_cnt_t& used)
+{
 	if (srcState == nullptr) { return false; }
 
 	SRC_DATA src_data;
@@ -939,7 +973,9 @@ ADSR::ADSR()
 	, attackLength(0)
 	, decayLength(0)
 	, releasePosition(0)
-	, releaseLength(0) {}
+	, releaseLength(0)
+{
+}
 
 // Create the ADSR envelope from the settings in the GIG file
 ADSR::ADSR(gig::DimensionRegion* region, int sampleRate)
@@ -958,7 +994,8 @@ ADSR::ADSR(gig::DimensionRegion* region, int sampleRate)
 	, attackLength(0)
 	, decayLength(0)
 	, releasePosition(0)
-	, releaseLength(0) {
+	, releaseLength(0)
+{
 	if (region != nullptr) {
 		// Parameters from GIG file
 		preattack = 1.0 * region->EG1PreAttack / 1000; // EG1PreAttack is 0-1000 permille
@@ -993,7 +1030,8 @@ void ADSR::keyup() { isRelease = true; }
 bool ADSR::done() { return isDone; }
 
 // Return the current amplitude and increment internal positions
-float ADSR::value() {
+float ADSR::value()
+{
 	float currentAmplitude = amplitude;
 
 	// If we're done, don't output any signal
@@ -1039,7 +1077,8 @@ float ADSR::value() {
 }
 
 // Increment internal positions a certain number of times
-void ADSR::inc(f_cnt_t num) {
+void ADSR::inc(f_cnt_t num)
+{
 	for (f_cnt_t i = 0; i < num; ++i) {
 		value();
 	}

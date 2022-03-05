@@ -37,15 +37,19 @@
 #include "LadspaBase.h"
 
 LadspaSubPluginFeatures::LadspaSubPluginFeatures(Plugin::PluginTypes _type)
-	: SubPluginFeatures(_type) {}
+	: SubPluginFeatures(_type)
+{
+}
 
-QString LadspaSubPluginFeatures::displayName(const Plugin::Descriptor::SubPluginFeatures::Key& k) const {
+QString LadspaSubPluginFeatures::displayName(const Plugin::Descriptor::SubPluginFeatures::Key& k) const
+{
 	const ladspa_key_t& lkey = subPluginKeyToLadspaKey(&k);
 	Ladspa2LMMS* lm = Engine::getLADSPAManager();
 	return lm->getName(lkey);
 }
 
-void LadspaSubPluginFeatures::fillDescriptionWidget(QWidget* _parent, const Key* _key) const {
+void LadspaSubPluginFeatures::fillDescriptionWidget(QWidget* _parent, const Key* _key) const
+{
 	const ladspa_key_t& lkey = subPluginKeyToLadspaKey(_key);
 	Ladspa2LMMS* lm = Engine::getLADSPAManager();
 
@@ -104,7 +108,8 @@ void LadspaSubPluginFeatures::fillDescriptionWidget(QWidget* _parent, const Key*
 	channelsOut->setText(QWidget::tr("Channels Out: ") + QString::number(lm->getDescription(lkey)->outputChannels));
 }
 
-void LadspaSubPluginFeatures::listSubPluginKeys(const Plugin::Descriptor* _desc, KeyList& _kl) const {
+void LadspaSubPluginFeatures::listSubPluginKeys(const Plugin::Descriptor* _desc, KeyList& _kl) const
+{
 	Ladspa2LMMS* lm = Engine::getLADSPAManager();
 
 	l_sortable_plugin_t plugins;
@@ -126,7 +131,8 @@ void LadspaSubPluginFeatures::listSubPluginKeys(const Plugin::Descriptor* _desc,
 	}
 }
 
-ladspa_key_t LadspaSubPluginFeatures::subPluginKeyToLadspaKey(const Key* _key) {
+ladspa_key_t LadspaSubPluginFeatures::subPluginKeyToLadspaKey(const Key* _key)
+{
 	QString file = _key->attributes["file"];
 	return (ladspa_key_t(file.remove(QRegExp("\\.so$")).remove(QRegExp("\\.dll$")) +
 #ifdef LMMS_BUILD_WIN32

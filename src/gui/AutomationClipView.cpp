@@ -45,7 +45,8 @@ QPixmap* AutomationClipView::s_clip_rec = nullptr;
 AutomationClipView::AutomationClipView(AutomationClip* _clip, TrackView* _parent)
 	: ClipView(_clip, _parent)
 	, m_clip(_clip)
-	, m_paintPixmap() {
+	, m_paintPixmap()
+{
 	connect(m_clip, SIGNAL(dataChanged()), this, SLOT(update()));
 	connect(getGUI()->automationEditor(), SIGNAL(currentClipChanged()), this, SLOT(update()));
 
@@ -61,11 +62,13 @@ AutomationClipView::AutomationClipView(AutomationClip* _clip, TrackView* _parent
 
 AutomationClipView::~AutomationClipView() {}
 
-void AutomationClipView::openInAutomationEditor() {
+void AutomationClipView::openInAutomationEditor()
+{
 	if (getGUI() != nullptr) getGUI()->automationEditor()->open(m_clip);
 }
 
-void AutomationClipView::update() {
+void AutomationClipView::update()
+{
 	ToolTip::add(this, m_clip->name());
 
 	ClipView::update();
@@ -73,7 +76,8 @@ void AutomationClipView::update() {
 
 void AutomationClipView::resetName() { m_clip->setName(QString()); }
 
-void AutomationClipView::changeName() {
+void AutomationClipView::changeName()
+{
 	QString s = m_clip->name();
 	RenameDialog rename_dlg(s);
 	rename_dlg.exec();
@@ -81,7 +85,8 @@ void AutomationClipView::changeName() {
 	update();
 }
 
-void AutomationClipView::disconnectObject(QAction* _a) {
+void AutomationClipView::disconnectObject(QAction* _a)
+{
 	JournallingObject* j = Engine::projectJournal()->journallingObject(_a->data().toInt());
 	if (j && dynamic_cast<AutomatableModel*>(j)) {
 		float oldMin = m_clip->getMin();
@@ -102,22 +107,26 @@ void AutomationClipView::disconnectObject(QAction* _a) {
 	}
 }
 
-void AutomationClipView::toggleRecording() {
+void AutomationClipView::toggleRecording()
+{
 	m_clip->setRecording(!m_clip->isRecording());
 	update();
 }
 
-void AutomationClipView::flipY() {
+void AutomationClipView::flipY()
+{
 	m_clip->flipY(m_clip->getMin(), m_clip->getMax());
 	update();
 }
 
-void AutomationClipView::flipX() {
+void AutomationClipView::flipX()
+{
 	m_clip->flipX(m_clip->length());
 	update();
 }
 
-void AutomationClipView::constructContextMenu(QMenu* _cm) {
+void AutomationClipView::constructContextMenu(QMenu* _cm)
+{
 	QAction* a = new QAction(embed::getIconPixmap("automation"), tr("Open in Automation editor"), _cm);
 	_cm->insertAction(_cm->actions()[0], a);
 	connect(a, SIGNAL(triggered()), this, SLOT(openInAutomationEditor()));
@@ -149,7 +158,8 @@ void AutomationClipView::constructContextMenu(QMenu* _cm) {
 	}
 }
 
-void AutomationClipView::mouseDoubleClickEvent(QMouseEvent* me) {
+void AutomationClipView::mouseDoubleClickEvent(QMouseEvent* me)
+{
 	if (me->button() != Qt::LeftButton) {
 		me->ignore();
 		return;
@@ -157,7 +167,8 @@ void AutomationClipView::mouseDoubleClickEvent(QMouseEvent* me) {
 	openInAutomationEditor();
 }
 
-void AutomationClipView::paintEvent(QPaintEvent*) {
+void AutomationClipView::paintEvent(QPaintEvent*)
+{
 	QPainter painter(this);
 
 	if (!needsUpdate()) {
@@ -309,12 +320,14 @@ void AutomationClipView::paintEvent(QPaintEvent*) {
 	painter.drawPixmap(0, 0, m_paintPixmap);
 }
 
-void AutomationClipView::dragEnterEvent(QDragEnterEvent* _dee) {
+void AutomationClipView::dragEnterEvent(QDragEnterEvent* _dee)
+{
 	StringPairDrag::processDragEnterEvent(_dee, "automatable_model");
 	if (!_dee->isAccepted()) { ClipView::dragEnterEvent(_dee); }
 }
 
-void AutomationClipView::dropEvent(QDropEvent* _de) {
+void AutomationClipView::dropEvent(QDropEvent* _de)
+{
 	QString type = StringPairDrag::decodeKey(_de);
 	QString val = StringPairDrag::decodeValue(_de);
 	if (type == "automatable_model") {
@@ -342,7 +355,8 @@ void AutomationClipView::dropEvent(QDropEvent* _de) {
 /**
  * @brief Preserves the auto points over different scale
  */
-void AutomationClipView::scaleTimemapToFit(float oldMin, float oldMax) {
+void AutomationClipView::scaleTimemapToFit(float oldMin, float oldMax)
+{
 	float newMin = m_clip->getMin();
 	float newMax = m_clip->getMax();
 

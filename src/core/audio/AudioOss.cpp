@@ -67,7 +67,8 @@ AudioOss::AudioOss(bool& _success_ful, AudioEngine* _audioEngine)
 	: AudioDevice(qBound<ch_cnt_t>(DEFAULT_CHANNELS, ConfigManager::inst()->value("audiooss", "channels").toInt(),
 					  SURROUND_CHANNELS),
 		_audioEngine)
-	, m_convertEndian(false) {
+	, m_convertEndian(false)
+{
 	_success_ful = false;
 
 	m_audioFD = open(probeDevice().toLatin1().constData(), O_WRONLY, 0);
@@ -156,12 +157,14 @@ AudioOss::AudioOss(bool& _success_ful, AudioEngine* _audioEngine)
 	_success_ful = true;
 }
 
-AudioOss::~AudioOss() {
+AudioOss::~AudioOss()
+{
 	stopProcessing();
 	close(m_audioFD);
 }
 
-QString AudioOss::probeDevice() {
+QString AudioOss::probeDevice()
+{
 	QString dev = ConfigManager::inst()->value("AudioOss", "Device");
 	if (dev.isEmpty()) {
 		char* adev = getenv("AUDIODEV"); // Is there a standard
@@ -188,13 +191,15 @@ QString AudioOss::probeDevice() {
 	return dev;
 }
 
-void AudioOss::startProcessing() {
+void AudioOss::startProcessing()
+{
 	if (!isRunning()) { start(QThread::HighPriority); }
 }
 
 void AudioOss::stopProcessing() { stopProcessingThread(this); }
 
-void AudioOss::applyQualitySettings() {
+void AudioOss::applyQualitySettings()
+{
 	if (hqAudio()) {
 		setSampleRate(Engine::audioEngine()->processingSampleRate());
 
@@ -218,7 +223,8 @@ void AudioOss::applyQualitySettings() {
 	AudioDevice::applyQualitySettings();
 }
 
-void AudioOss::run() {
+void AudioOss::run()
+{
 	surroundSampleFrame* temp = new surroundSampleFrame[audioEngine()->framesPerPeriod()];
 	int_sample_t* outbuf = new int_sample_t[audioEngine()->framesPerPeriod() * channels()];
 
@@ -235,7 +241,8 @@ void AudioOss::run() {
 }
 
 AudioOss::setupWidget::setupWidget(QWidget* _parent)
-	: AudioDeviceSetupWidget(AudioOss::name(), _parent) {
+	: AudioDeviceSetupWidget(AudioOss::name(), _parent)
+{
 	m_device = new QLineEdit(probeDevice(), this);
 	m_device->setGeometry(10, 20, 160, 20);
 
@@ -256,7 +263,8 @@ AudioOss::setupWidget::setupWidget(QWidget* _parent)
 
 AudioOss::setupWidget::~setupWidget() { delete m_channels->model(); }
 
-void AudioOss::setupWidget::saveSettings() {
+void AudioOss::setupWidget::saveSettings()
+{
 	ConfigManager::inst()->setValue("audiooss", "device", m_device->text());
 	ConfigManager::inst()->setValue("audiooss", "channels", QString::number(m_channels->value<int>()));
 }

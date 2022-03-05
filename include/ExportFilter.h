@@ -31,10 +31,13 @@
 #include "Plugin.h"
 #include "TrackContainer.h"
 
-class LMMS_EXPORT ExportFilter : public Plugin {
+class LMMS_EXPORT ExportFilter : public Plugin
+{
 public:
 	ExportFilter(const Descriptor* _descriptor)
-		: Plugin(_descriptor, nullptr) {}
+		: Plugin(_descriptor, nullptr)
+	{
+	}
 	virtual ~ExportFilter() {}
 
 	virtual bool tryExport(const TrackContainer::TrackList& tracks, const TrackContainer::TrackList& patternTracks,

@@ -30,7 +30,8 @@
 
 #include "lmms_export.h"
 
-class LMMS_EXPORT TextFloat : public QWidget {
+class LMMS_EXPORT TextFloat : public QWidget
+{
 	Q_OBJECT
 public:
 	TextFloat();

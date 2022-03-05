@@ -32,7 +32,8 @@
 
 class MultitapEchoEffect;
 
-class MultitapEchoControls : public EffectControls {
+class MultitapEchoControls : public EffectControls
+{
 	Q_OBJECT
 public:
 	MultitapEchoControls(MultitapEchoEffect* eff);

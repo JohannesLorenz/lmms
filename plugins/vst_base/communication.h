@@ -26,13 +26,15 @@
 #ifndef _COMMUNICATION_H
 #define _COMMUNICATION_H
 
-struct VstParameterDumpItem {
+struct VstParameterDumpItem
+{
 	int32_t index;
 	std::string shortLabel;
 	float value;
 };
 
-enum VstHostLanguages {
+enum VstHostLanguages
+{
 	LanguageEnglish = 1,
 	LanguageGerman,
 	LanguageFrench,
@@ -42,7 +44,8 @@ enum VstHostLanguages {
 	LanguageKorean
 };
 
-enum VstRemoteMessageIDs {
+enum VstRemoteMessageIDs
+{
 	// vstPlugin -> remoteVstPlugin
 	IdVstLoadPlugin = IdUserBase,
 	IdVstClosePlugin,
