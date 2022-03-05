@@ -43,11 +43,14 @@ public:
 		ConstNotePlayHandleList nphv = NotePlayHandle::nphsOfInstrumentTrack(m_instrument->instrumentTrack(), true);
 
 		bool nphsLeft;
-		do {
+		do
+		{
 			nphsLeft = false;
-			for (const NotePlayHandle* constNotePlayHandle : nphv) {
+			for (const NotePlayHandle* constNotePlayHandle : nphv)
+			{
 				NotePlayHandle* notePlayHandle = const_cast<NotePlayHandle*>(constNotePlayHandle);
-				if (notePlayHandle->state() != ThreadableJob::ProcessingState::Done && !notePlayHandle->isFinished()) {
+				if (notePlayHandle->state() != ThreadableJob::ProcessingState::Done && !notePlayHandle->isFinished())
+				{
 					nphsLeft = true;
 					notePlayHandle->process();
 				}

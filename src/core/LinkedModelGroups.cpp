@@ -64,7 +64,8 @@ void LinkedModelGroup::addModel(AutomatableModel* model, const QString& name)
 	connect(
 		model, &AutomatableModel::destroyed, this,
 		[this, model](jo_id_t) {
-			if (containsModel(model->objectName())) {
+			if (containsModel(model->objectName()))
+			{
 				emit modelRemoved(model);
 				eraseModel(model->objectName());
 			}
@@ -78,7 +79,8 @@ void LinkedModelGroup::addModel(AutomatableModel* model, const QString& name)
 
 void LinkedModelGroup::removeControl(AutomatableModel* mdl)
 {
-	if (containsModel(mdl->objectName())) {
+	if (containsModel(mdl->objectName()))
+	{
 		emit modelRemoved(mdl);
 		eraseModel(mdl->objectName());
 	}
@@ -104,7 +106,8 @@ void LinkedModelGroups::linkAllModels()
 	LinkedModelGroup* first = getGroup(0);
 	LinkedModelGroup* cur;
 
-	for (std::size_t i = 1; (cur = getGroup(i)); ++i) {
+	for (std::size_t i = 1; (cur = getGroup(i)); ++i)
+	{
 		first->linkControls(cur);
 	}
 }
@@ -112,11 +115,14 @@ void LinkedModelGroups::linkAllModels()
 void LinkedModelGroups::saveSettings(QDomDocument& doc, QDomElement& that)
 {
 	LinkedModelGroup* grp0 = getGroup(0);
-	if (grp0) {
+	if (grp0)
+	{
 		QDomElement models = doc.createElement("models");
 		that.appendChild(models);
 		grp0->saveValues(doc, models);
-	} else { /* don't even add a "models" node */
+	}
+	else
+	{ /* don't even add a "models" node */
 	}
 }
 
@@ -124,7 +130,8 @@ void LinkedModelGroups::loadSettings(const QDomElement& that)
 {
 	QDomElement models = that.firstChildElement("models");
 	LinkedModelGroup* grp0;
-	if (!models.isNull() && (grp0 = getGroup(0))) {
+	if (!models.isNull() && (grp0 = getGroup(0)))
+	{
 		// only load the first group, the others are linked to the first
 		grp0->loadValues(models);
 	}

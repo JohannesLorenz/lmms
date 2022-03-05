@@ -27,11 +27,12 @@
 QString Model::fullDisplayName() const
 {
 	const QString& n = displayName();
-	if (parentModel()) {
+	if (parentModel())
+	{
 		const QString p = parentModel()->fullDisplayName();
-		if (n.isEmpty() && p.isEmpty()) {
-			return QString();
-		} else if (p.isEmpty()) {
+		if (n.isEmpty() && p.isEmpty()) { return QString(); }
+		else if (p.isEmpty())
+		{
 			return n;
 		}
 		return p + ">" + n;

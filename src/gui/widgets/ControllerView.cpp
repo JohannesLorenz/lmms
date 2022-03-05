@@ -94,11 +94,14 @@ ControllerView::~ControllerView()
 
 void ControllerView::editControls()
 {
-	if (m_show) {
+	if (m_show)
+	{
 		m_subWindow->show();
 		m_subWindow->raise();
 		m_show = false;
-	} else {
+	}
+	else
+	{
 		m_subWindow->hide();
 		m_show = true;
 	}
@@ -118,9 +121,11 @@ void ControllerView::renameController()
 	Controller* c = castModel<Controller>();
 	QString new_name = QInputDialog::getText(
 		this, tr("Rename controller"), tr("Enter the new name for this controller"), QLineEdit::Normal, c->name(), &ok);
-	if (ok && !new_name.isEmpty()) {
+	if (ok && !new_name.isEmpty())
+	{
 		c->setName(new_name);
-		if (getController()->type() == Controller::LfoController) {
+		if (getController()->type() == Controller::LfoController)
+		{
 			m_controllerDlg->setWindowTitle(tr("LFO") + " (" + new_name + ")");
 		}
 		m_nameLabel->setText(new_name);

@@ -59,7 +59,8 @@ bool BassBoosterEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 {
 	if (!isEnabled() || !isRunning()) { return (false); }
 	// check out changed controls
-	if (m_frequencyChangeNeeded || m_bbControls.m_freqModel.isValueChanged()) {
+	if (m_frequencyChangeNeeded || m_bbControls.m_freqModel.isValueChanged())
+	{
 		changeFrequency();
 		m_frequencyChangeNeeded = false;
 	}
@@ -73,9 +74,11 @@ bool BassBoosterEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 	const float d = dryLevel();
 	const float w = wetLevel();
 
-	for (fpp_t f = 0; f < frames; ++f) {
+	for (fpp_t f = 0; f < frames; ++f)
+	{
 		float gain = const_gain;
-		if (gainBuffer) {
+		if (gainBuffer)
+		{
 			// process period using sample exact data
 			gain = gainBuffer->value(f);
 		}

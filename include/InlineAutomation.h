@@ -48,14 +48,16 @@ public:
 
 	bool hasAutomation() const
 	{
-		if (m_autoClip != nullptr && m_autoClip->getTimeMap().isEmpty() == false) {
+		if (m_autoClip != nullptr && m_autoClip->getTimeMap().isEmpty() == false)
+		{
 			// Prevent saving inline automation if there's just one node at the beginning of
 			// the clip, which has a InValue equal to the value of model (which is going
 			// to be saved anyways) and no offset between the InValue and OutValue
 			AutomationClip::timeMap::const_iterator firstNode = m_autoClip->getTimeMap().begin();
 
 			if (isAtInitValue() && m_autoClip->getTimeMap().size() == 1 && POS(firstNode) == 0
-				&& INVAL(firstNode) == value() && OFFSET(firstNode) == 0) {
+				&& INVAL(firstNode) == value() && OFFSET(firstNode) == 0)
+			{
 				return false;
 			}
 
@@ -67,7 +69,8 @@ public:
 
 	AutomationClip* automationClip()
 	{
-		if (m_autoClip == nullptr) {
+		if (m_autoClip == nullptr)
+		{
 			m_autoClip = new AutomationClip(nullptr);
 			m_autoClip->addObject(this);
 		}

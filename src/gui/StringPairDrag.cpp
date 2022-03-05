@@ -39,9 +39,9 @@ StringPairDrag::StringPairDrag(const QString& _key, const QString& _value, const
 	// For mimeType() and MimeType enum class
 	using namespace Clipboard;
 
-	if (_icon.isNull() && _w) {
-		setPixmap(_w->grab().scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-	} else {
+	if (_icon.isNull() && _w) { setPixmap(_w->grab().scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation)); }
+	else
+	{
 		setPixmap(_icon);
 	}
 	QString txt = _key + ":" + _value;
@@ -65,7 +65,8 @@ bool StringPairDrag::processDragEnterEvent(QDragEnterEvent* _dee, const QString&
 
 	if (!_dee->mimeData()->hasFormat(mimeType(MimeType::StringPair))) { return (false); }
 	QString txt = _dee->mimeData()->data(mimeType(MimeType::StringPair));
-	if (_allowed_keys.split(',').contains(txt.section(':', 0, 0))) {
+	if (_allowed_keys.split(',').contains(txt.section(':', 0, 0)))
+	{
 		_dee->acceptProposedAction();
 		return (true);
 	}

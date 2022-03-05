@@ -89,7 +89,8 @@ public:
 		AutomatableModel::loadSettings(element, name);
 		bool mustQuote = mustQuoteName(name);
 		QDomElement me = element.firstChildElement(mustQuote ? QString("automatablemodel") : name);
-		if (!me.isNull()) {
+		if (!me.isNull())
+		{
 			m_isOutput = (bool)me.attribute("output", "0").toInt();
 			m_groupName = QString(me.attribute("groupName", ""));
 		}
@@ -98,11 +99,13 @@ public:
 	inline virtual void saveSettings(
 		QDomDocument& doc, QDomElement& element, const QString& name = QString("value")) override
 	{
-		if (m_isEnabled) {
+		if (m_isEnabled)
+		{
 			AutomatableModel::saveSettings(doc, element, name);
 			bool mustQuote = mustQuoteName(name);
 			QDomElement me = element.firstChildElement(mustQuote ? QString("automatablemodel") : name);
-			if (!me.isNull()) {
+			if (!me.isNull())
+			{
 				me.setAttribute("output", m_isOutput);
 				me.setAttribute("groupName", m_groupName);
 			}
@@ -164,7 +167,8 @@ public:
 
 	virtual void mouseReleaseEvent(QMouseEvent* event) override
 	{
-		if (resizing) {
+		if (resizing)
+		{
 			resizing = false;
 			mousePress = false;
 			emit resized();

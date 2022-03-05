@@ -43,17 +43,23 @@ public:
 
 	inline void setSize(int size)
 	{
-		if (m_buffer) {
-			if (m_size < size) {
+		if (m_buffer)
+		{
+			if (m_size < size)
+			{
 				delete m_buffer;
 				m_buffer = new float[size];
 				m_size = size;
 				reset();
-			} else {
+			}
+			else
+			{
 				m_size = size;
 				reset();
 			}
-		} else {
+		}
+		else
+		{
 			m_buffer = new float[size];
 			m_size = size;
 			reset();

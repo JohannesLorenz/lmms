@@ -117,7 +117,8 @@ InstrumentMidiIOView::InstrumentMidiIOView(QWidget* parent)
 	connect(m_midiOutputGroupBox->ledButton(), SIGNAL(toggled(bool)), m_outputProgramSpinBox, SLOT(setEnabled(bool)));
 	connect(m_midiOutputGroupBox->ledButton(), SIGNAL(toggled(bool)), m_fixedOutputNoteSpinBox, SLOT(setEnabled(bool)));
 
-	if (!Engine::audioEngine()->midiClient()->isRaw()) {
+	if (!Engine::audioEngine()->midiClient()->isRaw())
+	{
 		m_rpBtn = new QToolButton;
 		m_rpBtn->setMinimumSize(32, 32);
 		m_rpBtn->setText(tr("MIDI devices to receive MIDI events from"));

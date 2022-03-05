@@ -45,10 +45,13 @@ Interval::Interval(uint32_t numerator, uint32_t denominator)
 
 void Interval::saveSettings(QDomDocument& document, QDomElement& element)
 {
-	if (m_denominator > 0) {
+	if (m_denominator > 0)
+	{
 		element.setAttribute("num", QString::number(m_numerator));
 		element.setAttribute("den", QString::number(m_denominator));
-	} else {
+	}
+	else
+	{
 		element.setAttribute("cents", QString::number(m_cents));
 	}
 }
@@ -58,9 +61,9 @@ void Interval::loadSettings(const QDomElement& element)
 	m_numerator = element.attribute("num", "0").toULong();
 	m_denominator = element.attribute("den", "0").toULong();
 	m_cents = element.attribute("cents", "0").toDouble();
-	if (m_denominator) {
-		m_ratio = static_cast<float>(m_numerator) / m_denominator;
-	} else {
+	if (m_denominator) { m_ratio = static_cast<float>(m_numerator) / m_denominator; }
+	else
+	{
 		m_ratio = powf(2.f, m_cents / 1200.f);
 	}
 }
@@ -85,7 +88,8 @@ void Scale::saveSettings(QDomDocument& document, QDomElement& element)
 {
 	element.setAttribute("description", m_description);
 
-	for (auto& interval : m_intervals) {
+	for (auto& interval : m_intervals)
+	{
 		interval.saveState(document, element);
 	}
 }
@@ -97,7 +101,8 @@ void Scale::loadSettings(const QDomElement& element)
 	QDomNode node = element.firstChild();
 	m_intervals.clear();
 
-	for (int i = 0; !node.isNull(); i++) {
+	for (int i = 0; !node.isNull(); i++)
+	{
 		Interval temp;
 		temp.restoreState(node.toElement());
 		m_intervals.push_back(temp);

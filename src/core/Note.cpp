@@ -43,9 +43,9 @@ Note::Note(
 	, m_pos(pos)
 	, m_detuning(nullptr)
 {
-	if (detuning) {
-		m_detuning = sharedObject::ref(detuning);
-	} else {
+	if (detuning) { m_detuning = sharedObject::ref(detuning); }
+	else
+	{
 		createDetuning();
 	}
 }
@@ -129,7 +129,8 @@ void Note::loadSettings(const QDomElement& _this)
 	m_length = _this.attribute("len").toInt();
 	m_pos = _this.attribute("pos").toInt();
 
-	if (_this.hasChildNodes()) {
+	if (_this.hasChildNodes())
+	{
 		createDetuning();
 		m_detuning->loadSettings(_this);
 	}
@@ -137,7 +138,8 @@ void Note::loadSettings(const QDomElement& _this)
 
 void Note::createDetuning()
 {
-	if (m_detuning == nullptr) {
+	if (m_detuning == nullptr)
+	{
 		m_detuning = new DetuningHelper;
 		(void)m_detuning->automationClip();
 		m_detuning->setRange(-MaxDetuning, MaxDetuning, 0.5f);

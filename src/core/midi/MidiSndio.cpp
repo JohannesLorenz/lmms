@@ -39,13 +39,14 @@ MidiSndio::MidiSndio(void)
 {
 	QString dev = probeDevice();
 
-	if (dev == "") {
-		m_hdl = mio_open(nullptr, MIO_IN | MIO_OUT, 0);
-	} else {
+	if (dev == "") { m_hdl = mio_open(nullptr, MIO_IN | MIO_OUT, 0); }
+	else
+	{
 		m_hdl = mio_open(dev.toLatin1().constData(), MIO_IN | MIO_OUT, 0);
 	}
 
-	if (m_hdl == nullptr) {
+	if (m_hdl == nullptr)
+	{
 		printf("sndio: failed opening sndio midi device\n");
 		return;
 	}
@@ -55,7 +56,8 @@ MidiSndio::MidiSndio(void)
 
 MidiSndio::~MidiSndio()
 {
-	if (isRunning()) {
+	if (isRunning())
+	{
 		m_quit = true;
 		wait(1000);
 		terminate();
@@ -78,14 +80,16 @@ void MidiSndio::run(void)
 	char buf[0x100], *p;
 	size_t n;
 	int ret;
-	while (m_quit == false && m_hdl) {
+	while (m_quit == false && m_hdl)
+	{
 		nfds = mio_pollfd(m_hdl, &pfd, POLLIN);
 		ret = poll(&pfd, nfds, 100);
 		if (ret < 0) break;
 		if (!ret || !(mio_revents(m_hdl, &pfd) & POLLIN)) continue;
 		n = mio_read(m_hdl, buf, sizeof(buf));
 		if (!n) { break; }
-		for (p = buf; n > 0; n--, p++) {
+		for (p = buf; n > 0; n--, p++)
+		{
 			parseData(*p);
 		}
 	}

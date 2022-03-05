@@ -43,13 +43,15 @@ SampleRecordHandle::SampleRecordHandle(SampleClip* clip)
 
 SampleRecordHandle::~SampleRecordHandle()
 {
-	if (!m_buffers.empty()) {
+	if (!m_buffers.empty())
+	{
 		SampleBuffer* sb;
 		createSampleBuffer(&sb);
 		m_clip->setSampleBuffer(sb);
 	}
 
-	while (!m_buffers.empty()) {
+	while (!m_buffers.empty())
+	{
 		delete[] m_buffers.front().first;
 		m_buffers.erase(m_buffers.begin());
 	}
@@ -64,7 +66,8 @@ void SampleRecordHandle::play(sampleFrame* /*_working_buffer*/)
 	m_framesRecorded += frames;
 
 	TimePos len = (tick_t)(m_framesRecorded / Engine::framesPerTick());
-	if (len > m_minLength) {
+	if (len > m_minLength)
+	{
 		//		m_clip->changeLength( len );
 		m_minLength = len;
 	}
@@ -90,7 +93,8 @@ void SampleRecordHandle::createSampleBuffer(SampleBuffer** sampleBuf)
 	assert(data != nullptr);
 
 	// now copy all buffers into big buffer
-	for (bufferList::const_iterator it = m_buffers.begin(); it != m_buffers.end(); ++it) {
+	for (bufferList::const_iterator it = m_buffers.begin(); it != m_buffers.end(); ++it)
+	{
 		memcpy(data_ptr, (*it).first, (*it).second * sizeof(sampleFrame));
 		data_ptr += (*it).second;
 	}
@@ -103,8 +107,10 @@ void SampleRecordHandle::createSampleBuffer(SampleBuffer** sampleBuf)
 void SampleRecordHandle::writeBuffer(const sampleFrame* _ab, const f_cnt_t _frames)
 {
 	sampleFrame* buf = new sampleFrame[_frames];
-	for (f_cnt_t frame = 0; frame < _frames; ++frame) {
-		for (ch_cnt_t chnl = 0; chnl < DEFAULT_CHANNELS; ++chnl) {
+	for (f_cnt_t frame = 0; frame < _frames; ++frame)
+	{
+		for (ch_cnt_t chnl = 0; chnl < DEFAULT_CHANNELS; ++chnl)
+		{
 			buf[frame][chnl] = _ab[frame][chnl];
 		}
 	}

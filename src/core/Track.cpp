@@ -83,7 +83,8 @@ Track::~Track()
 	lock();
 	emit destroyedTrack();
 
-	while (!m_clips.isEmpty()) {
+	while (!m_clips.isEmpty())
+	{
 		delete m_clips.last();
 	}
 
@@ -102,7 +103,8 @@ Track* Track::create(TrackTypes tt, TrackContainer* tc)
 
 	Track* t = nullptr;
 
-	switch (tt) {
+	switch (tt)
+	{
 	case InstrumentTrack: t = new ::InstrumentTrack(tc); break;
 	case PatternTrack: t = new ::PatternTrack(tc); break;
 	case SampleTrack:
@@ -186,13 +188,15 @@ void Track::saveSettings(QDomDocument& doc, QDomElement& element)
 	element.appendChild(tsDe);
 	saveTrackSpecificSettings(doc, tsDe);
 
-	if (m_simpleSerializingMode) {
+	if (m_simpleSerializingMode)
+	{
 		m_simpleSerializingMode = false;
 		return;
 	}
 
 	// now save settings of all Clip's
-	for (clipVector::const_iterator it = m_clips.begin(); it != m_clips.end(); ++it) {
+	for (clipVector::const_iterator it = m_clips.begin(); it != m_clips.end(); ++it)
+	{
 		(*it)->saveState(doc, element);
 	}
 }
@@ -211,7 +215,8 @@ void Track::saveSettings(QDomDocument& doc, QDomElement& element)
  */
 void Track::loadSettings(const QDomElement& element)
 {
-	if (element.attribute("type").toInt() != type()) {
+	if (element.attribute("type").toInt() != type())
+	{
 		qWarning("Current track-type does not match track-type of "
 				 "settings-node!\n");
 	}
@@ -225,17 +230,23 @@ void Track::loadSettings(const QDomElement& element)
 	// Older project files that didn't have this attribute will set the value to false (issue 5562)
 	m_mutedBeforeSolo = QVariant(element.attribute("mutedBeforeSolo", "0")).toBool();
 
-	if (element.hasAttribute("color")) {
+	if (element.hasAttribute("color"))
+	{
 		QColor newColor = QColor(element.attribute("color"));
 		setColor(newColor);
-	} else {
+	}
+	else
+	{
 		resetColor();
 	}
 
-	if (m_simpleSerializingMode) {
+	if (m_simpleSerializingMode)
+	{
 		QDomNode node = element.firstChild();
-		while (!node.isNull()) {
-			if (node.isElement() && node.nodeName() == nodeName()) {
+		while (!node.isNull())
+		{
+			if (node.isElement() && node.nodeName() == nodeName())
+			{
 				loadTrackSpecificSettings(node.toElement());
 				break;
 			}
@@ -245,18 +256,21 @@ void Track::loadSettings(const QDomElement& element)
 		return;
 	}
 
-	while (!m_clips.empty()) {
+	while (!m_clips.empty())
+	{
 		delete m_clips.front();
 		//		m_clips.erase( m_clips.begin() );
 	}
 
 	QDomNode node = element.firstChild();
-	while (!node.isNull()) {
-		if (node.isElement()) {
-			if (node.nodeName() == nodeName()) {
-				loadTrackSpecificSettings(node.toElement());
-			} else if (node.nodeName() != "muted" && node.nodeName() != "solo"
-				&& !node.toElement().attribute("metadata").toInt()) {
+	while (!node.isNull())
+	{
+		if (node.isElement())
+		{
+			if (node.nodeName() == nodeName()) { loadTrackSpecificSettings(node.toElement()); }
+			else if (node.nodeName() != "muted" && node.nodeName() != "solo"
+				&& !node.toElement().attribute("metadata").toInt())
+			{
 				Clip* clip = createClip(TimePos(0));
 				clip->restoreState(node.toElement());
 			}
@@ -288,9 +302,11 @@ Clip* Track::addClip(Clip* clip)
 void Track::removeClip(Clip* clip)
 {
 	clipVector::iterator it = std::find(m_clips.begin(), m_clips.end(), clip);
-	if (it != m_clips.end()) {
+	if (it != m_clips.end())
+	{
 		m_clips.erase(it);
-		if (Engine::getSong()) {
+		if (Engine::getSong())
+		{
 			Engine::getSong()->updateLength();
 			Engine::getSong()->setModified();
 		}
@@ -300,7 +316,8 @@ void Track::removeClip(Clip* clip)
 /*! \brief Remove all Clips from this track */
 void Track::deleteClips()
 {
-	while (!m_clips.isEmpty()) {
+	while (!m_clips.isEmpty())
+	{
 		delete m_clips.first();
 	}
 }
@@ -341,7 +358,8 @@ int Track::getClipNum(const Clip* clip)
 {
 	//	for( int i = 0; i < getTrackContentWidget()->numOfClips(); ++i )
 	clipVector::iterator it = std::find(m_clips.begin(), m_clips.end(), clip);
-	if (it != m_clips.end()) {
+	if (it != m_clips.end())
+	{
 		/*		if( getClip( i ) == _clip )
 				{
 					return i;
@@ -365,10 +383,12 @@ int Track::getClipNum(const Clip* clip)
  */
 void Track::getClipsInRange(clipVector& clipV, const TimePos& start, const TimePos& end)
 {
-	for (Clip* clip : m_clips) {
+	for (Clip* clip : m_clips)
+	{
 		int s = clip->startPosition();
 		int e = clip->endPosition();
-		if ((s <= end) && (e >= start)) {
+		if ((s <= end) && (e >= start))
+		{
 			// Clip is within given range
 			// Insert sorted by Clip's position
 			clipV.insert(std::upper_bound(clipV.begin(), clipV.end(), clip, Clip::comparePosition), clip);
@@ -396,7 +416,8 @@ void Track::swapPositionOfClips(int clipNum1, int clipNum2)
 
 void Track::createClipsForPattern(int pattern)
 {
-	while (numOfClips() < pattern + 1) {
+	while (numOfClips() < pattern + 1)
+	{
 		TimePos position = TimePos(numOfClips(), 0);
 		Clip* clip = createClip(position);
 		clip->changeLength(TimePos(1, 0));
@@ -414,7 +435,8 @@ void Track::insertBar(const TimePos& pos)
 {
 	// we'll increase the position of every Clip, positioned behind pos, by
 	// one bar
-	for (clipVector::iterator it = m_clips.begin(); it != m_clips.end(); ++it) {
+	for (clipVector::iterator it = m_clips.begin(); it != m_clips.end(); ++it)
+	{
 		if ((*it)->startPosition() >= pos) { (*it)->movePosition((*it)->startPosition() + TimePos::ticksPerBar()); }
 	}
 }
@@ -427,7 +449,8 @@ void Track::removeBar(const TimePos& pos)
 {
 	// we'll decrease the position of every Clip, positioned behind pos, by
 	// one bar
-	for (clipVector::iterator it = m_clips.begin(); it != m_clips.end(); ++it) {
+	for (clipVector::iterator it = m_clips.begin(); it != m_clips.end(); ++it)
+	{
 		if ((*it)->startPosition() >= pos) { (*it)->movePosition((*it)->startPosition() - TimePos::ticksPerBar()); }
 	}
 }
@@ -442,7 +465,8 @@ bar_t Track::length() const
 {
 	// find last end-position
 	tick_t last = 0;
-	for (clipVector::const_iterator it = m_clips.begin(); it != m_clips.end(); ++it) {
+	for (clipVector::const_iterator it = m_clips.begin(); it != m_clips.end(); ++it)
+	{
 		if (Engine::getSong()->isExporting() && (*it)->isMuted()) { continue; }
 
 		const tick_t cur = (*it)->endPosition();
@@ -463,9 +487,12 @@ void Track::toggleSolo()
 	const TrackContainer::TrackList& tl = m_trackContainer->tracks();
 
 	bool soloBefore = false;
-	for (TrackContainer::TrackList::const_iterator it = tl.begin(); it != tl.end(); ++it) {
-		if (*it != this) {
-			if ((*it)->m_soloModel.value()) {
+	for (TrackContainer::TrackList::const_iterator it = tl.begin(); it != tl.end(); ++it)
+	{
+		if (*it != this)
+		{
+			if ((*it)->m_soloModel.value())
+			{
 				soloBefore = true;
 				break;
 			}
@@ -476,18 +503,22 @@ void Track::toggleSolo()
 	// Should we use the new behavior of solo or the older/legacy one?
 	const bool soloLegacyBehavior = ConfigManager::inst()->value("app", "sololegacybehavior", "0").toInt();
 
-	for (TrackContainer::TrackList::const_iterator it = tl.begin(); it != tl.end(); ++it) {
-		if (solo) {
+	for (TrackContainer::TrackList::const_iterator it = tl.begin(); it != tl.end(); ++it)
+	{
+		if (solo)
+		{
 			// save mute-state in case no track was solo before
 			if (!soloBefore) { (*it)->m_mutedBeforeSolo = (*it)->isMuted(); }
 			// Don't mute AutomationTracks (keep their original state) unless we are on the sololegacybehavior mode
-			if (*it == this) {
-				(*it)->setMuted(false);
-			} else if (soloLegacyBehavior || (*it)->type() != AutomationTrack) {
+			if (*it == this) { (*it)->setMuted(false); }
+			else if (soloLegacyBehavior || (*it)->type() != AutomationTrack)
+			{
 				(*it)->setMuted(true);
 			}
 			if (*it != this) { (*it)->m_soloModel.setValue(false); }
-		} else if (!soloBefore) {
+		}
+		else if (!soloBefore)
+		{
 			// Unless we are on the sololegacybehavior mode, only restores the
 			// mute state if the track isn't an Automation Track
 			if (soloLegacyBehavior || (*it)->type() != AutomationTrack) { (*it)->setMuted((*it)->m_mutedBeforeSolo); }

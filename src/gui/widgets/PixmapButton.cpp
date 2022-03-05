@@ -46,9 +46,12 @@ void PixmapButton::paintEvent(QPaintEvent*)
 {
 	QPainter p(this);
 
-	if ((model() != nullptr && model()->value()) || m_pressed) {
+	if ((model() != nullptr && model()->value()) || m_pressed)
+	{
 		if (!m_activePixmap.isNull()) { p.drawPixmap(0, 0, m_activePixmap); }
-	} else if (!m_inactivePixmap.isNull()) {
+	}
+	else if (!m_inactivePixmap.isNull())
+	{
 		p.drawPixmap(0, 0, m_inactivePixmap);
 	}
 }
@@ -56,7 +59,8 @@ void PixmapButton::paintEvent(QPaintEvent*)
 void PixmapButton::mousePressEvent(QMouseEvent* _me)
 {
 	// Show pressing graphics if this isn't checkable
-	if (!isCheckable()) {
+	if (!isCheckable())
+	{
 		m_pressed = true;
 		update();
 	}
@@ -68,7 +72,8 @@ void PixmapButton::mouseReleaseEvent(QMouseEvent* _me)
 {
 	AutomatableButton::mouseReleaseEvent(_me);
 
-	if (!isCheckable()) {
+	if (!isCheckable())
+	{
 		m_pressed = false;
 		update();
 	}
@@ -94,9 +99,9 @@ void PixmapButton::setInactiveGraphic(const QPixmap& _pm, bool _update)
 
 QSize PixmapButton::sizeHint() const
 {
-	if ((model() != nullptr && model()->value()) || m_pressed) {
-		return m_activePixmap.size() / devicePixelRatio();
-	} else {
+	if ((model() != nullptr && model()->value()) || m_pressed) { return m_activePixmap.size() / devicePixelRatio(); }
+	else
+	{
 		return m_inactivePixmap.size() / devicePixelRatio();
 	}
 }

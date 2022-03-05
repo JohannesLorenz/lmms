@@ -102,17 +102,22 @@ PresetPreviewPlayHandle::PresetPreviewPlayHandle(const QString& _preset_file, bo
 	const bool j = Engine::projectJournal()->isJournalling();
 	Engine::projectJournal()->setJournalling(false);
 
-	if (_load_by_plugin) {
+	if (_load_by_plugin)
+	{
 		Instrument* i = s_previewTC->previewInstrumentTrack()->instrument();
 		const QString ext = QFileInfo(_preset_file).suffix().toLower();
-		if (i == nullptr || !i->descriptor()->supportsFileType(ext)) {
+		if (i == nullptr || !i->descriptor()->supportsFileType(ext))
+		{
 			const PluginFactory::PluginInfoAndKey& infoAndKey = getPluginFactory()->pluginSupportingExtension(ext);
 			i = s_previewTC->previewInstrumentTrack()->loadInstrument(infoAndKey.info.name(), &infoAndKey.key);
 		}
 		if (i != nullptr) { i->loadFile(_preset_file); }
-	} else {
+	}
+	else
+	{
 		bool dataFileCreated = false;
-		if (dataFile == 0) {
+		if (dataFile == 0)
+		{
 			dataFile = new DataFile(_preset_file);
 			dataFileCreated = true;
 		}
@@ -177,7 +182,8 @@ void PresetPreviewPlayHandle::cleanup()
 ConstNotePlayHandleList PresetPreviewPlayHandle::nphsOfInstrumentTrack(const InstrumentTrack* _it)
 {
 	ConstNotePlayHandleList cnphv;
-	if (s_previewTC->previewNote() != nullptr && s_previewTC->previewNote()->instrumentTrack() == _it) {
+	if (s_previewTC->previewNote() != nullptr && s_previewTC->previewNote()->instrumentTrack() == _it)
+	{
 		cnphv.push_back(s_previewTC->previewNote());
 	}
 	return cnphv;

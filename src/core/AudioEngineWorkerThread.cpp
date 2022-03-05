@@ -51,14 +51,15 @@ void AudioEngineWorkerThread::JobQueue::reset(OperationMode _opMode)
 
 void AudioEngineWorkerThread::JobQueue::addJob(ThreadableJob* _job)
 {
-	if (_job->requiresProcessing()) {
+	if (_job->requiresProcessing())
+	{
 		// update job state
 		_job->queue();
 		// actually queue the job via atomic operations
 		auto index = m_writeIndex++;
-		if (index < JOB_QUEUE_SIZE) {
-			m_items[index] = _job;
-		} else {
+		if (index < JOB_QUEUE_SIZE) { m_items[index] = _job; }
+		else
+		{
 			qWarning() << "Job queue is full!";
 			++m_itemsDone;
 		}
@@ -68,11 +69,14 @@ void AudioEngineWorkerThread::JobQueue::addJob(ThreadableJob* _job)
 void AudioEngineWorkerThread::JobQueue::run()
 {
 	bool processedJob = true;
-	while (processedJob && m_itemsDone < m_writeIndex) {
+	while (processedJob && m_itemsDone < m_writeIndex)
+	{
 		processedJob = false;
-		for (int i = 0; i < m_writeIndex && i < JOB_QUEUE_SIZE; ++i) {
+		for (int i = 0; i < m_writeIndex && i < JOB_QUEUE_SIZE; ++i)
+		{
 			ThreadableJob* job = m_items[i].exchange(nullptr);
-			if (job) {
+			if (job)
+			{
 				job->process();
 				processedJob = true;
 				++m_itemsDone;
@@ -85,7 +89,8 @@ void AudioEngineWorkerThread::JobQueue::run()
 
 void AudioEngineWorkerThread::JobQueue::wait()
 {
-	while (m_itemsDone < m_writeIndex) {
+	while (m_itemsDone < m_writeIndex)
+	{
 #ifdef __SSE__
 		_mm_pause();
 #endif
@@ -134,7 +139,8 @@ void AudioEngineWorkerThread::run()
 	disable_denormals();
 
 	QMutex m;
-	while (m_quit == false) {
+	while (m_quit == false)
+	{
 		m.lock();
 		queueReadyWaitCond->wait(&m);
 		globalJobQueue.run();

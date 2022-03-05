@@ -85,7 +85,8 @@ bool ReverbSCEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 	ValueBuffer* colorBuf = m_reverbSCControls.m_colorModel.valueBuffer();
 	ValueBuffer* outGainBuf = m_reverbSCControls.m_outputGainModel.valueBuffer();
 
-	for (fpp_t f = 0; f < frames; ++f) {
+	for (fpp_t f = 0; f < frames; ++f)
+	{
 		sample_t s[2] = {buf[f][0], buf[f][1]};
 
 		const SPFLOAT inGain

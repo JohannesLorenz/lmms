@@ -77,7 +77,8 @@ Clip::~Clip()
 void Clip::movePosition(const TimePos& pos)
 {
 	TimePos newPos = qMax(0, pos.getTicks());
-	if (m_startPosition != newPos) {
+	if (m_startPosition != newPos)
+	{
 		Engine::audioEngine()->requestChangeInModel();
 		m_startPosition = newPos;
 		Engine::audioEngine()->doneChangeInModel();
@@ -109,7 +110,8 @@ bool Clip::comparePosition(const Clip* a, const Clip* b) { return a->startPositi
 void Clip::copyStateTo(Clip* src, Clip* dst)
 {
 	// If the node names match we copy the state
-	if (src->nodeName() == dst->nodeName()) {
+	if (src->nodeName() == dst->nodeName())
+	{
 		QDomDocument doc;
 		QDomElement parent = doc.createElement("StateCopy");
 		src->saveState(doc, parent);

@@ -223,7 +223,8 @@ SetupDialog::SetupDialog(ConfigTabs tab_to_open)
 
 	QDir dir(ConfigManager::inst()->localeDir());
 	QStringList fileNames = dir.entryList(QStringList("*.qm"));
-	for (int i = 0; i < fileNames.size(); ++i) {
+	for (int i = 0; i < fileNames.size(); ++i)
+	{
 		// Get locale extracted by filename.
 		fileNames[i].truncate(fileNames[i].lastIndexOf('.'));
 		m_languages.append(fileNames[i]);
@@ -232,17 +233,20 @@ SetupDialog::SetupDialog(ConfigTabs tab_to_open)
 	}
 
 	// If language unset, fallback to system language when available.
-	if (m_lang == "") {
+	if (m_lang == "")
+	{
 		QString tmp = QLocale::system().name().left(2);
-		if (m_languages.contains(tmp)) {
-			m_lang = tmp;
-		} else {
+		if (m_languages.contains(tmp)) { m_lang = tmp; }
+		else
+		{
 			m_lang = "en";
 		}
 	}
 
-	for (int i = 0; i < changeLang->count(); ++i) {
-		if (m_lang == m_languages.at(i)) {
+	for (int i = 0; i < changeLang->count(); ++i)
+	{
+		if (m_lang == m_languages.at(i))
+		{
 			changeLang->setCurrentIndex(i);
 			break;
 		}
@@ -409,10 +413,12 @@ SetupDialog::SetupDialog(ConfigTabs tab_to_open)
 
 	m_audioIfaceSetupWidgets[AudioDummy::name()] = new AudioDummy::setupWidget(as_w);
 
-	for (AswMap::iterator it = m_audioIfaceSetupWidgets.begin(); it != m_audioIfaceSetupWidgets.end(); ++it) {
+	for (AswMap::iterator it = m_audioIfaceSetupWidgets.begin(); it != m_audioIfaceSetupWidgets.end(); ++it)
+	{
 		m_audioIfaceNames[AudioDeviceSetupWidget::tr(it.key().toUtf8())] = it.key();
 	}
-	for (trMap::iterator it = m_audioIfaceNames.begin(); it != m_audioIfaceNames.end(); ++it) {
+	for (trMap::iterator it = m_audioIfaceNames.begin(); it != m_audioIfaceNames.end(); ++it)
+	{
 		QWidget* audioWidget = m_audioIfaceSetupWidgets[it.value()];
 		audioWidget->hide();
 		as_w_layout->addWidget(audioWidget);
@@ -421,7 +427,8 @@ SetupDialog::SetupDialog(ConfigTabs tab_to_open)
 
 	// If no preferred audio device is saved, save the current one.
 	QString audioDevName = ConfigManager::inst()->value("audioengine", "audiodev");
-	if (m_audioInterfaces->findText(audioDevName) < 0) {
+	if (m_audioInterfaces->findText(audioDevName) < 0)
+	{
 		audioDevName = Engine::audioEngine()->audioDevName();
 		ConfigManager::inst()->setValue("audioengine", "audiodev", audioDevName);
 	}
@@ -431,7 +438,8 @@ SetupDialog::SetupDialog(ConfigTabs tab_to_open)
 	connect(m_audioInterfaces, SIGNAL(activated(const QString&)), this, SLOT(audioInterfaceChanged(const QString&)));
 
 	// Advanced setting, hidden for now
-	if (false) {
+	if (false)
+	{
 		LedCheckBox* useNaNHandler = new LedCheckBox(tr("Use built-in NaN handler"), audio_w);
 		useNaNHandler->setChecked(m_NaNHandler);
 	}
@@ -522,10 +530,12 @@ SetupDialog::SetupDialog(ConfigTabs tab_to_open)
 
 	m_midiIfaceSetupWidgets[MidiDummy::name()] = MidiSetupWidget::create<MidiDummy>(ms_w);
 
-	for (MswMap::iterator it = m_midiIfaceSetupWidgets.begin(); it != m_midiIfaceSetupWidgets.end(); ++it) {
+	for (MswMap::iterator it = m_midiIfaceSetupWidgets.begin(); it != m_midiIfaceSetupWidgets.end(); ++it)
+	{
 		m_midiIfaceNames[MidiSetupWidget::tr(it.key().toUtf8())] = it.key();
 	}
-	for (trMap::iterator it = m_midiIfaceNames.begin(); it != m_midiIfaceNames.end(); ++it) {
+	for (trMap::iterator it = m_midiIfaceNames.begin(); it != m_midiIfaceNames.end(); ++it)
+	{
 		QWidget* midiWidget = m_midiIfaceSetupWidgets[it.value()];
 		midiWidget->hide();
 		ms_w_layout->addWidget(midiWidget);
@@ -533,7 +543,8 @@ SetupDialog::SetupDialog(ConfigTabs tab_to_open)
 	}
 
 	QString midiDevName = ConfigManager::inst()->value("audioengine", "mididev");
-	if (m_midiInterfaces->findText(midiDevName) < 0) {
+	if (m_midiInterfaces->findText(midiDevName) < 0)
+	{
 		midiDevName = Engine::audioEngine()->midiClientName();
 		ConfigManager::inst()->setValue("audioengine", "mididev", midiDevName);
 	}
@@ -549,9 +560,12 @@ SetupDialog::SetupDialog(ConfigTabs tab_to_open)
 	m_assignableMidiDevices = new QComboBox(midiAutoAssign_tw);
 	m_assignableMidiDevices->setGeometry(10, 20, 240, 28);
 	m_assignableMidiDevices->addItem("none");
-	if (!Engine::audioEngine()->midiClient()->isRaw()) {
+	if (!Engine::audioEngine()->midiClient()->isRaw())
+	{
 		m_assignableMidiDevices->addItems(Engine::audioEngine()->midiClient()->readablePorts());
-	} else {
+	}
+	else
+	{
 		m_assignableMidiDevices->addItem("all");
 	}
 	int current = m_assignableMidiDevices->findText(ConfigManager::inst()->value("midi", "midiautoassign"));
@@ -736,11 +750,13 @@ void SetupDialog::accept()
 	ConfigManager::inst()->setBackgroundPicFile(m_backgroundPicFile);
 
 	// Tell all audio-settings-widgets to save their settings.
-	for (AswMap::iterator it = m_audioIfaceSetupWidgets.begin(); it != m_audioIfaceSetupWidgets.end(); ++it) {
+	for (AswMap::iterator it = m_audioIfaceSetupWidgets.begin(); it != m_audioIfaceSetupWidgets.end(); ++it)
+	{
 		it.value()->saveSettings();
 	}
 	// Tell all MIDI-settings-widgets to save their settings.
-	for (MswMap::iterator it = m_midiIfaceSetupWidgets.begin(); it != m_midiIfaceSetupWidgets.end(); ++it) {
+	for (MswMap::iterator it = m_midiIfaceSetupWidgets.begin(); it != m_midiIfaceSetupWidgets.end(); ++it)
+	{
 		it.value()->saveSettings();
 	}
 	ConfigManager::inst()->saveConfigFile();
@@ -827,7 +843,8 @@ void SetupDialog::toggleHQAudioDev(bool enabled) { m_hqAudioDev = enabled; }
 
 void SetupDialog::audioInterfaceChanged(const QString& iface)
 {
-	for (AswMap::iterator it = m_audioIfaceSetupWidgets.begin(); it != m_audioIfaceSetupWidgets.end(); ++it) {
+	for (AswMap::iterator it = m_audioIfaceSetupWidgets.begin(); it != m_audioIfaceSetupWidgets.end(); ++it)
+	{
 		it.value()->hide();
 	}
 
@@ -837,11 +854,12 @@ void SetupDialog::audioInterfaceChanged(const QString& iface)
 void SetupDialog::setBufferSize(int value)
 {
 	const int step = DEFAULT_BUFFER_SIZE / BUFFERSIZE_RESOLUTION;
-	if (value > step && value % step) {
+	if (value > step && value % step)
+	{
 		int mod_value = value % step;
-		if (mod_value < step / 2) {
-			m_bufferSizeSlider->setValue(value - mod_value);
-		} else {
+		if (mod_value < step / 2) { m_bufferSizeSlider->setValue(value - mod_value); }
+		else
+		{
 			m_bufferSizeSlider->setValue(value + step - mod_value);
 		}
 		return;
@@ -862,7 +880,8 @@ void SetupDialog::resetBufferSize() { setBufferSize(DEFAULT_BUFFER_SIZE / BUFFER
 
 void SetupDialog::midiInterfaceChanged(const QString& iface)
 {
-	for (MswMap::iterator it = m_midiIfaceSetupWidgets.begin(); it != m_midiIfaceSetupWidgets.end(); ++it) {
+	for (MswMap::iterator it = m_midiIfaceSetupWidgets.begin(); it != m_midiIfaceSetupWidgets.end(); ++it)
+	{
 		it.value()->hide();
 	}
 
@@ -890,10 +909,11 @@ void SetupDialog::setVSTDir(const QString& vstDir) { m_vstDir = vstDir; }
 void SetupDialog::openLADSPADir()
 {
 	QString new_dir = FileDialog::getExistingDirectory(this, tr("Choose your LADSPA plugins directory"), m_ladspaDir);
-	if (!new_dir.isEmpty()) {
-		if (m_ladspaDirLineEdit->text() == "") {
-			m_ladspaDirLineEdit->setText(new_dir);
-		} else {
+	if (!new_dir.isEmpty())
+	{
+		if (m_ladspaDirLineEdit->text() == "") { m_ladspaDirLineEdit->setText(new_dir); }
+		else
+		{
 			m_ladspaDirLineEdit->setText(m_ladspaDirLineEdit->text() + "," + new_dir);
 		}
 	}
@@ -946,8 +966,10 @@ void SetupDialog::openBackgroundPicFile()
 {
 	QList<QByteArray> fileTypesList = QImageReader::supportedImageFormats();
 	QString fileTypes;
-	for (int i = 0; i < fileTypesList.count(); i++) {
-		if (fileTypesList[i] != fileTypesList[i].toUpper()) {
+	for (int i = 0; i < fileTypesList.count(); i++)
+	{
+		if (fileTypesList[i] != fileTypesList[i].toUpper())
+		{
 			if (!fileTypes.isEmpty()) { fileTypes += " "; }
 			fileTypes += "*." + QString(fileTypesList[i]);
 		}

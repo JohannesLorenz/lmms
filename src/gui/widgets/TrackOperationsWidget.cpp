@@ -86,10 +86,13 @@ TrackOperationsWidget::TrackOperationsWidget(TrackView* parent)
 	m_soloBtn->setInactiveGraphic(embed::getIconPixmap("led_off"));
 	m_soloBtn->setCheckable(true);
 
-	if (ConfigManager::inst()->value("ui", "compacttrackbuttons").toInt()) {
+	if (ConfigManager::inst()->value("ui", "compacttrackbuttons").toInt())
+	{
 		m_muteBtn->move(46, 0);
 		m_soloBtn->move(46, 16);
-	} else {
+	}
+	else
+	{
 		m_muteBtn->move(46, 8);
 		m_soloBtn->move(62, 8);
 	}
@@ -126,12 +129,15 @@ TrackOperationsWidget::~TrackOperationsWidget() {}
 void TrackOperationsWidget::mousePressEvent(QMouseEvent* me)
 {
 	if (me->button() == Qt::LeftButton && me->modifiers() & Qt::ControlModifier
-		&& m_trackView->getTrack()->type() != Track::PatternTrack) {
+		&& m_trackView->getTrack()->type() != Track::PatternTrack)
+	{
 		DataFile dataFile(DataFile::DragNDropData);
 		m_trackView->getTrack()->saveState(dataFile, dataFile.content());
 		new StringPairDrag(QString("track_%1").arg(m_trackView->getTrack()->type()), dataFile.toString(),
 			m_trackView->getTrackSettingsWidget()->grab(), this);
-	} else if (me->button() == Qt::LeftButton) {
+	}
+	else if (me->button() == Qt::LeftButton)
+	{
 		// track-widget (parent-widget) initiates track-move
 		me->ignore();
 	}
@@ -154,7 +160,8 @@ void TrackOperationsWidget::paintEvent(QPaintEvent* pe)
 
 	p.fillRect(rect(), palette().brush(QPalette::Background));
 
-	if (m_trackView->getTrack()->useColor() && !m_trackView->getTrack()->getMutedModel()->value()) {
+	if (m_trackView->getTrack()->useColor() && !m_trackView->getTrack()->getMutedModel()->value())
+	{
 		QRect coloredRect(0, 0, 10, m_trackView->getTrack()->getHeight());
 
 		p.fillRect(coloredRect, m_trackView->getTrack()->color());
@@ -207,7 +214,8 @@ void TrackOperationsWidget::cloneTrack()
 
 	int index = tcView->trackViews().indexOf(m_trackView);
 	int i = tcView->trackViews().size();
-	while (i != index + 1) {
+	while (i != index + 1)
+	{
 		tcView->moveTrackView(newTrackView, i - 1);
 		i--;
 	}
@@ -265,7 +273,8 @@ void TrackOperationsWidget::resetClipColors()
 {
 	auto track = m_trackView->getTrack();
 	track->addJournalCheckPoint();
-	for (auto clip : track->getClips()) {
+	for (auto clip : track->getClips())
+	{
 		clip->useCustomClipColor(false);
 	}
 	Engine::getSong()->setModified();
@@ -286,18 +295,22 @@ void TrackOperationsWidget::updateMenu()
 	toMenu->addAction(embed::getIconPixmap("edit_copy", 16, 16), tr("Clone this track"), this, SLOT(cloneTrack()));
 	toMenu->addAction(embed::getIconPixmap("cancel", 16, 16), tr("Remove this track"), this, SLOT(removeTrack()));
 
-	if (!m_trackView->trackContainerView()->fixedClips()) {
+	if (!m_trackView->trackContainerView()->fixedClips())
+	{
 		toMenu->addAction(tr("Clear this track"), this, SLOT(clearTrack()));
 	}
-	if (QMenu* mixerMenu = m_trackView->createMixerMenu(tr("Channel %1: %2"), tr("Assign to new Mixer Channel"))) {
+	if (QMenu* mixerMenu = m_trackView->createMixerMenu(tr("Channel %1: %2"), tr("Assign to new Mixer Channel")))
+	{
 		toMenu->addMenu(mixerMenu);
 	}
 
-	if (InstrumentTrackView* trackView = dynamic_cast<InstrumentTrackView*>(m_trackView)) {
+	if (InstrumentTrackView* trackView = dynamic_cast<InstrumentTrackView*>(m_trackView))
+	{
 		toMenu->addSeparator();
 		toMenu->addMenu(trackView->midiMenu());
 	}
-	if (dynamic_cast<AutomationTrackView*>(m_trackView)) {
+	if (dynamic_cast<AutomationTrackView*>(m_trackView))
+	{
 		toMenu->addAction(tr("Turn all recording on"), this, SLOT(recordingOn()));
 		toMenu->addAction(tr("Turn all recording off"), this, SLOT(recordingOff()));
 	}
@@ -316,8 +329,10 @@ void TrackOperationsWidget::updateMenu()
 void TrackOperationsWidget::toggleRecording(bool on)
 {
 	AutomationTrackView* atv = dynamic_cast<AutomationTrackView*>(m_trackView);
-	if (atv) {
-		for (Clip* clip : atv->getTrack()->getClips()) {
+	if (atv)
+	{
+		for (Clip* clip : atv->getTrack()->getClips())
+		{
 			AutomationClip* ap = dynamic_cast<AutomationClip*>(clip);
 			if (ap) { ap->setRecording(on); }
 		}

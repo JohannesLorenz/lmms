@@ -108,7 +108,8 @@ Editor::Editor(bool record, bool stepRecord)
 
 	// Add actions to toolbar
 	addButton(m_playAction, "playButton");
-	if (record) {
+	if (record)
+	{
 		addButton(m_recordAction, "recordButton");
 		addButton(m_recordAccompanyAction, "recordAccompanyButton");
 	}
@@ -122,9 +123,9 @@ QAction* Editor::playAction() const { return m_playAction; }
 
 void Editor::closeEvent(QCloseEvent* _ce)
 {
-	if (parentWidget()) {
-		parentWidget()->hide();
-	} else {
+	if (parentWidget()) { parentWidget()->hide(); }
+	else
+	{
 		hide();
 	}
 	_ce->ignore();

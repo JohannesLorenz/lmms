@@ -58,7 +58,8 @@ bool VstEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames)
 {
 	if (!isEnabled() || !isRunning()) { return false; }
 
-	if (m_plugin) {
+	if (m_plugin)
+	{
 		const float d = dryLevel();
 #ifdef __GNUC__
 		sampleFrame buf[_frames];
@@ -66,18 +67,21 @@ bool VstEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames)
 		sampleFrame* buf = new sampleFrame[_frames];
 #endif
 		memcpy(buf, _buf, sizeof(sampleFrame) * _frames);
-		if (m_pluginMutex.tryLock(Engine::getSong()->isExporting() ? -1 : 0)) {
+		if (m_pluginMutex.tryLock(Engine::getSong()->isExporting() ? -1 : 0))
+		{
 			m_plugin->process(buf, buf);
 			m_pluginMutex.unlock();
 		}
 
 		double out_sum = 0.0;
 		const float w = wetLevel();
-		for (fpp_t f = 0; f < _frames; ++f) {
+		for (fpp_t f = 0; f < _frames; ++f)
+		{
 			_buf[f][0] = w * buf[f][0] + d * _buf[f][0];
 			_buf[f][1] = w * buf[f][1] + d * _buf[f][1];
 		}
-		for (fpp_t f = 0; f < _frames; ++f) {
+		for (fpp_t f = 0; f < _frames; ++f)
+		{
 			out_sum += _buf[f][0] * _buf[f][0] + _buf[f][1] * _buf[f][1];
 		}
 #ifndef __GNUC__
@@ -92,7 +96,8 @@ bool VstEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames)
 void VstEffect::openPlugin(const QString& _plugin)
 {
 	TextFloat* tf = nullptr;
-	if (getGUI() != nullptr) {
+	if (getGUI() != nullptr)
+	{
 		tf = TextFloat::displayMessage(VstPlugin::tr("Loading plugin"),
 			VstPlugin::tr("Please wait while loading VST plugin..."), PLUGIN_NAME::getIconPixmap("logo", 24, 24), 0);
 	}
@@ -100,7 +105,8 @@ void VstEffect::openPlugin(const QString& _plugin)
 	QMutexLocker ml(&m_pluginMutex);
 	Q_UNUSED(ml);
 	m_plugin = QSharedPointer<VstPlugin>(new VstPlugin(_plugin));
-	if (m_plugin->failed()) {
+	if (m_plugin->failed())
+	{
 		m_plugin.clear();
 		delete tf;
 		collectErrorForUI(VstPlugin::tr("The VST plugin %1 could not be loaded.").arg(_plugin));

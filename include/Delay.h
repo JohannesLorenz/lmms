@@ -77,7 +77,8 @@ public:
 
 	inline void setMaxDelay(int maxDelay)
 	{
-		if (maxDelay > m_size) {
+		if (maxDelay > m_size)
+		{
 			MM_FREE(m_buffer);
 			m_buffer = MM_ALLOC<frame>(maxDelay);
 			memset(m_buffer, 0, sizeof(frame) * maxDelay);
@@ -136,7 +137,8 @@ template <ch_cnt_t CHANNELS> class CombFeedfwd
 
 	inline void setMaxDelay(int maxDelay)
 	{
-		if (maxDelay > m_size) {
+		if (maxDelay > m_size)
+		{
 			MM_FREE(m_buffer);
 			m_buffer = MM_ALLOC<frame>(maxDelay);
 			memset(m_buffer, 0, sizeof(frame) * maxDelay);
@@ -196,7 +198,8 @@ template <ch_cnt_t CHANNELS> class CombFeedbackDualtap
 
 	inline void setMaxDelay(int maxDelay)
 	{
-		if (maxDelay > m_size) {
+		if (maxDelay > m_size)
+		{
 			MM_FREE(m_buffer);
 			m_buffer = MM_ALLOC<frame>(maxDelay);
 			memset(m_buffer, 0, sizeof(frame) * maxDelay);
@@ -265,7 +268,8 @@ public:
 
 	inline void setMaxDelay(int maxDelay)
 	{
-		if (maxDelay > m_size) {
+		if (maxDelay > m_size)
+		{
 			MM_FREE(m_buffer);
 			m_buffer = MM_ALLOC<frame>(maxDelay);
 			memset(m_buffer, 0, sizeof(frame) * maxDelay);

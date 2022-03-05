@@ -52,7 +52,8 @@ LV2_URID UridMap::map(const char* uri)
 
 	// the Lv2 docs say that 0 should be returned in any case
 	// where creating an ID for the given URI fails
-	try {
+	try
+	{
 		// TODO:
 		// when using C++14, we can get around any string allocation
 		// in the case the URI is already inside the map:
@@ -67,18 +68,24 @@ LV2_URID UridMap::map(const char* uri)
 		std::lock_guard<std::mutex> guard(m_MapMutex);
 
 		auto itr = m_map.find(uriStr);
-		if (itr == m_map.end()) {
+		if (itr == m_map.end())
+		{
 			// 1 is the first free URID
 			std::size_t index = 1u + m_unMap.size();
 			auto pr = m_map.emplace(std::move(uriStr), index);
-			if (pr.second) {
+			if (pr.second)
+			{
 				m_unMap.emplace_back(pr.first->first.c_str());
 				result = static_cast<LV2_URID>(index);
 			}
-		} else {
+		}
+		else
+		{
 			result = itr->second;
 		}
-	} catch (...) { /* result variable is already 0 */
+	}
+	catch (...)
+	{ /* result variable is already 0 */
 	}
 
 	return result;

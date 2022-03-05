@@ -70,9 +70,12 @@ InstrumentTrackView::InstrumentTrackView(InstrumentTrack* _it, TrackContainerVie
 
 	// creation of widgets for track-settings-widget
 	int widgetWidth;
-	if (ConfigManager::inst()->value("ui", "compacttrackbuttons").toInt()) {
+	if (ConfigManager::inst()->value("ui", "compacttrackbuttons").toInt())
+	{
 		widgetWidth = DEFAULT_SETTINGS_WIDGET_WIDTH_COMPACT;
-	} else {
+	}
+	else
+	{
 		widgetWidth = DEFAULT_SETTINGS_WIDGET_WIDTH;
 	}
 
@@ -94,14 +97,17 @@ InstrumentTrackView::InstrumentTrackView(InstrumentTrack* _it, TrackContainerVie
 	m_midiMenu = new QMenu(tr("MIDI"), this);
 
 	// sequenced MIDI?
-	if (!Engine::audioEngine()->midiClient()->isRaw()) {
+	if (!Engine::audioEngine()->midiClient()->isRaw())
+	{
 		_it->m_midiPort.m_readablePortsMenu = new MidiPortMenu(MidiPort::Input);
 		_it->m_midiPort.m_writablePortsMenu = new MidiPortMenu(MidiPort::Output);
 		_it->m_midiPort.m_readablePortsMenu->setModel(&_it->m_midiPort);
 		_it->m_midiPort.m_writablePortsMenu->setModel(&_it->m_midiPort);
 		m_midiInputAction = m_midiMenu->addMenu(_it->m_midiPort.m_readablePortsMenu);
 		m_midiOutputAction = m_midiMenu->addMenu(_it->m_midiPort.m_writablePortsMenu);
-	} else {
+	}
+	else
+	{
 		m_midiInputAction = m_midiMenu->addAction("");
 		m_midiOutputAction = m_midiMenu->addAction("");
 		m_midiInputAction->setCheckable(true);
@@ -146,9 +152,9 @@ void InstrumentTrackView::toggleMidiCCRack()
 	// this->model() returns pointer to the InstrumentTrack who owns this InstrumentTrackView.
 	if (!m_midiCCRackView) { m_midiCCRackView = std::unique_ptr<MidiCCRackView>(new MidiCCRackView(this->model())); }
 
-	if (m_midiCCRackView->parentWidget()->isVisible()) {
-		m_midiCCRackView->parentWidget()->hide();
-	} else {
+	if (m_midiCCRackView->parentWidget()->isVisible()) { m_midiCCRackView->parentWidget()->hide(); }
+	else
+	{
 		m_midiCCRackView->parentWidget()->show();
 		m_midiCCRackView->show();
 	}
@@ -157,9 +163,10 @@ void InstrumentTrackView::toggleMidiCCRack()
 InstrumentTrackWindow* InstrumentTrackView::topLevelInstrumentTrackWindow()
 {
 	InstrumentTrackWindow* w = nullptr;
-	for (const QMdiSubWindow* sw :
-		getGUI()->mainWindow()->workspace()->subWindowList(QMdiArea::ActivationHistoryOrder)) {
-		if (sw->isVisible() && sw->widget()->inherits("InstrumentTrackWindow")) {
+	for (const QMdiSubWindow* sw : getGUI()->mainWindow()->workspace()->subWindowList(QMdiArea::ActivationHistoryOrder))
+	{
+		if (sw->isVisible() && sw->widget()->inherits("InstrumentTrackWindow"))
+		{
 			w = qobject_cast<InstrumentTrackWindow*>(sw->widget());
 		}
 	}
@@ -198,7 +205,8 @@ void InstrumentTrackView::handleConfigChange(QString cls, QString attr, QString 
 {
 	// When one instrument track window mode is turned on,
 	// close windows except last opened one.
-	if (cls == "ui" && attr == "oneinstrumenttrackwindow" && value.toInt()) {
+	if (cls == "ui" && attr == "oneinstrumenttrackwindow" && value.toInt())
+	{
 		m_tlb->setChecked(m_window && m_window == topLevelInstrumentTrackWindow());
 	}
 }
@@ -217,7 +225,8 @@ void InstrumentTrackView::dropEvent(QDropEvent* _de)
 
 void InstrumentTrackView::toggleInstrumentWindow(bool _on)
 {
-	if (_on && ConfigManager::inst()->value("ui", "oneinstrumenttrackwindow").toInt()) {
+	if (_on && ConfigManager::inst()->value("ui", "oneinstrumenttrackwindow").toInt())
+	{
 		if (topLevelInstrumentTrackWindow()) { topLevelInstrumentTrackWindow()->m_itv->m_tlb->setChecked(false); }
 	}
 
@@ -265,10 +274,12 @@ QMenu* InstrumentTrackView::createMixerMenu(QString title, QString newMixerLabel
 	mixerMenu->addAction(newMixerLabel, this, SLOT(createMixerLine()));
 	mixerMenu->addSeparator();
 
-	for (int i = 0; i < Engine::mixer()->numChannels(); ++i) {
+	for (int i = 0; i < Engine::mixer()->numChannels(); ++i)
+	{
 		MixerChannel* currentChannel = Engine::mixer()->mixerChannel(i);
 
-		if (currentChannel != mixerChannel) {
+		if (currentChannel != mixerChannel)
+		{
 			auto index = currentChannel->m_channelIndex;
 			QString label = tr("%1: %2").arg(currentChannel->m_channelIndex).arg(currentChannel->m_name);
 			mixerMenu->addAction(label, [this, index]() { assignMixerLine(index); });

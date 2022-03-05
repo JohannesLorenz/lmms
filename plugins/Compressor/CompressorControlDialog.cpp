@@ -364,7 +364,8 @@ void CompressorControlDialog::limiterChanged()
 
 void CompressorControlDialog::updateDisplay()
 {
-	if (!isVisible()) {
+	if (!isVisible())
+	{
 		m_timeElapsed.restart();
 		return;
 	}
@@ -378,7 +379,8 @@ void CompressorControlDialog::updateDisplay()
 	// Time Change / Daylight Savings Time protection
 	if (!m_compPixelMovement || m_compPixelMovement <= 0) { return; }
 
-	if (!m_controls->m_effect->isEnabled() || !m_controls->m_effect->isRunning()) {
+	if (!m_controls->m_effect->isEnabled() || !m_controls->m_effect->isRunning())
+	{
 		m_controls->m_effect->m_displayPeak[0] = COMP_NOISE_FLOOR;
 		m_controls->m_effect->m_displayPeak[1] = COMP_NOISE_FLOOR;
 		m_controls->m_effect->m_displayGain[0] = 1;
@@ -427,7 +429,8 @@ void CompressorControlDialog::drawVisPixmap()
 
 	// Draw translucent portion of input volume line
 	m_p.setPen(QPen(m_inVolAreaColor, 1));
-	for (int i = 0; i < m_compPixelMovement; ++i) {
+	for (int i = 0; i < m_compPixelMovement; ++i)
+	{
 		const int temp = linearInterpolate(m_lastPoint, m_yPoint, float(i) / float(m_compPixelMovement));
 		m_p.drawLine(
 			m_windowSizeX - m_compPixelMovement + i, temp, m_windowSizeX - m_compPixelMovement + i, m_windowSizeY);
@@ -439,7 +442,8 @@ void CompressorControlDialog::drawVisPixmap()
 
 	// Draw translucent portion of output volume line
 	m_p.setPen(QPen(m_outVolAreaColor, 1));
-	for (int i = 0; i < m_compPixelMovement; ++i) {
+	for (int i = 0; i < m_compPixelMovement; ++i)
+	{
 		const int temp = linearInterpolate(
 			m_lastPoint + m_lastGainPoint, m_yPoint + m_yGainPoint, float(i) / float(m_compPixelMovement));
 		m_p.drawLine(
@@ -489,19 +493,22 @@ void CompressorControlDialog::redrawKnee()
 
 	// Draw two straight lines
 	m_p.drawLine(0, m_kneeWindowSizeY, dbfsToXPoint(kneePoint1), dbfsToYPoint(kneePoint1));
-	if (dbfsToXPoint(kneePoint2X) < m_kneeWindowSizeY) {
+	if (dbfsToXPoint(kneePoint2X) < m_kneeWindowSizeY)
+	{
 		m_p.drawLine(dbfsToXPoint(kneePoint2X), dbfsToYPoint(kneePoint2Y), m_kneeWindowSizeY, dbfsToYPoint(ratioPoint));
 	}
 
 	// Draw knee section
-	if (m_controls->m_effect->m_kneeVal) {
+	if (m_controls->m_effect->m_kneeVal)
+	{
 		m_p.setPen(QPen(m_kneeColor2, 3));
 
 		float prevPoint[2] = {kneePoint1, kneePoint1};
 		float newPoint[2] = {0, 0};
 
 		// Draw knee curve using many straight lines.
-		for (int i = 0; i < COMP_KNEE_LINES; ++i) {
+		for (int i = 0; i < COMP_KNEE_LINES; ++i)
+		{
 			newPoint[0] = linearInterpolate(kneePoint1, kneePoint2X, (i + 1) / (float)COMP_KNEE_LINES);
 
 			const float temp = newPoint[0] - m_controls->m_effect->m_thresholdVal + m_controls->m_effect->m_kneeVal;
@@ -542,10 +549,13 @@ void CompressorControlDialog::drawKneePixmap2()
 	m_p.setRenderHint(QPainter::Antialiasing, false);
 
 	int kneePoint = dbfsToXPoint(ampToDbfs(m_peakAvg));
-	if (kneePoint > m_lastKneePoint) {
+	if (kneePoint > m_lastKneePoint)
+	{
 		QRectF knee2Rect = QRect(m_lastKneePoint, 0, kneePoint - m_lastKneePoint, m_kneeWindowSizeY);
 		m_p.drawPixmap(knee2Rect, m_kneePixmap, knee2Rect);
-	} else {
+	}
+	else
+	{
 		m_p.setCompositionMode(QPainter::CompositionMode_Source);
 		m_p.fillRect(kneePoint, 0, m_lastKneePoint, m_kneeWindowSizeY, QColor("transparent"));
 		m_p.setCompositionMode(QPainter::CompositionMode_SourceOver);
@@ -612,7 +622,8 @@ void CompressorControlDialog::wheelEvent(QWheelEvent* event)
 	m_dbRange = round(qBound(COMP_GRID_SPACING, dbRangeNew, COMP_GRID_MAX) / COMP_GRID_SPACING) * COMP_GRID_SPACING;
 
 	// Only reset view if the scolling had an effect
-	if (m_dbRange != temp) {
+	if (m_dbRange != temp)
+	{
 		drawGraph();
 		m_controls->m_effect->m_redrawKnee = true;
 		m_controls->m_effect->m_redrawThreshold = true;
@@ -636,7 +647,8 @@ void CompressorControlDialog::drawGraph()
 
 	// Redraw graph
 	m_p.setPen(QPen(m_graphColor, 1));
-	for (int i = 1; i < m_dbRange / COMP_GRID_SPACING + 1; ++i) {
+	for (int i = 1; i < m_dbRange / COMP_GRID_SPACING + 1; ++i)
+	{
 		m_p.drawLine(0, dbfsToYPoint(-COMP_GRID_SPACING * i), m_windowSizeX, dbfsToYPoint(-COMP_GRID_SPACING * i));
 		m_p.drawLine(dbfsToXPoint(-COMP_GRID_SPACING * i), 0, dbfsToXPoint(-COMP_GRID_SPACING * i), m_kneeWindowSizeY);
 		m_p.drawText(QRectF(m_windowSizeX - 50, dbfsToYPoint(-COMP_GRID_SPACING * i), 50, 50),

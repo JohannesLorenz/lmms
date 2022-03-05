@@ -74,7 +74,8 @@ public:
 	void messageLoop()
 	{
 		message m;
-		while ((m = receiveMessage()).id != IdQuit) {
+		while ((m = receiveMessage()).id != IdQuit)
+		{
 			pthread_mutex_lock(&m_master->mutex);
 			processMessage(m);
 			pthread_mutex_unlock(&m_master->mutex);
@@ -84,7 +85,8 @@ public:
 
 	virtual bool processMessage(const message& _m)
 	{
-		switch (_m.id) {
+		switch (_m.id)
+		{
 		case IdQuit: break;
 
 		case IdShowUI:
@@ -146,30 +148,35 @@ void RemoteZynAddSubFx::guiLoop()
 	int exitProgram = 0;
 	MasterUI* ui = nullptr;
 
-	while (!m_guiExit) {
-		if (ui) {
-			Fl::wait(m_guiSleepTime / 1000.0);
-		} else {
+	while (!m_guiExit)
+	{
+		if (ui) { Fl::wait(m_guiSleepTime / 1000.0); }
+		else
+		{
 #ifdef LMMS_BUILD_WIN32
 			Sleep(m_guiSleepTime);
 #else
 			usleep(m_guiSleepTime * 1000);
 #endif
 		}
-		if (exitProgram == 1) {
+		if (exitProgram == 1)
+		{
 			pthread_mutex_lock(&m_master->mutex);
 			sendMessage(IdHideUI);
 			exitProgram = 0;
 			pthread_mutex_unlock(&m_master->mutex);
 		}
 		pthread_mutex_lock(&m_guiMutex);
-		while (m_guiMessages.size()) {
+		while (m_guiMessages.size())
+		{
 			RemotePluginClient::message m = m_guiMessages.front();
 			m_guiMessages.pop();
-			switch (m.id) {
+			switch (m.id)
+			{
 			case IdShowUI:
 				// we only create GUI
-				if (!ui) {
+				if (!ui)
+				{
 					Fl::scheme("plastic");
 					ui = new MasterUI(m_master, &exitProgram);
 				}
@@ -188,7 +195,8 @@ void RemoteZynAddSubFx::guiLoop()
 
 			case IdLoadPresetFile: {
 				LocalZynAddSubFx::loadPreset(m.getString(), ui ? ui->npartcounter->value() - 1 : 0);
-				if (ui) {
+				if (ui)
+				{
 					ui->npartcounter->do_callback();
 					ui->updatepanel();
 					ui->refresh_master_ui();

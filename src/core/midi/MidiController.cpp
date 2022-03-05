@@ -44,10 +44,13 @@ MidiController::~MidiController() {}
 
 void MidiController::updateValueBuffer()
 {
-	if (m_previousValue != m_lastValue) {
+	if (m_previousValue != m_lastValue)
+	{
 		m_valueBuffer.interpolate(m_previousValue, m_lastValue);
 		m_previousValue = m_lastValue;
-	} else {
+	}
+	else
+	{
 		m_valueBuffer.fill(m_lastValue);
 	}
 	m_bufferLastUpdated = s_periods;
@@ -61,12 +64,14 @@ void MidiController::updateName()
 void MidiController::processInEvent(const MidiEvent& event, const TimePos& time, f_cnt_t offset)
 {
 	unsigned char controllerNum;
-	switch (event.type()) {
+	switch (event.type())
+	{
 	case MidiControlChange:
 		controllerNum = event.controllerNumber();
 
 		if (m_midiPort.inputController() == controllerNum + 1
-			&& (m_midiPort.inputChannel() == event.channel() + 1 || m_midiPort.inputChannel() == 0)) {
+			&& (m_midiPort.inputChannel() == event.channel() + 1 || m_midiPort.inputChannel() == 0))
+		{
 			unsigned char val = event.controllerValue();
 			m_previousValue = m_lastValue;
 			m_lastValue = (float)(val) / 127.0f;
@@ -82,7 +87,8 @@ void MidiController::processInEvent(const MidiEvent& event, const TimePos& time,
 
 void MidiController::subscribeReadablePorts(const MidiPort::Map& _map)
 {
-	for (MidiPort::Map::ConstIterator it = _map.constBegin(); it != _map.constEnd(); ++it) {
+	for (MidiPort::Map::ConstIterator it = _map.constBegin(); it != _map.constEnd(); ++it)
+	{
 		m_midiPort.subscribeReadablePort(it.key(), *it);
 	}
 }

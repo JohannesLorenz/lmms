@@ -64,16 +64,20 @@ bool AmplifierEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 	const ValueBuffer* leftBuf = m_ampControls.m_leftModel.valueBuffer();
 	const ValueBuffer* rightBuf = m_ampControls.m_rightModel.valueBuffer();
 
-	for (fpp_t f = 0; f < frames; ++f) {
+	for (fpp_t f = 0; f < frames; ++f)
+	{
 		//		qDebug( "offset %d, value %f", f, m_ampControls.m_volumeModel.value( f ) );
 
 		sample_t s[2] = {buf[f][0], buf[f][1]};
 
 		// vol knob
-		if (volBuf) {
+		if (volBuf)
+		{
 			s[0] *= volBuf->value(f) * 0.01f;
 			s[1] *= volBuf->value(f) * 0.01f;
-		} else {
+		}
+		else
+		{
 			s[0] *= m_ampControls.m_volumeModel.value() * 0.01f;
 			s[1] *= m_ampControls.m_volumeModel.value() * 0.01f;
 		}

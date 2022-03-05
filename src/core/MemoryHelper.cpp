@@ -55,7 +55,8 @@ void* MemoryHelper::alignedMalloc(size_t byteNum)
  */
 void MemoryHelper::alignedFree(void* _buffer)
 {
-	if (_buffer) {
+	if (_buffer)
+	{
 		int* ptr2 = static_cast<int*>(_buffer) - 1;
 		_buffer = static_cast<char*>(_buffer) - *ptr2;
 		free(_buffer);

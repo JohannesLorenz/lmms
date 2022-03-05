@@ -56,10 +56,13 @@ void LinkedModelGroupView::modelChanged(LinkedModelGroup* group)
 		auto itr = m_widgets.find(str);
 		// in case there are new or deleted widgets, the subclass has already
 		// modified m_widgets, so this will go into the else case
-		if (itr == m_widgets.end()) {
+		if (itr == m_widgets.end())
+		{
 			// no widget? this can happen when the whole view is being destroyed
 			// (for some strange reasons)
-		} else {
+		}
+		else
+		{
 			itr->second->setModel(minf.m_model);
 		}
 	});
@@ -69,12 +72,14 @@ void LinkedModelGroupView::modelChanged(LinkedModelGroup* group)
 
 void LinkedModelGroupView::addControl(Control* ctrl, const std::string& id, const std::string& display, bool removable)
 {
-	if (ctrl) {
+	if (ctrl)
+	{
 		QWidget* box = new QWidget(this);
 		QHBoxLayout* boxLayout = new QHBoxLayout(box);
 		boxLayout->addWidget(ctrl->topWidget());
 
-		if (removable) {
+		if (removable)
+		{
 			QPushButton* removeBtn = new QPushButton;
 			removeBtn->setIcon(embed::getIconPixmap("discard"));
 			QObject::connect(
@@ -105,7 +110,8 @@ void LinkedModelGroupView::addControl(Control* ctrl, const std::string& id, cons
 void LinkedModelGroupView::removeControl(const QString& key)
 {
 	auto itr = m_widgets.find(key.toStdString());
-	if (itr != m_widgets.end()) {
+	if (itr != m_widgets.end())
+	{
 		QLayoutItem* item = m_layout->itemByString(key);
 		Q_ASSERT(!!item);
 		QWidget* wdg = item->widget();

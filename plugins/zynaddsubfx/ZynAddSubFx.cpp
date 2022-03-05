@@ -75,7 +75,8 @@ ZynAddSubFxRemotePlugin::~ZynAddSubFxRemotePlugin() {}
 
 bool ZynAddSubFxRemotePlugin::processMessage(const message& _m)
 {
-	switch (_m.id) {
+	switch (_m.id)
+	{
 	case IdHideUI: emit clickedCloseButton(); return true;
 	default: break;
 	}
@@ -141,7 +142,8 @@ void ZynAddSubFxInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this)
 	m_resBandwidthModel.saveSettings(_doc, _this, "resbandwidth");
 
 	QString modifiedControllers;
-	for (QMap<int, bool>::ConstIterator it = m_modifiedControllers.begin(); it != m_modifiedControllers.end(); ++it) {
+	for (QMap<int, bool>::ConstIterator it = m_modifiedControllers.begin(); it != m_modifiedControllers.end(); ++it)
+	{
 		if (it.value()) { modifiedControllers += QString("%1,").arg(it.key()); }
 	}
 	_this.setAttribute("modifiedcontrollers", modifiedControllers);
@@ -149,21 +151,26 @@ void ZynAddSubFxInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this)
 	m_forwardMidiCcModel.saveSettings(_doc, _this, "forwardmidicc");
 
 	QTemporaryFile tf;
-	if (tf.open()) {
+	if (tf.open())
+	{
 		const std::string fn = QSTR_TO_STDSTR(QDir::toNativeSeparators(tf.fileName()));
 		m_pluginMutex.lock();
-		if (m_remotePlugin) {
+		if (m_remotePlugin)
+		{
 			m_remotePlugin->lock();
 			m_remotePlugin->sendMessage(RemotePlugin::message(IdSaveSettingsToFile).addString(fn));
 			m_remotePlugin->waitForMessage(IdSaveSettingsToFile);
 			m_remotePlugin->unlock();
-		} else {
+		}
+		else
+		{
 			m_plugin->saveXML(fn);
 		}
 		m_pluginMutex.unlock();
 		QByteArray a = tf.readAll();
 		QDomDocument doc("mydoc");
-		if (doc.setContent(a)) {
+		if (doc.setContent(a))
+		{
 			QDomNode n = _doc.importNode(doc.documentElement(), true);
 			_this.appendChild(n);
 		}
@@ -189,27 +196,34 @@ void ZynAddSubFxInstrument::loadSettings(const QDomElement& _this)
 	doc.appendChild(doc.importNode(data, true));
 
 	QTemporaryFile tf;
-	if (tf.open()) {
+	if (tf.open())
+	{
 		QByteArray a = doc.toString(0).toUtf8();
 		tf.write(a);
 		tf.flush();
 
 		const std::string fn = QSTR_TO_STDSTR(QDir::toNativeSeparators(tf.fileName()));
 		m_pluginMutex.lock();
-		if (m_remotePlugin) {
+		if (m_remotePlugin)
+		{
 			m_remotePlugin->lock();
 			m_remotePlugin->sendMessage(RemotePlugin::message(IdLoadSettingsFromFile).addString(fn));
 			m_remotePlugin->waitForMessage(IdLoadSettingsFromFile);
 			m_remotePlugin->unlock();
-		} else {
+		}
+		else
+		{
 			m_plugin->loadXML(fn);
 		}
 		m_pluginMutex.unlock();
 
 		m_modifiedControllers.clear();
-		for (const QString& c : _this.attribute("modifiedcontrollers").split(',')) {
-			if (!c.isEmpty()) {
-				switch (c.toInt()) {
+		for (const QString& c : _this.attribute("modifiedcontrollers").split(','))
+		{
+			if (!c.isEmpty())
+			{
+				switch (c.toInt())
+				{
 				case C_portamento: updatePortamento(); break;
 				case C_filtercutoff: updateFilterFreq(); break;
 				case C_filterq: updateFilterQ(); break;
@@ -230,12 +244,15 @@ void ZynAddSubFxInstrument::loadSettings(const QDomElement& _this)
 void ZynAddSubFxInstrument::loadFile(const QString& _file)
 {
 	const std::string fn = QSTR_TO_STDSTR(_file);
-	if (m_remotePlugin) {
+	if (m_remotePlugin)
+	{
 		m_remotePlugin->lock();
 		m_remotePlugin->sendMessage(RemotePlugin::message(IdLoadPresetFile).addString(fn));
 		m_remotePlugin->waitForMessage(IdLoadPresetFile);
 		m_remotePlugin->unlock();
-	} else {
+	}
+	else
+	{
 		m_pluginMutex.lock();
 		m_plugin->loadPreset(fn);
 		m_pluginMutex.unlock();
@@ -253,9 +270,9 @@ QString ZynAddSubFxInstrument::nodeName() const { return zynaddsubfx_plugin_desc
 void ZynAddSubFxInstrument::play(sampleFrame* _buf)
 {
 	if (!m_pluginMutex.tryLock(Engine::getSong()->isExporting() ? -1 : 0)) { return; }
-	if (m_remotePlugin) {
-		m_remotePlugin->process(nullptr, _buf);
-	} else {
+	if (m_remotePlugin) { m_remotePlugin->process(nullptr, _buf); }
+	else
+	{
 		m_plugin->processAudio(_buf);
 	}
 	m_pluginMutex.unlock();
@@ -266,16 +283,17 @@ bool ZynAddSubFxInstrument::handleMidiEvent(const MidiEvent& event, const TimePo
 {
 	// do not forward external MIDI Control Change events if the according
 	// LED is not checked
-	if (event.type() == MidiControlChange && event.sourcePort() != this && m_forwardMidiCcModel.value() == false) {
+	if (event.type() == MidiControlChange && event.sourcePort() != this && m_forwardMidiCcModel.value() == false)
+	{
 		return true;
 	}
 
 	MidiEvent localEvent = event;
 	localEvent.setChannel(0);
 	m_pluginMutex.lock();
-	if (m_remotePlugin) {
-		m_remotePlugin->processMidiEvent(localEvent, 0);
-	} else {
+	if (m_remotePlugin) { m_remotePlugin->processMidiEvent(localEvent, 0); }
+	else
+	{
 		m_plugin->processMidiEvent(localEvent);
 	}
 	m_pluginMutex.unlock();
@@ -299,10 +317,13 @@ void ZynAddSubFxInstrument::reloadPlugin()
 void ZynAddSubFxInstrument::updatePitchRange()
 {
 	m_pluginMutex.lock();
-	if (m_remotePlugin) {
+	if (m_remotePlugin)
+	{
 		m_remotePlugin->sendMessage(
 			RemotePlugin::message(IdZasfSetPitchWheelBendRange).addInt(instrumentTrack()->midiPitchRange()));
-	} else {
+	}
+	else
+	{
 		m_plugin->setPitchWheelBendRange(instrumentTrack()->midiPitchRange());
 	}
 	m_pluginMutex.unlock();
@@ -331,7 +352,8 @@ void ZynAddSubFxInstrument::initPlugin()
 	m_plugin = nullptr;
 	m_remotePlugin = nullptr;
 
-	if (m_hasGUI) {
+	if (m_hasGUI)
+	{
 		m_remotePlugin = new ZynAddSubFxRemotePlugin();
 		m_remotePlugin->lock();
 		m_remotePlugin->waitForInitDone(false);
@@ -352,7 +374,9 @@ void ZynAddSubFxInstrument::initPlugin()
 
 		m_remotePlugin->showUI();
 		m_remotePlugin->unlock();
-	} else {
+	}
+	else
+	{
 		m_plugin = new LocalZynAddSubFx;
 		m_plugin->setSampleRate(Engine::audioEngine()->processingSampleRate());
 		m_plugin->setBufferSize(Engine::audioEngine()->framesPerPeriod());
@@ -443,14 +467,17 @@ void ZynAddSubFxView::dragEnterEvent(QDragEnterEvent* _dee)
 	// For mimeType() and MimeType enum class
 	using namespace Clipboard;
 
-	if (_dee->mimeData()->hasFormat(mimeType(MimeType::StringPair))) {
+	if (_dee->mimeData()->hasFormat(mimeType(MimeType::StringPair)))
+	{
 		QString txt = _dee->mimeData()->data(mimeType(MimeType::StringPair));
-		if (txt.section(':', 0, 0) == "pluginpresetfile") {
-			_dee->acceptProposedAction();
-		} else {
+		if (txt.section(':', 0, 0) == "pluginpresetfile") { _dee->acceptProposedAction(); }
+		else
+		{
 			_dee->ignore();
 		}
-	} else {
+	}
+	else
+	{
 		_dee->ignore();
 	}
 }
@@ -459,7 +486,8 @@ void ZynAddSubFxView::dropEvent(QDropEvent* _de)
 {
 	const QString type = StringPairDrag::decodeKey(_de);
 	const QString value = StringPairDrag::decodeValue(_de);
-	if (type == "pluginpresetfile") {
+	if (type == "pluginpresetfile")
+	{
 		castModel<ZynAddSubFxInstrument>()->loadFile(value);
 		_de->accept();
 		return;
@@ -488,11 +516,13 @@ void ZynAddSubFxView::modelChanged()
 void ZynAddSubFxView::toggleUI()
 {
 	ZynAddSubFxInstrument* model = castModel<ZynAddSubFxInstrument>();
-	if (model->m_hasGUI != m_toggleUIButton->isChecked()) {
+	if (model->m_hasGUI != m_toggleUIButton->isChecked())
+	{
 		model->m_hasGUI = m_toggleUIButton->isChecked();
 		model->reloadPlugin();
 
-		if (model->m_remotePlugin) {
+		if (model->m_remotePlugin)
+		{
 			connect(model->m_remotePlugin, SIGNAL(clickedCloseButton()), m_toggleUIButton, SLOT(toggle()));
 		}
 	}

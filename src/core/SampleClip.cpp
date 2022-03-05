@@ -62,7 +62,8 @@ SampleClip::SampleClip(Track* _track)
 	// care about Clip position
 	connect(this, SIGNAL(positionChanged()), this, SLOT(updateTrackClips()));
 
-	switch (getTrack()->trackContainer()->type()) {
+	switch (getTrack()->trackContainer()->type())
+	{
 	case TrackContainer::PatternContainer: setAutoResize(true); break;
 
 	case TrackContainer::SongContainer:
@@ -109,11 +110,14 @@ void SampleClip::setSampleBuffer(SampleBuffer* sb)
 void SampleClip::setSampleFile(const QString& _sf)
 {
 	int length;
-	if (_sf.isEmpty()) { // When creating an empty sample clip make it a bar long
+	if (_sf.isEmpty())
+	{ // When creating an empty sample clip make it a bar long
 		float nom = Engine::getSong()->getTimeSigModel().getNumerator();
 		float den = Engine::getSong()->getTimeSigModel().getDenominator();
 		length = DefaultTicksPerBar * (nom / den);
-	} else { // Otherwise set it to the sample's length
+	}
+	else
+	{ // Otherwise set it to the sample's length
 		m_sampleBuffer->setAudioFile(_sf);
 		length = sampleLength();
 	}
@@ -158,16 +162,17 @@ void SampleClip::setSamplePlayLength(f_cnt_t length) { m_sampleBuffer->setEndFra
 
 void SampleClip::saveSettings(QDomDocument& _doc, QDomElement& _this)
 {
-	if (_this.parentNode().nodeName() == "clipboard") {
-		_this.setAttribute("pos", -1);
-	} else {
+	if (_this.parentNode().nodeName() == "clipboard") { _this.setAttribute("pos", -1); }
+	else
+	{
 		_this.setAttribute("pos", startPosition());
 	}
 	_this.setAttribute("len", length());
 	_this.setAttribute("muted", isMuted());
 	_this.setAttribute("src", sampleFile());
 	_this.setAttribute("off", startTimeOffset());
-	if (sampleFile() == "") {
+	if (sampleFile() == "")
+	{
 		QString s;
 		_this.setAttribute("data", m_sampleBuffer->toBase64(s));
 	}
@@ -182,7 +187,8 @@ void SampleClip::loadSettings(const QDomElement& _this)
 {
 	if (_this.attribute("pos").toInt() >= 0) { movePosition(_this.attribute("pos").toInt()); }
 	setSampleFile(_this.attribute("src"));
-	if (sampleFile().isEmpty() && _this.hasAttribute("data")) {
+	if (sampleFile().isEmpty() && _this.hasAttribute("data"))
+	{
 		m_sampleBuffer->loadFromBase64(_this.attribute("data"));
 	}
 	changeLength(_this.attribute("len").toInt());
@@ -191,14 +197,18 @@ void SampleClip::loadSettings(const QDomElement& _this)
 
 	if (_this.hasAttribute("sample_rate")) { m_sampleBuffer->setSampleRate(_this.attribute("sample_rate").toInt()); }
 
-	if (_this.hasAttribute("color")) {
+	if (_this.hasAttribute("color"))
+	{
 		useCustomClipColor(true);
 		setColor(_this.attribute("color"));
-	} else {
+	}
+	else
+	{
 		useCustomClipColor(false);
 	}
 
-	if (_this.hasAttribute("reversed")) {
+	if (_this.hasAttribute("reversed"))
+	{
 		m_sampleBuffer->setReversed(true);
 		emit wasReversed(); // tell SampleClipView to update the view
 	}

@@ -42,7 +42,8 @@ void TrackRenameLineEdit::show()
 
 void TrackRenameLineEdit::keyPressEvent(QKeyEvent* ke)
 {
-	if (ke->key() == Qt::Key_Escape) {
+	if (ke->key() == Qt::Key_Escape)
+	{
 		setText(m_oldName);
 		hide();
 	}

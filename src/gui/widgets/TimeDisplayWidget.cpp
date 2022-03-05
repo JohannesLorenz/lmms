@@ -60,7 +60,8 @@ void TimeDisplayWidget::setDisplayMode(DisplayMode displayMode)
 {
 	m_displayMode = displayMode;
 
-	switch (m_displayMode) {
+	switch (m_displayMode)
+	{
 	case MinutesSeconds:
 		m_majorLCD.setLabel(tr("MIN"));
 		m_minorLCD.setLabel(tr("SEC"));
@@ -81,7 +82,8 @@ void TimeDisplayWidget::updateTime()
 {
 	Song* s = Engine::getSong();
 
-	switch (m_displayMode) {
+	switch (m_displayMode)
+	{
 	case MinutesSeconds:
 		int msec;
 		msec = s->getMilliseconds();
@@ -105,10 +107,11 @@ void TimeDisplayWidget::updateTime()
 
 void TimeDisplayWidget::mousePressEvent(QMouseEvent* mouseEvent)
 {
-	if (mouseEvent->button() == Qt::LeftButton) {
-		if (m_displayMode == MinutesSeconds) {
-			setDisplayMode(BarsTicks);
-		} else {
+	if (mouseEvent->button() == Qt::LeftButton)
+	{
+		if (m_displayMode == MinutesSeconds) { setDisplayMode(BarsTicks); }
+		else
+		{
 			setDisplayMode(MinutesSeconds);
 		}
 	}

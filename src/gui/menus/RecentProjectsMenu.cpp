@@ -28,7 +28,8 @@ void RecentProjectsMenu::fillMenu()
 	//	The file history goes 50 deep but we only show the 15
 	//	most recent ones that we can open and omit .mpt files.
 	int shownInMenu = 0;
-	for (QString& fileName : rup) {
+	for (QString& fileName : rup)
+	{
 		QFileInfo recentFile(fileName);
 		if (!recentFile.exists() || fileName == ConfigManager::inst()->recoveryFile()) { continue; }
 
@@ -48,7 +49,8 @@ void RecentProjectsMenu::fillMenu()
 void RecentProjectsMenu::openProject(QAction* _action)
 {
 	auto mainWindow = getGUI()->mainWindow();
-	if (mainWindow->mayChangeProject(true)) {
+	if (mainWindow->mayChangeProject(true))
+	{
 		const QString f = _action->text().replace("&&", "&");
 		mainWindow->setCursor(Qt::WaitCursor);
 		Engine::getSong()->loadProject(f);

@@ -123,7 +123,8 @@ inline float positiveFraction(float x)
 template <typename T> inline void clearArray(T* arr, unsigned int size)
 {
 	const T* const arr_end = arr + size;
-	while (arr < arr_end) {
+	while (arr < arr_end)
+	{
 		*arr = 0;
 		++arr;
 	}

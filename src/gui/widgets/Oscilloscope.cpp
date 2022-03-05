@@ -65,7 +65,8 @@ Oscilloscope::~Oscilloscope()
 
 void Oscilloscope::updateAudioBuffer(const surroundSampleFrame* buffer)
 {
-	if (!Engine::getSong()->isExporting()) {
+	if (!Engine::getSong()->isExporting())
+	{
 		const fpp_t fpp = Engine::audioEngine()->framesPerPeriod();
 		memcpy(m_buffer, buffer, sizeof(surroundSampleFrame) * fpp);
 	}
@@ -74,11 +75,14 @@ void Oscilloscope::updateAudioBuffer(const surroundSampleFrame* buffer)
 void Oscilloscope::setActive(bool _active)
 {
 	m_active = _active;
-	if (m_active) {
+	if (m_active)
+	{
 		connect(getGUI()->mainWindow(), SIGNAL(periodicUpdate()), this, SLOT(update()));
 		connect(Engine::audioEngine(), SIGNAL(nextAudioBuffer(const surroundSampleFrame*)), this,
 			SLOT(updateAudioBuffer(const surroundSampleFrame*)));
-	} else {
+	}
+	else
+	{
 		disconnect(getGUI()->mainWindow(), SIGNAL(periodicUpdate()), this, SLOT(update()));
 		disconnect(Engine::audioEngine(), SIGNAL(nextAudioBuffer(const surroundSampleFrame*)), this,
 			SLOT(updateAudioBuffer(const surroundSampleFrame*)));
@@ -102,7 +106,8 @@ void Oscilloscope::paintEvent(QPaintEvent*)
 
 	p.drawPixmap(0, 0, m_background);
 
-	if (m_active && !Engine::getSong()->isExporting()) {
+	if (m_active && !Engine::getSong()->isExporting())
+	{
 		AudioEngine const* audioEngine = Engine::audioEngine();
 
 		float master_output = audioEngine->masterGain();
@@ -124,15 +129,19 @@ void Oscilloscope::paintEvent(QPaintEvent*)
 		int x_base = 2;
 		const qreal y_base = height() / 2 - 0.5;
 
-		for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch) {
-			for (int frame = 0; frame < frames; ++frame) {
+		for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch)
+		{
+			for (int frame = 0; frame < frames; ++frame)
+			{
 				sample_t const clippedSample = AudioEngine::clip(m_buffer[frame][ch]);
 				m_points[frame] = QPointF(
 					x_base + static_cast<qreal>(frame) * xd, y_base + (static_cast<qreal>(clippedSample) * half_h));
 			}
 			p.drawPolyline(m_points, frames);
 		}
-	} else {
+	}
+	else
+	{
 		p.setPen(QColor(192, 192, 192));
 		p.setFont(pointSize<7>(p.font()));
 		p.drawText(6, height() - 5, tr("Click to enable"));
@@ -146,9 +155,9 @@ void Oscilloscope::mousePressEvent(QMouseEvent* _me)
 
 QColor const& Oscilloscope::determineLineColor(float level) const
 {
-	if (level <= 1.0f) {
-		return normalColor();
-	} else {
+	if (level <= 1.0f) { return normalColor(); }
+	else
+	{
 		return clippingColor();
 	}
 }

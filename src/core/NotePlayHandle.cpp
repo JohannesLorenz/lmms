@@ -69,10 +69,13 @@ NotePlayHandle::NotePlayHandle(InstrumentTrack* instrumentTrack, const f_cnt_t _
 	, m_frequencyNeedsUpdate(false)
 {
 	lock();
-	if (hasParent() == false) {
+	if (hasParent() == false)
+	{
 		m_baseDetuning = new BaseDetuning(detuning());
 		m_instrumentTrack->m_processHandles.push_back(this);
-	} else {
+	}
+	else
+	{
 		m_baseDetuning = parent->m_baseDetuning;
 
 		parent->m_subNotes.push_back(this);
@@ -90,7 +93,8 @@ NotePlayHandle::NotePlayHandle(InstrumentTrack* instrumentTrack, const f_cnt_t _
 	// inform attached components about new MIDI note (used for recording in Piano Roll)
 	if (m_origin == OriginMidiInput) { m_instrumentTrack->midiNoteOn(*this); }
 
-	if (m_instrumentTrack->instrument() && m_instrumentTrack->instrument()->flags() & Instrument::IsSingleStreamed) {
+	if (m_instrumentTrack->instrument() && m_instrumentTrack->instrument()->flags() & Instrument::IsSingleStreamed)
+	{
 		setUsesBuffer(false);
 	}
 
@@ -104,10 +108,13 @@ NotePlayHandle::~NotePlayHandle()
 	lock();
 	noteOff(0);
 
-	if (hasParent() == false) {
+	if (hasParent() == false)
+	{
 		delete m_baseDetuning;
 		m_instrumentTrack->m_processHandles.removeAll(this);
-	} else {
+	}
+	else
+	{
 		m_parent->m_subNotes.removeOne(this);
 	}
 
@@ -141,7 +148,8 @@ void NotePlayHandle::play(sampleFrame* _working_buffer)
 	if (m_muted) { return; }
 
 	// if the note offset falls over to next period, then don't start playback yet
-	if (offset() >= Engine::audioEngine()->framesPerPeriod()) {
+	if (offset() >= Engine::audioEngine()->framesPerPeriod())
+	{
 		setOffset(offset() - Engine::audioEngine()->framesPerPeriod());
 		return;
 	}
@@ -151,11 +159,13 @@ void NotePlayHandle::play(sampleFrame* _working_buffer)
 	// Don't play the note if it falls outside of the user defined key range
 	// TODO: handle the range check by Microtuner, and if the key becomes "not mapped", save the current frequency
 	// so that the note release can finish playing using a valid frequency instead of a 1 Hz placeholder
-	if (key() < m_instrumentTrack->m_firstKeyModel.value() || key() > m_instrumentTrack->m_lastKeyModel.value()) {
+	if (key() < m_instrumentTrack->m_firstKeyModel.value() || key() > m_instrumentTrack->m_lastKeyModel.value())
+	{
 		// Release the note in case it started playing before going out of range
 		noteOff(0);
 		// Exit if the note did not start playing before going out of range (i.e. there is no need to play release)
-		if (m_totalFramesPlayed == 0) {
+		if (m_totalFramesPlayed == 0)
+		{
 			unlock();
 			return;
 		}
@@ -166,7 +176,8 @@ void NotePlayHandle::play(sampleFrame* _working_buffer)
 	 * Therefore, we check here whether the note has already been released before sending
 	 * the note-on message. */
 	if (!m_released && m_totalFramesPlayed == 0 && !m_hasMidiNote
-		&& (hasParent() || !m_instrumentTrack->isArpeggioEnabled())) {
+		&& (hasParent() || !m_instrumentTrack->isArpeggioEnabled()))
+	{
 		m_hasMidiNote = true;
 
 		const int baseVelocity = m_instrumentTrack->midiPort()->baseVelocity();
@@ -184,7 +195,8 @@ void NotePlayHandle::play(sampleFrame* _working_buffer)
 
 	// check if we start release during this period
 	if (m_released == false && instrumentTrack()->isSustainPedalPressed() == false
-		&& m_totalFramesPlayed + framesThisPeriod > m_frames) {
+		&& m_totalFramesPlayed + framesThisPeriod > m_frames)
+	{
 		noteOff(m_totalFramesPlayed == 0
 				? (m_frames + offset()) // if we have noteon and noteoff during the same period, take offset in account
 										// for release frame
@@ -194,12 +206,14 @@ void NotePlayHandle::play(sampleFrame* _working_buffer)
 	// under some circumstances we're called even if there's nothing to play
 	// therefore do an additional check which fixes crash e.g. when
 	// decreasing release of an instrument-track while the note is active
-	if (framesLeft() > 0) {
+	if (framesLeft() > 0)
+	{
 		// play note!
 		m_instrumentTrack->playNote(this, _working_buffer);
 	}
 
-	if (m_released && (!instrumentTrack()->isSustainPedalPressed() || m_releaseStarted)) {
+	if (m_released && (!instrumentTrack()->isSustainPedalPressed() || m_releaseStarted))
+	{
 		m_releaseStarted = true;
 
 		f_cnt_t todo = framesThisPeriod;
@@ -209,18 +223,23 @@ void NotePlayHandle::play(sampleFrame* _working_buffer)
 		// because we do not allow NotePlayHandle::isFinished() to be true
 		// until all sub-notes are completely played and no new ones
 		// are inserted by arpAndChordsTabWidget::processNote()
-		if (!m_subNotes.isEmpty()) {
+		if (!m_subNotes.isEmpty())
+		{
 			m_releaseFramesToDo = m_releaseFramesDone + 2 * Engine::audioEngine()->framesPerPeriod();
 		}
 		// look whether we have frames left to be done before release
-		if (m_framesBeforeRelease) {
+		if (m_framesBeforeRelease)
+		{
 			// yes, then look whether these samples can be played
 			// within one audio-buffer
-			if (m_framesBeforeRelease <= framesThisPeriod) {
+			if (m_framesBeforeRelease <= framesThisPeriod)
+			{
 				// yes, then we did less releaseFramesDone
 				todo -= m_framesBeforeRelease;
 				m_framesBeforeRelease = 0;
-			} else {
+			}
+			else
+			{
 				// no, then just decrease framesBeforeRelease
 				// and wait for next loop... (we're not in
 				// release-phase yet)
@@ -229,14 +248,18 @@ void NotePlayHandle::play(sampleFrame* _working_buffer)
 			}
 		}
 		// look whether we're in release-phase
-		if (todo && m_releaseFramesDone < m_releaseFramesToDo) {
+		if (todo && m_releaseFramesDone < m_releaseFramesToDo)
+		{
 			// check whether we have to do more frames in current
 			// loop than left in current loop
-			if (m_releaseFramesToDo - m_releaseFramesDone >= todo) {
+			if (m_releaseFramesToDo - m_releaseFramesDone >= todo)
+			{
 				// yes, then increase number of release-frames
 				// done
 				m_releaseFramesDone += todo;
-			} else {
+			}
+			else
+			{
 				// no, we did all in this loop!
 				m_releaseFramesDone = m_releaseFramesToDo;
 			}
@@ -250,11 +273,13 @@ void NotePlayHandle::play(sampleFrame* _working_buffer)
 
 f_cnt_t NotePlayHandle::framesLeft() const
 {
-	if (instrumentTrack()->isSustainPedalPressed()) {
-		return 4 * Engine::audioEngine()->framesPerPeriod();
-	} else if (m_released && actualReleaseFramesToDo() == 0) {
+	if (instrumentTrack()->isSustainPedalPressed()) { return 4 * Engine::audioEngine()->framesPerPeriod(); }
+	else if (m_released && actualReleaseFramesToDo() == 0)
+	{
 		return m_framesBeforeRelease;
-	} else if (m_released) {
+	}
+	else if (m_released)
+	{
 		return m_framesBeforeRelease + m_releaseFramesToDo - m_releaseFramesDone;
 	}
 	return m_frames + actualReleaseFramesToDo() - m_totalFramesPlayed;
@@ -262,7 +287,8 @@ f_cnt_t NotePlayHandle::framesLeft() const
 
 fpp_t NotePlayHandle::framesLeftForCurrentPeriod() const
 {
-	if (m_totalFramesPlayed == 0) {
+	if (m_totalFramesPlayed == 0)
+	{
 		return (fpp_t)qMin<f_cnt_t>(framesLeft(), Engine::audioEngine()->framesPerPeriod() - offset());
 	}
 	return (fpp_t)qMin<f_cnt_t>(framesLeft(), Engine::audioEngine()->framesPerPeriod());
@@ -279,7 +305,8 @@ void NotePlayHandle::noteOff(const f_cnt_t _s)
 	m_released = true;
 
 	// first note-off all sub-notes
-	for (NotePlayHandle* n : m_subNotes) {
+	for (NotePlayHandle* n : m_subNotes)
+	{
 		n->lock();
 		n->noteOff(_s);
 		n->unlock();
@@ -289,7 +316,8 @@ void NotePlayHandle::noteOff(const f_cnt_t _s)
 	m_framesBeforeRelease = _s;
 	m_releaseFramesToDo = qMax<f_cnt_t>(0, actualReleaseFramesToDo());
 
-	if (m_hasMidiNote) {
+	if (m_hasMidiNote)
+	{
 		m_hasMidiNote = false;
 
 		// send MidiNoteOff event
@@ -298,8 +326,10 @@ void NotePlayHandle::noteOff(const f_cnt_t _s)
 	}
 
 	// inform attached components about MIDI finished (used for recording in Piano Roll)
-	if (!instrumentTrack()->isSustainPedalPressed()) {
-		if (m_origin == OriginMidiInput) {
+	if (!instrumentTrack()->isSustainPedalPressed())
+	{
+		if (m_origin == OriginMidiInput)
+		{
 			setLength(TimePos(static_cast<f_cnt_t>(totalFramesPlayed() / Engine::framesPerTick())));
 			m_instrumentTrack->midiNoteOff(*this);
 		}
@@ -323,7 +353,8 @@ float NotePlayHandle::volumeLevel(const f_cnt_t _frame)
 void NotePlayHandle::mute()
 {
 	// mute all sub-notes
-	for (NotePlayHandleList::Iterator it = m_subNotes.begin(); it != m_subNotes.end(); ++it) {
+	for (NotePlayHandleList::Iterator it = m_subNotes.begin(); it != m_subNotes.end(); ++it)
+	{
 		(*it)->mute();
 	}
 	m_muted = true;
@@ -333,9 +364,11 @@ int NotePlayHandle::index() const
 {
 	const PlayHandleList& playHandles = Engine::audioEngine()->playHandles();
 	int idx = 0;
-	for (PlayHandleList::ConstIterator it = playHandles.begin(); it != playHandles.end(); ++it) {
+	for (PlayHandleList::ConstIterator it = playHandles.begin(); it != playHandles.end(); ++it)
+	{
 		const NotePlayHandle* nph = dynamic_cast<const NotePlayHandle*>(*it);
-		if (nph == nullptr || nph->m_instrumentTrack != m_instrumentTrack || nph->isReleased() || nph->hasParent()) {
+		if (nph == nullptr || nph->m_instrumentTrack != m_instrumentTrack || nph->isReleased() || nph->hasParent())
+		{
 			continue;
 		}
 		if (nph == this) { return idx; }
@@ -349,10 +382,12 @@ ConstNotePlayHandleList NotePlayHandle::nphsOfInstrumentTrack(const InstrumentTr
 	const PlayHandleList& playHandles = Engine::audioEngine()->playHandles();
 	ConstNotePlayHandleList cnphv;
 
-	for (PlayHandleList::ConstIterator it = playHandles.begin(); it != playHandles.end(); ++it) {
+	for (PlayHandleList::ConstIterator it = playHandles.begin(); it != playHandles.end(); ++it)
+	{
 		const NotePlayHandle* nph = dynamic_cast<const NotePlayHandle*>(*it);
 		if (nph != nullptr && nph->m_instrumentTrack == _it
-			&& ((nph->isReleased() == false && nph->hasParent() == false) || _all_ph == true)) {
+			&& ((nph->isReleased() == false && nph->hasParent() == false) || _all_ph == true))
+		{
 			cnphv.push_back(nph);
 		}
 	}
@@ -375,34 +410,43 @@ void NotePlayHandle::updateFrequency()
 	float detune = m_baseDetuning->value();
 	float instrumentPitch = m_instrumentTrack->pitchModel()->value();
 
-	if (m_instrumentTrack->m_microtuner.enabled()) {
+	if (m_instrumentTrack->m_microtuner.enabled())
+	{
 		// custom key mapping and scale: get frequency from the microtuner
 		const float detuneMaster = detune + masterPitch;
 
-		if (m_instrumentTrack->isKeyMapped(key())) {
+		if (m_instrumentTrack->isKeyMapped(key()))
+		{
 			const auto frequency = m_instrumentTrack->m_microtuner.keyToFreq(key(), baseNote);
 			m_frequency = frequency * powf(2.f, (detuneMaster + instrumentPitch / 100) / 12.f);
 			m_unpitchedFrequency = frequency * powf(2.f, detuneMaster / 12.f);
-		} else {
+		}
+		else
+		{
 			m_frequency = m_unpitchedFrequency = 0;
 		}
-	} else {
+	}
+	else
+	{
 		// default key mapping and 12-TET frequency computation with default 440 Hz base note frequency
 		const float pitch = (key() - baseNote + masterPitch + detune) / 12.0f;
 		m_frequency = DefaultBaseFreq * powf(2.0f, pitch + instrumentPitch / (100 * 12.0f));
 		m_unpitchedFrequency = DefaultBaseFreq * powf(2.0f, pitch);
 	}
 
-	for (auto it : m_subNotes) {
+	for (auto it : m_subNotes)
+	{
 		it->updateFrequency();
 	}
 }
 
 void NotePlayHandle::processTimePos(const TimePos& time)
 {
-	if (detuning() && time >= songGlobalParentOffset() + pos()) {
+	if (detuning() && time >= songGlobalParentOffset() + pos())
+	{
 		const float v = detuning()->automationClip()->valueAt(time - songGlobalParentOffset() - pos());
-		if (!typeInfo<float>::isEqual(v, m_baseDetuning->value())) {
+		if (!typeInfo<float>::isEqual(v, m_baseDetuning->value()))
+		{
 			m_baseDetuning->setValue(v);
 			updateFrequency();
 		}
@@ -411,7 +455,8 @@ void NotePlayHandle::processTimePos(const TimePos& time)
 
 void NotePlayHandle::resize(const bpm_t _new_tempo)
 {
-	if (origin() == OriginMidiInput || (origin() == OriginNoteStacking && m_parent->origin() == OriginMidiInput)) {
+	if (origin() == OriginMidiInput || (origin() == OriginNoteStacking && m_parent->origin() == OriginMidiInput))
+	{
 		// Don't resize notes from MIDI input - they should continue to play
 		// until the key is released, and their large duration can cause
 		// overflows in this method.
@@ -423,7 +468,8 @@ void NotePlayHandle::resize(const bpm_t _new_tempo)
 	m_frames = (f_cnt_t)new_frames;
 	m_totalFramesPlayed = (f_cnt_t)(completed * new_frames);
 
-	for (NotePlayHandleList::Iterator it = m_subNotes.begin(); it != m_subNotes.end(); ++it) {
+	for (NotePlayHandleList::Iterator it = m_subNotes.begin(); it != m_subNotes.end(); ++it)
+	{
 		(*it)->resize(_new_tempo);
 	}
 }
@@ -439,7 +485,8 @@ void NotePlayHandleManager::init()
 
 	NotePlayHandle* n = MM_ALLOC<NotePlayHandle>(INITIAL_NPH_CACHE);
 
-	for (int i = 0; i < INITIAL_NPH_CACHE; ++i) {
+	for (int i = 0; i < INITIAL_NPH_CACHE; ++i)
+	{
 		s_available[i] = n;
 		++n;
 	}
@@ -478,7 +525,8 @@ void NotePlayHandleManager::extend(int c)
 
 	NotePlayHandle* n = MM_ALLOC<NotePlayHandle>(c);
 
-	for (int i = 0; i < c; ++i) {
+	for (int i = 0; i < c; ++i)
+	{
 		s_available[++s_availableIndex] = n;
 		++n;
 	}

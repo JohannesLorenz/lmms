@@ -53,7 +53,8 @@ CPULoadWidget::~CPULoadWidget() {}
 
 void CPULoadWidget::paintEvent(QPaintEvent*)
 {
-	if (m_changed == true) {
+	if (m_changed == true)
+	{
 		m_changed = false;
 
 		m_temp.fill(QColor(0, 0, 0, 0));
@@ -74,7 +75,8 @@ void CPULoadWidget::updateCpuLoad()
 {
 	// smooth load-values a bit
 	int new_load = (m_currentLoad + Engine::audioEngine()->cpuLoad()) / 2;
-	if (new_load != m_currentLoad) {
+	if (new_load != m_currentLoad)
+	{
 		m_currentLoad = new_load;
 		m_changed = true;
 		update();

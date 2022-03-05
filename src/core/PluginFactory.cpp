@@ -108,7 +108,8 @@ const PluginFactory::PluginInfoAndKey PluginFactory::pluginSupportingExtension(c
 
 const PluginFactory::PluginInfo PluginFactory::pluginInfo(const char* name) const
 {
-	for (const PluginInfo& info : m_pluginInfos) {
+	for (const PluginInfo& info : m_pluginInfos)
+	{
 		if (qstrcmp(info.descriptor->name, name) == 0) return info;
 	}
 	return PluginInfo();
@@ -127,7 +128,8 @@ void PluginFactory::discoverPlugins()
 	m_pluginByExt.clear();
 
 	QSet<QFileInfo> files;
-	for (const QString& searchPath : QDir::searchPaths("plugins")) {
+	for (const QString& searchPath : QDir::searchPaths("plugins"))
+	{
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 		auto discoveredPluginList = QDir(searchPath).entryInfoList(nameFilters);
 		files.unite(QSet<QFileInfo>(discoveredPluginList.begin(), discoveredPluginList.end()));
@@ -138,26 +140,31 @@ void PluginFactory::discoverPlugins()
 
 	// Cheap dependency handling: zynaddsubfx needs ZynAddSubFxCore. By loading
 	// all libraries twice we ensure that libZynAddSubFxCore is found.
-	for (const QFileInfo& file : files) {
+	for (const QFileInfo& file : files)
+	{
 		QLibrary(file.absoluteFilePath()).load();
 	}
 
-	for (const QFileInfo& file : files) {
+	for (const QFileInfo& file : files)
+	{
 		auto library = std::make_shared<QLibrary>(file.absoluteFilePath());
-		if (!library->load()) {
+		if (!library->load())
+		{
 			m_errors[file.baseName()] = library->errorString();
 			qWarning("%s", library->errorString().toLocal8Bit().data());
 			continue;
 		}
 
 		Plugin::Descriptor* pluginDescriptor = nullptr;
-		if (library->resolve("lmms_plugin_main")) {
+		if (library->resolve("lmms_plugin_main"))
+		{
 			QString descriptorName = file.baseName() + "_plugin_descriptor";
 			if (descriptorName.left(3) == "lib") { descriptorName = descriptorName.mid(3); }
 
 			pluginDescriptor
 				= reinterpret_cast<Plugin::Descriptor*>(library->resolve(descriptorName.toUtf8().constData()));
-			if (pluginDescriptor == nullptr) {
+			if (pluginDescriptor == nullptr)
+			{
 				qWarning() << qApp->translate(
 									  "PluginFactory", "LMMS plugin %1 does not have a plugin descriptor named %2!")
 								  .arg(file.absoluteFilePath())
@@ -166,7 +173,8 @@ void PluginFactory::discoverPlugins()
 			}
 		}
 
-		if (pluginDescriptor) {
+		if (pluginDescriptor)
+		{
 			PluginInfo info;
 			info.file = file;
 			info.library = library;
@@ -175,8 +183,10 @@ void PluginFactory::discoverPlugins()
 
 			auto addSupportedFileTypes = [this](QString supportedFileTypes, const PluginInfo& info,
 											 const Plugin::Descriptor::SubPluginFeatures::Key* key = nullptr) {
-				if (!supportedFileTypes.isNull()) {
-					for (const QString& ext : supportedFileTypes.split(',')) {
+				if (!supportedFileTypes.isNull())
+				{
+					for (const QString& ext : supportedFileTypes.split(','))
+					{
 						// qDebug() << "Plugin " << info.name()
 						//	<< "supports" << ext;
 						PluginInfoAndKey infoAndKey;
@@ -190,10 +200,12 @@ void PluginFactory::discoverPlugins()
 			if (info.descriptor->supportedFileTypes)
 				addSupportedFileTypes(QString(info.descriptor->supportedFileTypes), info);
 
-			if (info.descriptor->subPluginFeatures) {
+			if (info.descriptor->subPluginFeatures)
+			{
 				Plugin::Descriptor::SubPluginFeatures::KeyList subPluginKeys;
 				info.descriptor->subPluginFeatures->listSubPluginKeys(info.descriptor, subPluginKeys);
-				for (const Plugin::Descriptor::SubPluginFeatures::Key& key : subPluginKeys) {
+				for (const Plugin::Descriptor::SubPluginFeatures::Key& key : subPluginKeys)
+				{
 					addSupportedFileTypes(key.additionalFileExtensions(), info, &key);
 				}
 			}

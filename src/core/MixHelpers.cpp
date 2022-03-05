@@ -36,7 +36,8 @@ namespace MixHelpers {
 /*! \brief Function for applying MIXOP on all sample frames */
 template <typename MIXOP> static inline void run(sampleFrame* dst, const sampleFrame* src, int frames, const MIXOP& OP)
 {
-	for (int i = 0; i < frames; ++i) {
+	for (int i = 0; i < frames; ++i)
+	{
 		OP(dst[i], src[i]);
 	}
 }
@@ -45,7 +46,8 @@ template <typename MIXOP> static inline void run(sampleFrame* dst, const sampleF
 template <typename MIXOP>
 static inline void run(sampleFrame* dst, const sample_t* srcLeft, const sample_t* srcRight, int frames, const MIXOP& OP)
 {
-	for (int i = 0; i < frames; ++i) {
+	for (int i = 0; i < frames; ++i)
+	{
 		const sampleFrame src = {srcLeft[i], srcRight[i]};
 		OP(dst[i], src);
 	}
@@ -55,7 +57,8 @@ bool isSilent(const sampleFrame* src, int frames)
 {
 	const float silenceThreshold = 0.0000001f;
 
-	for (int i = 0; i < frames; ++i) {
+	for (int i = 0; i < frames; ++i)
+	{
 		if (fabsf(src[i][0]) >= silenceThreshold || fabsf(src[i][1]) >= silenceThreshold) { return false; }
 	}
 
@@ -72,21 +75,28 @@ bool sanitize(sampleFrame* src, int frames)
 	if (!useNaNHandler()) { return false; }
 
 	bool found = false;
-	for (int f = 0; f < frames; ++f) {
-		for (int c = 0; c < 2; ++c) {
-			if (std::isinf(src[f][c]) || std::isnan(src[f][c])) {
+	for (int f = 0; f < frames; ++f)
+	{
+		for (int c = 0; c < 2; ++c)
+		{
+			if (std::isinf(src[f][c]) || std::isnan(src[f][c]))
+			{
 #ifdef LMMS_DEBUG
 				printf("Bad data, clearing buffer. frame: ");
 				printf("%d: value %f\n", f, src[f][c]);
 #endif
-				for (int f = 0; f < frames; ++f) {
-					for (int c = 0; c < 2; ++c) {
+				for (int f = 0; f < frames; ++f)
+				{
+					for (int c = 0; c < 2; ++c)
+					{
 						src[f][c] = 0.0f;
 					}
 				}
 				found = true;
 				return found;
-			} else {
+			}
+			else
+			{
 				src[f][c] = qBound(-1000.0f, src[f][c], 1000.0f);
 			}
 		}
@@ -150,7 +160,8 @@ void addSwappedMultiplied(sampleFrame* dst, const sampleFrame* src, float coeffS
 void addMultipliedByBuffer(
 	sampleFrame* dst, const sampleFrame* src, float coeffSrc, ValueBuffer* coeffSrcBuf, int frames)
 {
-	for (int f = 0; f < frames; ++f) {
+	for (int f = 0; f < frames; ++f)
+	{
 		dst[f][0] += src[f][0] * coeffSrc * coeffSrcBuf->values()[f];
 		dst[f][1] += src[f][1] * coeffSrc * coeffSrcBuf->values()[f];
 	}
@@ -159,7 +170,8 @@ void addMultipliedByBuffer(
 void addMultipliedByBuffers(
 	sampleFrame* dst, const sampleFrame* src, ValueBuffer* coeffSrcBuf1, ValueBuffer* coeffSrcBuf2, int frames)
 {
-	for (int f = 0; f < frames; ++f) {
+	for (int f = 0; f < frames; ++f)
+	{
 		dst[f][0] += src[f][0] * coeffSrcBuf1->values()[f] * coeffSrcBuf2->values()[f];
 		dst[f][1] += src[f][1] * coeffSrcBuf1->values()[f] * coeffSrcBuf2->values()[f];
 	}
@@ -168,12 +180,14 @@ void addMultipliedByBuffers(
 void addSanitizedMultipliedByBuffer(
 	sampleFrame* dst, const sampleFrame* src, float coeffSrc, ValueBuffer* coeffSrcBuf, int frames)
 {
-	if (!useNaNHandler()) {
+	if (!useNaNHandler())
+	{
 		addMultipliedByBuffer(dst, src, coeffSrc, coeffSrcBuf, frames);
 		return;
 	}
 
-	for (int f = 0; f < frames; ++f) {
+	for (int f = 0; f < frames; ++f)
+	{
 		dst[f][0] += (std::isinf(src[f][0]) || std::isnan(src[f][0])) ? 0.0f
 																	  : src[f][0] * coeffSrc * coeffSrcBuf->values()[f];
 		dst[f][1] += (std::isinf(src[f][1]) || std::isnan(src[f][1])) ? 0.0f
@@ -184,12 +198,14 @@ void addSanitizedMultipliedByBuffer(
 void addSanitizedMultipliedByBuffers(
 	sampleFrame* dst, const sampleFrame* src, ValueBuffer* coeffSrcBuf1, ValueBuffer* coeffSrcBuf2, int frames)
 {
-	if (!useNaNHandler()) {
+	if (!useNaNHandler())
+	{
 		addMultipliedByBuffers(dst, src, coeffSrcBuf1, coeffSrcBuf2, frames);
 		return;
 	}
 
-	for (int f = 0; f < frames; ++f) {
+	for (int f = 0; f < frames; ++f)
+	{
 		dst[f][0] += (std::isinf(src[f][0]) || std::isnan(src[f][0]))
 			? 0.0f
 			: src[f][0] * coeffSrcBuf1->values()[f] * coeffSrcBuf2->values()[f];
@@ -217,7 +233,8 @@ struct AddSanitizedMultipliedOp
 
 void addSanitizedMultiplied(sampleFrame* dst, const sampleFrame* src, float coeffSrc, int frames)
 {
-	if (!useNaNHandler()) {
+	if (!useNaNHandler())
+	{
 		addMultiplied(dst, src, coeffSrc, frames);
 		return;
 	}

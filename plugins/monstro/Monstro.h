@@ -184,7 +184,8 @@ private:
 
 	inline sample_t oscillate(int _wave, const float _ph, float _wavelen)
 	{
-		switch (_wave) {
+		switch (_wave)
+		{
 		case WAVE_SINE: return Oscillator::sinSample(_ph); break;
 		case WAVE_TRI:
 			// return Oscillator::triangleSample( _ph );

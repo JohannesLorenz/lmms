@@ -91,7 +91,8 @@ void dynProcControls::saveSettings(QDomDocument& _doc, QDomElement& _this)
 void dynProcControls::setDefaultShape()
 {
 	float shp[200] = {};
-	for (int i = 0; i < 200; i++) {
+	for (int i = 0; i < 200; i++)
+	{
 		shp[i] = ((float)i + 1.0f) / 200.0f;
 	}
 
@@ -113,7 +114,8 @@ void dynProcControls::smoothClicked()
 
 void dynProcControls::addOneClicked()
 {
-	for (int i = 0; i < 200; i++) {
+	for (int i = 0; i < 200; i++)
+	{
 		m_wavegraphModel.setSampleAt(i, qBound(0.0f, m_wavegraphModel.samples()[i] * onedB, 1.0f));
 	}
 	Engine::getSong()->setModified();
@@ -121,7 +123,8 @@ void dynProcControls::addOneClicked()
 
 void dynProcControls::subOneClicked()
 {
-	for (int i = 0; i < 200; i++) {
+	for (int i = 0; i < 200; i++)
+	{
 		m_wavegraphModel.setSampleAt(i, qBound(0.0f, m_wavegraphModel.samples()[i] / onedB, 1.0f));
 	}
 	Engine::getSong()->setModified();

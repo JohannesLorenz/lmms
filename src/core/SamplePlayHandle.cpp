@@ -69,7 +69,8 @@ void SamplePlayHandle::play(sampleFrame* buffer)
 {
 	const fpp_t fpp = Engine::audioEngine()->framesPerPeriod();
 	// play( 0, _try_parallelizing );
-	if (framesDone() >= totalFrames()) {
+	if (framesDone() >= totalFrames())
+	{
 		memset(buffer, 0, sizeof(sampleFrame) * fpp);
 		return;
 	}
@@ -78,19 +79,22 @@ void SamplePlayHandle::play(sampleFrame* buffer)
 	f_cnt_t frames = fpp;
 
 	// apply offset for the first period
-	if (framesDone() == 0) {
+	if (framesDone() == 0)
+	{
 		memset(buffer, 0, sizeof(sampleFrame) * offset());
 		workingBuffer += offset();
 		frames -= offset();
 	}
 
-	if (!(m_track && m_track->isMuted()) && !(m_patternTrack && m_patternTrack->isMuted())) {
+	if (!(m_track && m_track->isMuted()) && !(m_patternTrack && m_patternTrack->isMuted()))
+	{
 		/*		stereoVolumeVector v =
 					{ { m_volumeModel->value() / DefaultVolume,
 						m_volumeModel->value() / DefaultVolume } };*/
 		// SamplePlayHandle always plays the sample at its original pitch;
 		// it is used only for previews, SampleTracks and the metronome.
-		if (!m_sampleBuffer->play(workingBuffer, &m_state, frames, DefaultBaseFreq)) {
+		if (!m_sampleBuffer->play(workingBuffer, &m_state, frames, DefaultBaseFreq))
+		{
 			memset(workingBuffer, 0, frames * sizeof(sampleFrame));
 		}
 	}

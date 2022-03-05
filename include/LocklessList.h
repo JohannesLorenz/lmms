@@ -52,7 +52,8 @@ public:
 		e->value = value;
 		e->next = m_first.load(std::memory_order_relaxed);
 
-		while (!m_first.compare_exchange_weak(e->next, e, std::memory_order_release, std::memory_order_relaxed)) {
+		while (!m_first.compare_exchange_weak(e->next, e, std::memory_order_release, std::memory_order_relaxed))
+		{
 			// Empty loop (compare_exchange_weak updates e->next)
 		}
 	}

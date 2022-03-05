@@ -71,7 +71,8 @@ organicInstrument::organicInstrument(InstrumentTrack* _instrument_track)
 	m_numOscillators = NUM_OSCILLATORS;
 
 	m_osc = new OscillatorObject*[m_numOscillators];
-	for (int i = 0; i < m_numOscillators; i++) {
+	for (int i = 0; i < m_numOscillators; i++)
+	{
 		m_osc[i] = new OscillatorObject(this, i);
 		m_osc[i]->m_numOscillators = m_numOscillators;
 
@@ -94,7 +95,8 @@ organicInstrument::organicInstrument(InstrumentTrack* _instrument_track)
 		m_osc[6]->m_harmonic = log2f( 5.0f );	// .
 		m_osc[7]->m_harmonic = log2f( 6.0f );	// .*/
 
-	if (s_harmonics == nullptr) {
+	if (s_harmonics == nullptr)
+	{
 		s_harmonics = new float[NUM_HARMONICS];
 		s_harmonics[0] = log2f(0.5f);
 		s_harmonics[1] = log2f(0.75f);
@@ -116,7 +118,8 @@ organicInstrument::organicInstrument(InstrumentTrack* _instrument_track)
 		s_harmonics[17] = log2f(16.0f);
 	}
 
-	for (int i = 0; i < m_numOscillators; i++) {
+	for (int i = 0; i < m_numOscillators; i++)
+	{
 		m_osc[i]->updateVolume();
 		m_osc[i]->updateDetuning();
 	}
@@ -132,7 +135,8 @@ void organicInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this)
 	m_fx1Model.saveSettings(_doc, _this, "foldback");
 	m_volModel.saveSettings(_doc, _this, "vol");
 
-	for (int i = 0; i < m_numOscillators; ++i) {
+	for (int i = 0; i < m_numOscillators; ++i)
+	{
 		QString is = QString::number(i);
 		m_osc[i]->m_volModel.saveSettings(_doc, _this, "vol" + is);
 		m_osc[i]->m_panModel.saveSettings(_doc, _this, "pan" + is);
@@ -148,20 +152,24 @@ void organicInstrument::loadSettings(const QDomElement& _this)
 	//	m_numOscillators =  _this.attribute( "num_osc" ).
 	//							toInt();
 
-	for (int i = 0; i < m_numOscillators; ++i) {
+	for (int i = 0; i < m_numOscillators; ++i)
+	{
 		QString is = QString::number(i);
 		m_osc[i]->m_volModel.loadSettings(_this, "vol" + is);
-		if (_this.hasAttribute("detune" + is)) {
+		if (_this.hasAttribute("detune" + is))
+		{
 			m_osc[i]->m_detuneModel.setValue(_this.attribute("detune").toInt() * 12);
-		} else {
+		}
+		else
+		{
 			m_osc[i]->m_detuneModel.loadSettings(_this, "newdetune" + is);
 		}
 		m_osc[i]->m_panModel.loadSettings(_this, "pan" + is);
 		m_osc[i]->m_oscModel.loadSettings(_this, "wavetype" + is);
 
-		if (_this.hasAttribute("newharmonic" + is)) {
-			m_osc[i]->m_harmModel.loadSettings(_this, "newharmonic" + is);
-		} else {
+		if (_this.hasAttribute("newharmonic" + is)) { m_osc[i]->m_harmModel.loadSettings(_this, "newharmonic" + is); }
+		else
+		{
 			m_osc[i]->m_harmModel.setValue(static_cast<float>(i));
 		}
 	}
@@ -177,19 +185,22 @@ void organicInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffe
 	const fpp_t frames = _n->framesLeftForCurrentPeriod();
 	const f_cnt_t offset = _n->noteOffset();
 
-	if (_n->totalFramesPlayed() == 0 || _n->m_pluginData == nullptr) {
+	if (_n->totalFramesPlayed() == 0 || _n->m_pluginData == nullptr)
+	{
 		Oscillator* oscs_l[NUM_OSCILLATORS];
 		Oscillator* oscs_r[NUM_OSCILLATORS];
 
 		_n->m_pluginData = new oscPtr;
 
-		for (int i = m_numOscillators - 1; i >= 0; --i) {
+		for (int i = m_numOscillators - 1; i >= 0; --i)
+		{
 			static_cast<oscPtr*>(_n->m_pluginData)->phaseOffsetLeft[i] = rand() / (RAND_MAX + 1.0f);
 			static_cast<oscPtr*>(_n->m_pluginData)->phaseOffsetRight[i] = rand() / (RAND_MAX + 1.0f);
 
 			// initialise ocillators
 
-			if (i == m_numOscillators - 1) {
+			if (i == m_numOscillators - 1)
+			{
 				// create left oscillator
 				oscs_l[i] = new Oscillator(&m_osc[i]->m_waveShape, &m_modulationAlgo, _n->frequency(),
 					m_osc[i]->m_detuningLeft, static_cast<oscPtr*>(_n->m_pluginData)->phaseOffsetLeft[i],
@@ -198,7 +209,9 @@ void organicInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffe
 				oscs_r[i] = new Oscillator(&m_osc[i]->m_waveShape, &m_modulationAlgo, _n->frequency(),
 					m_osc[i]->m_detuningRight, static_cast<oscPtr*>(_n->m_pluginData)->phaseOffsetRight[i],
 					m_osc[i]->m_volumeRight);
-			} else {
+			}
+			else
+			{
 				// create left oscillator
 				oscs_l[i] = new Oscillator(&m_osc[i]->m_waveShape, &m_modulationAlgo, _n->frequency(),
 					m_osc[i]->m_detuningLeft, static_cast<oscPtr*>(_n->m_pluginData)->phaseOffsetLeft[i],
@@ -225,7 +238,8 @@ void organicInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffe
 	// fxKnob is [0;1]
 	float t = m_fx1Model.value();
 
-	for (int i = 0; i < frames + offset; i++) {
+	for (int i = 0; i < frames + offset; i++)
+	{
 		_working_buffer[i][0] = waveshape(_working_buffer[i][0], t) * m_volModel.value() / 100.0f;
 		_working_buffer[i][1] = waveshape(_working_buffer[i][1], t) * m_volModel.value() / 100.0f;
 	}
@@ -263,7 +277,8 @@ float inline organicInstrument::waveshape(float in, float amount)
 void organicInstrument::randomiseSettings()
 {
 
-	for (int i = 0; i < m_numOscillators; i++) {
+	for (int i = 0; i < m_numOscillators; i++)
+	{
 		m_osc[i]->m_volModel.setValue(intRand(0, 100));
 
 		m_osc[i]->m_detuneModel.setValue(intRand(-5, 5));
@@ -276,7 +291,8 @@ void organicInstrument::randomiseSettings()
 
 void organicInstrument::updateAllDetuning()
 {
-	for (int i = 0; i < m_numOscillators; ++i) {
+	for (int i = 0; i < m_numOscillators; ++i)
+	{
 		m_osc[i]->updateDetuning();
 	}
 }
@@ -359,7 +375,8 @@ void organicInstrumentView::modelChanged()
 	m_oscKnobs = new OscillatorKnobs[m_numOscillators];
 
 	// Create knobs, now that we know how many to make
-	for (int i = 0; i < m_numOscillators; ++i) {
+	for (int i = 0; i < m_numOscillators; ++i)
+	{
 		// setup harmonic knob
 		Knob* harmKnob = new organicKnob(this);
 		harmKnob->move(x + i * colWidth, y - rowHeight);
@@ -405,7 +422,8 @@ void organicInstrumentView::modelChanged()
 void organicInstrumentView::updateKnobHint()
 {
 	organicInstrument* oi = castModel<organicInstrument>();
-	for (int i = 0; i < m_numOscillators; ++i) {
+	for (int i = 0; i < m_numOscillators; ++i)
+	{
 		const float harm = oi->m_osc[i]->m_harmModel.value();
 		const float wave = oi->m_osc[i]->m_oscModel.value();
 

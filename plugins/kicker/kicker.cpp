@@ -98,9 +98,9 @@ void kickerInstrument::loadSettings(const QDomElement& _this)
 	m_endFreqModel.loadSettings(_this, "endfreq");
 	m_decayModel.loadSettings(_this, "decay");
 	m_distModel.loadSettings(_this, "dist");
-	if (_this.hasAttribute("distend")) {
-		m_distEndModel.loadSettings(_this, "distend");
-	} else {
+	if (_this.hasAttribute("distend")) { m_distEndModel.loadSettings(_this, "distend"); }
+	else
+	{
 		m_distEndModel.setValue(m_distModel.value());
 	}
 	m_gainModel.loadSettings(_this, "gain");
@@ -113,7 +113,8 @@ void kickerInstrument::loadSettings(const QDomElement& _this)
 	m_endNoteModel.loadSettings(_this, "endnote");
 
 	// Try to maintain backwards compatibility
-	if (!_this.hasAttribute("version")) {
+	if (!_this.hasAttribute("version"))
+	{
 		m_startNoteModel.setValue(false);
 		m_decayModel.setValue(m_decayModel.value() * 1.33f);
 		m_envModel.setValue(1.0f);
@@ -135,23 +136,28 @@ void kickerInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer
 	const float decfr = m_decayModel.value() * Engine::audioEngine()->processingSampleRate() / 1000.0f;
 	const f_cnt_t tfp = _n->totalFramesPlayed();
 
-	if (tfp == 0) {
+	if (tfp == 0)
+	{
 		_n->m_pluginData = new SweepOsc(DistFX(m_distModel.value(), m_gainModel.value()),
 			m_startNoteModel.value() ? _n->frequency() : m_startFreqModel.value(),
 			m_endNoteModel.value() ? _n->frequency() : m_endFreqModel.value(),
 			m_noiseModel.value() * m_noiseModel.value(), m_clickModel.value() * 0.25f, m_slopeModel.value(),
 			m_envModel.value(), m_distModel.value(), m_distEndModel.value(), decfr);
-	} else if (tfp > decfr && !_n->isReleased()) {
+	}
+	else if (tfp > decfr && !_n->isReleased())
+	{
 		_n->noteOff();
 	}
 
 	SweepOsc* so = static_cast<SweepOsc*>(_n->m_pluginData);
 	so->update(_working_buffer + offset, frames, Engine::audioEngine()->processingSampleRate());
 
-	if (_n->isReleased()) {
+	if (_n->isReleased())
+	{
 		const float done = _n->releaseFramesDone();
 		const float desired = desiredReleaseFrames();
-		for (fpp_t f = 0; f < frames; ++f) {
+		for (fpp_t f = 0; f < frames; ++f)
+		{
 			const float fac = (done + f < desired) ? (1.0f - ((done + f) / desired)) : 0;
 			_working_buffer[f + offset][0] *= fac;
 			_working_buffer[f + offset][1] *= fac;

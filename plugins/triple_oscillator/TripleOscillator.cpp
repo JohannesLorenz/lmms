@@ -111,7 +111,8 @@ OscillatorObject::~OscillatorObject() { sharedObject::unref(m_sampleBuffer); }
 void OscillatorObject::oscUserDefWaveDblClick()
 {
 	QString af = m_sampleBuffer->openAndSetWaveformFile();
-	if (af != "") {
+	if (af != "")
+	{
 		// TODO:
 		// ToolTip::add( m_usrWaveBtn, m_sampleBuffer->audioFile() );
 	}
@@ -119,11 +120,14 @@ void OscillatorObject::oscUserDefWaveDblClick()
 
 void OscillatorObject::updateVolume()
 {
-	if (m_panModel.value() >= 0.0f) {
+	if (m_panModel.value() >= 0.0f)
+	{
 		const float panningFactorLeft = 1.0f - m_panModel.value() / (float)PanningRight;
 		m_volumeLeft = panningFactorLeft * m_volumeModel.value() / 100.0f;
 		m_volumeRight = m_volumeModel.value() / 100.0f;
-	} else {
+	}
+	else
+	{
 		m_volumeLeft = m_volumeModel.value() / 100.0f;
 		const float panningFactorRight = 1.0f + m_panModel.value() / (float)PanningRight;
 		m_volumeRight = panningFactorRight * m_volumeModel.value() / 100.0f;
@@ -154,7 +158,8 @@ void OscillatorObject::updateUseWaveTable() { m_useWaveTable = m_useWaveTableMod
 TripleOscillator::TripleOscillator(InstrumentTrack* _instrument_track)
 	: Instrument(_instrument_track, &tripleoscillator_plugin_descriptor)
 {
-	for (int i = 0; i < NUM_OF_OSCILLATORS; ++i) {
+	for (int i = 0; i < NUM_OF_OSCILLATORS; ++i)
+	{
 		m_osc[i] = new OscillatorObject(this, i);
 	}
 
@@ -165,7 +170,8 @@ TripleOscillator::~TripleOscillator() {}
 
 void TripleOscillator::saveSettings(QDomDocument& _doc, QDomElement& _this)
 {
-	for (int i = 0; i < NUM_OF_OSCILLATORS; ++i) {
+	for (int i = 0; i < NUM_OF_OSCILLATORS; ++i)
+	{
 		QString is = QString::number(i);
 		m_osc[i]->m_volumeModel.saveSettings(_doc, _this, "vol" + is);
 		m_osc[i]->m_panModel.saveSettings(_doc, _this, "pan" + is);
@@ -183,7 +189,8 @@ void TripleOscillator::saveSettings(QDomDocument& _doc, QDomElement& _this)
 
 void TripleOscillator::loadSettings(const QDomElement& _this)
 {
-	for (int i = 0; i < NUM_OF_OSCILLATORS; ++i) {
+	for (int i = 0; i < NUM_OF_OSCILLATORS; ++i)
+	{
 		const QString is = QString::number(i);
 		m_osc[i]->m_volumeModel.loadSettings(_this, "vol" + is);
 		m_osc[i]->m_panModel.loadSettings(_this, "pan" + is);
@@ -203,21 +210,26 @@ QString TripleOscillator::nodeName() const { return (tripleoscillator_plugin_des
 
 void TripleOscillator::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
 {
-	if (_n->totalFramesPlayed() == 0 || _n->m_pluginData == nullptr) {
+	if (_n->totalFramesPlayed() == 0 || _n->m_pluginData == nullptr)
+	{
 		Oscillator* oscs_l[NUM_OF_OSCILLATORS];
 		Oscillator* oscs_r[NUM_OF_OSCILLATORS];
 
-		for (int i = NUM_OF_OSCILLATORS - 1; i >= 0; --i) {
+		for (int i = NUM_OF_OSCILLATORS - 1; i >= 0; --i)
+		{
 
 			// the last oscs needs no sub-oscs...
-			if (i == NUM_OF_OSCILLATORS - 1) {
+			if (i == NUM_OF_OSCILLATORS - 1)
+			{
 				oscs_l[i] = new Oscillator(&m_osc[i]->m_waveShapeModel, &m_osc[i]->m_modulationAlgoModel,
 					_n->frequency(), m_osc[i]->m_detuningLeft, m_osc[i]->m_phaseOffsetLeft, m_osc[i]->m_volumeLeft);
 				oscs_l[i]->setUseWaveTable(m_osc[i]->m_useWaveTable);
 				oscs_r[i] = new Oscillator(&m_osc[i]->m_waveShapeModel, &m_osc[i]->m_modulationAlgoModel,
 					_n->frequency(), m_osc[i]->m_detuningRight, m_osc[i]->m_phaseOffsetRight, m_osc[i]->m_volumeRight);
 				oscs_r[i]->setUseWaveTable(m_osc[i]->m_useWaveTable);
-			} else {
+			}
+			else
+			{
 				oscs_l[i]
 					= new Oscillator(&m_osc[i]->m_waveShapeModel, &m_osc[i]->m_modulationAlgoModel, _n->frequency(),
 						m_osc[i]->m_detuningLeft, m_osc[i]->m_phaseOffsetLeft, m_osc[i]->m_volumeLeft, oscs_l[i + 1]);
@@ -263,7 +275,8 @@ PluginView* TripleOscillator::instantiateView(QWidget* _parent) { return new Tri
 
 void TripleOscillator::updateAllDetuning()
 {
-	for (int i = 0; i < NUM_OF_OSCILLATORS; ++i) {
+	for (int i = 0; i < NUM_OF_OSCILLATORS; ++i)
+	{
 		m_osc[i]->updateDetuningLeft();
 		m_osc[i]->updateDetuningRight();
 	}
@@ -373,7 +386,8 @@ TripleOscillatorView::TripleOscillatorView(Instrument* _instrument, QWidget* _pa
 	m_mod2BtnGrp->addButton(sync_osc2_btn);
 	m_mod2BtnGrp->addButton(fm_osc2_btn);
 
-	for (int i = 0; i < NUM_OF_OSCILLATORS; ++i) {
+	for (int i = 0; i < NUM_OF_OSCILLATORS; ++i)
+	{
 		int knob_y = osc_y + i * osc_h;
 
 		// setup volume-knob
@@ -493,7 +507,8 @@ void TripleOscillatorView::modelChanged()
 	m_mod1BtnGrp->setModel(&t->m_osc[0]->m_modulationAlgoModel);
 	m_mod2BtnGrp->setModel(&t->m_osc[1]->m_modulationAlgoModel);
 
-	for (int i = 0; i < NUM_OF_OSCILLATORS; ++i) {
+	for (int i = 0; i < NUM_OF_OSCILLATORS; ++i)
+	{
 		m_oscKnobs[i].m_volKnob->setModel(&t->m_osc[i]->m_volumeModel);
 		m_oscKnobs[i].m_panKnob->setModel(&t->m_osc[i]->m_panModel);
 		m_oscKnobs[i].m_coarseKnob->setModel(&t->m_osc[i]->m_coarseModel);

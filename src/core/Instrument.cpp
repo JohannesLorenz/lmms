@@ -65,10 +65,13 @@ static int countZeroCrossings(sampleFrame* buf, fpp_t start, fpp_t frames)
 	int maxZeroCrossings = 0;
 
 	// determine the zero point crossing counts
-	for (fpp_t f = start; f < frames; ++f) {
-		for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch) {
+	for (fpp_t f = start; f < frames; ++f)
+	{
+		for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch)
+		{
 			// we don't want to count [-1, 0, 1] as two crossings
-			if ((buf[f - 1][ch] <= 0.0 && buf[f][ch] > 0.0) || (buf[f - 1][ch] >= 0.0 && buf[f][ch] < 0.0)) {
+			if ((buf[f - 1][ch] <= 0.0 && buf[f][ch] > 0.0) || (buf[f - 1][ch] >= 0.0 && buf[f][ch] < 0.0))
+			{
 				++zeroCrossings[ch];
 				if (zeroCrossings[ch] > maxZeroCrossings) { maxZeroCrossings = zeroCrossings[ch]; }
 			}
@@ -92,7 +95,8 @@ void Instrument::applyFadeIn(sampleFrame* buf, NotePlayHandle* n)
 {
 	const static float MAX_FADE_IN_LENGTH = 85.0;
 	f_cnt_t total = n->totalFramesPlayed();
-	if (total == 0) {
+	if (total == 0)
+	{
 		const fpp_t frames = n->framesLeftForCurrentPeriod();
 		const f_cnt_t offset = n->offset();
 
@@ -106,22 +110,29 @@ void Instrument::applyFadeIn(sampleFrame* buf, NotePlayHandle* n)
 
 		// apply fade in
 		length = length < frames ? length : frames;
-		for (fpp_t f = 0; f < length; ++f) {
-			for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch) {
+		for (fpp_t f = 0; f < length; ++f)
+		{
+			for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch)
+			{
 				buf[offset + f][ch] *= 0.5 - 0.5 * cosf(F_PI * (float)f / (float)n->m_fadeInLength);
 			}
 		}
-	} else if (total < n->m_fadeInLength) {
+	}
+	else if (total < n->m_fadeInLength)
+	{
 		const fpp_t frames = n->framesLeftForCurrentPeriod();
 
 		int new_zc = countZeroCrossings(buf, 1, frames);
 		fpp_t new_length = getFadeInLength(MAX_FADE_IN_LENGTH, frames, new_zc);
 
-		for (fpp_t f = 0; f < frames; ++f) {
-			for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch) {
+		for (fpp_t f = 0; f < frames; ++f)
+		{
+			for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch)
+			{
 				float currentLength = n->m_fadeInLength * (1.0f - (float)f / frames) + new_length * ((float)f / frames);
 				buf[f][ch] *= 0.5 - 0.5 * cosf(F_PI * (float)(total + f) / currentLength);
-				if (total + f >= currentLength) {
+				if (total + f >= currentLength)
+				{
 					n->m_fadeInLength = currentLength;
 					return;
 				}
@@ -136,11 +147,14 @@ void Instrument::applyRelease(sampleFrame* buf, const NotePlayHandle* _n)
 	const fpp_t frames = _n->framesLeftForCurrentPeriod();
 	const fpp_t fpp = Engine::audioEngine()->framesPerPeriod();
 	const f_cnt_t fl = _n->framesLeft();
-	if (fl <= desiredReleaseFrames() + fpp) {
+	if (fl <= desiredReleaseFrames() + fpp)
+	{
 		for (fpp_t f = (fpp_t)((fl > desiredReleaseFrames()) ? (qMax(fpp - desiredReleaseFrames(), 0) + fl % fpp) : 0);
-			 f < frames; ++f) {
+			 f < frames; ++f)
+		{
 			const float fac = (float)(fl - f - 1) / desiredReleaseFrames();
-			for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch) {
+			for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch)
+			{
 				buf[f][ch] *= fac;
 			}
 		}

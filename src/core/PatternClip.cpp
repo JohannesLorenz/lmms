@@ -35,7 +35,8 @@ PatternClip::PatternClip(Track* track)
 	: Clip(track)
 {
 	bar_t t = Engine::patternStore()->lengthOfPattern(patternIndex());
-	if (t > 0) {
+	if (t > 0)
+	{
 		saveJournallingState(false);
 		changeLength(TimePos(t, 0));
 		restoreJournallingState();
@@ -46,9 +47,9 @@ PatternClip::PatternClip(Track* track)
 void PatternClip::saveSettings(QDomDocument& doc, QDomElement& element)
 {
 	element.setAttribute("name", name());
-	if (element.parentNode().nodeName() == "clipboard") {
-		element.setAttribute("pos", -1);
-	} else {
+	if (element.parentNode().nodeName() == "clipboard") { element.setAttribute("pos", -1); }
+	else
+	{
 		element.setAttribute("pos", startPosition());
 	}
 	element.setAttribute("len", length());
@@ -64,17 +65,21 @@ void PatternClip::loadSettings(const QDomElement& element)
 	if (element.attribute("muted").toInt() != isMuted()) { toggleMute(); }
 
 	// for colors saved in 1.3-onwards
-	if (element.hasAttribute("color") && !element.hasAttribute("usestyle")) {
+	if (element.hasAttribute("color") && !element.hasAttribute("usestyle"))
+	{
 		useCustomClipColor(true);
 		setColor(element.attribute("color"));
 	}
 
 	// for colors saved before 1.3
-	else if (element.hasAttribute("color")) {
+	else if (element.hasAttribute("color"))
+	{
 		setColor(QColor(element.attribute("color").toUInt()));
 
 		// usestyle attribute is no longer used
-	} else {
+	}
+	else
+	{
 		useCustomClipColor(false);
 	}
 }

@@ -70,11 +70,13 @@ bool DualFilterEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 	const float d = dryLevel();
 	const float w = wetLevel();
 
-	if (m_dfControls.m_filter1Model.isValueChanged() || m_filter1changed) {
+	if (m_dfControls.m_filter1Model.isValueChanged() || m_filter1changed)
+	{
 		m_filter1->setFilterType(m_dfControls.m_filter1Model.value());
 		m_filter1changed = true;
 	}
-	if (m_dfControls.m_filter2Model.isValueChanged() || m_filter2changed) {
+	if (m_dfControls.m_filter2Model.isValueChanged() || m_filter2changed)
+	{
 		m_filter2->setFilterType(m_dfControls.m_filter2Model.value());
 		m_filter2changed = true;
 	}
@@ -115,7 +117,8 @@ bool DualFilterEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 	const bool enabled2 = m_dfControls.m_enabled2Model.value();
 
 	// buffer processing loop
-	for (fpp_t f = 0; f < frames; ++f) {
+	for (fpp_t f = 0; f < frames; ++f)
+	{
 		// get mix amounts for wet signals of both filters
 		const float mix2 = ((*mixPtr + 1.0f) * 0.5f);
 		const float mix1 = 1.0f - mix2;
@@ -126,11 +129,13 @@ bool DualFilterEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 		sample_t s2[2] = {buf[f][0], buf[f][1]}; // filter 2
 
 		// update filter 1
-		if (enabled1) {
+		if (enabled1)
+		{
 			// update filter 1 params here
 			//  recalculate only when necessary: either cut/res is changed, or the changed-flag is set (filter type or
 			//  samplerate changed)
-			if (((*cut1Ptr != m_currentCut1 || *res1Ptr != m_currentRes1)) || m_filter1changed) {
+			if (((*cut1Ptr != m_currentCut1 || *res1Ptr != m_currentRes1)) || m_filter1changed)
+			{
 				m_filter1->calcFilterCoeffs(*cut1Ptr, *res1Ptr);
 				m_filter1changed = false;
 				m_currentCut1 = *cut1Ptr;
@@ -149,9 +154,11 @@ bool DualFilterEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 		}
 
 		// update filter 2
-		if (enabled2) {
+		if (enabled2)
+		{
 			// update filter 2 params here
-			if (((*cut2Ptr != m_currentCut2 || *res2Ptr != m_currentRes2)) || m_filter2changed) {
+			if (((*cut2Ptr != m_currentCut2 || *res2Ptr != m_currentRes2)) || m_filter2changed)
+			{
 				m_filter2->calcFilterCoeffs(*cut2Ptr, *res2Ptr);
 				m_filter2changed = false;
 				m_currentCut2 = *cut2Ptr;

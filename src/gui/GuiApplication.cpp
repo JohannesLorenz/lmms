@@ -65,7 +65,8 @@ GuiApplication::GuiApplication()
 				  "later via Edit -> Settings.")
 				   .arg(ConfigManager::inst()->workingDir()),
 			   QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes)
-			== QMessageBox::Yes) {
+			== QMessageBox::Yes)
+	{
 		ConfigManager::inst()->createWorkingDir();
 	}
 	// Init style and palette
@@ -177,23 +178,37 @@ void GuiApplication::childDestroyed(QObject* obj)
 {
 	// when any object that can be reached via getGUI()->mainWindow(), getGUI()->mixerView(), etc
 	//   is destroyed, ensure that their accessor functions will return null instead of a garbage pointer.
-	if (obj == m_mainWindow) {
-		m_mainWindow = nullptr;
-	} else if (obj == m_mixerView) {
+	if (obj == m_mainWindow) { m_mainWindow = nullptr; }
+	else if (obj == m_mixerView)
+	{
 		m_mixerView = nullptr;
-	} else if (obj == m_songEditor) {
+	}
+	else if (obj == m_songEditor)
+	{
 		m_songEditor = nullptr;
-	} else if (obj == m_automationEditor) {
+	}
+	else if (obj == m_automationEditor)
+	{
 		m_automationEditor = nullptr;
-	} else if (obj == m_patternEditor) {
+	}
+	else if (obj == m_patternEditor)
+	{
 		m_patternEditor = nullptr;
-	} else if (obj == m_pianoRoll) {
+	}
+	else if (obj == m_pianoRoll)
+	{
 		m_pianoRoll = nullptr;
-	} else if (obj == m_projectNotes) {
+	}
+	else if (obj == m_projectNotes)
+	{
 		m_projectNotes = nullptr;
-	} else if (obj == m_microtunerConfig) {
+	}
+	else if (obj == m_microtunerConfig)
+	{
 		m_microtunerConfig = nullptr;
-	} else if (obj == m_controllerRackView) {
+	}
+	else if (obj == m_controllerRackView)
+	{
 		m_controllerRackView = nullptr;
 	}
 }
@@ -207,7 +222,8 @@ QFont GuiApplication::getWin32SystemFont()
 	NONCLIENTMETRICS metrics = {sizeof(NONCLIENTMETRICS)};
 	SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &metrics, 0);
 	int pointSize = metrics.lfMessageFont.lfHeight;
-	if (pointSize < 0) {
+	if (pointSize < 0)
+	{
 		// height is in pixels, convert to points
 		HDC hDC = GetDC(nullptr);
 		pointSize = MulDiv(abs(pointSize), 72, GetDeviceCaps(hDC, LOGPIXELSY));

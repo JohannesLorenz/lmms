@@ -87,7 +87,8 @@ void SfxrSynth::resetSample(bool restart)
 	arp_time = 0;
 	arp_limit = (int)(pow(1.0f - s->m_changeSpeedModel.value(), 2.0f) * 20000 + 32);
 	if (s->m_changeSpeedModel.value() == 1.0f) arp_limit = 0;
-	if (!restart) {
+	if (!restart)
+	{
 		// reset filter
 		fltp = 0.0f;
 		fltdp = 0.0f;
@@ -131,33 +132,40 @@ void SfxrSynth::resetSample(bool restart)
 
 void SfxrSynth::update(sampleFrame* buffer, const int32_t frameNum)
 {
-	for (int i = 0; i < frameNum; i++) {
-		if (!playing_sample) {
-			for (ch_cnt_t j = 0; j < DEFAULT_CHANNELS; j++) {
+	for (int i = 0; i < frameNum; i++)
+	{
+		if (!playing_sample)
+		{
+			for (ch_cnt_t j = 0; j < DEFAULT_CHANNELS; j++)
+			{
 				buffer[i][j] = 0.0f;
 			}
 		}
 
 		rep_time++;
-		if (rep_limit != 0 && rep_time >= rep_limit) {
+		if (rep_limit != 0 && rep_time >= rep_limit)
+		{
 			rep_limit = 0;
 			resetSample(true);
 		}
 
 		// frequency envelopes/arpeggios
 		arp_time++;
-		if (arp_limit != 0 && arp_time >= arp_limit) {
+		if (arp_limit != 0 && arp_time >= arp_limit)
+		{
 			arp_limit = 0;
 			fperiod *= arp_mod;
 		}
 		fslide += fdslide;
 		fperiod *= fslide;
-		if (fperiod > fmaxperiod) {
+		if (fperiod > fmaxperiod)
+		{
 			fperiod = fmaxperiod;
 			if (s->m_minFreqModel.value() > 0.0f) playing_sample = false;
 		}
 		float rfperiod = fperiod;
-		if (vib_amp > 0.0f) {
+		if (vib_amp > 0.0f)
+		{
 			vib_phase += vib_speed;
 			rfperiod = fperiod * (1.0 + sin(vib_phase) * vib_amp);
 		}
@@ -168,7 +176,8 @@ void SfxrSynth::update(sampleFrame* buffer, const int32_t frameNum)
 		if (square_duty > 0.5f) square_duty = 0.5f;
 		// volume envelope
 		env_time++;
-		if (env_time > env_length[env_stage]) {
+		if (env_time > env_length[env_stage])
+		{
 			env_time = 0;
 			env_stage++;
 			if (env_stage == 3) playing_sample = false;
@@ -183,7 +192,8 @@ void SfxrSynth::update(sampleFrame* buffer, const int32_t frameNum)
 		iphase = abs((int)fphase);
 		if (iphase > 1023) iphase = 1023;
 
-		if (flthp_d != 0.0f) {
+		if (flthp_d != 0.0f)
+		{
 			flthp *= flthp_d;
 			if (flthp < 0.00001f) flthp = 0.00001f;
 			if (flthp > 0.1f) flthp = 0.1f;
@@ -194,7 +204,8 @@ void SfxrSynth::update(sampleFrame* buffer, const int32_t frameNum)
 		{
 			float sample = 0.0f;
 			phase++;
-			if (phase >= period) {
+			if (phase >= period)
+			{
 				//				phase=0;
 				phase %= period;
 				if (s->m_waveFormModel.value() == 3)
@@ -203,7 +214,8 @@ void SfxrSynth::update(sampleFrame* buffer, const int32_t frameNum)
 			}
 			// base waveform
 			float fp = (float)phase / period;
-			switch (s->m_waveFormModel.value()) {
+			switch (s->m_waveFormModel.value())
+			{
 			case 0: // square
 				if (fp < square_duty) sample = 0.5f;
 				else
@@ -224,10 +236,13 @@ void SfxrSynth::update(sampleFrame* buffer, const int32_t frameNum)
 			fltw *= fltw_d;
 			if (fltw < 0.0f) fltw = 0.0f;
 			if (fltw > 0.1f) fltw = 0.1f;
-			if (s->m_lpFilCutModel.value() != 1.0f) {
+			if (s->m_lpFilCutModel.value() != 1.0f)
+			{
 				fltdp += (sample - fltp) * fltw;
 				fltdp -= fltdp * fltdmp;
-			} else {
+			}
+			else
+			{
 				fltp = sample;
 				fltdp = 0.0f;
 			}
@@ -248,10 +263,12 @@ void SfxrSynth::update(sampleFrame* buffer, const int32_t frameNum)
 		// ssample*=2.0f*sound_vol;
 		ssample *= 0.025f;
 
-		if (buffer != nullptr) {
+		if (buffer != nullptr)
+		{
 			if (ssample > 1.0f) ssample = 1.0f;
 			if (ssample < -1.0f) ssample = -1.0f;
-			for (ch_cnt_t j = 0; j < DEFAULT_CHANNELS; j++) {
+			for (ch_cnt_t j = 0; j < DEFAULT_CHANNELS; j++)
+			{
 				buffer[i][j] = ssample;
 			}
 		}
@@ -380,9 +397,9 @@ void sfxrInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
 
 	fpp_t frameNum = _n->framesLeftForCurrentPeriod();
 	const f_cnt_t offset = _n->noteOffset();
-	if (_n->totalFramesPlayed() == 0 || _n->m_pluginData == nullptr) {
-		_n->m_pluginData = new SfxrSynth(this);
-	} else if (static_cast<SfxrSynth*>(_n->m_pluginData)->isPlaying() == false) {
+	if (_n->totalFramesPlayed() == 0 || _n->m_pluginData == nullptr) { _n->m_pluginData = new SfxrSynth(this); }
+	else if (static_cast<SfxrSynth*>(_n->m_pluginData)->isPlaying() == false)
+	{
 		memset(_working_buffer + offset, 0, sizeof(sampleFrame) * frameNum);
 		_n->noteOff();
 		return;
@@ -398,8 +415,10 @@ void sfxrInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
 
 	sampleFrame* pitchedBuffer = new sampleFrame[pitchedFrameNum];
 	static_cast<SfxrSynth*>(_n->m_pluginData)->update(pitchedBuffer, pitchedFrameNum);
-	for (fpp_t i = 0; i < frameNum; i++) {
-		for (ch_cnt_t j = 0; j < DEFAULT_CHANNELS; j++) {
+	for (fpp_t i = 0; i < frameNum; i++)
+	{
+		for (ch_cnt_t j = 0; j < DEFAULT_CHANNELS; j++)
+		{
 			_working_buffer[i + offset][j] = pitchedBuffer[i * pitchedFrameNum / frameNum][j];
 		}
 	}
@@ -669,7 +688,8 @@ void sfxrInstrumentView::genPickup()
 	s->m_decModel.setValue(0.1f + frnd(0.4f));
 	s->m_susModel.setValue(0.3f + frnd(0.3f));
 
-	if (rnd(1)) {
+	if (rnd(1))
+	{
 		s->m_changeSpeedModel.setValue(0.5f + frnd(0.2f));
 		s->m_changeAmtModel.setValue(0.2f + frnd(0.4f));
 	}
@@ -690,16 +710,20 @@ void sfxrInstrumentView::genLaser()
 
 	s->m_slideModel.setValue(-0.15f - frnd(0.2f));
 
-	if (rnd(2) == 0) {
+	if (rnd(2) == 0)
+	{
 		s->m_startFreqModel.setValue(0.3f + frnd(0.6f));
 		s->m_minFreqModel.setValue(frnd(0.1f));
 		s->m_slideModel.setValue(-0.35f - frnd(0.3f));
 	}
 
-	if (rnd(1)) {
+	if (rnd(1))
+	{
 		s->m_sqrDutyModel.setValue(frnd(0.5f));
 		s->m_sqrSweepModel.setValue(0.2f);
-	} else {
+	}
+	else
+	{
 		s->m_sqrDutyModel.setValue(0.4f + frnd(0.5f));
 		s->m_sqrSweepModel.setValue(-frnd(0.7f));
 	}
@@ -710,7 +734,8 @@ void sfxrInstrumentView::genLaser()
 
 	if (rnd(1)) { s->m_susModel.setValue(frnd(0.3f)); }
 
-	if (rnd(2) == 0) {
+	if (rnd(2) == 0)
+	{
 		s->m_phaserOffsetModel.setValue(frnd(0.2f));
 		s->m_phaserSweepModel.setValue(-frnd(0.2f));
 	}
@@ -725,10 +750,13 @@ void sfxrInstrumentView::genExplosion()
 
 	s->m_waveFormModel.setValue(3);
 
-	if (rnd(1)) {
+	if (rnd(1))
+	{
 		s->m_startFreqModel.setValue(0.1f + frnd(0.4f));
 		s->m_slideModel.setValue(-0.1f + frnd(0.4f));
-	} else {
+	}
+	else
+	{
 		s->m_startFreqModel.setValue(0.2f + frnd(0.7f));
 		s->m_slideModel.setValue(-0.2f - frnd(0.2f));
 	}
@@ -741,17 +769,20 @@ void sfxrInstrumentView::genExplosion()
 	s->m_attModel.setValue(0.0f);
 	s->m_holdModel.setValue(0.1f + frnd(0.3f));
 	s->m_decModel.setValue(0.5f);
-	if (rnd(1) == 0) {
+	if (rnd(1) == 0)
+	{
 		s->m_phaserOffsetModel.setValue(-0.3f + frnd(0.9f));
 		s->m_phaserSweepModel.setValue(-frnd(0.3f));
 	}
 	s->m_susModel.setValue(0.2f + frnd(0.6f));
 
-	if (rnd(1)) {
+	if (rnd(1))
+	{
 		s->m_vibDepthModel.setValue(frnd(0.7f));
 		s->m_vibSpeedModel.setValue(frnd(0.6f));
 	}
-	if (rnd(2) == 0) {
+	if (rnd(2) == 0)
+	{
 		s->m_changeSpeedModel.setValue(0.6f + frnd(0.3f));
 		s->m_changeAmtModel.setValue(0.8f - frnd(1.6f));
 	}
@@ -765,14 +796,18 @@ void sfxrInstrumentView::genPowerup()
 	if (rnd(1)) s->m_waveFormModel.setValue(1);
 	else
 		s->m_sqrDutyModel.setValue(frnd(0.6f));
-	if (rnd(1)) {
+	if (rnd(1))
+	{
 		s->m_startFreqModel.setValue(0.2f + frnd(0.3f));
 		s->m_slideModel.setValue(0.1f + frnd(0.4f));
 		s->m_repeatSpeedModel.setValue(0.4f + frnd(0.4f));
-	} else {
+	}
+	else
+	{
 		s->m_startFreqModel.setValue(0.2f + frnd(0.3f));
 		s->m_slideModel.setValue(0.05f + frnd(0.2f));
-		if (rnd(1)) {
+		if (rnd(1))
+		{
 			s->m_vibDepthModel.setValue(frnd(0.7f));
 			s->m_vibSpeedModel.setValue(frnd(0.6f));
 		}
@@ -844,10 +879,12 @@ void sfxrInstrumentView::randomize()
 	if (rnd(1)) { s->m_startFreqModel.setValue(pow(frnd(2.0f) - 1.0f, 3.0f) + 0.5f); }
 	s->m_minFreqModel.setValue(0.0f);
 	s->m_slideModel.setValue(pow(frnd(2.0f) - 1.0f, 5.0f));
-	if (s->m_startFreqModel.value() > 0.7f && s->m_slideModel.value() > 0.2f) {
+	if (s->m_startFreqModel.value() > 0.7f && s->m_slideModel.value() > 0.2f)
+	{
 		s->m_slideModel.setValue(-s->m_slideModel.value());
 	}
-	if (s->m_startFreqModel.value() < 0.2f && s->m_slideModel.value() < -0.05f) {
+	if (s->m_startFreqModel.value() < 0.2f && s->m_slideModel.value() < -0.05f)
+	{
 		s->m_slideModel.setValue(-s->m_slideModel.value());
 	}
 	s->m_dSlideModel.setValue(pow(frnd(2.0f) - 1.0f, 3.0f));
@@ -863,7 +900,8 @@ void sfxrInstrumentView::randomize()
 	s->m_holdModel.setValue(pow(frnd(2.0f) - 1.0f, 2.0f));
 	s->m_decModel.setValue(frnd(2.0f) - 1.0f);
 	s->m_susModel.setValue(pow(frnd(0.8f), 2.0f));
-	if (s->m_attModel.value() + s->m_holdModel.value() + s->m_decModel.value() < 0.2f) {
+	if (s->m_attModel.value() + s->m_holdModel.value() + s->m_decModel.value() < 0.2f)
+	{
 		s->m_holdModel.setValue(s->m_holdModel.value() + 0.2f + frnd(0.3f));
 		s->m_decModel.setValue(s->m_decModel.value() + 0.2f + frnd(0.3f));
 	}
@@ -871,7 +909,8 @@ void sfxrInstrumentView::randomize()
 	s->m_lpFilResoModel.setValue(frnd(2.0f) - 1.0f);
 	s->m_lpFilCutModel.setValue(1.0f - pow(frnd(1.0f), 3.0f));
 	s->m_lpFilCutSweepModel.setValue(pow(frnd(2.0f) - 1.0f, 3.0f));
-	if (s->m_lpFilCutModel.value() < 0.1f && s->m_lpFilCutSweepModel.value() < -0.05f) {
+	if (s->m_lpFilCutModel.value() < 0.1f && s->m_lpFilCutSweepModel.value() < -0.05f)
+	{
 		s->m_lpFilCutSweepModel.setValue(-s->m_lpFilCutSweepModel.value());
 	}
 	s->m_hpFilCutModel.setValue(pow(frnd(1.0f), 5.0f));

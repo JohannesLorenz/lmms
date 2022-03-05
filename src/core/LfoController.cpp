@@ -75,7 +75,8 @@ void LfoController::updateValueBuffer()
 
 	// roll phase up until we're in sync with period counter
 	m_bufferLastUpdated++;
-	if (m_bufferLastUpdated < s_periods) {
+	if (m_bufferLastUpdated < s_periods)
+	{
 		int diff = s_periods - m_bufferLastUpdated;
 		phase += static_cast<float>(Engine::audioEngine()->framesPerPeriod() * diff) / m_duration;
 		m_bufferLastUpdated += diff;
@@ -86,7 +87,8 @@ void LfoController::updateValueBuffer()
 	int amountInc = amountBuffer ? 1 : 0;
 	float* amountPtr = amountBuffer ? &(amountBuffer->values()[0]) : &amount;
 
-	for (float& f : m_valueBuffer) {
+	for (float& f : m_valueBuffer)
+	{
 		const float currentSample
 			= m_sampleFunction != nullptr ? m_sampleFunction(phase) : m_userDefSampleBuffer->userWaveSample(phase);
 
@@ -110,7 +112,8 @@ void LfoController::updateDuration()
 {
 	float newDurationF = Engine::audioEngine()->processingSampleRate() * m_speedModel.value();
 
-	switch (m_multiplierModel.value()) {
+	switch (m_multiplierModel.value())
+	{
 	case 1: newDurationF /= 100.0; break;
 
 	case 2: newDurationF *= 100.0; break;
@@ -123,7 +126,8 @@ void LfoController::updateDuration()
 
 void LfoController::updateSampleFunction()
 {
-	switch (m_waveModel.value()) {
+	switch (m_waveModel.value())
+	{
 	case Oscillator::SineWave: m_sampleFunction = &Oscillator::sinSample; break;
 	case Oscillator::TriangleWave: m_sampleFunction = &Oscillator::triangleSample; break;
 	case Oscillator::SawWave: m_sampleFunction = &Oscillator::sawSample; break;

@@ -148,7 +148,8 @@ MainWindow::MainWindow()
 
 #if !defined(LMMS_BUILD_APPLE)
 	QFileInfoList drives = QDir::drives();
-	for (const QFileInfo& drive : drives) {
+	for (const QFileInfo& drive : drives)
+	{
 		root_paths += drive.absolutePath();
 	}
 #endif
@@ -163,9 +164,9 @@ MainWindow::MainWindow()
 	QString backgroundPicFile = ConfigManager::inst()->backgroundPicFile();
 	QImage backgroundPic;
 	if (!backgroundPicFile.isEmpty()) { backgroundPic = QImage(backgroundPicFile); }
-	if (!backgroundPicFile.isNull()) {
-		m_workspace->setBackground(backgroundPic);
-	} else {
+	if (!backgroundPicFile.isNull()) { m_workspace->setBackground(backgroundPic); }
+	else
+	{
 		m_workspace->setBackground(Qt::NoBrush);
 	}
 
@@ -177,7 +178,8 @@ MainWindow::MainWindow()
 	hbox->addWidget(splitter);
 	// If the user wants the sidebar on the right, we move the workspace and
 	// the splitter to the "left" side, or the first widgets in their list
-	if (sideBarOnRight) {
+	if (sideBarOnRight)
+	{
 		splitter->insertWidget(0, m_workspace);
 		hbox->insertWidget(0, splitter);
 	}
@@ -199,7 +201,8 @@ MainWindow::MainWindow()
 
 	m_updateTimer.start(1000 / 60, this); // 60 fps
 
-	if (ConfigManager::inst()->value("ui", "enableautosave").toInt()) {
+	if (ConfigManager::inst()->value("ui", "enableautosave").toInt())
+	{
 		// connect auto save
 		connect(&m_autoSaveTimer, SIGNAL(timeout()), this, SLOT(autoSave()));
 		m_autoSaveInterval = ConfigManager::inst()->value("ui", "saveinterval").toInt() < 1
@@ -225,7 +228,8 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow()
 {
-	for (PluginView* view : m_tools) {
+	for (PluginView* view : m_tools)
+	{
 		delete view->model();
 		delete view;
 	}
@@ -292,10 +296,12 @@ void MainWindow::finalize()
 	m_redoAction
 		= edit_menu->addAction(embed::getIconPixmap("edit_redo"), tr("Redo"), this, SLOT(redo()), QKeySequence::Redo);
 	// Ensure that both (Ctrl+Y) and (Ctrl+Shift+Z) activate redo shortcut regardless of OS defaults
-	if (QKeySequence(QKeySequence::Redo) != QKeySequence(Qt::CTRL + Qt::Key_Y)) {
+	if (QKeySequence(QKeySequence::Redo) != QKeySequence(Qt::CTRL + Qt::Key_Y))
+	{
 		new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Y), this, SLOT(redo()));
 	}
-	if (QKeySequence(QKeySequence::Redo) != QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z)) {
+	if (QKeySequence(QKeySequence::Redo) != QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z))
+	{
 		new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Z), this, SLOT(redo()));
 	}
 
@@ -309,11 +315,13 @@ void MainWindow::finalize()
 	connect(m_viewMenu, SIGNAL(triggered(QAction*)), this, SLOT(updateConfig(QAction*)));
 
 	m_toolsMenu = new QMenu(this);
-	for (const Plugin::Descriptor* desc : getPluginFactory()->descriptors(Plugin::Tool)) {
+	for (const Plugin::Descriptor* desc : getPluginFactory()->descriptors(Plugin::Tool))
+	{
 		m_toolsMenu->addAction(desc->logo->pixmap(), desc->displayName);
 		m_tools.push_back(ToolPlugin::instantiate(desc->name, /*this*/ nullptr)->createView(this));
 	}
-	if (!m_toolsMenu->isEmpty()) {
+	if (!m_toolsMenu->isEmpty())
+	{
 		menuBar()->addMenu(m_toolsMenu)->setText(tr("&Tools"));
 		connect(m_toolsMenu, SIGNAL(triggered(QAction*)), this, SLOT(showTool(QAction*)));
 	}
@@ -322,9 +330,9 @@ void MainWindow::finalize()
 	QMenu* help_menu = new QMenu(this);
 	menuBar()->addMenu(help_menu)->setText(tr("&Help"));
 	// May use offline help
-	if (true) {
-		help_menu->addAction(embed::getIconPixmap("help"), tr("Online Help"), this, SLOT(browseHelp()));
-	} else {
+	if (true) { help_menu->addAction(embed::getIconPixmap("help"), tr("Online Help"), this, SLOT(browseHelp())); }
+	else
+	{
 		help_menu->addAction(embed::getIconPixmap("help"), tr("Help"), this, SLOT(help()));
 	}
 
@@ -415,7 +423,8 @@ void MainWindow::finalize()
 	m_toolBarLayout->setColumnStretch(100, 1);
 
 	// setup-dialog opened before?
-	if (!ConfigManager::inst()->value("app", "configured").toInt()) {
+	if (!ConfigManager::inst()->value("app", "configured").toInt())
+	{
 		ConfigManager::inst()->setValue("app", "configured", "1");
 		// no, so show it that user can setup everything
 		SetupDialog sd;
@@ -425,7 +434,8 @@ void MainWindow::finalize()
 	// user and is using AudioDummy as a fallback
 	// or the audio device is set to invalid one
 	else if (Engine::audioEngine()->audioDevStartFailed()
-		|| !AudioEngine::isAudioDevNameValid(ConfigManager::inst()->value("audioengine", "audiodev"))) {
+		|| !AudioEngine::isAudioDevNameValid(ConfigManager::inst()->value("audioengine", "audiodev")))
+	{
 		// if so, offer the audio settings section of the setup dialog
 		SetupDialog sd(SetupDialog::AudioSettings);
 		sd.exec();
@@ -433,7 +443,8 @@ void MainWindow::finalize()
 
 	// Add editor subwindows
 	for (QWidget* widget : std::list<QWidget*>{
-			 getGUI()->automationEditor(), getGUI()->patternEditor(), getGUI()->pianoRoll(), getGUI()->songEditor()}) {
+			 getGUI()->automationEditor(), getGUI()->patternEditor(), getGUI()->pianoRoll(), getGUI()->songEditor()})
+	{
 		QMdiSubWindow* window = addWindowedWidget(widget);
 		window->setWindowIcon(widget->windowIcon());
 		window->setAttribute(Qt::WA_DeleteOnClose, false);
@@ -449,7 +460,8 @@ void MainWindow::finalize()
 	getGUI()->songEditor()->parentWidget()->show();
 
 	// reset window title every time we change the state of a subwindow to show the correct title
-	for (const QMdiSubWindow* subWindow : workspace()->subWindowList()) {
+	for (const QMdiSubWindow* subWindow : workspace()->subWindowList())
+	{
 		connect(
 			subWindow, SIGNAL(windowStateChanged(Qt::WindowStates, Qt::WindowStates)), this, SLOT(resetWindowTitle()));
 	}
@@ -458,9 +470,9 @@ void MainWindow::finalize()
 int MainWindow::addWidgetToToolBar(QWidget* _w, int _row, int _col)
 {
 	int col = (_col == -1) ? m_toolBarLayout->columnCount() + 7 : _col;
-	if (_w->height() > 32 || _row == -1) {
-		m_toolBarLayout->addWidget(_w, 0, col, 2, 1);
-	} else {
+	if (_w->height() > 32 || _row == -1) { m_toolBarLayout->addWidget(_w, 0, col, 2, 1); }
+	else
+	{
 		m_toolBarLayout->addWidget(_w, _row, col);
 	}
 	return (col);
@@ -486,7 +498,8 @@ void MainWindow::resetWindowTitle()
 {
 	QString title(tr("Untitled"));
 
-	if (Engine::getSong()->projectFileName() != "") {
+	if (Engine::getSong()->projectFileName() != "")
+	{
 		title = QFileInfo(Engine::getSong()->projectFileName()).completeBaseName();
 	}
 
@@ -520,9 +533,9 @@ bool MainWindow::mayChangeProject(bool stopPlayback)
 		QMessageBox::Discard, QMessageBox::Cancel, this);
 	int answer = mb.exec();
 
-	if (answer == QMessageBox::Save) {
-		return (saveProject());
-	} else if (answer == QMessageBox::Discard) {
+	if (answer == QMessageBox::Save) { return (saveProject()); }
+	else if (answer == QMessageBox::Discard)
+	{
 		if (getSession() == Recover) { sessionCleanup(); }
 		return (true);
 	}
@@ -566,7 +579,8 @@ void MainWindow::restoreWidgetState(QWidget* _w, const QDomElement& _de)
 	QRect r(qMax(1, _de.attribute("x").toInt()), qMax(1, _de.attribute("y").toInt()),
 		qMax(_w->sizeHint().width(), _de.attribute("width").toInt()),
 		qMax(_w->minimumHeight(), _de.attribute("height").toInt()));
-	if (_de.hasAttribute("visible") && !r.isNull()) {
+	if (_de.hasAttribute("visible") && !r.isNull())
+	{
 		// If our widget is the main content of a window (e.g. piano roll, Mixer, etc),
 		// we really care about the position of the *window* - not the position of the widget within its window
 		if (_w->parentWidget() != nullptr && _w->parentWidget()->inherits("QMdiSubWindow")) { _w = _w->parentWidget(); }
@@ -596,12 +610,14 @@ void MainWindow::createNewProject()
 
 void MainWindow::openProject()
 {
-	if (mayChangeProject(false)) {
+	if (mayChangeProject(false))
+	{
 		FileDialog ofd(this, tr("Open Project"), "", tr("LMMS (*.mmp *.mmpz)"));
 
 		ofd.setDirectory(ConfigManager::inst()->userProjectsDir());
 		ofd.setFileMode(FileDialog::ExistingFiles);
-		if (ofd.exec() == QDialog::Accepted && !ofd.selectedFiles().isEmpty()) {
+		if (ofd.exec() == QDialog::Accepted && !ofd.selectedFiles().isEmpty())
+		{
 			Song* song = Engine::getSong();
 
 			song->stop();
@@ -614,9 +630,9 @@ void MainWindow::openProject()
 
 bool MainWindow::saveProject()
 {
-	if (Engine::getSong()->projectFileName() == "") {
-		return (saveProjectAs());
-	} else if (this->guiSaveProject()) {
+	if (Engine::getSong()->projectFileName() == "") { return (saveProjectAs()); }
+	else if (this->guiSaveProject())
+	{
 		if (getSession() == Recover) { sessionCleanup(); }
 		return true;
 	}
@@ -629,10 +645,13 @@ bool MainWindow::saveProjectAs()
 	VersionedSaveDialog sfd(this, optionsWidget, tr("Save Project"), "",
 		tr("LMMS Project") + " (*.mmpz *.mmp);;" + tr("LMMS Project Template") + " (*.mpt)");
 	QString f = Engine::getSong()->projectFileName();
-	if (f != "") {
+	if (f != "")
+	{
 		sfd.setDirectory(QFileInfo(f).absolutePath());
 		sfd.selectFile(QFileInfo(f).fileName());
-	} else {
+	}
+	else
+	{
 		sfd.setDirectory(ConfigManager::inst()->userProjectsDir());
 	}
 
@@ -640,18 +659,23 @@ bool MainWindow::saveProjectAs()
 	QString suffix = ConfigManager::inst()->value("app", "nommpz").toInt() == 0 ? "mmpz" : "mmp";
 	sfd.setDefaultSuffix(suffix);
 
-	if (sfd.exec() == FileDialog::Accepted && !sfd.selectedFiles().isEmpty() && sfd.selectedFiles()[0] != "") {
+	if (sfd.exec() == FileDialog::Accepted && !sfd.selectedFiles().isEmpty() && sfd.selectedFiles()[0] != "")
+	{
 		QString fname = sfd.selectedFiles()[0];
-		if (sfd.selectedNameFilter().contains("(*.mpt)")) {
+		if (sfd.selectedNameFilter().contains("(*.mpt)"))
+		{
 			// Remove the default suffix
 			fname.remove("." + suffix);
-			if (!sfd.selectedFiles()[0].endsWith(".mpt")) {
-				if (VersionedSaveDialog::fileExistsQuery(fname + ".mpt", tr("Save project template"))) {
+			if (!sfd.selectedFiles()[0].endsWith(".mpt"))
+			{
+				if (VersionedSaveDialog::fileExistsQuery(fname + ".mpt", tr("Save project template")))
+				{
 					fname += ".mpt";
 				}
 			}
 		}
-		if (this->guiSaveProjectAs(fname)) {
+		if (this->guiSaveProjectAs(fname))
+		{
 			if (getSession() == Recover) { sessionCleanup(); }
 			return true;
 		}
@@ -662,9 +686,9 @@ bool MainWindow::saveProjectAs()
 bool MainWindow::saveProjectAsNewVersion()
 {
 	QString fileName = Engine::getSong()->projectFileName();
-	if (fileName == "") {
-		return saveProjectAs();
-	} else {
+	if (fileName == "") { return saveProjectAs(); }
+	else
+	{
 		do
 			VersionedSaveDialog::changeFileNameVersion(fileName, true);
 		while (QFile(fileName).exists());
@@ -678,10 +702,12 @@ void MainWindow::saveProjectAsDefaultTemplate()
 	QString defaultTemplate = ConfigManager::inst()->userTemplateDir() + "default.mpt";
 
 	QFileInfo fileInfo(defaultTemplate);
-	if (fileInfo.exists()) {
+	if (fileInfo.exists())
+	{
 		if (QMessageBox::warning(this, tr("Overwrite default template?"),
 				tr("This will overwrite your current default template."), QMessageBox::Ok, QMessageBox::Cancel)
-			!= QMessageBox::Ok) {
+			!= QMessageBox::Ok)
+		{
 			return;
 		}
 	}
@@ -712,11 +738,14 @@ void MainWindow::toggleWindow(QWidget* window, bool forceShow)
 {
 	QWidget* parent = window->parentWidget();
 
-	if (forceShow || m_workspace->activeSubWindow() != parent || parent->isHidden()) {
+	if (forceShow || m_workspace->activeSubWindow() != parent || parent->isHidden())
+	{
 		parent->show();
 		window->show();
 		window->setFocus();
-	} else {
+	}
+	else
+	{
 		parent->hide();
 		refocus();
 	}
@@ -730,10 +759,13 @@ void MainWindow::toggleWindow(QWidget* window, bool forceShow)
 
 void MainWindow::toggleFullscreen()
 {
-	if (!isFullScreen()) {
+	if (!isFullScreen())
+	{
 		maximized = isMaximized();
 		showFullScreen();
-	} else {
+	}
+	else
+	{
 		maximized ? showMaximized() : showNormal();
 	}
 }
@@ -751,8 +783,10 @@ void MainWindow::refocus()
 
 	bool found = false;
 	QList<QWidget*>::Iterator editor;
-	for (editor = editors.begin(); editor != editors.end(); ++editor) {
-		if (!(*editor)->isHidden()) {
+	for (editor = editors.begin(); editor != editors.end(); ++editor)
+	{
+		if (!(*editor)->isHidden())
+		{
 			(*editor)->setFocus();
 			found = true;
 			break;
@@ -849,15 +883,21 @@ void MainWindow::updateConfig(QAction* _who)
 	QString tag = _who->data().toString();
 	bool checked = _who->isChecked();
 
-	if (tag == "displaydbfs") {
-		ConfigManager::inst()->setValue("app", "displaydbfs", QString::number(checked));
-	} else if (tag == "tooltips") {
+	if (tag == "displaydbfs") { ConfigManager::inst()->setValue("app", "displaydbfs", QString::number(checked)); }
+	else if (tag == "tooltips")
+	{
 		ConfigManager::inst()->setValue("tooltips", "disabled", QString::number(!checked));
-	} else if (tag == "smoothscroll") {
+	}
+	else if (tag == "smoothscroll")
+	{
 		ConfigManager::inst()->setValue("ui", "smoothscroll", QString::number(checked));
-	} else if (tag == "oneinstrument") {
+	}
+	else if (tag == "oneinstrument")
+	{
 		ConfigManager::inst()->setValue("ui", "oneinstrumenttrackwindow", QString::number(checked));
-	} else if (tag == "printnotelabels") {
+	}
+	else if (tag == "printnotelabels")
+	{
 		ConfigManager::inst()->setValue("ui", "printnotelabels", QString::number(checked));
 	}
 }
@@ -873,8 +913,10 @@ void MainWindow::updatePlayPauseIcons()
 	getGUI()->patternEditor()->setPauseIcon(false);
 	getGUI()->pianoRoll()->setPauseIcon(false);
 
-	if (Engine::getSong()->isPlaying()) {
-		switch (Engine::getSong()->playMode()) {
+	if (Engine::getSong()->isPlaying())
+	{
+		switch (Engine::getSong()->playMode())
+		{
 		case Song::Mode_PlaySong: getGUI()->songEditor()->setPauseIcon(true); break;
 
 		case Song::Mode_PlayAutomationClip: getGUI()->automationEditor()->setPauseIcon(true); break;
@@ -902,13 +944,17 @@ void MainWindow::redo() { Engine::projectJournal()->redo(); }
 
 void MainWindow::closeEvent(QCloseEvent* _ce)
 {
-	if (mayChangeProject(true)) {
+	if (mayChangeProject(true))
+	{
 		// delete recovery file
-		if (ConfigManager::inst()->value("ui", "enableautosave").toInt()) {
+		if (ConfigManager::inst()->value("ui", "enableautosave").toInt())
+		{
 			sessionCleanup();
 			_ce->accept();
 		}
-	} else {
+	}
+	else
+	{
 		_ce->ignore();
 	}
 }
@@ -931,7 +977,8 @@ void MainWindow::focusOutEvent(QFocusEvent* _fe)
 
 void MainWindow::keyPressEvent(QKeyEvent* _ke)
 {
-	switch (_ke->key()) {
+	switch (_ke->key())
+	{
 	case Qt::Key_Control: m_keyMods.m_ctrl = true; break;
 	case Qt::Key_Shift: m_keyMods.m_shift = true; break;
 	case Qt::Key_Alt: m_keyMods.m_alt = true; break;
@@ -945,12 +992,14 @@ void MainWindow::keyPressEvent(QKeyEvent* _ke)
 
 void MainWindow::keyReleaseEvent(QKeyEvent* _ke)
 {
-	switch (_ke->key()) {
+	switch (_ke->key())
+	{
 	case Qt::Key_Control: m_keyMods.m_ctrl = false; break;
 	case Qt::Key_Shift: m_keyMods.m_shift = false; break;
 	case Qt::Key_Alt: m_keyMods.m_alt = false; break;
 	default:
-		if (InstrumentTrackView::topLevelInstrumentTrackWindow()) {
+		if (InstrumentTrackView::topLevelInstrumentTrackWindow())
+		{
 			InstrumentTrackView::topLevelInstrumentTrackWindow()->pianoView()->keyReleaseEvent(_ke);
 		}
 		if (!_ke->isAccepted()) { QMainWindow::keyReleaseEvent(_ke); }
@@ -979,10 +1028,13 @@ void MainWindow::autoSave()
 {
 	if (!Engine::getSong()->isExporting() && !Engine::getSong()->isLoadingProject()
 		&& !RemotePluginBase::isMainThreadWaiting() && !QApplication::mouseButtons()
-		&& (ConfigManager::inst()->value("ui", "enablerunningautosave").toInt() || !Engine::getSong()->isPlaying())) {
+		&& (ConfigManager::inst()->value("ui", "enablerunningautosave").toInt() || !Engine::getSong()->isPlaying()))
+	{
 		Engine::getSong()->saveProjectFile(ConfigManager::inst()->recoveryFile());
 		autoSaveTimerReset(); // Reset timer
-	} else {
+	}
+	else
+	{
 		// try again in 10 seconds
 		if (getAutoSaveTimerInterval() != m_autoSaveShortTime) { autoSaveTimerReset(m_autoSaveShortTime); }
 	}
@@ -999,10 +1051,13 @@ void MainWindow::onExportProjectMidi()
 	efd.setNameFilters(types);
 	QString base_filename;
 	QString const& projectFileName = Engine::getSong()->projectFileName();
-	if (!projectFileName.isEmpty()) {
+	if (!projectFileName.isEmpty())
+	{
 		efd.setDirectory(QFileInfo(projectFileName).absolutePath());
 		base_filename = QFileInfo(projectFileName).completeBaseName();
-	} else {
+	}
+	else
+	{
 		efd.setDirectory(ConfigManager::inst()->userProjectsDir());
 		base_filename = tr("untitled");
 	}
@@ -1012,7 +1067,8 @@ void MainWindow::onExportProjectMidi()
 
 	efd.setAcceptMode(FileDialog::AcceptSave);
 
-	if (efd.exec() == QDialog::Accepted && !efd.selectedFiles().isEmpty() && !efd.selectedFiles()[0].isEmpty()) {
+	if (efd.exec() == QDialog::Accepted && !efd.selectedFiles().isEmpty() && !efd.selectedFiles()[0].isEmpty())
+	{
 		const QString suffix = ".mid";
 
 		QString export_filename = efd.selectedFiles()[0];
@@ -1028,26 +1084,34 @@ void MainWindow::exportProject(bool multiExport)
 
 	FileDialog efd(getGUI()->mainWindow());
 
-	if (multiExport) {
+	if (multiExport)
+	{
 		efd.setFileMode(FileDialog::Directory);
 		efd.setWindowTitle(tr("Select directory for writing exported tracks..."));
 		if (!projectFileName.isEmpty()) { efd.setDirectory(QFileInfo(projectFileName).absolutePath()); }
-	} else {
+	}
+	else
+	{
 		efd.setFileMode(FileDialog::AnyFile);
 		int idx = 0;
 		QStringList types;
-		while (ProjectRenderer::fileEncodeDevices[idx].m_fileFormat != ProjectRenderer::NumFileFormats) {
-			if (ProjectRenderer::fileEncodeDevices[idx].isAvailable()) {
+		while (ProjectRenderer::fileEncodeDevices[idx].m_fileFormat != ProjectRenderer::NumFileFormats)
+		{
+			if (ProjectRenderer::fileEncodeDevices[idx].isAvailable())
+			{
 				types << tr(ProjectRenderer::fileEncodeDevices[idx].m_description);
 			}
 			++idx;
 		}
 		efd.setNameFilters(types);
 		QString baseFilename;
-		if (!projectFileName.isEmpty()) {
+		if (!projectFileName.isEmpty())
+		{
 			efd.setDirectory(QFileInfo(projectFileName).absolutePath());
 			baseFilename = QFileInfo(projectFileName).completeBaseName();
-		} else {
+		}
+		else
+		{
 			efd.setDirectory(ConfigManager::inst()->userProjectsDir());
 			baseFilename = tr("untitled");
 		}
@@ -1059,14 +1123,17 @@ void MainWindow::exportProject(bool multiExport)
 	efd.setDefaultSuffix(suffix);
 	efd.setAcceptMode(FileDialog::AcceptSave);
 
-	if (efd.exec() == QDialog::Accepted && !efd.selectedFiles().isEmpty() && !efd.selectedFiles()[0].isEmpty()) {
+	if (efd.exec() == QDialog::Accepted && !efd.selectedFiles().isEmpty() && !efd.selectedFiles()[0].isEmpty())
+	{
 
 		QString exportFileName = efd.selectedFiles()[0];
-		if (!multiExport) {
+		if (!multiExport)
+		{
 			int stx = efd.selectedNameFilter().indexOf("(*.");
 			int etx = efd.selectedNameFilter().indexOf(")");
 
-			if (stx > 0 && etx > stx) {
+			if (stx > 0 && etx > stx)
+			{
 				// Get first extension from selected dropdown.
 				// i.e. ".wav" from "WAV-File (*.wav), Dummy-File (*.dum)"
 				suffix = efd.selectedNameFilter().mid(stx + 2, etx - stx - 2).split(" ")[0].trimmed();
@@ -1076,8 +1143,10 @@ void MainWindow::exportProject(bool multiExport)
 				cs = Qt::CaseInsensitive;
 #endif
 				exportFileName.remove("." + suffix, cs);
-				if (efd.selectedFiles()[0].endsWith(suffix)) {
-					if (VersionedSaveDialog::fileExistsQuery(exportFileName + suffix, tr("Save project"))) {
+				if (efd.selectedFiles()[0].endsWith(suffix))
+				{
+					if (VersionedSaveDialog::fileExistsQuery(exportFileName + suffix, tr("Save project")))
+					{
 						exportFileName += suffix;
 					}
 				}
@@ -1091,12 +1160,15 @@ void MainWindow::exportProject(bool multiExport)
 
 void MainWindow::handleSaveResult(QString const& filename, bool songSavedSuccessfully)
 {
-	if (songSavedSuccessfully) {
+	if (songSavedSuccessfully)
+	{
 		TextFloat::displayMessage(tr("Project saved"), tr("The project %1 is now saved.").arg(filename),
 			embed::getIconPixmap("project_save", 24, 24), 2000);
 		ConfigManager::inst()->addRecentlyOpenedProject(filename);
 		resetWindowTitle();
-	} else {
+	}
+	else
+	{
 		TextFloat::displayMessage(tr("Project NOT saved."), tr("The project %1 was not saved!").arg(filename),
 			embed::getIconPixmap("error"), 4000);
 	}
@@ -1128,13 +1200,15 @@ void MainWindow::onImportProject()
 {
 	Song* song = Engine::getSong();
 
-	if (song) {
+	if (song)
+	{
 		FileDialog ofd(nullptr, tr("Import file"), ConfigManager::inst()->userProjectsDir(),
 			tr("MIDI sequences") + " (*.mid *.midi *.rmi);;" + tr("Hydrogen projects") + " (*.h2song);;"
 				+ tr("All file types") + " (*.*)");
 
 		ofd.setFileMode(FileDialog::ExistingFiles);
-		if (ofd.exec() == QDialog::Accepted && !ofd.selectedFiles().isEmpty()) {
+		if (ofd.exec() == QDialog::Accepted && !ofd.selectedFiles().isEmpty())
+		{
 			ImportFilter::import(ofd.selectedFiles()[0], song);
 		}
 
@@ -1149,18 +1223,23 @@ void MainWindow::onSongStopped()
 
 	TimeLineWidget* tl = playPos.m_timeLine;
 
-	if (tl) {
+	if (tl)
+	{
 		SongEditorWindow* songEditor = getGUI()->songEditor();
-		switch (tl->behaviourAtStop()) {
+		switch (tl->behaviourAtStop())
+		{
 		case TimeLineWidget::BackToZero:
-			if (songEditor && (tl->autoScroll() == TimeLineWidget::AutoScrollEnabled)) {
+			if (songEditor && (tl->autoScroll() == TimeLineWidget::AutoScrollEnabled))
+			{
 				songEditor->m_editor->updatePosition(0);
 			}
 			break;
 
 		case TimeLineWidget::BackToStart:
-			if (tl->savedPos() >= 0) {
-				if (songEditor && (tl->autoScroll() == TimeLineWidget::AutoScrollEnabled)) {
+			if (tl->savedPos() >= 0)
+			{
+				if (songEditor && (tl->autoScroll() == TimeLineWidget::AutoScrollEnabled))
+				{
 					songEditor->m_editor->updatePosition(TimePos(tl->savedPos().getTicks()));
 				}
 				tl->savePos(-1);

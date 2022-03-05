@@ -316,7 +316,8 @@ lb302Synth::lb302Synth(InstrumentTrack* _instrumentTrack)
 
 lb302Synth::~lb302Synth()
 {
-	for (int i = 0; i < NUM_FILTERS; ++i) {
+	for (int i = 0; i < NUM_FILTERS; ++i)
+	{
 		delete vcfs[i];
 	}
 }
@@ -419,7 +420,8 @@ int lb302Synth::process(sampleFrame* outbuf, const int size)
 
 	if (release_frame == 0 || !m_playingNote) { vca_mode = decay; }
 
-	if (new_freq) {
+	if (new_freq)
+	{
 		// printf("  playing new note..\n");
 		lb302Note note;
 		note.vco_inc = GET_INC(true_freq);
@@ -432,17 +434,20 @@ int lb302Synth::process(sampleFrame* outbuf, const int size)
 	// TODO: NORMAL RELEASE
 	// vca_mode = 1;
 
-	for (int i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++)
+	{
 		// start decay if we're past release
 		if (i >= release_frame) { vca_mode = decay; }
 
 		// update vcf
-		if (vcf_envpos >= ENVINC) {
+		if (vcf_envpos >= ENVINC)
+		{
 			filter->envRecalc();
 
 			vcf_envpos = 0;
 
-			if (vco_slide) {
+			if (vco_slide)
+			{
 				vco_inc = vco_slidebase - vco_slide;
 				// Calculate coeff from dec_knob on knob change.
 				vco_slide
@@ -460,7 +465,8 @@ int lb302Synth::process(sampleFrame* outbuf, const int size)
 
 		if (vco_c > 0.5) vco_c -= 1.0;
 
-		switch (int(rint(wave_shape.value()))) {
+		switch (int(rint(wave_shape.value())))
+		{
 		case 0: vco_shape = SAWTOOTH; break;
 		case 1: vco_shape = TRIANGLE; break;
 		case 2: vco_shape = SQUARE; break;
@@ -478,7 +484,8 @@ int lb302Synth::process(sampleFrame* outbuf, const int size)
 
 		// add vco_shape_param the changes the shape of each curve.
 		// merge sawtooths with triangle and square with round square?
-		switch (vco_shape) {
+		switch (vco_shape)
+		{
 		case SAWTOOTH:	   // p0: curviness of line
 			vco_k = vco_c; // Is this sawtooth backwards?
 			break;
@@ -499,9 +506,9 @@ int lb302Synth::process(sampleFrame* outbuf, const int size)
 		case MOOG: // Maybe the fall should be exponential/sinsoidal instead of quadric.
 			// [-0.5, 0]: Rise, [0,0.25]: Slope down, [0.25,0.5]: Low
 			vco_k = (vco_c * 2.0) + 0.5;
-			if (vco_k > 1.0) {
-				vco_k = -0.5;
-			} else if (vco_k > 0.5) {
+			if (vco_k > 1.0) { vco_k = -0.5; }
+			else if (vco_k > 0.5)
+			{
 				w = 2.0 * (vco_k - 0.5) - 1.0;
 				vco_k = 0.5 - sqrtf(1.0 - (w * w));
 			}
@@ -550,7 +557,8 @@ int lb302Synth::process(sampleFrame* outbuf, const int size)
 
 		// samp = vco_k * vca_a;
 
-		if (sample_cnt <= 4) {
+		if (sample_cnt <= 4)
+		{
 			//			vca_a = 0;
 		}
 
@@ -563,19 +571,24 @@ int lb302Synth::process(sampleFrame* outbuf, const int size)
 		*/
 		// LB302 samp *= (float)(decay_frames - catch_decay)/(float)decay_frames;
 
-		for (int c = 0; c < DEFAULT_CHANNELS; c++) {
+		for (int c = 0; c < DEFAULT_CHANNELS; c++)
+		{
 			outbuf[i][c] = samp;
 		}
 
 		// Handle Envelope
-		if (vca_mode == attack) {
+		if (vca_mode == attack)
+		{
 			vca_a += (vca_a0 - vca_a) * vca_attack;
 			if (sample_cnt >= 0.5 * Engine::audioEngine()->processingSampleRate()) vca_mode = idle;
-		} else if (vca_mode == decay) {
+		}
+		else if (vca_mode == decay)
+		{
 			vca_a *= vca_decay;
 
 			// the following line actually speeds up processing
-			if (vca_a < (1 / 65536.0)) {
+			if (vca_a < (1 / 65536.0))
+			{
 				vca_a = 0;
 				vca_mode = never_played;
 			}
@@ -597,26 +610,31 @@ void lb302Synth::initNote(lb302Note* n)
 
 	// Always reset vca on non-dead notes, and
 	// Only reset vca on decaying(decayed) and never-played
-	if (n->dead == 0 || (vca_mode == decay || vca_mode == never_played)) {
+	if (n->dead == 0 || (vca_mode == decay || vca_mode == never_played))
+	{
 		// printf("    good\n");
 		sample_cnt = 0;
 		vca_mode = attack;
 		// LB303:
 		// vca_a = 0;
-	} else {
+	}
+	else
+	{
 		vca_mode = idle;
 	}
 
 	initSlide();
 
 	// Slide-from note, save inc for next note
-	if (slideToggle.value()) {
+	if (slideToggle.value())
+	{
 		vco_slideinc = vco_inc; // May need to equal vco_slidebase+vco_slide if last note slid
 	}
 
 	recalcFilter();
 
-	if (n->dead == 0) {
+	if (n->dead == 0)
+	{
 		// Swap next two blocks??
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 		vcf.loadRelaxed()->playNote();
@@ -635,12 +653,15 @@ void lb302Synth::initNote(lb302Note* n)
 void lb302Synth::initSlide()
 {
 	// Initiate Slide
-	if (vco_slideinc) {
+	if (vco_slideinc)
+	{
 		// printf("    sliding\n");
 		vco_slide = vco_inc - vco_slideinc; // Slide amount
 		vco_slidebase = vco_inc;			// The REAL frequency
 		vco_slideinc = 0;					// reset from-note
-	} else {
+	}
+	else
+	{
 		vco_slide = 0;
 	}
 }
@@ -651,9 +672,9 @@ void lb302Synth::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
 
 	// sort notes: new notes to the end
 	m_notesMutex.lock();
-	if (_n->totalFramesPlayed() == 0) {
-		m_notes.append(_n);
-	} else {
+	if (_n->totalFramesPlayed() == 0) { m_notes.append(_n); }
+	else
+	{
 		m_notes.prepend(_n);
 	}
 	m_notesMutex.unlock();
@@ -664,24 +685,30 @@ void lb302Synth::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
 void lb302Synth::processNote(NotePlayHandle* _n)
 {
 	/// Start a new note.
-	if (_n->m_pluginData != this) {
+	if (_n->m_pluginData != this)
+	{
 		m_playingNote = _n;
 		new_freq = true;
 		_n->m_pluginData = this;
 	}
 
-	if (!m_playingNote && !_n->isReleased() && release_frame > 0) {
+	if (!m_playingNote && !_n->isReleased() && release_frame > 0)
+	{
 		m_playingNote = _n;
 		if (slideToggle.value()) { vco_slideinc = GET_INC(_n->frequency()); }
 	}
 
 	// Check for slide
-	if (m_playingNote == _n) {
+	if (m_playingNote == _n)
+	{
 		true_freq = _n->frequency();
 
-		if (slideToggle.value()) {
+		if (slideToggle.value())
+		{
 			vco_slidebase = GET_INC(true_freq); // The REAL frequency
-		} else {
+		}
+		else
+		{
 			vco_inc = GET_INC(true_freq);
 		}
 	}
@@ -690,7 +717,8 @@ void lb302Synth::processNote(NotePlayHandle* _n)
 void lb302Synth::play(sampleFrame* _working_buffer)
 {
 	m_notesMutex.lock();
-	while (!m_notes.isEmpty()) {
+	while (!m_notes.isEmpty())
+	{
 		processNote(m_notes.takeFirst());
 	};
 	m_notesMutex.unlock();

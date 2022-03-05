@@ -52,17 +52,17 @@ typedef struct
 public:
 	inline sample_t sampleAt(int table, int ph)
 	{
-		if (table % 2 == 0) {
-			return m_data[TLENS[table] + ph];
-		} else {
+		if (table % 2 == 0) { return m_data[TLENS[table] + ph]; }
+		else
+		{
 			return m_data3[TLENS[table] + ph];
 		}
 	}
 	inline void setSampleAt(int table, int ph, sample_t sample)
 	{
-		if (table % 2 == 0) {
-			m_data[TLENS[table] + ph] = sample;
-		} else {
+		if (table % 2 == 0) { m_data[TLENS[table] + ph] = sample; }
+		else
+		{
 			m_data3[TLENS[table] + ph] = sample;
 		}
 	}
@@ -114,7 +114,8 @@ public:
 	{
 		// get the next higher tlen
 		int t = 0;
-		while (t < MAXTBL && _wavelen >= TLENS[t + 1]) {
+		while (t < MAXTBL && _wavelen >= TLENS[t + 1])
+		{
 			t++;
 		}
 

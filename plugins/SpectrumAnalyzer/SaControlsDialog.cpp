@@ -317,10 +317,13 @@ SaControlsDialog::SaControlsDialog(SaControls* controls, SaProcessor* processor)
 	controls_layout->addWidget(advancedButton);
 
 	connect(advancedButton, &PixmapButton::toggled, [=](bool checked) {
-		if (checked) {
+		if (checked)
+		{
 			config_widget->hide();
 			advanced_widget->show();
-		} else {
+		}
+		else
+		{
 			config_widget->show();
 			advanced_widget->hide();
 		}
@@ -343,10 +346,13 @@ QSize SaControlsDialog::sizeHint() const
 	// Best height depends on whether waterfall is visible and
 	// consists of heights of the config section, spectrum, waterfall
 	// and some reserve for margins.
-	if (m_waterfall->isVisible()) {
+	if (m_waterfall->isVisible())
+	{
 		return QSize(m_spectrum->sizeHint().width(),
 			m_configHeight + m_spectrum->sizeHint().height() + m_waterfall->sizeHint().height() + 50);
-	} else {
+	}
+	else
+	{
 		return QSize(m_spectrum->sizeHint().width(), m_configHeight + m_spectrum->sizeHint().height() + 50);
 	}
 }

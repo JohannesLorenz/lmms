@@ -85,7 +85,8 @@ TrackContainerView::TrackContainerView(TrackContainer* _tc)
 
 TrackContainerView::~TrackContainerView()
 {
-	while (!m_trackViews.empty()) {
+	while (!m_trackViews.empty())
+	{
 		delete m_trackViews.takeLast();
 	}
 }
@@ -110,7 +111,8 @@ TrackView* TrackContainerView::addTrackView(TrackView* _tv)
 void TrackContainerView::removeTrackView(TrackView* _tv)
 {
 	int index = m_trackViews.indexOf(_tv);
-	if (index != -1) {
+	if (index != -1)
+	{
 		m_trackViews.removeAt(index);
 
 		disconnect(_tv);
@@ -160,9 +162,12 @@ void TrackContainerView::moveTrackViewDown(TrackView* trackView)
 
 void TrackContainerView::scrollToTrackView(TrackView* _tv)
 {
-	if (!m_trackViews.contains(_tv)) {
+	if (!m_trackViews.contains(_tv))
+	{
 		qWarning("TrackContainerView::scrollToTrackView: TrackView is not owned by this");
-	} else {
+	}
+	else
+	{
 		int currentScrollTop = m_scrollArea->verticalScrollBar()->value();
 		int scrollAreaHeight = m_scrollArea->size().height();
 		int trackViewTop = _tv->pos().y();
@@ -183,7 +188,8 @@ void TrackContainerView::realignTracks()
 	m_scrollArea->widget()->setFixedWidth(width());
 	m_scrollArea->widget()->setFixedHeight(m_scrollArea->widget()->minimumSizeHint().height());
 
-	for (trackViewList::iterator it = m_trackViews.begin(); it != m_trackViews.end(); ++it) {
+	for (trackViewList::iterator it = m_trackViews.begin(); it != m_trackViews.end(); ++it)
+	{
 		(*it)->show();
 		(*it)->update();
 	}
@@ -194,7 +200,8 @@ TrackView* TrackContainerView::createTrackView(Track* _t)
 	// m_tc->addJournalCheckPoint();
 
 	// Avoid duplicating track views
-	for (trackViewList::iterator it = m_trackViews.begin(); it != m_trackViews.end(); ++it) {
+	for (trackViewList::iterator it = m_trackViews.begin(); it != m_trackViews.end(); ++it)
+	{
 		if ((*it)->getTrack() == _t) { return (*it); }
 	}
 
@@ -222,7 +229,8 @@ const TrackView* TrackContainerView::trackViewAt(const int _y) const
 	//	debug code
 	//	qDebug( "abs_y %d", abs_y );
 
-	for (trackViewList::const_iterator it = m_trackViews.begin(); it != m_trackViews.end(); ++it) {
+	for (trackViewList::const_iterator it = m_trackViews.begin(); it != m_trackViews.end(); ++it)
+	{
 		const int y_cnt1 = y_cnt;
 		y_cnt += (*it)->height();
 		if (abs_y >= y_cnt1 && abs_y < y_cnt) { return (*it); }
@@ -239,14 +247,16 @@ void TrackContainerView::setPixelsPerBar(int ppb)
 	m_ppb = ppb;
 
 	// tell all TrackContentWidgets to update their background tile pixmap
-	for (trackViewList::Iterator it = m_trackViews.begin(); it != m_trackViews.end(); ++it) {
+	for (trackViewList::Iterator it = m_trackViews.begin(); it != m_trackViews.end(); ++it)
+	{
 		(*it)->getTrackContentWidget()->updateBackground();
 	}
 }
 
 void TrackContainerView::clearAllTracks()
 {
-	while (!m_trackViews.empty()) {
+	while (!m_trackViews.empty())
+	{
 		TrackView* tv = m_trackViews.takeLast();
 		Track* t = tv->getTrack();
 		delete tv;
@@ -274,14 +284,17 @@ void TrackContainerView::dropEvent(QDropEvent* _de)
 {
 	QString type = StringPairDrag::decodeKey(_de);
 	QString value = StringPairDrag::decodeValue(_de);
-	if (type == "instrument") {
+	if (type == "instrument")
+	{
 		InstrumentTrack* it = dynamic_cast<InstrumentTrack*>(Track::create(Track::InstrumentTrack, m_tc));
 		InstrumentLoaderThread* ilt = new InstrumentLoaderThread(this, it, value);
 		ilt->start();
 		// it->toggledInstrumentTrackButton( true );
 		_de->accept();
-	} else if (type == "samplefile" || type == "pluginpresetfile" || type == "soundfontfile" || type == "vstpluginfile"
-		|| type == "patchfile") {
+	}
+	else if (type == "samplefile" || type == "pluginpresetfile" || type == "soundfontfile" || type == "vstpluginfile"
+		|| type == "patchfile")
+	{
 		InstrumentTrack* it = dynamic_cast<InstrumentTrack*>(Track::create(Track::InstrumentTrack, m_tc));
 		PluginFactory::PluginInfoAndKey piakn
 			= getPluginFactory()->pluginSupportingExtension(FileItem::extension(value));
@@ -289,24 +302,30 @@ void TrackContainerView::dropEvent(QDropEvent* _de)
 		i->loadFile(value);
 		// it->toggledInstrumentTrackButton( true );
 		_de->accept();
-	} else if (type == "presetfile") {
+	}
+	else if (type == "presetfile")
+	{
 		DataFile dataFile(value);
 		InstrumentTrack* it = dynamic_cast<InstrumentTrack*>(Track::create(Track::InstrumentTrack, m_tc));
 		it->setSimpleSerializing();
 		it->loadSettings(dataFile.content().toElement());
 		// it->toggledInstrumentTrackButton( true );
 		_de->accept();
-	} else if (type == "importedproject") {
+	}
+	else if (type == "importedproject")
+	{
 		ImportFilter::import(value, m_tc);
 		_de->accept();
 	}
 
-	else if (type == "projectfile") {
+	else if (type == "projectfile")
+	{
 		if (getGUI()->mainWindow()->mayChangeProject(true)) { Engine::getSong()->loadProject(value); }
 		_de->accept();
 	}
 
-	else if (type.left(6) == "track_") {
+	else if (type.left(6) == "track_")
+	{
 		DataFile dataFile(value.toUtf8());
 		Track::create(dataFile.content().firstChild().toElement(), m_tc);
 		_de->accept();

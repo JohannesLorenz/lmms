@@ -92,10 +92,13 @@ public:
 	void updateLFSR(bool mode)
 	{
 		uint16_t LFSRx;
-		if (mode) {
+		if (mode)
+		{
 			LFSRx = m_LFSR & (1 << 8); // get bit 13
 			LFSRx <<= 6;			   // shit to left so it overlaps with bit 14
-		} else {
+		}
+		else
+		{
 			LFSRx = m_LFSR & (1 << 13); // get bit 13
 			LFSRx <<= 1;				// shit to left so it overlaps with bit 14
 		}
@@ -122,7 +125,8 @@ public:
 	inline int nearestNoiseFreq(float f)
 	{
 		int n = 15;
-		for (int i = 15; i >= 0; i--) {
+		for (int i = 15; i >= 0; i--)
+		{
 			if (f >= NOISE_FREQS[i]) { n = i; }
 		}
 		return n;

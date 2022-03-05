@@ -94,7 +94,8 @@ void PluginBrowser::updateRootVisibility(int rootIndex)
 void PluginBrowser::updateRootVisibilities()
 {
 	int rootCount = m_descTree->topLevelItemCount();
-	for (int rootIndex = 0; rootIndex < rootCount; ++rootIndex) {
+	for (int rootIndex = 0; rootIndex < rootCount; ++rootIndex)
+	{
 		updateRootVisibility(rootIndex);
 	}
 }
@@ -102,16 +103,18 @@ void PluginBrowser::updateRootVisibilities()
 void PluginBrowser::onFilterChanged(const QString& filter)
 {
 	int rootCount = m_descTree->topLevelItemCount();
-	for (int rootIndex = 0; rootIndex < rootCount; ++rootIndex) {
+	for (int rootIndex = 0; rootIndex < rootCount; ++rootIndex)
+	{
 		QTreeWidgetItem* root = m_descTree->topLevelItem(rootIndex);
 
 		int itemCount = root->childCount();
-		for (int itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
+		for (int itemIndex = 0; itemIndex < itemCount; ++itemIndex)
+		{
 			QTreeWidgetItem* item = root->child(itemIndex);
 			PluginDescWidget* descWidget = static_cast<PluginDescWidget*>(m_descTree->itemWidget(item, 0));
-			if (descWidget->name().contains(filter, Qt::CaseInsensitive)) {
-				item->setHidden(false);
-			} else {
+			if (descWidget->name().contains(filter, Qt::CaseInsensitive)) { item->setHidden(false); }
+			else
+			{
 				item->setHidden(true);
 			}
 		}
@@ -148,8 +151,10 @@ void PluginBrowser::addPlugins()
 	lmmsRoot->setExpanded(true);
 
 	// Add all of the descriptors to the tree
-	for (const auto desc : descs) {
-		if (desc->subPluginFeatures) {
+	for (const auto desc : descs)
+	{
+		if (desc->subPluginFeatures)
+		{
 			// Fetch and sort all subplugins for this plugin descriptor
 			auto subPluginKeys = Plugin::Descriptor::SubPluginFeatures::KeyList{};
 			desc->subPluginFeatures->listSubPluginKeys(desc, subPluginKeys);
@@ -159,10 +164,13 @@ void PluginBrowser::addPlugins()
 
 			// Create a root node for this plugin and add the subplugins under it
 			const auto root = addRoot(desc->displayName);
-			for (const auto& key : subPluginKeys) {
+			for (const auto& key : subPluginKeys)
+			{
 				addPlugin(key, root);
 			}
-		} else {
+		}
+		else
+		{
 			addPlugin(Plugin::Descriptor::SubPluginFeatures::Key(desc, desc->name), lmmsRoot);
 		}
 	}
@@ -221,7 +229,8 @@ void PluginDescWidget::leaveEvent(QEvent* _e)
 
 void PluginDescWidget::mousePressEvent(QMouseEvent* _me)
 {
-	if (_me->button() == Qt::LeftButton) {
+	if (_me->button() == Qt::LeftButton)
+	{
 		Engine::setDndPluginKey(&m_pluginKey);
 		new StringPairDrag("instrument", QString::fromUtf8(m_pluginKey.desc->name), m_logo, this);
 		leaveEvent(_me);

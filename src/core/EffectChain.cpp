@@ -45,10 +45,11 @@ void EffectChain::saveSettings(QDomDocument& _doc, QDomElement& _this)
 	m_enabledModel.saveSettings(_doc, _this, "enabled");
 	_this.setAttribute("numofeffects", m_effects.count());
 
-	for (Effect* effect : m_effects) {
-		if (DummyEffect* dummy = dynamic_cast<DummyEffect*>(effect)) {
-			_this.appendChild(dummy->originalPluginData());
-		} else {
+	for (Effect* effect : m_effects)
+	{
+		if (DummyEffect* dummy = dynamic_cast<DummyEffect*>(effect)) { _this.appendChild(dummy->originalPluginData()); }
+		else
+		{
 			QDomElement ef = effect->saveState(_doc, _this);
 			ef.setAttribute("name", QString::fromUtf8(effect->descriptor()->name));
 			ef.appendChild(effect->key().saveXML(_doc));
@@ -68,8 +69,10 @@ void EffectChain::loadSettings(const QDomElement& _this)
 
 	QDomNode node = _this.firstChild();
 	int fx_loaded = 0;
-	while (!node.isNull() && fx_loaded < plugin_cnt) {
-		if (node.isElement() && node.nodeName() == "effect") {
+	while (!node.isNull() && fx_loaded < plugin_cnt)
+	{
+		if (node.isElement() && node.nodeName() == "effect")
+		{
 			QDomElement effectData = node.toElement();
 
 			const QString name = effectData.attribute("name");
@@ -77,9 +80,9 @@ void EffectChain::loadSettings(const QDomElement& _this)
 
 			Effect* e = Effect::instantiate(name.toUtf8(), this, &key);
 
-			if (e != nullptr && e->isOkay() && e->nodeName() == node.nodeName()) {
-				e->restoreState(effectData);
-			} else {
+			if (e != nullptr && e->isOkay() && e->nodeName() == node.nodeName()) { e->restoreState(effectData); }
+			else
+			{
 				delete e;
 				e = new DummyEffect(parentModel(), effectData);
 			}
@@ -109,7 +112,8 @@ void EffectChain::removeEffect(Effect* _effect)
 	Engine::audioEngine()->requestChangeInModel();
 
 	Effect** found = std::find(m_effects.begin(), m_effects.end(), _effect);
-	if (found == m_effects.end()) {
+	if (found == m_effects.end())
+	{
 		Engine::audioEngine()->doneChangeInModel();
 		return;
 	}
@@ -124,7 +128,8 @@ void EffectChain::removeEffect(Effect* _effect)
 
 void EffectChain::moveDown(Effect* _effect)
 {
-	if (_effect != m_effects.last()) {
+	if (_effect != m_effects.last())
+	{
 		int i = m_effects.indexOf(_effect);
 		std::swap(m_effects[i + 1], m_effects[i]);
 	}
@@ -132,7 +137,8 @@ void EffectChain::moveDown(Effect* _effect)
 
 void EffectChain::moveUp(Effect* _effect)
 {
-	if (_effect != m_effects.first()) {
+	if (_effect != m_effects.first())
+	{
 		int i = m_effects.indexOf(_effect);
 		std::swap(m_effects[i - 1], m_effects[i]);
 	}
@@ -145,8 +151,10 @@ bool EffectChain::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames, boo
 	MixHelpers::sanitize(_buf, _frames);
 
 	bool moreEffects = false;
-	for (EffectList::Iterator it = m_effects.begin(); it != m_effects.end(); ++it) {
-		if (hasInputNoise || (*it)->isRunning()) {
+	for (EffectList::Iterator it = m_effects.begin(); it != m_effects.end(); ++it)
+	{
+		if (hasInputNoise || (*it)->isRunning())
+		{
 			moreEffects |= (*it)->processAudioBuffer(_buf, _frames);
 			MixHelpers::sanitize(_buf, _frames);
 		}
@@ -159,7 +167,8 @@ void EffectChain::startRunning()
 {
 	if (m_enabledModel.value() == false) { return; }
 
-	for (EffectList::Iterator it = m_effects.begin(); it != m_effects.end(); it++) {
+	for (EffectList::Iterator it = m_effects.begin(); it != m_effects.end(); it++)
+	{
 		(*it)->startRunning();
 	}
 }
@@ -170,7 +179,8 @@ void EffectChain::clear()
 
 	Engine::audioEngine()->requestChangeInModel();
 
-	while (m_effects.count()) {
+	while (m_effects.count())
+	{
 		Effect* e = m_effects[m_effects.count() - 1];
 		m_effects.pop_back();
 		delete e;

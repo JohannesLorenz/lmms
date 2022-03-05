@@ -40,7 +40,8 @@ Lv2Features::Lv2Features()
 {
 	const Lv2Manager* man = Engine::getLv2Manager();
 	// create (yet empty) map feature URI -> feature
-	for (const char* uri : man->supportedFeatureURIs()) {
+	for (const char* uri : man->supportedFeatureURIs())
+	{
 		m_featureByUri.emplace(uri, nullptr);
 	}
 }
@@ -56,7 +57,8 @@ void Lv2Features::initCommon()
 void Lv2Features::createFeatureVectors()
 {
 	// create vector of features
-	for (std::pair<const char* const, void*>& pr : m_featureByUri) {
+	for (std::pair<const char* const, void*>& pr : m_featureByUri)
+	{
 		/*
 			If pr.second is nullptr here, this means that the LV2_feature
 			has no "data". If this happens here, this means
@@ -71,7 +73,8 @@ void Lv2Features::createFeatureVectors()
 
 	// create pointer vector (for lilv_plugin_instantiate)
 	m_featurePointers.reserve(m_features.size() + 1);
-	for (std::size_t i = 0; i < m_features.size(); ++i) {
+	for (std::size_t i = 0; i < m_features.size(); ++i)
+	{
 		m_featurePointers.push_back(&m_features[i]);
 	}
 	m_featurePointers.push_back(nullptr);

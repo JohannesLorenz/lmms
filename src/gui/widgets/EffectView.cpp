@@ -77,7 +77,8 @@ EffectView::EffectView(Effect* _model, QWidget* _parent)
 
 	setModel(_model);
 
-	if (effect()->controls()->controlCount() > 0) {
+	if (effect()->controls()->controlCount() > 0)
+	{
 		QPushButton* ctls_btn = new QPushButton(tr("Controls"), this);
 		QFont f = ctls_btn->font();
 		ctls_btn->setFont(pointSize<8>(f));
@@ -85,10 +86,12 @@ EffectView::EffectView(Effect* _model, QWidget* _parent)
 		connect(ctls_btn, SIGNAL(clicked()), this, SLOT(editControls()));
 
 		m_controlView = effect()->controls()->createView();
-		if (m_controlView) {
+		if (m_controlView)
+		{
 			m_subWindow = getGUI()->mainWindow()->addWindowedWidget(m_controlView);
 
-			if (!m_controlView->isResizable()) {
+			if (!m_controlView->isResizable())
+			{
 				m_subWindow->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 				if (m_subWindow->layout()) { m_subWindow->layout()->setSizeConstraint(QLayout::SetFixedSize); }
 			}
@@ -111,12 +114,16 @@ EffectView::~EffectView() { delete m_subWindow; }
 
 void EffectView::editControls()
 {
-	if (m_subWindow) {
-		if (!m_subWindow->isVisible()) {
+	if (m_subWindow)
+	{
+		if (!m_subWindow->isVisible())
+		{
 			m_subWindow->show();
 			m_subWindow->raise();
 			effect()->controls()->setViewVisible(true);
-		} else {
+		}
+		else
+		{
 			m_subWindow->hide();
 			effect()->controls()->setViewVisible(false);
 		}

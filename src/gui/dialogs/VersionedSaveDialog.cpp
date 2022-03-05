@@ -60,7 +60,8 @@ VersionedSaveDialog::VersionedSaveDialog(QWidget* parent, QWidget* saveOptionsWi
 	hLayout->addWidget(minusButton);
 	layout->addLayout(hLayout, 2, 1);
 
-	if (saveOptionsWidget) {
+	if (saveOptionsWidget)
+	{
 		auto groupBox = new QGroupBox(tr("Save Options"));
 		auto optionsLayout = new QGridLayout;
 
@@ -85,12 +86,15 @@ bool VersionedSaveDialog::changeFileNameVersion(QString& fileName, bool incremen
 	int insertIndex = fileName.lastIndexOf('.');
 	if (insertIndex < idx + 1) insertIndex = fileName.size();
 
-	if (idx == -1) {
+	if (idx == -1)
+	{
 		// Can't decrement if there is no version number
 		if (increment == false) return false;
 		else
 			fileName.insert(insertIndex, "-01");
-	} else {
+	}
+	else
+	{
 		// Find current version number
 		QString number = fileName.mid(idx + 1, insertIndex - idx - 1);
 		bool ok;
@@ -131,7 +135,8 @@ void VersionedSaveDialog::decrementVersion()
 bool VersionedSaveDialog::fileExistsQuery(QString FileName, QString WindowTitle)
 {
 	bool fileExists = false;
-	if (QFile(FileName).exists()) {
+	if (QFile(FileName).exists())
+	{
 		QMessageBox mb;
 		mb.setWindowTitle(WindowTitle);
 		mb.setText(FileName

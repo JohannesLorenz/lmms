@@ -58,9 +58,9 @@ private:
 
 	inline bitrate_t minBitrate() const
 	{
-		if (nominalBitrate() > 64) {
-			return nominalBitrate() - 64;
-		} else {
+		if (nominalBitrate() > 64) { return nominalBitrate() - 64; }
+		else
+		{
 			return 64;
 		}
 	}

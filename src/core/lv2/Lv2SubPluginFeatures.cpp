@@ -127,8 +127,10 @@ const PixmapLoader* Lv2SubPluginFeatures::logo(const Plugin::Descriptor::SubPlug
 void Lv2SubPluginFeatures::listSubPluginKeys(const Plugin::Descriptor* desc, KeyList& kl) const
 {
 	Lv2Manager* lv2Mgr = Engine::getLv2Manager();
-	for (const auto& uriInfoPair : *lv2Mgr) {
-		if (uriInfoPair.second.type() == m_type && uriInfoPair.second.isValid()) {
+	for (const auto& uriInfoPair : *lv2Mgr)
+	{
+		if (uriInfoPair.second.type() == m_type && uriInfoPair.second.isValid())
+		{
 			using KeyType = Plugin::Descriptor::SubPluginFeatures::Key;
 			KeyType::AttributeMap atm;
 			atm["uri"] = QString::fromUtf8(uriInfoPair.first.c_str());

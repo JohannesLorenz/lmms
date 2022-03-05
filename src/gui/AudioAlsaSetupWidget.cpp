@@ -42,7 +42,8 @@ AudioAlsaSetupWidget::AudioAlsaSetupWidget(QWidget* _parent)
 	QString deviceText = ConfigManager::inst()->value("audioalsa", "device");
 
 	m_deviceComboBox = new QComboBox(this);
-	for (size_t i = 0; i < m_deviceInfos.size(); ++i) {
+	for (size_t i = 0; i < m_deviceInfos.size(); ++i)
+	{
 		AudioAlsa::DeviceInfo const& currentDeviceInfo = m_deviceInfos[i];
 		QString comboBoxText = currentDeviceInfo.getDeviceName();
 		m_deviceComboBox->addItem(comboBoxText, QVariant(static_cast<uint>(i)));
@@ -79,7 +80,8 @@ void AudioAlsaSetupWidget::saveSettings()
 {
 	QString deviceText;
 
-	if (m_selectedDevice != -1) {
+	if (m_selectedDevice != -1)
+	{
 		AudioAlsa::DeviceInfo const& selectedDevice = m_deviceInfos[m_selectedDevice];
 		deviceText = selectedDevice.getDeviceName();
 	}

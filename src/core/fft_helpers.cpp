@@ -40,7 +40,8 @@ float maximum(const float* abs_spectrum, unsigned int spec_size)
 
 	float maxi = 0;
 
-	for (unsigned int i = 0; i < spec_size; i++) {
+	for (unsigned int i = 0; i < spec_size; i++)
+	{
 		if (abs_spectrum[i] > maxi) { maxi = abs_spectrum[i]; }
 	}
 	return maxi;
@@ -59,7 +60,8 @@ int normalize(const float* abs_spectrum, float* norm_spectrum, unsigned int bin_
 	if (bin_count == 0 || block_size == 0) { return -1; }
 
 	block_size /= 2;
-	for (unsigned int i = 0; i < bin_count; i++) {
+	for (unsigned int i = 0; i < bin_count; i++)
+	{
 		norm_spectrum[i] = abs_spectrum[i] / block_size;
 	}
 	return 0;
@@ -79,7 +81,8 @@ int normalize(const std::vector<float>& abs_spectrum, std::vector<float>& norm_s
  */
 int notEmpty(const std::vector<float>& spectrum)
 {
-	for (float s : spectrum) {
+	for (float s : spectrum)
+	{
 		if (s != 0) { return 1; }
 	}
 	return 0;
@@ -101,10 +104,12 @@ int precomputeWindow(float* window, unsigned int length, FFT_WINDOWS type, bool 
 
 	// constants taken from
 	// https://en.wikipedia.org/wiki/Window_function#AList_of_window_functions
-	switch (type) {
+	switch (type)
+	{
 	default:
 	case RECTANGULAR:
-		for (unsigned int i = 0; i < length; i++) {
+		for (unsigned int i = 0; i < length; i++)
+		{
 			window[i] = 1.0;
 		}
 		gain = 1;
@@ -130,7 +135,8 @@ int precomputeWindow(float* window, unsigned int length, FFT_WINDOWS type, bool 
 	}
 
 	// common computation for cosine-sum based windows
-	for (unsigned int i = 0; i < length; i++) {
+	for (unsigned int i = 0; i < length; i++)
+	{
 		window[i] = (a0 - a1 * cos(2 * F_PI * i / ((float)length - 1.0))
 			+ a2 * cos(4 * F_PI * i / ((float)length - 1.0)) - a3 * cos(6 * F_PI * i / ((float)length - 1.0)));
 		gain += window[i];
@@ -138,7 +144,8 @@ int precomputeWindow(float* window, unsigned int length, FFT_WINDOWS type, bool 
 
 	// apply amplitude correction
 	gain /= (float)length;
-	for (unsigned int i = 0; i < length; i++) {
+	for (unsigned int i = 0; i < length; i++)
+	{
 		window[i] /= gain;
 	}
 
@@ -156,7 +163,8 @@ int absspec(const fftwf_complex* complex_buffer, float* absspec_buffer, unsigned
 	if (complex_buffer == nullptr || absspec_buffer == nullptr) { return -1; }
 	if (compl_length == 0) { return -1; }
 
-	for (unsigned int i = 0; i < compl_length; i++) {
+	for (unsigned int i = 0; i < compl_length; i++)
+	{
 		absspec_buffer[i]
 			= (float)sqrt(complex_buffer[i][0] * complex_buffer[i][0] + complex_buffer[i][1] * complex_buffer[i][1]);
 	}
@@ -183,7 +191,8 @@ int compressbands(const float* absspec_buffer, float* compressedband, int num_ol
 	float ratio = (float)usefromold / (float)num_new;
 
 	// for each new subband
-	for (int i = 0; i < num_new; i++) {
+	for (int i = 0; i < num_new; i++)
+	{
 		compressedband[i] = 0;
 
 		float j_min = (i * ratio) + bottom;
@@ -192,7 +201,8 @@ int compressbands(const float* absspec_buffer, float* compressedband, int num_ol
 
 		float j_max = j_min + ratio;
 
-		for (float j = (int)j_min; j <= j_max; j++) {
+		for (float j = (int)j_min; j <= j_max; j++)
+		{
 			compressedband[i] += absspec_buffer[(int)j];
 		}
 	}

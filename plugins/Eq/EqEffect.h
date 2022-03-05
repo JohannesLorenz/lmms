@@ -39,7 +39,8 @@ public:
 	{
 		peak[0][0] = 0.0f;
 		peak[0][1] = 0.0f;
-		for (fpp_t f = 0; f < frames; ++f) {
+		for (fpp_t f = 0; f < frames; ++f)
+		{
 			buf[f][0] *= scale;
 			buf[f][1] *= scale;
 

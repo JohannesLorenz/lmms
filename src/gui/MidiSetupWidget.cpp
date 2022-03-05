@@ -38,7 +38,8 @@ MidiSetupWidget::MidiSetupWidget(
 {
 	// supply devName=QString() (distinct from QString(""))
 	// to indicate that there is no editable device field
-	if (!devName.isNull()) {
+	if (!devName.isNull())
+	{
 		m_device = new QLineEdit(devName, this);
 		m_device->setGeometry(10, 20, 160, 20);
 
@@ -50,7 +51,8 @@ MidiSetupWidget::MidiSetupWidget(
 
 void MidiSetupWidget::saveSettings()
 {
-	if (!m_configSection.isEmpty() && m_device) {
+	if (!m_configSection.isEmpty() && m_device)
+	{
 		ConfigManager::inst()->setValue(m_configSection, "device", m_device->text());
 	}
 }

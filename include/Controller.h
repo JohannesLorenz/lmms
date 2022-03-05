@@ -73,7 +73,8 @@ public:
 	// determining when to update GUI
 	inline bool frequentUpdates() const
 	{
-		switch (m_type) {
+		switch (m_type)
+		{
 		case LfoController: return (true);
 		case PeakController: return (true);
 		default: break;

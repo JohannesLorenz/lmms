@@ -77,7 +77,8 @@ bool FlangerEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 	sample_t dryS[2];
 	float leftLfo;
 	float rightLfo;
-	for (fpp_t f = 0; f < frames; ++f) {
+	for (fpp_t f = 0; f < frames; ++f)
+	{
 		buf[f][0] += m_noise->tick() * noise;
 		buf[f][1] += m_noise->tick() * noise;
 		dryS[0] = buf[f][0];
@@ -85,10 +86,13 @@ bool FlangerEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 		m_lfo->tick(&leftLfo, &rightLfo);
 		m_lDelay->setLength((float)length + amplitude * (leftLfo + 1.0));
 		m_rDelay->setLength((float)length + amplitude * (rightLfo + 1.0));
-		if (invertFeedback) {
+		if (invertFeedback)
+		{
 			m_lDelay->tick(&buf[f][1]);
 			m_rDelay->tick(&buf[f][0]);
-		} else {
+		}
+		else
+		{
 			m_lDelay->tick(&buf[f][0]);
 			m_rDelay->tick(&buf[f][1]);
 		}

@@ -43,9 +43,9 @@ public:
 		const QString& s1 = text(iColumn);
 		const QString& s2 = other.text(iColumn);
 
-		if (iColumn == 0 || iColumn == 2) {
-			return s1.toInt() < s2.toInt();
-		} else {
+		if (iColumn == 0 || iColumn == 2) { return s1.toInt() < s2.toInt(); }
+		else
+		{
 			return s1 < s2;
 		}
 	}
@@ -122,17 +122,21 @@ void PatchesDialog::setup(GigInstance* pSynth, int iChan, const QString& chanNam
 
 	gig::Instrument* pInstrument = m_pSynth->gig.GetFirstInstrument();
 
-	while (pInstrument) {
+	while (pInstrument)
+	{
 		int iBank = pInstrument->MIDIBank;
 		int iProg = pInstrument->MIDIProgram;
 
-		if (!findBankItem(iBank)) {
+		if (!findBankItem(iBank))
+		{
 			pBankItem = new PatchItem(m_bankListView, pBankItem);
 
-			if (pBankItem) {
+			if (pBankItem)
+			{
 				pBankItem->setText(0, QString::number(iBank));
 
-				if (iBankDefault == -1) {
+				if (iBankDefault == -1)
+				{
 					iBankDefault = iBank;
 					iProgDefault = iProg;
 				}
@@ -183,7 +187,8 @@ void PatchesDialog::setBankProg(int iBank, int iProg)
 // Validate form fields and accept it valid.
 void PatchesDialog::accept()
 {
-	if (validateForm()) {
+	if (validateForm())
+	{
 		// Unload from current selected dialog items.
 		int iBank = (m_bankListView->currentItem())->text(0).toInt();
 		int iProg = (m_progListView->currentItem())->text(0).toInt();
@@ -191,7 +196,8 @@ void PatchesDialog::accept()
 		// And set it right away...
 		setBankProg(iBank, iProg);
 
-		if (m_dirty > 0) {
+		if (m_dirty > 0)
+		{
 			m_bankModel->setValue(iBank);
 			m_progModel->setValue(iProg);
 			m_patchLabel->setText(m_progListView->currentItem()->text(1));
@@ -219,9 +225,9 @@ QTreeWidgetItem* PatchesDialog::findBankItem(int iBank)
 
 	QListIterator<QTreeWidgetItem*> iter(banks);
 
-	if (iter.hasNext()) {
-		return iter.next();
-	} else {
+	if (iter.hasNext()) { return iter.next(); }
+	else
+	{
 		return nullptr;
 	}
 }
@@ -233,9 +239,9 @@ QTreeWidgetItem* PatchesDialog::findProgItem(int iProg)
 
 	QListIterator<QTreeWidgetItem*> iter(progs);
 
-	if (iter.hasNext()) {
-		return iter.next();
-	} else {
+	if (iter.hasNext()) { return iter.next(); }
+	else
+	{
 		return nullptr;
 	}
 }
@@ -258,7 +264,8 @@ void PatchesDialog::bankChanged()
 
 	gig::Instrument* pInstrument = m_pSynth->gig.GetFirstInstrument();
 
-	while (pInstrument) {
+	while (pInstrument)
+	{
 		QString name = QString::fromStdString(pInstrument->pInfo->Name);
 
 		if (name == "") { name = "<no name>"; }
@@ -266,10 +273,12 @@ void PatchesDialog::bankChanged()
 		int iBank = pInstrument->MIDIBank;
 		int iProg = pInstrument->MIDIProgram;
 
-		if (iBank == iBankSelected && !findProgItem(iProg)) {
+		if (iBank == iBankSelected && !findProgItem(iProg))
+		{
 			pProgItem = new PatchItem(m_progListView, pProgItem);
 
-			if (pProgItem) {
+			if (pProgItem)
+			{
 				pProgItem->setText(0, QString::number(iProg));
 				pProgItem->setText(1, name);
 			}
@@ -290,7 +299,8 @@ void PatchesDialog::progChanged(QTreeWidgetItem* curr, QTreeWidgetItem* prev)
 	if (m_pSynth == nullptr || curr == nullptr) { return; }
 
 	// Which preview state...
-	if (validateForm()) {
+	if (validateForm())
+	{
 		// Set current selection.
 		int iBank = (m_bankListView->currentItem())->text(0).toInt();
 		int iProg = curr->text(0).toInt();

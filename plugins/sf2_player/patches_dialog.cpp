@@ -47,9 +47,9 @@ public:
 		int iColumn = QTreeWidgetItem::treeWidget()->sortColumn();
 		const QString& s1 = text(iColumn);
 		const QString& s2 = other.text(iColumn);
-		if (iColumn == 0 || iColumn == 2) {
-			return (s1.toInt() < s2.toInt());
-		} else {
+		if (iColumn == 0 || iColumn == 2) { return (s1.toInt() < s2.toInt()); }
+		else
+		{
 			return (s1 < s2);
 		}
 	}
@@ -123,9 +123,11 @@ void patchesDialog::setup(fluid_synth_t* pSynth, int iChan, const QString& _chan
 	QTreeWidgetItem* pBankItem = nullptr;
 	// For all soundfonts (in reversed stack order) fill the available banks...
 	int cSoundFonts = ::fluid_synth_sfcount(m_pSynth);
-	for (int i = 0; i < cSoundFonts; i++) {
+	for (int i = 0; i < cSoundFonts; i++)
+	{
 		fluid_sfont_t* pSoundFont = ::fluid_synth_get_sfont(m_pSynth, i);
-		if (pSoundFont) {
+		if (pSoundFont)
+		{
 #ifdef CONFIG_FLUID_BANK_OFFSET
 			int iBankOffset = ::fluid_synth_get_bank_offset(m_pSynth, fluid_sfont_get_id(pSoundFont));
 #endif
@@ -136,12 +138,14 @@ void patchesDialog::setup(fluid_synth_t* pSynth, int iChan, const QString& _chan
 #else
 			fluid_preset_t* pCurPreset;
 #endif
-			while ((pCurPreset = fluid_sfont_iteration_next_wrapper(pSoundFont, pCurPreset))) {
+			while ((pCurPreset = fluid_sfont_iteration_next_wrapper(pSoundFont, pCurPreset)))
+			{
 				int iBank = fluid_preset_get_banknum(pCurPreset);
 #ifdef CONFIG_FLUID_BANK_OFFSET
 				iBank += iBankOffset;
 #endif
-				if (!findBankItem(iBank)) {
+				if (!findBankItem(iBank))
+				{
 					pBankItem = new patchItem(m_bankListView, pBankItem);
 					if (pBankItem) pBankItem->setText(0, QString::number(iBank));
 				}
@@ -153,7 +157,8 @@ void patchesDialog::setup(fluid_synth_t* pSynth, int iChan, const QString& _chan
 	// Set the selected bank.
 	m_iBank = 0;
 	fluid_preset_t* pPreset = ::fluid_synth_get_channel_preset(m_pSynth, m_iChan);
-	if (pPreset) {
+	if (pPreset)
+	{
 		m_iBank = fluid_preset_get_banknum(pPreset);
 #ifdef CONFIG_FLUID_BANK_OFFSET
 		m_iBank += ::fluid_synth_get_bank_offset(m_pSynth, fluid_sfont_get_id(fluid_preset_get_sfont(sfont)));
@@ -204,14 +209,16 @@ void patchesDialog::setBankProg(int iBank, int iProg)
 // Validate form fields and accept it valid.
 void patchesDialog::accept()
 {
-	if (validateForm()) {
+	if (validateForm())
+	{
 		// Unload from current selected dialog items.
 		int iBank = (m_bankListView->currentItem())->text(0).toInt();
 		int iProg = (m_progListView->currentItem())->text(0).toInt();
 		// And set it right away...
 		setBankProg(iBank, iProg);
 
-		if (m_dirty > 0) {
+		if (m_dirty > 0)
+		{
 			m_bankModel->setValue(iBank);
 			m_progModel->setValue(iProg);
 			m_patchLabel->setText(m_progListView->currentItem()->text(1));
@@ -272,9 +279,11 @@ void patchesDialog::bankChanged(void)
 	QTreeWidgetItem* pProgItem = nullptr;
 	// For all soundfonts (in reversed stack order) fill the available programs...
 	int cSoundFonts = ::fluid_synth_sfcount(m_pSynth);
-	for (int i = 0; i < cSoundFonts && !pProgItem; i++) {
+	for (int i = 0; i < cSoundFonts && !pProgItem; i++)
+	{
 		fluid_sfont_t* pSoundFont = ::fluid_synth_get_sfont(m_pSynth, i);
-		if (pSoundFont) {
+		if (pSoundFont)
+		{
 #ifdef CONFIG_FLUID_BANK_OFFSET
 			int iBankOffset = ::fluid_synth_get_bank_offset(m_pSynth, fluid_sfont_get_id(pSoundFont));
 #endif
@@ -285,15 +294,18 @@ void patchesDialog::bankChanged(void)
 #else
 			fluid_preset_t* pCurPreset;
 #endif
-			while ((pCurPreset = fluid_sfont_iteration_next_wrapper(pSoundFont, pCurPreset))) {
+			while ((pCurPreset = fluid_sfont_iteration_next_wrapper(pSoundFont, pCurPreset)))
+			{
 				int iBank = fluid_preset_get_banknum(pCurPreset);
 #ifdef CONFIG_FLUID_BANK_OFFSET
 				iBank += iBankOffset;
 #endif
 				int iProg = fluid_preset_get_num(pCurPreset);
-				if (iBank == iBankSelected && !findProgItem(iProg)) {
+				if (iBank == iBankSelected && !findProgItem(iProg))
+				{
 					pProgItem = new patchItem(m_progListView, pProgItem);
-					if (pProgItem) {
+					if (pProgItem)
+					{
 						pProgItem->setText(0, QString::number(iProg));
 						pProgItem->setText(1, fluid_preset_get_name(pCurPreset));
 						// pProgItem->setText(2, QString::number(fluid_sfont_get_id(pSoundFont)));
@@ -316,7 +328,8 @@ void patchesDialog::progChanged(QTreeWidgetItem* _curr, QTreeWidgetItem* _prev)
 	if (m_pSynth == nullptr || _curr == nullptr) return;
 
 	// Which preview state...
-	if (validateForm()) {
+	if (validateForm())
+	{
 		// Set current selection.
 		int iBank = (m_bankListView->currentItem())->text(0).toInt();
 		int iProg = _curr->text(0).toInt();

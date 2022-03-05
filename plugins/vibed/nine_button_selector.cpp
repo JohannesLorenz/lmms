@@ -117,7 +117,8 @@ nineButtonSelector::nineButtonSelector(QPixmap _button0_on, QPixmap _button0_off
 
 nineButtonSelector::~nineButtonSelector()
 {
-	for (int i = 0; i < 9; i++) {
+	for (int i = 0; i < 9; i++)
+	{
 		delete m_buttons[i];
 	}
 }

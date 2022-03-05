@@ -40,7 +40,8 @@ inline double toDouble(QString str, bool* ok = nullptr)
 	QLocale c(QLocale::C);
 	c.setNumberOptions(QLocale::RejectGroupSeparator);
 	value = c.toDouble(str, &isOkay);
-	if (!isOkay) {
+	if (!isOkay)
+	{
 		QLocale german(QLocale::German);
 		german.setNumberOptions(QLocale::RejectGroupSeparator);
 		value = german.toDouble(str, &isOkay);
@@ -52,7 +53,8 @@ inline double toDouble(QString str, bool* ok = nullptr)
 inline float toFloat(QString str, bool* ok = nullptr)
 {
 	double d = toDouble(str, ok);
-	if (!std::isinf(d) && std::fabs(d) > std::numeric_limits<float>::max()) {
+	if (!std::isinf(d) && std::fabs(d) > std::numeric_limits<float>::max())
+	{
 		if (ok != nullptr) { *ok = false; }
 		return 0.0f;
 	}

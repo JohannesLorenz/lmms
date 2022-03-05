@@ -62,9 +62,9 @@ void LedCheckBox::paintEvent(QPaintEvent*)
 	QPainter p(this);
 	p.setFont(pointSize<7>(font()));
 
-	if (model()->value() == true) {
-		p.drawPixmap(0, 0, *m_ledOnPixmap);
-	} else {
+	if (model()->value() == true) { p.drawPixmap(0, 0, *m_ledOnPixmap); }
+	else
+	{
 		p.drawPixmap(0, 0, *m_ledOffPixmap);
 	}
 

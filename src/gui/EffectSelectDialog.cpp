@@ -47,10 +47,11 @@ EffectSelectDialog::EffectSelectDialog(QWidget* _parent)
 
 	EffectKeyList subPluginEffectKeys;
 
-	for (const Plugin::Descriptor* desc : getPluginFactory()->descriptors(Plugin::Effect)) {
-		if (desc->subPluginFeatures) {
-			desc->subPluginFeatures->listSubPluginKeys(desc, subPluginEffectKeys);
-		} else {
+	for (const Plugin::Descriptor* desc : getPluginFactory()->descriptors(Plugin::Effect))
+	{
+		if (desc->subPluginFeatures) { desc->subPluginFeatures->listSubPluginKeys(desc, subPluginEffectKeys); }
+		else
+		{
 			m_effectKeys << EffectKey(desc, desc->name);
 		}
 	}
@@ -61,13 +62,17 @@ EffectSelectDialog::EffectSelectDialog(QWidget* _parent)
 	m_sourceModel.setHorizontalHeaderItem(0, new QStandardItem(tr("Name")));
 	m_sourceModel.setHorizontalHeaderItem(1, new QStandardItem(tr("Type")));
 	int row = 0;
-	for (EffectKeyList::ConstIterator it = m_effectKeys.begin(); it != m_effectKeys.end(); ++it) {
+	for (EffectKeyList::ConstIterator it = m_effectKeys.begin(); it != m_effectKeys.end(); ++it)
+	{
 		QString name;
 		QString type;
-		if (it->desc->subPluginFeatures) {
+		if (it->desc->subPluginFeatures)
+		{
 			name = it->displayName();
 			type = it->desc->displayName;
-		} else {
+		}
+		else
+		{
 			name = it->desc->displayName;
 			type = "LMMS";
 		}
@@ -112,7 +117,8 @@ EffectSelectDialog::~EffectSelectDialog() { delete ui; }
 Effect* EffectSelectDialog::instantiateSelectedPlugin(EffectChain* _parent)
 {
 	Effect* result = nullptr;
-	if (!m_currentSelection.name.isEmpty() && m_currentSelection.desc) {
+	if (!m_currentSelection.name.isEmpty() && m_currentSelection.desc)
+	{
 		result = Effect::instantiate(m_currentSelection.desc->name, _parent, &m_currentSelection);
 	}
 	if (!result) { result = new DummyEffect(_parent, QDomElement()); }
@@ -129,13 +135,17 @@ void EffectSelectDialog::rowChanged(const QModelIndex& _idx, const QModelIndex&)
 	delete m_descriptionWidget;
 	m_descriptionWidget = nullptr;
 
-	if (m_model.mapToSource(_idx).row() < 0) {
+	if (m_model.mapToSource(_idx).row() < 0)
+	{
 		// invalidate current selection
 		m_currentSelection = Plugin::Descriptor::SubPluginFeatures::Key();
-	} else {
+	}
+	else
+	{
 		m_currentSelection = m_effectKeys[m_model.mapToSource(_idx).row()];
 	}
-	if (m_currentSelection.desc) {
+	if (m_currentSelection.desc)
+	{
 		m_descriptionWidget = new QWidget;
 
 		QHBoxLayout* hbox = new QHBoxLayout(m_descriptionWidget);
@@ -143,7 +153,8 @@ void EffectSelectDialog::rowChanged(const QModelIndex& _idx, const QModelIndex&)
 		Plugin::Descriptor const& descriptor = *(m_currentSelection.desc);
 
 		const PixmapLoader* pixLoa = m_currentSelection.logo();
-		if (pixLoa) {
+		if (pixLoa)
+		{
 			QLabel* logoLabel = new QLabel(m_descriptionWidget);
 			logoLabel->setPixmap(pixLoa->pixmap());
 			logoLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -160,18 +171,22 @@ void EffectSelectDialog::rowChanged(const QModelIndex& _idx, const QModelIndex&)
 		textWidgetLayout->setMargin(4);
 		textWidgetLayout->setSpacing(0);
 
-		if (m_currentSelection.desc->subPluginFeatures) {
+		if (m_currentSelection.desc->subPluginFeatures)
+		{
 			QWidget* subWidget = new QWidget(textualInfoWidget);
 			QVBoxLayout* subLayout = new QVBoxLayout(subWidget);
 			subLayout->setMargin(4);
 			subLayout->setSpacing(0);
 			m_currentSelection.desc->subPluginFeatures->fillDescriptionWidget(subWidget, &m_currentSelection);
-			for (QWidget* w : subWidget->findChildren<QWidget*>()) {
+			for (QWidget* w : subWidget->findChildren<QWidget*>())
+			{
 				if (w->parent() == subWidget) { subLayout->addWidget(w); }
 			}
 
 			textWidgetLayout->addWidget(subWidget);
-		} else {
+		}
+		else
+		{
 			QLabel* label = new QLabel(m_descriptionWidget);
 			QString labelText = "<p><b>" + tr("Name") + ":</b> " + QString::fromUtf8(descriptor.displayName) + "</p>";
 			labelText += "<p><b>" + tr("Description") + ":</b> "
@@ -192,7 +207,8 @@ void EffectSelectDialog::sortAgain() { ui->pluginList->setSortingEnabled(ui->plu
 void EffectSelectDialog::updateSelection()
 {
 	// no valid selection anymore due to changed filter?
-	if (ui->pluginList->selectionModel()->selection().size() <= 0) {
+	if (ui->pluginList->selectionModel()->selection().size() <= 0)
+	{
 		// then select our first item
 		ui->pluginList->selectionModel()->select(
 			m_model.index(0, 0), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);

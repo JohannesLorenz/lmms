@@ -75,23 +75,29 @@ void SampleClipView::constructContextMenu(QMenu* cm)
 
 void SampleClipView::dragEnterEvent(QDragEnterEvent* _dee)
 {
-	if (StringPairDrag::processDragEnterEvent(_dee, "samplefile,sampledata") == false) {
+	if (StringPairDrag::processDragEnterEvent(_dee, "samplefile,sampledata") == false)
+	{
 		ClipView::dragEnterEvent(_dee);
 	}
 }
 
 void SampleClipView::dropEvent(QDropEvent* _de)
 {
-	if (StringPairDrag::decodeKey(_de) == "samplefile") {
+	if (StringPairDrag::decodeKey(_de) == "samplefile")
+	{
 		m_clip->setSampleFile(StringPairDrag::decodeValue(_de));
 		_de->accept();
-	} else if (StringPairDrag::decodeKey(_de) == "sampledata") {
+	}
+	else if (StringPairDrag::decodeKey(_de) == "sampledata")
+	{
 		m_clip->m_sampleBuffer->loadFromBase64(StringPairDrag::decodeValue(_de));
 		m_clip->updateLength();
 		update();
 		_de->accept();
 		Engine::getSong()->setModified();
-	} else {
+	}
+	else
+	{
 		ClipView::dropEvent(_de);
 	}
 }
@@ -99,10 +105,14 @@ void SampleClipView::dropEvent(QDropEvent* _de)
 void SampleClipView::mousePressEvent(QMouseEvent* _me)
 {
 	if (_me->button() == Qt::LeftButton && _me->modifiers() & Qt::ControlModifier
-		&& _me->modifiers() & Qt::ShiftModifier) {
+		&& _me->modifiers() & Qt::ShiftModifier)
+	{
 		m_clip->toggleRecord();
-	} else {
-		if (_me->button() == Qt::MiddleButton && _me->modifiers() == Qt::ControlModifier) {
+	}
+	else
+	{
+		if (_me->button() == Qt::MiddleButton && _me->modifiers() == Qt::ControlModifier)
+		{
 			SampleClip* sClip = dynamic_cast<SampleClip*>(getClip());
 			if (sClip) { sClip->updateTrackClips(); }
 		}
@@ -112,7 +122,8 @@ void SampleClipView::mousePressEvent(QMouseEvent* _me)
 
 void SampleClipView::mouseReleaseEvent(QMouseEvent* _me)
 {
-	if (_me->button() == Qt::MiddleButton && !_me->modifiers()) {
+	if (_me->button() == Qt::MiddleButton && !_me->modifiers())
+	{
 		SampleClip* sClip = dynamic_cast<SampleClip*>(getClip());
 		if (sClip) { sClip->playbackPositionChanged(); }
 	}
@@ -123,12 +134,14 @@ void SampleClipView::mouseDoubleClickEvent(QMouseEvent*)
 {
 	QString af = m_clip->m_sampleBuffer->openAudioFile();
 
-	if (af.isEmpty()) {
-	}													  // Don't do anything if no file is loaded
-	else if (af == m_clip->m_sampleBuffer->audioFile()) { // Instead of reloading the existing file, just reset the size
+	if (af.isEmpty()) {} // Don't do anything if no file is loaded
+	else if (af == m_clip->m_sampleBuffer->audioFile())
+	{ // Instead of reloading the existing file, just reset the size
 		int length = (int)(m_clip->m_sampleBuffer->frames() / Engine::framesPerTick());
 		m_clip->changeLength(length);
-	} else { // Otherwise load the new file as ususal
+	}
+	else
+	{ // Otherwise load the new file as ususal
 		m_clip->setSampleFile(af);
 		Engine::getSong()->setModified();
 	}
@@ -138,7 +151,8 @@ void SampleClipView::paintEvent(QPaintEvent* pe)
 {
 	QPainter painter(this);
 
-	if (!needsUpdate()) {
+	if (!needsUpdate())
+	{
 		painter.drawPixmap(0, 0, m_paintPixmap);
 		return;
 	}
@@ -163,9 +177,9 @@ void SampleClipView::paintEvent(QPaintEvent* pe)
 	// paint a black rectangle under the clip to prevent glitches with transparent backgrounds
 	p.fillRect(rect(), QColor(0, 0, 0));
 
-	if (gradient()) {
-		p.fillRect(rect(), lingrad);
-	} else {
+	if (gradient()) { p.fillRect(rect(), lingrad); }
+	else
+	{
 		p.fillRect(rect(), c);
 	}
 
@@ -175,7 +189,8 @@ void SampleClipView::paintEvent(QPaintEvent* pe)
 
 	p.setPen(clipColor);
 
-	if (muted) {
+	if (muted)
+	{
 		QColor penColor = p.pen().brush().color();
 		penColor.setHsv(penColor.hsvHue(), penColor.hsvSaturation() / 4, penColor.value());
 		p.setPen(penColor.darker(250));
@@ -210,7 +225,8 @@ void SampleClipView::paintEvent(QPaintEvent* pe)
 	p.drawRect(0, 0, rect().right(), rect().bottom());
 
 	// draw the 'muted' pixmap only if the clip was manualy muted
-	if (m_clip->isMuted()) {
+	if (m_clip->isMuted())
+	{
 		const int spacing = BORDER_WIDTH;
 		const int size = 14;
 		p.drawPixmap(spacing, height() - (size + spacing), embed::getIconPixmap("muted", size, size));
@@ -255,7 +271,8 @@ bool SampleClipView::splitClip(const TimePos pos)
 	// Don't split if we slid off the Clip or if we're on the clip's start/end
 	// Cutting at exactly the start/end position would create a zero length
 	// clip (bad), and a clip the same length as the original one (pointless).
-	if (splitPos > m_initialClipPos && splitPos < m_initialClipEnd) {
+	if (splitPos > m_initialClipPos && splitPos < m_initialClipEnd)
+	{
 		m_clip->getTrack()->addJournalCheckPoint();
 		m_clip->getTrack()->saveJournallingState(false);
 
@@ -269,7 +286,9 @@ bool SampleClipView::splitClip(const TimePos pos)
 
 		m_clip->getTrack()->restoreJournallingState();
 		return true;
-	} else {
+	}
+	else
+	{
 		return false;
 	}
 }

@@ -18,7 +18,8 @@ TemplatesMenu::TemplatesMenu(QWidget* parent)
 
 void TemplatesMenu::createNewProjectFromTemplate(QAction* _action)
 {
-	if (getGUI()->mainWindow()->mayChangeProject(true)) {
+	if (getGUI()->mainWindow()->mayChangeProject(true))
+	{
 		const QString& templateFilePath = _action->data().toString();
 		Engine::getSong()->createNewProjectFromTemplate(templateFilePath);
 	}
@@ -40,7 +41,8 @@ void TemplatesMenu::addTemplatesFromDir(const QDir& dir)
 
 	auto projectFileIcon = embed::getIconPixmap("project_file");
 
-	for (const QFileInfo& templateFile : templates) {
+	for (const QFileInfo& templateFile : templates)
+	{
 		auto action = addAction(projectFileIcon, templateFile.completeBaseName().replace("&", "&&"));
 		action->setData(templateFile.absoluteFilePath());
 #ifdef LMMS_BUILD_APPLE

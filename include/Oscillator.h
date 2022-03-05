@@ -89,9 +89,9 @@ public:
 	static inline sample_t triangleSample(const float _sample)
 	{
 		const float ph = absFraction(_sample);
-		if (ph <= 0.25f) {
-			return ph * 4.0f;
-		} else if (ph <= 0.75f) {
+		if (ph <= 0.25f) { return ph * 4.0f; }
+		else if (ph <= 0.75f)
+		{
 			return 2.0f - ph * 4.0f;
 		}
 		return ph * 4.0f - 4.0f;

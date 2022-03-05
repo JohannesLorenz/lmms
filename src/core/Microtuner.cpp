@@ -40,11 +40,13 @@ Microtuner::Microtuner()
 	, m_keymapModel(this, tr("Selected keyboard mapping"))
 	, m_keyRangeImportModel(true)
 {
-	for (unsigned int i = 0; i < MaxScaleCount; i++) {
+	for (unsigned int i = 0; i < MaxScaleCount; i++)
+	{
 		m_scaleModel.addItem(QString::number(i) + ": " + Engine::getSong()->getScale(i)->getDescription());
 	}
 
-	for (unsigned int i = 0; i < MaxKeymapCount; i++) {
+	for (unsigned int i = 0; i < MaxKeymapCount; i++)
+	{
 		m_keymapModel.addItem(QString::number(i) + ": " + Engine::getSong()->getKeymap(i)->getDescription());
 	}
 	connect(Engine::getSong(), SIGNAL(scaleListChanged(int)), this, SLOT(updateScaleList(int)));
@@ -74,8 +76,9 @@ float Microtuner::keyToFreq(int key, int userBaseNote) const
 	if (keymapDegree == -1) { return 0; }			 // key is not mapped, abort
 	const int keymapOctave = keymap->getOctave(key); // how many times did the keymap repeat
 	const int octaveDegree = intervals.size() - 1;	 // index of the interval with octave ratio
-	if (octaveDegree == 0) {						 // octave interval is 1/1, i.e. constant base frequency
-		return keymap->getBaseFreq();				 // → return the baseFreq directly
+	if (octaveDegree == 0)
+	{								  // octave interval is 1/1, i.e. constant base frequency
+		return keymap->getBaseFreq(); // → return the baseFreq directly
 	}
 	const int scaleOctave = keymapDegree / octaveDegree;
 
@@ -107,11 +110,15 @@ float Microtuner::keyToFreq(int key, int userBaseNote) const
  */
 void Microtuner::updateScaleList(int index)
 {
-	if (index >= 0 && index < MaxScaleCount) {
+	if (index >= 0 && index < MaxScaleCount)
+	{
 		m_scaleModel.replaceItem(
 			index, QString::number(index) + ": " + Engine::getSong()->getScale(index)->getDescription());
-	} else {
-		for (int i = 0; i < MaxScaleCount; i++) {
+	}
+	else
+	{
+		for (int i = 0; i < MaxScaleCount; i++)
+		{
 			m_scaleModel.replaceItem(i, QString::number(i) + ": " + Engine::getSong()->getScale(i)->getDescription());
 		}
 	}
@@ -123,11 +130,15 @@ void Microtuner::updateScaleList(int index)
  */
 void Microtuner::updateKeymapList(int index)
 {
-	if (index >= 0 && index < MaxKeymapCount) {
+	if (index >= 0 && index < MaxKeymapCount)
+	{
 		m_keymapModel.replaceItem(
 			index, QString::number(index) + ": " + Engine::getSong()->getKeymap(index)->getDescription());
-	} else {
-		for (int i = 0; i < MaxKeymapCount; i++) {
+	}
+	else
+	{
+		for (int i = 0; i < MaxKeymapCount; i++)
+		{
 			m_keymapModel.replaceItem(i, QString::number(i) + ": " + Engine::getSong()->getKeymap(i)->getDescription());
 		}
 	}

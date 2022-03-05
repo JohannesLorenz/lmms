@@ -48,11 +48,13 @@ ProjectJournal::~ProjectJournal() {}
 
 void ProjectJournal::undo()
 {
-	while (!m_undoCheckPoints.isEmpty()) {
+	while (!m_undoCheckPoints.isEmpty())
+	{
 		CheckPoint c = m_undoCheckPoints.pop();
 		JournallingObject* jo = m_joIDs[c.joID];
 
-		if (jo) {
+		if (jo)
+		{
 			DataFile curState(DataFile::JournalData);
 			jo->saveState(curState, curState.content());
 			m_redoCheckPoints.push(CheckPoint(c.joID, curState));
@@ -69,11 +71,13 @@ void ProjectJournal::undo()
 
 void ProjectJournal::redo()
 {
-	while (!m_redoCheckPoints.isEmpty()) {
+	while (!m_redoCheckPoints.isEmpty())
+	{
 		CheckPoint c = m_redoCheckPoints.pop();
 		JournallingObject* jo = m_joIDs[c.joID];
 
-		if (jo) {
+		if (jo)
+		{
 			DataFile curState(DataFile::JournalData);
 			jo->saveState(curState, curState.content());
 			m_undoCheckPoints.push(CheckPoint(c.joID, curState));
@@ -94,14 +98,16 @@ bool ProjectJournal::canRedo() const { return !m_redoCheckPoints.isEmpty(); }
 
 void ProjectJournal::addJournalCheckPoint(JournallingObject* jo)
 {
-	if (isJournalling()) {
+	if (isJournalling())
+	{
 		m_redoCheckPoints.clear();
 
 		DataFile dataFile(DataFile::JournalData);
 		jo->saveState(dataFile, dataFile.content());
 
 		m_undoCheckPoints.push(CheckPoint(jo->id(), dataFile));
-		if (m_undoCheckPoints.size() > MAX_UNDO_STATES) {
+		if (m_undoCheckPoints.size() > MAX_UNDO_STATES)
+		{
 			m_undoCheckPoints.remove(0, m_undoCheckPoints.size() - MAX_UNDO_STATES);
 		}
 	}
@@ -135,10 +141,11 @@ void ProjectJournal::clearJournal()
 	m_undoCheckPoints.clear();
 	m_redoCheckPoints.clear();
 
-	for (JoIdMap::Iterator it = m_joIDs.begin(); it != m_joIDs.end();) {
-		if (it.value() == nullptr) {
-			it = m_joIDs.erase(it);
-		} else {
+	for (JoIdMap::Iterator it = m_joIDs.begin(); it != m_joIDs.end();)
+	{
+		if (it.value() == nullptr) { it = m_joIDs.erase(it); }
+		else
+		{
 			++it;
 		}
 	}
@@ -146,7 +153,8 @@ void ProjectJournal::clearJournal()
 
 void ProjectJournal::stopAllJournalling()
 {
-	for (JoIdMap::Iterator it = m_joIDs.begin(); it != m_joIDs.end(); ++it) {
+	for (JoIdMap::Iterator it = m_joIDs.begin(); it != m_joIDs.end(); ++it)
+	{
 		if (it.value() != nullptr) { it.value()->setJournalling(false); }
 	}
 	setJournalling(false);

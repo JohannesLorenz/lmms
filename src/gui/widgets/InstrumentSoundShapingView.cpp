@@ -53,7 +53,8 @@ InstrumentSoundShapingView::InstrumentSoundShapingView(QWidget* _parent)
 	m_targetsTabWidget->setGeometry(
 		TARGETS_TABWIDGET_X, TARGETS_TABWIDGET_Y, TARGETS_TABWIDGET_WIDTH, TARGETS_TABWIDGET_HEIGTH);
 
-	for (int i = 0; i < InstrumentSoundShaping::NumTargets; ++i) {
+	for (int i = 0; i < InstrumentSoundShaping::NumTargets; ++i)
+	{
 		m_envLfoViews[i] = new EnvelopeAndLfoView(m_targetsTabWidget);
 		m_targetsTabWidget->addTab(m_envLfoViews[i], tr(InstrumentSoundShaping::targetNames[i][0]), nullptr);
 	}
@@ -100,7 +101,8 @@ void InstrumentSoundShapingView::modelChanged()
 	m_filterComboBox->setModel(&m_ss->m_filterModel);
 	m_filterCutKnob->setModel(&m_ss->m_filterCutModel);
 	m_filterResKnob->setModel(&m_ss->m_filterResModel);
-	for (int i = 0; i < InstrumentSoundShaping::NumTargets; ++i) {
+	for (int i = 0; i < InstrumentSoundShaping::NumTargets; ++i)
+	{
 		m_envLfoViews[i]->setModel(m_ss->m_envLfoParameters[i]);
 	}
 }

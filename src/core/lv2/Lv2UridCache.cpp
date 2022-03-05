@@ -62,7 +62,8 @@ Lv2UridCache::Lv2UridCache(UridMap& mapper)
 	init(Id::midi_MidiEvent, LV2_MIDI__MidiEvent);
 	init(Id::param_sampleRate, LV2_PARAMETERS__sampleRate);
 
-	for (uint32_t urid : m_cache) {
+	for (uint32_t urid : m_cache)
+	{
 		Q_ASSERT(urid != noIdYet);
 	}
 }

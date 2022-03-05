@@ -188,7 +188,8 @@ void Xpressive::playNote(NotePlayHandle* nph, sampleFrame* working_buffer)
 	m_A2 = m_parameterA2.value();
 	m_A3 = m_parameterA3.value();
 
-	if (nph->totalFramesPlayed() == 0 || nph->m_pluginData == nullptr) {
+	if (nph->totalFramesPlayed() == 0 || nph->m_pluginData == nullptr)
+	{
 
 		ExprFront* exprO1 = new ExprFront(m_outputExpression[0].constData(),
 			Engine::audioEngine()->processingSampleRate()); // give the "last" function a whole second
@@ -472,7 +473,8 @@ void XpressiveView::expressionChanged()
 	Xpressive* e = castModel<Xpressive>();
 	QByteArray text = m_expressionEditor->toPlainText().toLatin1();
 
-	switch (m_selectedGraphGroup->model()->value()) {
+	switch (m_selectedGraphGroup->model()->value())
+	{
 	case W1_EXPR: e->wavesExpression(0) = text; break;
 	case W2_EXPR: e->wavesExpression(1) = text; break;
 	case W3_EXPR: e->wavesExpression(2) = text; break;
@@ -481,7 +483,8 @@ void XpressiveView::expressionChanged()
 	}
 	if (m_wave_expr) m_graph->setEnabled(m_smoothKnob->model()->value() == 0 && text.size() == 0);
 
-	if (text.size() > 0) {
+	if (text.size() > 0)
+	{
 		const unsigned int sample_rate = m_raw_graph->length();
 		ExprFront expr(text.constData(), sample_rate);
 		float t = 0;
@@ -489,7 +492,8 @@ void XpressiveView::expressionChanged()
 		unsigned int i;
 		expr.add_variable("t", t);
 
-		if (m_output_expr) {
+		if (m_output_expr)
+		{
 			expr.add_constant("f", f);
 			expr.add_constant("key", key);
 			expr.add_constant("rel", 0);
@@ -509,27 +513,33 @@ void XpressiveView::expressionChanged()
 
 		const bool parse_ok = expr.compile();
 
-		if (parse_ok) {
+		if (parse_ok)
+		{
 			e->exprValid().setValue(0);
 			const int length = m_raw_graph->length();
 			float* const samples = new float[length];
-			for (i = 0; i < length; i++) {
+			for (i = 0; i < length; i++)
+			{
 				t = i / (float)length;
 				samples[i] = expr.evaluate();
 				if (std::isinf(samples[i]) != 0 || std::isnan(samples[i]) != 0) samples[i] = 0;
 			}
 			m_raw_graph->setSamples(samples);
 			delete[] samples;
-			if (m_wave_expr) {
-				smoothChanged();
-			} else {
+			if (m_wave_expr) { smoothChanged(); }
+			else
+			{
 				Engine::getSong()->setModified();
 			}
-		} else {
+		}
+		else
+		{
 			e->exprValid().setValue(1);
 			if (m_output_expr) m_raw_graph->clear();
 		}
-	} else {
+	}
+	else
+	{
 		e->exprValid().setValue(0);
 		if (m_output_expr) m_raw_graph->clear();
 	}
@@ -538,7 +548,8 @@ void XpressiveView::expressionChanged()
 void Xpressive::smooth(float smoothness, const graphModel* in, graphModel* out)
 {
 	out->setSamples(in->samples());
-	if (smoothness > 0) {
+	if (smoothness > 0)
+	{
 		const int guass_size = (int)(smoothness * 5) | 1;
 		const int guass_center = guass_size / 2;
 		const float delta = smoothness;
@@ -547,11 +558,13 @@ void Xpressive::smooth(float smoothness, const graphModel* in, graphModel* out)
 		float sum = 0.0f;
 		float temp = 0.0f;
 		int i;
-		for (i = 0; i < guass_size; i++) {
+		for (i = 0; i < guass_size; i++)
+		{
 			temp = (i - guass_center) / delta;
 			sum += guassian[i] = a * powf(F_E, -0.5f * temp * temp);
 		}
-		for (i = 0; i < guass_size; i++) {
+		for (i = 0; i < guass_size; i++)
+		{
 			guassian[i] = guassian[i] / sum;
 		}
 		out->convolve(guassian, guass_size, guass_center);
@@ -564,13 +577,15 @@ void XpressiveView::smoothChanged()
 
 	Xpressive* e = castModel<Xpressive>();
 	float smoothness = 0;
-	switch (m_selectedGraphGroup->model()->value()) {
+	switch (m_selectedGraphGroup->model()->value())
+	{
 	case W1_EXPR: smoothness = e->smoothW1().value(); break;
 	case W2_EXPR: smoothness = e->smoothW2().value(); break;
 	case W3_EXPR: smoothness = e->smoothW3().value(); break;
 	}
 	Xpressive::smooth(smoothness, m_raw_graph, m_graph->model());
-	switch (m_selectedGraphGroup->model()->value()) {
+	switch (m_selectedGraphGroup->model()->value())
+	{
 	case W1_EXPR: e->W1().copyFrom(m_graph->model()); break;
 	case W2_EXPR: e->W2().copyFrom(m_graph->model()); break;
 	case W3_EXPR: e->W3().copyFrom(m_graph->model()); break;
@@ -583,7 +598,8 @@ void XpressiveView::graphDrawn()
 {
 	m_raw_graph->setSamples(m_graph->model()->samples());
 	Xpressive* e = castModel<Xpressive>();
-	switch (m_selectedGraphGroup->model()->value()) {
+	switch (m_selectedGraphGroup->model()->value())
+	{
 	case W1_EXPR: e->W1().copyFrom(m_graph->model()); break;
 	case W2_EXPR: e->W2().copyFrom(m_graph->model()); break;
 	case W3_EXPR: e->W3().copyFrom(m_graph->model()); break;
@@ -613,7 +629,8 @@ void XpressiveView::updateLayout()
 	Xpressive* e = castModel<Xpressive>();
 	m_output_expr = false;
 	m_wave_expr = false;
-	switch (m_selectedGraphGroup->model()->value()) {
+	switch (m_selectedGraphGroup->model()->value())
+	{
 	case W1_EXPR:
 		m_wave_expr = true;
 		m_graph->setModel(&e->graphW1(), true);

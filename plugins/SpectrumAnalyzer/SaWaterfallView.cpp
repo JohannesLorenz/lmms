@@ -90,7 +90,8 @@ void SaWaterfallView::paintEvent(QPaintEvent* event)
 	painter.setRenderHint(QPainter::Antialiasing, true);
 
 	// check if time labels need to be rebuilt
-	if (secondsPerLine() != m_oldSecondsPerLine || m_processor->waterfallHeight() != m_oldHeight) {
+	if (secondsPerLine() != m_oldSecondsPerLine || m_processor->waterfallHeight() != m_oldHeight)
+	{
 		m_timeTics = makeTimeTics();
 		m_oldSecondsPerLine = secondsPerLine();
 		m_oldHeight = m_processor->waterfallHeight();
@@ -99,20 +100,26 @@ void SaWaterfallView::paintEvent(QPaintEvent* event)
 	// print time labels
 	float pos = 0;
 	painter.setPen(QPen(m_controls->m_colorLabels, 1, Qt::SolidLine, Qt::RoundCap, Qt::BevelJoin));
-	for (auto& line : m_timeTics) {
+	for (auto& line : m_timeTics)
+	{
 		pos = timeToYPixel(line.first, m_displayHeight);
 		// align first and last label to the edge if needed, otherwise center them
-		if (line == m_timeTics.front() && pos < label_height / 2) {
+		if (line == m_timeTics.front() && pos < label_height / 2)
+		{
 			painter.drawText(m_displayLeft - label_width - margin, m_displayTop - 1, label_width, label_height,
 				Qt::AlignRight | Qt::AlignTop | Qt::TextDontClip, QString(line.second.c_str()));
 			painter.drawText(m_displayRight + margin, m_displayTop - 1, label_width, label_height,
 				Qt::AlignLeft | Qt::AlignTop | Qt::TextDontClip, QString(line.second.c_str()));
-		} else if (line == m_timeTics.back() && pos > m_displayBottom - label_height + 2) {
+		}
+		else if (line == m_timeTics.back() && pos > m_displayBottom - label_height + 2)
+		{
 			painter.drawText(m_displayLeft - label_width - margin, m_displayBottom - label_height, label_width,
 				label_height, Qt::AlignRight | Qt::AlignBottom | Qt::TextDontClip, QString(line.second.c_str()));
 			painter.drawText(m_displayRight + margin, m_displayBottom - label_height + 2, label_width, label_height,
 				Qt::AlignLeft | Qt::AlignBottom | Qt::TextDontClip, QString(line.second.c_str()));
-		} else {
+		}
+		else
+		{
 			painter.drawText(m_displayLeft - label_width - margin, pos - label_height / 2, label_width, label_height,
 				Qt::AlignRight | Qt::AlignVCenter | Qt::TextDontClip, QString(line.second.c_str()));
 			painter.drawText(m_displayRight + margin, pos - label_height / 2, label_width, label_height,
@@ -121,7 +128,8 @@ void SaWaterfallView::paintEvent(QPaintEvent* event)
 	}
 
 	// draw the spectrogram precomputed in SaProcessor
-	if (m_processor->waterfallNotEmpty()) {
+	if (m_processor->waterfallNotEmpty())
+	{
 		QMutexLocker lock(&m_processor->m_reallocationAccess);
 		QImage temp = QImage(m_processor->getHistory(), // raw pixel data to display
 			m_processor->waterfallWidth(),				// width = number of frequency bins
@@ -133,7 +141,9 @@ void SaWaterfallView::paintEvent(QPaintEvent* event)
 			temp.scaled(m_displayWidth * devicePixelRatio(), m_displayHeight * devicePixelRatio(),
 				Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 		m_processor->flipRequest();
-	} else {
+	}
+	else
+	{
 		painter.fillRect(m_displayLeft, m_displayTop, m_displayWidth, m_displayHeight, QColor(0, 0, 0));
 	}
 
@@ -192,12 +202,15 @@ std::vector<std::pair<float, std::string>> SaWaterfallView::makeTimeTics()
 	if (increment < 0.1) { increment = 0.1; }
 
 	// NOTE: labels positions are rounded to match the (rounded) label value
-	for (i = 0; i <= limit; i += increment) {
-		if (i > 99) {
-			result.emplace_back(std::round(i), std::to_string(std::round(i)).substr(0, 3));
-		} else if (i < 10) {
+	for (i = 0; i <= limit; i += increment)
+	{
+		if (i > 99) { result.emplace_back(std::round(i), std::to_string(std::round(i)).substr(0, 3)); }
+		else if (i < 10)
+		{
 			result.emplace_back(std::round(i * 10) / 10, std::to_string(std::round(i * 10) / 10).substr(0, 3));
-		} else {
+		}
+		else
+		{
 			result.emplace_back(std::round(i), std::to_string(std::round(i)).substr(0, 2));
 		}
 	}
@@ -218,16 +231,20 @@ void SaWaterfallView::updateVisibility()
 	// get container of the control dialog to be resized if needed
 	QWidget* subWindow = m_controlDialog->parentWidget();
 
-	if (m_controls->m_waterfallModel.value()) {
+	if (m_controls->m_waterfallModel.value())
+	{
 		// clear old data before showing the waterfall
 		m_processor->clearHistory();
 		setVisible(true);
 
 		// increase window size if it is too small
-		if (subWindow->size().height() < m_controlDialog->sizeHint().height()) {
+		if (subWindow->size().height() < m_controlDialog->sizeHint().height())
+		{
 			subWindow->resize(subWindow->size().width(), m_controlDialog->sizeHint().height());
 		}
-	} else {
+	}
+	else
+	{
 		setVisible(false);
 		// decrease window size only if it does not violate sizeHint
 		subWindow->resize(subWindow->size().width(), m_controlDialog->sizeHint().height());
@@ -238,7 +255,8 @@ void SaWaterfallView::updateVisibility()
 void SaWaterfallView::drawCursor(QPainter& painter)
 {
 	if (m_cursor.x() >= m_displayLeft && m_cursor.x() <= m_displayRight && m_cursor.y() >= m_displayTop
-		&& m_cursor.y() <= m_displayBottom) {
+		&& m_cursor.y() <= m_displayBottom)
+	{
 		// cursor lines
 		painter.setPen(QPen(m_controls->m_colorGrid.lighter(), 1, Qt::SolidLine, Qt::RoundCap, Qt::BevelJoin));
 		painter.drawLine(QPointF(m_cursor.x(), m_displayTop), QPointF(m_cursor.x(), m_displayBottom));

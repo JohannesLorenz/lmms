@@ -38,7 +38,8 @@ AudioFileDevice::AudioFileDevice(
 {
 	setSampleRate(outputSettings.getSampleRate());
 
-	if (m_outputFile.open(QFile::WriteOnly | QFile::Truncate) == false) {
+	if (m_outputFile.open(QFile::WriteOnly | QFile::Truncate) == false)
+	{
 		QString title, message;
 		title = ExportProjectDialog::tr("Could not open file");
 		message = ExportProjectDialog::tr("Could not open file %1 "
@@ -49,9 +50,12 @@ AudioFileDevice::AudioFileDevice(
 										  "file and try again!")
 					  .arg(_file);
 
-		if (getGUI() != nullptr) {
+		if (getGUI() != nullptr)
+		{
 			QMessageBox::critical(nullptr, title, message, QMessageBox::Ok, QMessageBox::NoButton);
-		} else {
+		}
+		else
+		{
 			fprintf(stderr, "%s\n", message.toUtf8().constData());
 			exit(EXIT_FAILURE);
 		}

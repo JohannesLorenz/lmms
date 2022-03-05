@@ -64,7 +64,8 @@ public:
 		*r = sinf(m_phase + m_offset);
 		m_phase += m_increment;
 
-		while (m_phase >= D_2PI) {
+		while (m_phase >= D_2PI)
+		{
 			m_phase -= D_2PI;
 		}
 	}

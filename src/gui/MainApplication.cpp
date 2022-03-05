@@ -42,17 +42,22 @@ MainApplication::MainApplication(int& argc, char** argv)
 
 bool MainApplication::event(QEvent* event)
 {
-	switch (event->type()) {
+	switch (event->type())
+	{
 	case QEvent::FileOpen: {
 		QFileOpenEvent* fileEvent = static_cast<QFileOpenEvent*>(event);
 		// Handle the project file
 		m_queuedFile = fileEvent->file();
-		if (Engine::getSong()) {
-			if (getGUI()->mainWindow()->mayChangeProject(true)) {
+		if (Engine::getSong())
+		{
+			if (getGUI()->mainWindow()->mayChangeProject(true))
+			{
 				qDebug() << "Loading file " << m_queuedFile;
 				Engine::getSong()->loadProject(m_queuedFile);
 			}
-		} else {
+		}
+		else
+		{
 			qDebug() << "Queuing file " << m_queuedFile;
 		}
 		return true;
@@ -65,9 +70,11 @@ bool MainApplication::event(QEvent* event)
 // This can be moved into nativeEventFilter once Qt4 support has been dropped
 bool MainApplication::winEventFilter(MSG* msg, long* result)
 {
-	switch (msg->message) {
+	switch (msg->message)
+	{
 	case WM_STYLECHANGING:
-		if (msg->wParam == GWL_EXSTYLE) {
+		if (msg->wParam == GWL_EXSTYLE)
+		{
 			// Prevent plugins making the main window transparent
 			STYLESTRUCT* style = reinterpret_cast<STYLESTRUCT*>(msg->lParam);
 			if (!(style->styleOld & WS_EX_LAYERED)) { style->styleNew &= ~WS_EX_LAYERED; }

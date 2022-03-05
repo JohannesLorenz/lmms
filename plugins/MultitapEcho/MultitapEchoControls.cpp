@@ -98,7 +98,8 @@ void MultitapEchoControls::setDefaultAmpShape()
 	const int length = m_steps.value();
 
 	QVarLengthArray<float> samples(length);
-	for (int i = 0; i < length; ++i) {
+	for (int i = 0; i < length; ++i)
+	{
 		samples[i] = 0.0f;
 	}
 
@@ -110,7 +111,8 @@ void MultitapEchoControls::setDefaultLpShape()
 	const int length = m_steps.value();
 
 	QVarLengthArray<float> samples(length);
-	for (int i = 0; i < length; ++i) {
+	for (int i = 0; i < length; ++i)
+	{
 		samples[i] = 3.0f;
 	}
 
@@ -120,7 +122,8 @@ void MultitapEchoControls::setDefaultLpShape()
 void MultitapEchoControls::ampSamplesChanged(int begin, int end)
 {
 	const float* samples = m_ampGraph.samples();
-	for (int i = begin; i <= end; ++i) {
+	for (int i = begin; i <= end; ++i)
+	{
 		m_effect->m_amp[i] = dbfsToAmp(samples[i]);
 	}
 }
@@ -131,7 +134,8 @@ void MultitapEchoControls::lpSamplesChanged(int begin, int end)
 {
 	// qDebug( "b/e %d - %d", begin, end );
 	const float* samples = m_lpGraph.samples();
-	for (int i = begin; i <= end; ++i) {
+	for (int i = begin; i <= end; ++i)
+	{
 		m_effect->m_lpFreq[i] = 20.0f * std::pow(10.f, samples[i]);
 	}
 	m_effect->updateFilters(begin, end);

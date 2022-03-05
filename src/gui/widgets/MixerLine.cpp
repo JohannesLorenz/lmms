@@ -46,10 +46,13 @@
 bool MixerLine::eventFilter(QObject* dist, QEvent* event)
 {
 	// If we are in a rename, capture the enter/return events and handle them
-	if (event->type() == QEvent::KeyPress) {
+	if (event->type() == QEvent::KeyPress)
+	{
 		QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-		if (keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return) {
-			if (m_inRename) {
+		if (keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return)
+		{
+			if (m_inRename)
+			{
 				renameFinished();
 				event->accept(); // Stop the event from propagating
 				return true;
@@ -150,9 +153,12 @@ void MixerLine::drawMixerLine(
 	int width = mixerLine->rect().width();
 	int height = mixerLine->rect().height();
 
-	if (channel->m_hasColor && !muted) {
+	if (channel->m_hasColor && !muted)
+	{
 		p->fillRect(mixerLine->rect(), channel->m_color.darker(isActive ? 120 : 150));
-	} else {
+	}
+	else
+	{
 		p->fillRect(mixerLine->rect(), isActive ? mixerLine->backgroundActive().color() : p->background().color());
 	}
 
@@ -165,9 +171,9 @@ void MixerLine::drawMixerLine(
 	p->drawRect(0, 0, width - 1, height - 1);
 
 	// draw the mixer send background
-	if (sendToThis) {
-		p->drawPixmap(2, 0, 29, 56, *s_sendBgArrow);
-	} else if (receiveFromThis) {
+	if (sendToThis) { p->drawPixmap(2, 0, 29, 56, *s_sendBgArrow); }
+	else if (receiveFromThis)
+	{
 		p->drawPixmap(2, 0, 29, 56, *s_receiveBgArrow);
 	}
 }
@@ -249,7 +255,8 @@ void MixerLine::renameFinished()
 	m_lcd->show();
 	QString newName = m_renameLineEdit->text();
 	setFocus();
-	if (!newName.isEmpty() && Engine::mixer()->mixerChannel(m_channelIndex)->m_name != newName) {
+	if (!newName.isEmpty() && Engine::mixer()->mixerChannel(m_channelIndex)->m_name != newName)
+	{
 		Engine::mixer()->mixerChannel(m_channelIndex)->m_name = newName;
 		m_renameLineEdit->setText(elideName(newName));
 		Engine::getSong()->setModified();

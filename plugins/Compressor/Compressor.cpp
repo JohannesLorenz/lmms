@@ -112,11 +112,13 @@ void CompressorEffect::calcAutoMakeup()
 	// Formulas using the compressor's Threshold, Ratio, and Knee values to estimate a good makeup gain value
 
 	float tempGainResult;
-	if (-m_thresholdVal < m_kneeVal) {
+	if (-m_thresholdVal < m_kneeVal)
+	{
 		const float temp = -m_thresholdVal + m_kneeVal;
 		tempGainResult
 			= ((m_compressorControls.m_limiterModel.value() ? 0 : m_ratioVal) - 1) * temp * temp / (4 * m_kneeVal);
-	} else // Above knee
+	}
+	else // Above knee
 	{
 		tempGainResult = m_compressorControls.m_limiterModel.value() ? m_thresholdVal
 																	 : m_thresholdVal - m_thresholdVal * m_ratioVal;
@@ -214,9 +216,11 @@ void CompressorEffect::calcMix() { m_mixVal = m_compressorControls.m_mixModel.va
 
 bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 {
-	if (!isEnabled() || !isRunning()) {
+	if (!isEnabled() || !isRunning())
+	{
 		// Clear lookahead buffers and other values when needed
-		if (!m_cleanedBuffers) {
+		if (!m_cleanedBuffers)
+		{
 			m_yL[0] = m_yL[1] = COMP_NOISE_FLOOR;
 			m_gainResult[0] = m_gainResult[1] = 1;
 			m_displayPeak[0] = m_displayPeak[1] = COMP_NOISE_FLOOR;
@@ -235,7 +239,9 @@ bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 			m_cleanedBuffers = true;
 		}
 		return false;
-	} else {
+	}
+	else
+	{
 		m_cleanedBuffers = false;
 	}
 
@@ -261,12 +267,14 @@ bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 	const bool feedback = m_compressorControls.m_feedbackModel.value();
 	const bool lookahead = m_compressorControls.m_lookaheadModel.value();
 
-	for (fpp_t f = 0; f < frames; ++f) {
+	for (fpp_t f = 0; f < frames; ++f)
+	{
 		sample_t drySignal[2] = {buf[f][0], buf[f][1]};
 		sample_t s[2] = {drySignal[0] * m_inGainVal, drySignal[1] * m_inGainVal};
 
 		// Calculate tilt filters, to bias the sidechain to the low or high frequencies
-		if (m_tiltVal) {
+		if (m_tiltVal)
+		{
 			calcTiltFilter(s[0], s[0], 0);
 			calcTiltFilter(s[1], s[1], 1);
 		}
@@ -284,7 +292,8 @@ bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 		m_gainResult[0] = 0;
 		m_gainResult[1] = 0;
 
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < 2; i++)
+		{
 			float inputValue = feedback ? m_prevOut[i] : s[i];
 
 			// Calculate the crest factor of the audio by diving the peak by the RMS
@@ -302,7 +311,8 @@ bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 			// The following code uses math magic to semi-efficiently
 			// find the largest value in the lookahead buffer.
 			// This can probably be improved.
-			if (lookahead) {
+			if (lookahead)
+			{
 				// Pre-lookahead delay, so the total delay always matches 20 ms
 				++m_preLookaheadBufLoc[i];
 				if (m_preLookaheadBufLoc[i] >= m_preLookaheadLength) { m_preLookaheadBufLoc[i] = 0; }
@@ -318,7 +328,8 @@ bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 
 				// If the new input value is larger than the stored maximum,
 				// store that as the maximum
-				if (inputValue >= m_maxLookaheadVal[i]) {
+				if (inputValue >= m_maxLookaheadVal[i])
+				{
 					m_maxLookaheadVal[i] = inputValue;
 					m_maxLookaheadTimer[i] = m_lookaheadLength;
 				}
@@ -326,7 +337,8 @@ bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 				// Decrement timer.  When the timer reaches 0, that means the
 				// stored maximum value has left the buffer and a new
 				// maximum value must be found.
-				if (--m_maxLookaheadTimer[i] <= 0) {
+				if (--m_maxLookaheadTimer[i] <= 0)
+				{
 					m_maxLookaheadTimer[i] = std::distance(std::begin(m_lookaheadBuf[i]),
 						std::max_element(
 							std::begin(m_lookaheadBuf[i]), std::begin(m_lookaheadBuf[i]) + m_lookaheadLength));
@@ -354,7 +366,8 @@ bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 
 				m_yL[i] = m_yL[i] * att + (1 - att) * t;
 				m_holdTimer[i] = m_holdLength; // Reset hold timer
-			} else							   // Release phase
+			}
+			else // Release phase
 			{
 				float crestFactorValTemp = ((m_crestFactorVal[i] - 2.f) * m_autoRelVal) + 2.f;
 
@@ -365,7 +378,9 @@ bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 				if (m_holdTimer[i]) // Don't change peak if hold is being applied
 				{
 					--m_holdTimer[i];
-				} else {
+				}
+				else
+				{
 					m_yL[i] = m_yL[i] * rel + (1 - rel) * t;
 				}
 			}
@@ -383,11 +398,13 @@ bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 			if (currentPeakDbfs - m_thresholdVal < -m_kneeVal) // Below knee
 			{
 				m_gainResult[i] = currentPeakDbfs;
-			} else if (currentPeakDbfs - m_thresholdVal < m_kneeVal) // Within knee
+			}
+			else if (currentPeakDbfs - m_thresholdVal < m_kneeVal) // Within knee
 			{
 				const float temp = currentPeakDbfs - m_thresholdVal + m_kneeVal;
 				m_gainResult[i] = currentPeakDbfs + ((limiter ? 0 : m_ratioVal) - 1) * temp * temp / (4 * m_kneeVal);
-			} else // Above knee
+			}
+			else // Above knee
 			{
 				m_gainResult[i]
 					= limiter ? m_thresholdVal : m_thresholdVal + (currentPeakDbfs - m_thresholdVal) * m_ratioVal;
@@ -397,7 +414,8 @@ bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 			m_gainResult[i] = qMax(m_rangeVal, m_gainResult[i]);
 		}
 
-		switch (stereoLink) {
+		switch (stereoLink)
+		{
 		case Unlinked: {
 			break;
 		}
@@ -421,13 +439,15 @@ bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 					const float temp1 = qMin(m_gainResult[0], m_gainResult[1]);
 					m_gainResult[0] = linearInterpolate(m_gainResult[0], temp1, blend);
 					m_gainResult[1] = linearInterpolate(m_gainResult[1], temp1, blend);
-				} else if (blend <= 2) // Blend to average volume
+				}
+				else if (blend <= 2) // Blend to average volume
 				{
 					const float temp1 = qMin(m_gainResult[0], m_gainResult[1]);
 					const float temp2 = (m_gainResult[0] + m_gainResult[1]) * 0.5f;
 					m_gainResult[0] = linearInterpolate(temp1, temp2, blend - 1);
 					m_gainResult[1] = m_gainResult[0];
-				} else // Blend to maximum volume
+				}
+				else // Blend to maximum volume
 				{
 					const float temp1 = (m_gainResult[0] + m_gainResult[1]) * 0.5f;
 					const float temp2 = qMax(m_gainResult[0], m_gainResult[1]);
@@ -440,7 +460,8 @@ bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 		}
 
 		// Bias compression to the left or right (or mid or side)
-		if (stereoBalance != 0) {
+		if (stereoBalance != 0)
+		{
 			m_gainResult[0] = 1 - ((1 - m_gainResult[0]) * (stereoBalance > 0 ? 1 - stereoBalance : 1));
 			m_gainResult[1] = 1 - ((1 - m_gainResult[1]) * (stereoBalance < 0 ? 1 + stereoBalance : 1));
 		}
@@ -450,7 +471,8 @@ bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 		m_displayGain[1] = qMax(m_gainResult[1], m_displayGain[1]);
 
 		// Delay the signal by 20 ms via ring buffer if lookahead is enabled
-		if (lookahead) {
+		if (lookahead)
+		{
 			++m_inputBufLoc;
 			if (m_inputBufLoc >= m_lookaheadDelayLength) { m_inputBufLoc = 0; }
 
@@ -460,7 +482,9 @@ bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 
 			m_inputBuf[0][m_inputBufLoc] = temp[0];
 			m_inputBuf[1][m_inputBufLoc] = temp[1];
-		} else {
+		}
+		else
+		{
 			s[0] = drySignal[0];
 			s[1] = drySignal[1];
 		}
@@ -492,10 +516,13 @@ bool CompressorEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 		m_prevOut[1] = s[1];
 
 		// Negate wet signal from dry signal
-		if (audition) {
+		if (audition)
+		{
 			s[0] = (-s[0] + delayedDrySignal[0] * m_outGainVal * m_inGainVal);
 			s[1] = (-s[1] + delayedDrySignal[1] * m_outGainVal * m_inGainVal);
-		} else if (autoMakeup) {
+		}
+		else if (autoMakeup)
+		{
 			s[0] *= m_autoMakeupVal;
 			s[1] *= m_autoMakeupVal;
 		}

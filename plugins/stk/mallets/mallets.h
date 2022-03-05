@@ -70,9 +70,9 @@ public:
 
 	inline sample_t nextSampleLeft()
 	{
-		if (m_voice == nullptr) {
-			return (0.0f);
-		} else {
+		if (m_voice == nullptr) { return (0.0f); }
+		else
+		{
 			StkFloat s = m_voice->tick();
 			m_delay[m_delayWrite] = s;
 			m_delayWrite++;

@@ -40,9 +40,9 @@ MidiPortMenu::~MidiPortMenu() {}
 void MidiPortMenu::modelChanged()
 {
 	MidiPort* mp = castModel<MidiPort>();
-	if (m_mode == MidiPort::Input) {
-		connect(mp, SIGNAL(readablePortsChanged()), this, SLOT(updateMenu()));
-	} else if (m_mode == MidiPort::Output) {
+	if (m_mode == MidiPort::Input) { connect(mp, SIGNAL(readablePortsChanged()), this, SLOT(updateMenu())); }
+	else if (m_mode == MidiPort::Output)
+	{
 		connect(mp, SIGNAL(writablePortsChanged()), this, SLOT(updateMenu()));
 	}
 	updateMenu();
@@ -50,9 +50,9 @@ void MidiPortMenu::modelChanged()
 
 void MidiPortMenu::activatedPort(QAction* _item)
 {
-	if (m_mode == MidiPort::Input) {
-		castModel<MidiPort>()->subscribeReadablePort(_item->text(), _item->isChecked());
-	} else if (m_mode == MidiPort::Output) {
+	if (m_mode == MidiPort::Input) { castModel<MidiPort>()->subscribeReadablePort(_item->text(), _item->isChecked()); }
+	else if (m_mode == MidiPort::Output)
+	{
 		castModel<MidiPort>()->subscribeWritablePort(_item->text(), _item->isChecked());
 	}
 }
@@ -62,7 +62,8 @@ void MidiPortMenu::updateMenu()
 	MidiPort* mp = castModel<MidiPort>();
 	const MidiPort::Map& map = (m_mode == MidiPort::Input) ? mp->readablePorts() : mp->writablePorts();
 	clear();
-	for (MidiPort::Map::ConstIterator it = map.begin(); it != map.end(); ++it) {
+	for (MidiPort::Map::ConstIterator it = map.begin(); it != map.end(); ++it)
+	{
 		QAction* a = addAction(it.key());
 		a->setCheckable(true);
 		a->setChecked(it.value());

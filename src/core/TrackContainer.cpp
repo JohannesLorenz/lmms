@@ -57,7 +57,8 @@ void TrackContainer::saveSettings(QDomDocument& _doc, QDomElement& _this)
 
 	// save settings of each track
 	m_tracksMutex.lockForRead();
-	for (int i = 0; i < m_tracks.size(); ++i) {
+	for (int i = 0; i < m_tracks.size(); ++i)
+	{
 		m_tracks[i]->saveState(_doc, _this);
 	}
 	m_tracksMutex.unlock();
@@ -70,8 +71,10 @@ void TrackContainer::loadSettings(const QDomElement& _this)
 
 	static QProgressDialog* pd = nullptr;
 	bool was_null = (pd == nullptr);
-	if (!journalRestore && getGUI() != nullptr) {
-		if (pd == nullptr) {
+	if (!journalRestore && getGUI() != nullptr)
+	{
+		if (pd == nullptr)
+		{
 			pd = new QProgressDialog(tr("Loading project..."), tr("Cancel"), 0,
 				Engine::getSong()->getLoadingTrackCount(), getGUI()->mainWindow());
 			pd->setWindowModality(Qt::ApplicationModal);
@@ -81,12 +84,16 @@ void TrackContainer::loadSettings(const QDomElement& _this)
 	}
 
 	QDomNode node = _this.firstChild();
-	while (!node.isNull()) {
-		if (pd != nullptr) {
+	while (!node.isNull())
+	{
+		if (pd != nullptr)
+		{
 			pd->setValue(pd->value() + 1);
 			QCoreApplication::instance()->processEvents(QEventLoop::AllEvents, 100);
-			if (pd->wasCanceled()) {
-				if (getGUI() != nullptr) {
+			if (pd->wasCanceled())
+			{
+				if (getGUI() != nullptr)
+				{
 					TextFloat::displayMessage(tr("Loading cancelled"), tr("Project loading was cancelled."),
 						embed::getIconPixmap("project_file", 24, 24), 2000);
 				}
@@ -95,10 +102,12 @@ void TrackContainer::loadSettings(const QDomElement& _this)
 			}
 		}
 
-		if (node.isElement() && !node.toElement().attribute("metadata").toInt()) {
+		if (node.isElement() && !node.toElement().attribute("metadata").toInt())
+		{
 			QString trackName = node.toElement().hasAttribute("name") ? node.toElement().attribute("name")
 																	  : node.firstChild().toElement().attribute("name");
-			if (pd != nullptr) {
+			if (pd != nullptr)
+			{
 				pd->setLabelText(tr("Loading Track %1 (%2/Total %3)")
 									 .arg(trackName)
 									 .arg(pd->value() + 1)
@@ -109,8 +118,10 @@ void TrackContainer::loadSettings(const QDomElement& _this)
 		node = node.nextSibling();
 	}
 
-	if (pd != nullptr) {
-		if (was_null) {
+	if (pd != nullptr)
+	{
+		if (was_null)
+		{
 			delete pd;
 			pd = nullptr;
 		}
@@ -121,7 +132,8 @@ int TrackContainer::countTracks(Track::TrackTypes _tt) const
 {
 	int cnt = 0;
 	m_tracksMutex.lockForRead();
-	for (int i = 0; i < m_tracks.size(); ++i) {
+	for (int i = 0; i < m_tracks.size(); ++i)
+	{
 		if (m_tracks[i]->type() == _tt || _tt == Track::NumTrackTypes) { ++cnt; }
 	}
 	m_tracksMutex.unlock();
@@ -130,7 +142,8 @@ int TrackContainer::countTracks(Track::TrackTypes _tt) const
 
 void TrackContainer::addTrack(Track* _track)
 {
-	if (_track->type() != Track::HiddenAutomationTrack) {
+	if (_track->type() != Track::HiddenAutomationTrack)
+	{
 		_track->lock();
 		m_tracksMutex.lockForWrite();
 		m_tracks.push_back(_track);
@@ -147,7 +160,8 @@ void TrackContainer::removeTrack(Track* _track)
 	//   But since Qt offers no function to promote a read lock to a write lock, we must start with the write locker.
 	QWriteLocker lockTracksAccess(&m_tracksMutex);
 	int index = m_tracks.indexOf(_track);
-	if (index != -1) {
+	if (index != -1)
+	{
 		// If the track is solo, all other tracks are muted. Change this before removing the solo track:
 		if (_track->isSolo()) { _track->setSolo(false); }
 		m_tracks.remove(index);
@@ -162,7 +176,8 @@ void TrackContainer::updateAfterTrackAdd() {}
 void TrackContainer::clearAllTracks()
 {
 	// m_tracksMutex.lockForWrite();
-	while (!m_tracks.isEmpty()) {
+	while (!m_tracks.isEmpty())
+	{
 		delete m_tracks.first();
 	}
 	// m_tracksMutex.unlock();
@@ -170,7 +185,8 @@ void TrackContainer::clearAllTracks()
 
 bool TrackContainer::isEmpty() const
 {
-	for (TrackList::const_iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+	for (TrackList::const_iterator it = m_tracks.begin(); it != m_tracks.end(); ++it)
+	{
 		if (!(*it)->getClips().isEmpty()) { return false; }
 	}
 	return true;
@@ -185,16 +201,18 @@ AutomatedValueMap TrackContainer::automatedValuesFromTracks(const TrackList& tra
 {
 	Track::clipVector clips;
 
-	for (Track* track : tracks) {
+	for (Track* track : tracks)
+	{
 		if (track->isMuted()) { continue; }
 
-		switch (track->type()) {
+		switch (track->type())
+		{
 		case Track::AutomationTrack:
 		case Track::HiddenAutomationTrack:
 		case Track::PatternTrack:
-			if (clipNum < 0) {
-				track->getClipsInRange(clips, 0, time);
-			} else {
+			if (clipNum < 0) { track->getClipsInRange(clips, 0, time); }
+			else
+			{
 				Q_ASSERT(track->numOfClips() > clipNum);
 				clips << track->getClip(clipNum);
 			}
@@ -206,19 +224,24 @@ AutomatedValueMap TrackContainer::automatedValuesFromTracks(const TrackList& tra
 
 	Q_ASSERT(std::is_sorted(clips.begin(), clips.end(), Clip::comparePosition));
 
-	for (Clip* clip : clips) {
+	for (Clip* clip : clips)
+	{
 		if (clip->isMuted() || clip->startPosition() > time) { continue; }
 
-		if (auto* p = dynamic_cast<AutomationClip*>(clip)) {
+		if (auto* p = dynamic_cast<AutomationClip*>(clip))
+		{
 			if (!p->hasAutomation()) { continue; }
 			TimePos relTime = time - p->startPosition();
 			if (!p->getAutoResize()) { relTime = qMin(relTime, p->length()); }
 			float value = p->valueAt(relTime);
 
-			for (AutomatableModel* model : p->objects()) {
+			for (AutomatableModel* model : p->objects())
+			{
 				valueMap[model] = value;
 			}
-		} else if (auto* pattern = dynamic_cast<PatternClip*>(clip)) {
+		}
+		else if (auto* pattern = dynamic_cast<PatternClip*>(clip))
+		{
 			auto patIndex = dynamic_cast<class PatternTrack*>(pattern->getTrack())->patternIndex();
 			auto patStore = Engine::patternStore();
 
@@ -227,11 +250,14 @@ AutomatedValueMap TrackContainer::automatedValuesFromTracks(const TrackList& tra
 			patTime = patTime % (patStore->lengthOfPattern(patIndex) * TimePos::ticksPerBar());
 
 			auto patValues = patStore->automatedValuesAt(patTime, patIndex);
-			for (auto it = patValues.begin(); it != patValues.end(); it++) {
+			for (auto it = patValues.begin(); it != patValues.end(); it++)
+			{
 				// override old values, pattern track with the highest index takes precedence
 				valueMap[it.key()] = it.value();
 			}
-		} else {
+		}
+		else
+		{
 			continue;
 		}
 	}

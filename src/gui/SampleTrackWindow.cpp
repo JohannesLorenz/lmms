@@ -193,11 +193,14 @@ void SampleTrackWindow::textChanged(const QString& new_name)
 
 void SampleTrackWindow::toggleVisibility(bool on)
 {
-	if (on) {
+	if (on)
+	{
 		show();
 		parentWidget()->show();
 		parentWidget()->raise();
-	} else {
+	}
+	else
+	{
 		parentWidget()->hide();
 	}
 }
@@ -206,9 +209,9 @@ void SampleTrackWindow::closeEvent(QCloseEvent* ce)
 {
 	ce->ignore();
 
-	if (getGUI()->mainWindow()->workspace()) {
-		parentWidget()->hide();
-	} else {
+	if (getGUI()->mainWindow()->workspace()) { parentWidget()->hide(); }
+	else
+	{
 		hide();
 	}
 

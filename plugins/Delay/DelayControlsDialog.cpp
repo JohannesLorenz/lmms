@@ -116,7 +116,8 @@ void XyPad::mouseReleaseEvent(QMouseEvent* event) { m_acceptInput = false; }
 
 void XyPad::mouseMoveEvent(QMouseEvent* event)
 {
-	if (m_acceptInput && (event->x() >= 0) && (event->x() < width()) && (event->y() >= 0) && (event->y() < height())) {
+	if (m_acceptInput && (event->x() >= 0) && (event->x() < width()) && (event->y() >= 0) && (event->y() < height()))
+	{
 		// set xmodel
 		float xRange = m_xModel->maxValue() - m_xModel->minValue();
 		float xInc = xRange / width();

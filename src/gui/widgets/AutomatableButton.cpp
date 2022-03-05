@@ -64,11 +64,14 @@ void AutomatableButton::contextMenuEvent(QContextMenuEvent* _me)
 	// an QApplication::restoreOverrideCursor()-call...
 	mouseReleaseEvent(nullptr);
 
-	if (m_group != nullptr) {
+	if (m_group != nullptr)
+	{
 		CaptionMenu contextMenu(m_group->model()->displayName());
 		m_group->addDefaultActions(&contextMenu);
 		contextMenu.exec(QCursor::pos());
-	} else {
+	}
+	else
+	{
 		CaptionMenu contextMenu(model()->displayName());
 		addDefaultActions(&contextMenu);
 		contextMenu.exec(QCursor::pos());
@@ -77,20 +80,26 @@ void AutomatableButton::contextMenuEvent(QContextMenuEvent* _me)
 
 void AutomatableButton::mousePressEvent(QMouseEvent* _me)
 {
-	if (_me->button() == Qt::LeftButton && !(_me->modifiers() & Qt::ControlModifier)) {
+	if (_me->button() == Qt::LeftButton && !(_me->modifiers() & Qt::ControlModifier))
+	{
 		// User simply clicked, toggle if needed
 		if (isCheckable()) { toggle(); }
 		_me->accept();
-	} else {
+	}
+	else
+	{
 		// Ctrl-clicked, need to prepare drag-drop
-		if (m_group) {
+		if (m_group)
+		{
 			// A group, we must get process it instead
 			AutomatableModelView* groupView = (AutomatableModelView*)m_group;
 			new StringPairDrag(
 				"automatable_model", QString::number(groupView->modelUntyped()->id()), QPixmap(), widget());
 			// TODO: ^^ Maybe use a predefined icon instead of the button they happened to select
 			_me->accept();
-		} else {
+		}
+		else
+		{
 			// Otherwise, drag the standalone button
 			AutomatableModelView::mousePressEvent(_me);
 			QPushButton::mousePressEvent(_me);
@@ -105,9 +114,12 @@ void AutomatableButton::mouseReleaseEvent(QMouseEvent* _me)
 
 void AutomatableButton::toggle()
 {
-	if (isCheckable() && m_group != nullptr) {
+	if (isCheckable() && m_group != nullptr)
+	{
 		if (model()->value() == false) { m_group->activateButton(this); }
-	} else {
+	}
+	else
+	{
 		model()->setValue(!model()->value());
 	}
 }
@@ -122,7 +134,8 @@ automatableButtonGroup::automatableButtonGroup(QWidget* _parent, const QString& 
 
 automatableButtonGroup::~automatableButtonGroup()
 {
-	for (QList<AutomatableButton*>::iterator it = m_buttons.begin(); it != m_buttons.end(); ++it) {
+	for (QList<AutomatableButton*>::iterator it = m_buttons.begin(); it != m_buttons.end(); ++it)
+	{
 		(*it)->m_group = nullptr;
 	}
 }
@@ -149,9 +162,11 @@ void automatableButtonGroup::removeButton(AutomatableButton* _btn)
 
 void automatableButtonGroup::activateButton(AutomatableButton* _btn)
 {
-	if (_btn != m_buttons[model()->value()] && m_buttons.indexOf(_btn) != -1) {
+	if (_btn != m_buttons[model()->value()] && m_buttons.indexOf(_btn) != -1)
+	{
 		model()->setValue(m_buttons.indexOf(_btn));
-		for (AutomatableButton* btn : m_buttons) {
+		for (AutomatableButton* btn : m_buttons)
+		{
 			btn->update();
 		}
 	}
@@ -168,7 +183,8 @@ void automatableButtonGroup::updateButtons()
 {
 	model()->setRange(0, m_buttons.size() - 1);
 	int i = 0;
-	for (AutomatableButton* btn : m_buttons) {
+	for (AutomatableButton* btn : m_buttons)
+	{
 		btn->model()->setValue(i == model()->value());
 		++i;
 	}

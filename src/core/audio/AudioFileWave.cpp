@@ -48,7 +48,8 @@ bool AudioFileWave::startEncoding()
 
 	m_si.format = SF_FORMAT_WAV;
 
-	switch (getOutputSettings().getBitDepth()) {
+	switch (getOutputSettings().getBitDepth())
+	{
 	case OutputSettings::Depth_32Bit: m_si.format |= SF_FORMAT_FLOAT; break;
 	case OutputSettings::Depth_24Bit: m_si.format |= SF_FORMAT_PCM_24; break;
 	case OutputSettings::Depth_16Bit:
@@ -58,7 +59,8 @@ bool AudioFileWave::startEncoding()
 	// Use file handle to handle unicode file name on Windows
 	m_sf = sf_open_fd(outputFileHandle(), SFM_WRITE, &m_si, false);
 
-	if (!m_sf) {
+	if (!m_sf)
+	{
 		qWarning("Error: AudioFileWave::startEncoding: %s", sf_strerror(nullptr));
 		return false;
 	}
@@ -75,16 +77,21 @@ void AudioFileWave::writeBuffer(const surroundSampleFrame* _ab, const fpp_t _fra
 {
 	OutputSettings::BitDepth bitDepth = getOutputSettings().getBitDepth();
 
-	if (bitDepth == OutputSettings::Depth_32Bit || bitDepth == OutputSettings::Depth_24Bit) {
+	if (bitDepth == OutputSettings::Depth_32Bit || bitDepth == OutputSettings::Depth_24Bit)
+	{
 		float* buf = new float[_frames * channels()];
-		for (fpp_t frame = 0; frame < _frames; ++frame) {
-			for (ch_cnt_t chnl = 0; chnl < channels(); ++chnl) {
+		for (fpp_t frame = 0; frame < _frames; ++frame)
+		{
+			for (ch_cnt_t chnl = 0; chnl < channels(); ++chnl)
+			{
 				buf[frame * channels() + chnl] = _ab[frame][chnl] * _master_gain;
 			}
 		}
 		sf_writef_float(m_sf, buf, _frames);
 		delete[] buf;
-	} else {
+	}
+	else
+	{
 		int_sample_t* buf = new int_sample_t[_frames * channels()];
 		convertToS16(_ab, _frames, _master_gain, buf, !isLittleEndian());
 

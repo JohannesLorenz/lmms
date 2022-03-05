@@ -57,8 +57,10 @@ void TempoSyncKnobModel::calculateTempoSyncTime(bpm_t _bpm)
 {
 	float conversionFactor = 1.0;
 
-	if (m_tempoSyncMode) {
-		switch (m_tempoSyncMode) {
+	if (m_tempoSyncMode)
+	{
+		switch (m_tempoSyncMode)
+		{
 		case SyncCustom:
 			conversionFactor
 				= static_cast<float>(m_custom.getDenominator()) / static_cast<float>(m_custom.getNumerator());
@@ -78,7 +80,8 @@ void TempoSyncKnobModel::calculateTempoSyncTime(bpm_t _bpm)
 		setJournalling(journalling);
 	}
 
-	if (m_tempoSyncMode != m_tempoLastSyncMode) {
+	if (m_tempoSyncMode != m_tempoLastSyncMode)
+	{
 		emit syncModeChanged(m_tempoSyncMode);
 		m_tempoLastSyncMode = m_tempoSyncMode;
 	}
@@ -100,9 +103,11 @@ void TempoSyncKnobModel::loadSettings(const QDomElement& _this, const QString& _
 
 void TempoSyncKnobModel::setSyncMode(TempoSyncMode _new_mode)
 {
-	if (m_tempoSyncMode != _new_mode) {
+	if (m_tempoSyncMode != _new_mode)
+	{
 		m_tempoSyncMode = _new_mode;
-		if (_new_mode == SyncCustom) {
+		if (_new_mode == SyncCustom)
+		{
 			connect(&m_custom, SIGNAL(dataChanged()), this, SLOT(updateCustom()), Qt::DirectConnection);
 		}
 	}

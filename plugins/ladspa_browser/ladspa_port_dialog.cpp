@@ -58,8 +58,10 @@ ladspaPortDialog::ladspaPortDialog(const ladspa_key_t& _key)
 	ports.append(tr("SR Dependent"));
 	settings->setHorizontalHeaderLabels(ports);
 
-	for (int row = 0; row < pc; row++) {
-		for (int col = 0; col < 7; ++col) {
+	for (int row = 0; row < pc; row++)
+	{
+		for (int col = 0; col < 7; ++col)
+		{
 			QTableWidgetItem* item = new QTableWidgetItem;
 			item->setFlags(QFlag(0));
 			settings->setItem(row, col, item);
@@ -82,32 +84,39 @@ ladspaPortDialog::ladspaPortDialog(const ladspa_key_t& _key)
 		float def = manager->getDefaultSetting(_key, row);
 		QString range = "";
 
-		if (manager->areHintsSampleRateDependent(_key, row)) {
+		if (manager->areHintsSampleRateDependent(_key, row))
+		{
 			if (min != NOHINT) { min *= Engine::audioEngine()->processingSampleRate(); }
 			if (max != NOHINT) { max *= Engine::audioEngine()->processingSampleRate(); }
 		}
 
-		if (min == NOHINT) {
-			range += "-Inf < ";
-		} else if (manager->isInteger(_key, row)) {
+		if (min == NOHINT) { range += "-Inf < "; }
+		else if (manager->isInteger(_key, row))
+		{
 			range += QString::number(static_cast<int>(min)) + " < ";
-		} else {
+		}
+		else
+		{
 			range += QString::number(min) + " < ";
 		}
 
-		if (def == NOHINT) {
-			range += "None < ";
-		} else if (manager->isInteger(_key, row)) {
+		if (def == NOHINT) { range += "None < "; }
+		else if (manager->isInteger(_key, row))
+		{
 			range += QString::number(static_cast<int>(def)) + " < ";
-		} else {
+		}
+		else
+		{
 			range += QString::number(def) + " < ";
 		}
 
-		if (max == NOHINT) {
-			range += "Inf";
-		} else if (manager->isInteger(_key, row)) {
+		if (max == NOHINT) { range += "Inf"; }
+		else if (manager->isInteger(_key, row))
+		{
 			range += QString::number(static_cast<int>(max));
-		} else {
+		}
+		else
+		{
 			range += QString::number(max);
 		}
 

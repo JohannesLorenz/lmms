@@ -49,7 +49,8 @@ public:
 
 	virtual inline void setSampleRate(int sampleRate)
 	{
-		if (sampleRate != m_sampleRate) {
+		if (sampleRate != m_sampleRate)
+		{
 			m_sampleRate = sampleRate;
 			calcCoefficents();
 		}
@@ -57,7 +58,8 @@ public:
 
 	virtual inline void setFrequency(float freq)
 	{
-		if (freq != m_freq) {
+		if (freq != m_freq)
+		{
 			m_freq = freq;
 			calcCoefficents();
 		}
@@ -65,7 +67,8 @@ public:
 
 	virtual inline void setQ(float res)
 	{
-		if (res != m_res) {
+		if (res != m_res)
+		{
 			m_res = res;
 			calcCoefficents();
 		}
@@ -73,7 +76,8 @@ public:
 
 	virtual inline void setGain(float gain)
 	{
-		if (gain != m_gain) {
+		if (gain != m_gain)
+		{
 			m_gain = gain;
 			calcCoefficents();
 		}
@@ -82,7 +86,8 @@ public:
 	virtual inline void setParameters(float sampleRate, float freq, float res, float gain)
 	{
 		bool hasChanged = (sampleRate != m_sampleRate || freq != m_freq || res != m_res || gain != m_gain);
-		if (hasChanged) {
+		if (hasChanged)
+		{
 			m_sampleRate = sampleRate;
 			m_freq = freq;
 			m_res = res;
@@ -251,19 +256,23 @@ public:
 	virtual inline void setParameters(float sampleRate, float freq, float bw, float gain)
 	{
 		bool hasChanged = false;
-		if (sampleRate != m_sampleRate) {
+		if (sampleRate != m_sampleRate)
+		{
 			m_sampleRate = sampleRate;
 			hasChanged = true;
 		}
-		if (freq != m_freq) {
+		if (freq != m_freq)
+		{
 			m_freq = freq;
 			hasChanged = true;
 		}
-		if (bw != m_bw) {
+		if (bw != m_bw)
+		{
 			m_bw = bw;
 			hasChanged = true;
 		}
-		if (gain != m_gain) {
+		if (gain != m_gain)
+		{
 			m_gain = gain;
 			hasChanged = true;
 		}
@@ -355,7 +364,8 @@ public:
 
 	virtual inline void setSR(int sampleRate)
 	{
-		if (sampleRate != m_sr) {
+		if (sampleRate != m_sr)
+		{
 			m_sr = sampleRate;
 			setSampleRate(sampleRate);
 			setLowpass(m_freq);
@@ -364,7 +374,8 @@ public:
 
 	virtual inline void setFrequency(float freq)
 	{
-		if (freq != m_freq) {
+		if (freq != m_freq)
+		{
 			m_freq = freq;
 			setLowpass(m_freq);
 		}
@@ -372,7 +383,8 @@ public:
 
 	virtual void processBuffer(sampleFrame* buf, const fpp_t frames)
 	{
-		for (fpp_t f = 0; f < frames; ++f) {
+		for (fpp_t f = 0; f < frames; ++f)
+		{
 			buf[f][0] = update(buf[f][0], 0);
 			buf[f][1] = update(buf[f][1], 1);
 		}

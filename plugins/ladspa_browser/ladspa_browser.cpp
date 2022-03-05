@@ -100,7 +100,8 @@ ladspaBrowserView::ladspaBrowserView(ToolPlugin* _tool)
 	hlayout->addStretch();
 
 	hide();
-	if (parentWidget()) {
+	if (parentWidget())
+	{
 		parentWidget()->hide();
 		parentWidget()->layout()->setSizeConstraint(QLayout::SetFixedSize);
 

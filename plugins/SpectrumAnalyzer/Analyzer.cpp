@@ -88,7 +88,8 @@ bool Analyzer::processAudioBuffer(sampleFrame* buffer, const fpp_t frame_count)
 	if (!isEnabled() || !isRunning()) { return false; }
 
 	// Skip processing if the controls dialog isn't visible, it would only waste CPU cycles.
-	if (m_controls.isViewVisible()) {
+	if (m_controls.isViewVisible())
+	{
 		// To avoid processing spikes on audio thread, data are stored in
 		// a lockless ringbuffer and processed in a separate thread.
 		m_inputBuffer.write(buffer, frame_count, true);

@@ -39,7 +39,8 @@ AudioDevice::AudioDevice(const ch_cnt_t _channels, AudioEngine* _audioEngine)
 {
 	int error;
 	if ((m_srcState = src_new(audioEngine()->currentQualitySettings().libsrcInterpolation(), SURROUND_CHANNELS, &error))
-		== nullptr) {
+		== nullptr)
+	{
 		printf("Error: src_new() failed in audio_device.cpp!\n");
 	}
 }
@@ -56,9 +57,9 @@ AudioDevice::~AudioDevice()
 void AudioDevice::processNextBuffer()
 {
 	const fpp_t frames = getNextBuffer(m_buffer);
-	if (frames) {
-		writeBuffer(m_buffer, frames, audioEngine()->masterGain());
-	} else {
+	if (frames) { writeBuffer(m_buffer, frames, audioEngine()->masterGain()); }
+	else
+	{
 		m_inProcess = false;
 	}
 }
@@ -73,9 +74,12 @@ fpp_t AudioDevice::getNextBuffer(surroundSampleFrame* _ab)
 	lock();
 
 	// resample if necessary
-	if (audioEngine()->processingSampleRate() != m_sampleRate) {
+	if (audioEngine()->processingSampleRate() != m_sampleRate)
+	{
 		frames = resample(b, frames, _ab, audioEngine()->processingSampleRate(), m_sampleRate);
-	} else {
+	}
+	else
+	{
 		memcpy(_ab, b, frames * sizeof(surroundSampleFrame));
 	}
 
@@ -89,8 +93,10 @@ fpp_t AudioDevice::getNextBuffer(surroundSampleFrame* _ab)
 
 void AudioDevice::stopProcessing()
 {
-	if (audioEngine()->hasFifoWriter()) {
-		while (m_inProcess) {
+	if (audioEngine()->hasFifoWriter())
+	{
+		while (m_inProcess)
+		{
 			processNextBuffer();
 		}
 	}
@@ -98,7 +104,8 @@ void AudioDevice::stopProcessing()
 
 void AudioDevice::stopProcessingThread(QThread* thread)
 {
-	if (!thread->wait(30000)) {
+	if (!thread->wait(30000))
+	{
 		fprintf(stderr, "Terminating audio device thread\n");
 		thread->terminate();
 		if (!thread->wait(1000)) { fprintf(stderr, "Thread not terminated yet\n"); }
@@ -111,7 +118,8 @@ void AudioDevice::applyQualitySettings()
 
 	int error;
 	if ((m_srcState = src_new(audioEngine()->currentQualitySettings().libsrcInterpolation(), SURROUND_CHANNELS, &error))
-		== nullptr) {
+		== nullptr)
+	{
 		printf("Error: src_new() failed in audio_device.cpp!\n");
 	}
 }
@@ -133,7 +141,8 @@ fpp_t AudioDevice::resample(const surroundSampleFrame* _src, const fpp_t _frames
 	m_srcData.src_ratio = (double)_dst_sr / _src_sr;
 	m_srcData.end_of_input = 0;
 	int error;
-	if ((error = src_process(m_srcState, &m_srcData))) {
+	if ((error = src_process(m_srcState, &m_srcData)))
+	{
 		printf("AudioDevice::resample(): error while resampling: %s\n", src_strerror(error));
 	}
 	return static_cast<fpp_t>(m_srcData.output_frames_gen);
@@ -142,19 +151,26 @@ fpp_t AudioDevice::resample(const surroundSampleFrame* _src, const fpp_t _frames
 int AudioDevice::convertToS16(const surroundSampleFrame* _ab, const fpp_t _frames, const float _master_gain,
 	int_sample_t* _output_buffer, const bool _convert_endian)
 {
-	if (_convert_endian) {
+	if (_convert_endian)
+	{
 		int_sample_t temp;
-		for (fpp_t frame = 0; frame < _frames; ++frame) {
-			for (ch_cnt_t chnl = 0; chnl < channels(); ++chnl) {
+		for (fpp_t frame = 0; frame < _frames; ++frame)
+		{
+			for (ch_cnt_t chnl = 0; chnl < channels(); ++chnl)
+			{
 				temp = static_cast<int_sample_t>(
 					AudioEngine::clip(_ab[frame][chnl] * _master_gain) * OUTPUT_SAMPLE_MULTIPLIER);
 
 				(_output_buffer + frame * channels())[chnl] = (temp & 0x00ff) << 8 | (temp & 0xff00) >> 8;
 			}
 		}
-	} else {
-		for (fpp_t frame = 0; frame < _frames; ++frame) {
-			for (ch_cnt_t chnl = 0; chnl < channels(); ++chnl) {
+	}
+	else
+	{
+		for (fpp_t frame = 0; frame < _frames; ++frame)
+		{
+			for (ch_cnt_t chnl = 0; chnl < channels(); ++chnl)
+			{
 				(_output_buffer + frame * channels())[chnl] = static_cast<int_sample_t>(
 					AudioEngine::clip(_ab[frame][chnl] * _master_gain) * OUTPUT_SAMPLE_MULTIPLIER);
 			}

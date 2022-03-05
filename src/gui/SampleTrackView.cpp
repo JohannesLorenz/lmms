@@ -87,16 +87,17 @@ SampleTrackView::SampleTrackView(SampleTrack* _t, TrackContainerView* tcv)
 
 void SampleTrackView::updateIndicator()
 {
-	if (model()->isPlaying()) {
-		m_activityIndicator->activateOnce();
-	} else {
+	if (model()->isPlaying()) { m_activityIndicator->activateOnce(); }
+	else
+	{
 		m_activityIndicator->noteEnd();
 	}
 }
 
 SampleTrackView::~SampleTrackView()
 {
-	if (m_window != nullptr) {
+	if (m_window != nullptr)
+	{
 		m_window->setSampleTrackView(nullptr);
 		m_window->parentWidget()->hide();
 	}
@@ -118,10 +119,12 @@ QMenu* SampleTrackView::createMixerMenu(QString title, QString newMixerLabel)
 	mixerMenu->addAction(newMixerLabel, this, SLOT(createMixerLine()));
 	mixerMenu->addSeparator();
 
-	for (int i = 0; i < Engine::mixer()->numChannels(); ++i) {
+	for (int i = 0; i < Engine::mixer()->numChannels(); ++i)
+	{
 		MixerChannel* currentChannel = Engine::mixer()->mixerChannel(i);
 
-		if (currentChannel != mixerChannel) {
+		if (currentChannel != mixerChannel)
+		{
 			const auto index = currentChannel->m_channelIndex;
 			QString label = tr("%1: %2").arg(currentChannel->m_channelIndex).arg(currentChannel->m_name);
 			mixerMenu->addAction(label, [this, index]() { assignMixerLine(index); });
@@ -151,7 +154,8 @@ void SampleTrackView::dropEvent(QDropEvent* de)
 	QString type = StringPairDrag::decodeKey(de);
 	QString value = StringPairDrag::decodeValue(de);
 
-	if (type == "samplefile") {
+	if (type == "samplefile")
+	{
 		int trackHeadWidth = ConfigManager::inst()->value("ui", "compacttrackbuttons").toInt() == 1
 			? DEFAULT_SETTINGS_WIDGET_WIDTH_COMPACT + TRACK_OP_WIDTH_COMPACT
 			: DEFAULT_SETTINGS_WIDGET_WIDTH + TRACK_OP_WIDTH;

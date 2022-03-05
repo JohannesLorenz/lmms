@@ -44,12 +44,16 @@ vibratingString::vibratingString(float _pitch, float _pick, float _pickup, float
 
 	int pick = static_cast<int>(ceil(string_length * _pick));
 
-	if (!_state) {
+	if (!_state)
+	{
 		m_impulse = new float[string_length];
 		resample(_impulse, _len, string_length);
-	} else {
+	}
+	else
+	{
 		m_impulse = new float[_len];
-		for (int i = 0; i < _len; i++) {
+		for (int i = 0; i < _len; i++)
+		{
 			m_impulse[i] = _impulse[i];
 		}
 	}
@@ -69,16 +73,20 @@ vibratingString::delayLine* vibratingString::initDelayLine(int _len, int _pick)
 {
 	delayLine* dl = new vibratingString::delayLine[_len];
 	dl->length = _len;
-	if (_len > 0) {
+	if (_len > 0)
+	{
 		dl->data = new sample_t[_len];
 		float r;
 		float offset = 0.0f;
-		for (int i = 0; i < dl->length; i++) {
+		for (int i = 0; i < dl->length; i++)
+		{
 			r = static_cast<float>(rand()) / RAND_MAX;
 			offset = (m_randomize / 2.0f - m_randomize) * r;
 			dl->data[i] = offset;
 		}
-	} else {
+	}
+	else
+	{
 		dl->data = nullptr;
 	}
 
@@ -90,7 +98,8 @@ vibratingString::delayLine* vibratingString::initDelayLine(int _len, int _pick)
 
 void vibratingString::freeDelayLine(delayLine* _dl)
 {
-	if (_dl) {
+	if (_dl)
+	{
 		delete[] _dl->data;
 		delete[] _dl;
 	}
@@ -98,7 +107,8 @@ void vibratingString::freeDelayLine(delayLine* _dl)
 
 void vibratingString::resample(float* _src, f_cnt_t _src_frames, f_cnt_t _dst_frames)
 {
-	for (f_cnt_t frame = 0; frame < _dst_frames; ++frame) {
+	for (f_cnt_t frame = 0; frame < _dst_frames; ++frame)
+	{
 		const float src_frame_float = frame * (float)_src_frames / _dst_frames;
 		const float frac_pos = src_frame_float - static_cast<f_cnt_t>(src_frame_float);
 		const f_cnt_t src_frame = qBound<f_cnt_t>(1, static_cast<f_cnt_t>(src_frame_float), _src_frames - 3);

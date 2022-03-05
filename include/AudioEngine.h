@@ -87,7 +87,8 @@ public:
 
 		qualitySettings(Mode m)
 		{
-			switch (m) {
+			switch (m)
+			{
 			case Mode_Draft:
 				interpolation = Interpolation_Linear;
 				oversampling = Oversampling_None;
@@ -111,7 +112,8 @@ public:
 
 		int sampleRateMultiplier() const
 		{
-			switch (oversampling) {
+			switch (oversampling)
+			{
 			case Oversampling_None: return 1;
 			case Oversampling_2x: return 2;
 			case Oversampling_4x: return 4;
@@ -122,7 +124,8 @@ public:
 
 		int libsrcInterpolation() const
 		{
-			switch (interpolation) {
+			switch (interpolation)
+			{
 			case Interpolation_Linear: return SRC_ZERO_ORDER_HOLD;
 			case Interpolation_SincFastest: return SRC_SINC_FASTEST;
 			case Interpolation_SincMedium: return SRC_SINC_MEDIUM_QUALITY;
@@ -194,9 +197,9 @@ public:
 
 	static inline sample_t clip(const sample_t s)
 	{
-		if (s > 1.0f) {
-			return 1.0f;
-		} else if (s < -1.0f) {
+		if (s > 1.0f) { return 1.0f; }
+		else if (s < -1.0f)
+		{
 			return -1.0f;
 		}
 		return s;

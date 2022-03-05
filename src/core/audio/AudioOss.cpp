@@ -73,13 +73,15 @@ AudioOss::AudioOss(bool& _success_ful, AudioEngine* _audioEngine)
 
 	m_audioFD = open(probeDevice().toLatin1().constData(), O_WRONLY, 0);
 
-	if (m_audioFD == -1) {
+	if (m_audioFD == -1)
+	{
 		printf("AudioOss: failed opening audio-device\n");
 		return;
 	}
 
 	// Make the file descriptor use blocking writes with fcntl()
-	if (fcntl(m_audioFD, F_SETFL, fcntl(m_audioFD, F_GETFL) & ~O_NONBLOCK) < 0) {
+	if (fcntl(m_audioFD, F_SETFL, fcntl(m_audioFD, F_GETFL) & ~O_NONBLOCK) < 0)
+	{
 		printf("could not set audio blocking mode\n");
 		return;
 	}
@@ -91,62 +93,75 @@ AudioOss::AudioOss(bool& _success_ful, AudioEngine* _audioEngine)
 	int frag_spec;
 	for (frag_spec = 0;
 		 static_cast<int>(0x01 << frag_spec) < audioEngine()->framesPerPeriod() * channels() * BYTES_PER_INT_SAMPLE;
-		 ++frag_spec) {}
+		 ++frag_spec)
+	{
+	}
 
 	frag_spec |= 0x00020000; // two fragments, for low latency
 
-	if (ioctl(m_audioFD, SNDCTL_DSP_SETFRAGMENT, &frag_spec) < 0) {
+	if (ioctl(m_audioFD, SNDCTL_DSP_SETFRAGMENT, &frag_spec) < 0)
+	{
 		perror("SNDCTL_DSP_SETFRAGMENT");
 		printf("Warning: Couldn't set audio fragment size\n");
 	}
 
 	unsigned int value;
 	// Get a list of supported hardware formats
-	if (ioctl(m_audioFD, SNDCTL_DSP_GETFMTS, &value) < 0) {
+	if (ioctl(m_audioFD, SNDCTL_DSP_GETFMTS, &value) < 0)
+	{
 		perror("SNDCTL_DSP_GETFMTS");
 		printf("Couldn't get audio format list\n");
 		return;
 	}
 
 	// Set the audio format
-	if (value & AFMT_S16_LE) {
-		value = AFMT_S16_LE;
-	} else if (value & AFMT_S16_BE) {
+	if (value & AFMT_S16_LE) { value = AFMT_S16_LE; }
+	else if (value & AFMT_S16_BE)
+	{
 		value = AFMT_S16_BE;
-	} else {
+	}
+	else
+	{
 		printf(" Soundcard doesn't support signed 16-bit-data\n");
 	}
-	if (ioctl(m_audioFD, SNDCTL_DSP_SETFMT, &value) < 0) {
+	if (ioctl(m_audioFD, SNDCTL_DSP_SETFMT, &value) < 0)
+	{
 		perror("SNDCTL_DSP_SETFMT");
 		printf("Couldn't set audio format\n");
 		return;
 	}
-	if ((isLittleEndian() && (value == AFMT_S16_BE)) || (!isLittleEndian() && (value == AFMT_S16_LE))) {
+	if ((isLittleEndian() && (value == AFMT_S16_BE)) || (!isLittleEndian() && (value == AFMT_S16_LE)))
+	{
 		m_convertEndian = true;
 	}
 
 	// Set the number of channels of output
 	value = channels();
-	if (ioctl(m_audioFD, SNDCTL_DSP_CHANNELS, &value) < 0) {
+	if (ioctl(m_audioFD, SNDCTL_DSP_CHANNELS, &value) < 0)
+	{
 		perror("SNDCTL_DSP_CHANNELS");
 		printf("Cannot set the number of channels\n");
 		return;
 	}
-	if (value != channels()) {
+	if (value != channels())
+	{
 		printf("Couldn't set number of channels\n");
 		return;
 	}
 
 	// Set the DSP frequency
 	value = sampleRate();
-	if (ioctl(m_audioFD, SNDCTL_DSP_SPEED, &value) < 0) {
+	if (ioctl(m_audioFD, SNDCTL_DSP_SPEED, &value) < 0)
+	{
 		perror("SNDCTL_DSP_SPEED");
 		printf("Couldn't set audio frequency\n");
 		return;
 	}
-	if (value != sampleRate()) {
+	if (value != sampleRate())
+	{
 		value = audioEngine()->baseSampleRate();
-		if (ioctl(m_audioFD, SNDCTL_DSP_SPEED, &value) < 0) {
+		if (ioctl(m_audioFD, SNDCTL_DSP_SPEED, &value) < 0)
+		{
 			perror("SNDCTL_DSP_SPEED");
 			printf("Couldn't set audio frequency\n");
 			return;
@@ -166,22 +181,26 @@ AudioOss::~AudioOss()
 QString AudioOss::probeDevice()
 {
 	QString dev = ConfigManager::inst()->value("AudioOss", "Device");
-	if (dev.isEmpty()) {
+	if (dev.isEmpty())
+	{
 		char* adev = getenv("AUDIODEV"); // Is there a standard
 										 // variable name?
-		if (adev != nullptr) {
-			dev = adev;
-		} else {
+		if (adev != nullptr) { dev = adev; }
+		else
+		{
 			dev = PATH_DEV_DSP; // default device
 		}
 	}
 
 	// if the first open fails, look for other devices
-	if (QFileInfo(dev).isWritable() == false) {
+	if (QFileInfo(dev).isWritable() == false)
+	{
 		int instance = -1;
-		while (1) {
+		while (1)
+		{
 			dev = PATH_DEV_DSP + QString::number(++instance);
-			if (!QFileInfo(dev).exists()) {
+			if (!QFileInfo(dev).exists())
+			{
 				dev = PATH_DEV_DSP;
 				break;
 			}
@@ -200,18 +219,22 @@ void AudioOss::stopProcessing() { stopProcessingThread(this); }
 
 void AudioOss::applyQualitySettings()
 {
-	if (hqAudio()) {
+	if (hqAudio())
+	{
 		setSampleRate(Engine::audioEngine()->processingSampleRate());
 
 		unsigned int value = sampleRate();
-		if (ioctl(m_audioFD, SNDCTL_DSP_SPEED, &value) < 0) {
+		if (ioctl(m_audioFD, SNDCTL_DSP_SPEED, &value) < 0)
+		{
 			perror("SNDCTL_DSP_SPEED");
 			printf("Couldn't set audio frequency\n");
 			return;
 		}
-		if (value != sampleRate()) {
+		if (value != sampleRate())
+		{
 			value = audioEngine()->baseSampleRate();
-			if (ioctl(m_audioFD, SNDCTL_DSP_SPEED, &value) < 0) {
+			if (ioctl(m_audioFD, SNDCTL_DSP_SPEED, &value) < 0)
+			{
 				perror("SNDCTL_DSP_SPEED");
 				printf("Couldn't set audio frequency\n");
 				return;
@@ -228,7 +251,8 @@ void AudioOss::run()
 	surroundSampleFrame* temp = new surroundSampleFrame[audioEngine()->framesPerPeriod()];
 	int_sample_t* outbuf = new int_sample_t[audioEngine()->framesPerPeriod() * channels()];
 
-	while (true) {
+	while (true)
+	{
 		const fpp_t frames = getNextBuffer(temp);
 		if (!frames) { break; }
 

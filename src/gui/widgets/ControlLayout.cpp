@@ -98,7 +98,8 @@ ControlLayout::ControlLayout(QWidget* parent, int margin, int hSpacing, int vSpa
 ControlLayout::~ControlLayout()
 {
 	QLayoutItem* item;
-	while ((item = takeAt(0))) {
+	while ((item = takeAt(0)))
+	{
 		delete item;
 	}
 }
@@ -119,18 +120,18 @@ void ControlLayout::addItem(QLayoutItem* item)
 
 int ControlLayout::horizontalSpacing() const
 {
-	if (m_hSpace >= 0) {
-		return m_hSpace;
-	} else {
+	if (m_hSpace >= 0) { return m_hSpace; }
+	else
+	{
 		return smartSpacing(QStyle::PM_LayoutHorizontalSpacing);
 	}
 }
 
 int ControlLayout::verticalSpacing() const
 {
-	if (m_vSpace >= 0) {
-		return m_vSpace;
-	} else {
+	if (m_vSpace >= 0) { return m_vSpace; }
+	else
+	{
 		return smartSpacing(QStyle::PM_LayoutVerticalSpacing);
 	}
 }
@@ -144,7 +145,8 @@ QMap<QString, QLayoutItem*>::const_iterator ControlLayout::pairAt(int index) con
 	auto skip = [&](QLayoutItem* item) -> bool { return item->widget()->objectName() == s_searchBarName; };
 
 	QMap<QString, QLayoutItem*>::const_iterator itr = m_itemMap.cbegin();
-	for (; itr != m_itemMap.cend() && (index > 0 || skip(itr.value())); ++itr) {
+	for (; itr != m_itemMap.cend() && (index > 0 || skip(itr.value())); ++itr)
+	{
 		if (!skip(itr.value())) { index--; }
 	}
 	return itr;
@@ -196,7 +198,8 @@ QSize ControlLayout::minimumSize() const
 	// get maximum height and width for all children.
 	// as Qt will later call heightForWidth, only the width here really matters
 	QSize size;
-	for (const QLayoutItem* item : std::as_const(m_itemMap)) {
+	for (const QLayoutItem* item : std::as_const(m_itemMap))
+	{
 		size = size.expandedTo(item->minimumSize());
 	}
 	const QMargins margins = contentsMargins();
@@ -221,38 +224,47 @@ int ControlLayout::doLayout(const QRect& rect, bool testOnly) const
 	bool first = true;
 
 	QMapIterator<QString, QLayoutItem*> itr(m_itemMap);
-	while (itr.hasNext()) {
+	while (itr.hasNext())
+	{
 		itr.next();
 		QLayoutItem* item = itr.value();
 		QWidget* wid = item->widget();
-		if (wid) {
+		if (wid)
+		{
 			if (first ||				// do not filter search bar
 				filterText.isEmpty() || // no filter - pass all
-				itr.key().contains(filterText, Qt::CaseInsensitive)) {
-				if (first) {
+				itr.key().contains(filterText, Qt::CaseInsensitive))
+			{
+				if (first)
+				{
 					// for the search bar, only show it if there are at least
 					// two control widgets (i.e. at least 3 widgets)
-					if (m_itemMap.size() > 2) {
-						wid->show();
-					} else {
+					if (m_itemMap.size() > 2) { wid->show(); }
+					else
+					{
 						wid->hide();
 					}
-				} else {
+				}
+				else
+				{
 					wid->show();
 				}
 
 				int spaceX = horizontalSpacing();
-				if (spaceX == -1) {
+				if (spaceX == -1)
+				{
 					spaceX
 						= wid->style()->layoutSpacing(QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Horizontal);
 				}
 				int spaceY = verticalSpacing();
-				if (spaceY == -1) {
+				if (spaceY == -1)
+				{
 					spaceY
 						= wid->style()->layoutSpacing(QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Vertical);
 				}
 				int nextX = x + item->sizeHint().width() + spaceX;
-				if (nextX - spaceX > effectiveRect.right() && lineHeight > 0) {
+				if (nextX - spaceX > effectiveRect.right() && lineHeight > 0)
+				{
 					x = effectiveRect.x();
 					y = y + lineHeight + spaceY;
 					nextX = x + item->sizeHint().width() + spaceX;
@@ -264,7 +276,9 @@ int ControlLayout::doLayout(const QRect& rect, bool testOnly) const
 				x = nextX;
 				lineHeight = qMax(lineHeight, item->sizeHint().height());
 				first = false;
-			} else {
+			}
+			else
+			{
 				wid->hide();
 			}
 		}
@@ -275,12 +289,14 @@ int ControlLayout::doLayout(const QRect& rect, bool testOnly) const
 int ControlLayout::smartSpacing(QStyle::PixelMetric pm) const
 {
 	QObject* parent = this->parent();
-	if (!parent) {
-		return -1;
-	} else if (parent->isWidgetType()) {
+	if (!parent) { return -1; }
+	else if (parent->isWidgetType())
+	{
 		QWidget* pw = static_cast<QWidget*>(parent);
 		return pw->style()->pixelMetric(pm, nullptr, pw);
-	} else {
+	}
+	else
+	{
 		return static_cast<QLayout*>(parent)->spacing();
 	}
 }

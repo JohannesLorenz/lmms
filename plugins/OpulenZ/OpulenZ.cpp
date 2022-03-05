@@ -140,7 +140,8 @@ OpulenzInstrument::OpulenzInstrument(InstrumentTrack* _instrument_track)
 	// Initialize voice values
 	//  voiceNote[0] = 0;
 	//  voiceLRU[0] = 0;
-	for (int i = 0; i < OPL2_VOICES; ++i) {
+	for (int i = 0; i < OPL2_VOICES; ++i)
+	{
 		voiceNote[i] = OPL2_VOICE_FREE;
 		voiceLRU[i] = i;
 	}
@@ -226,7 +227,8 @@ void OpulenzInstrument::reloadEmulator()
 	theEmulator->init();
 	theEmulator->write(0x01, 0x20);
 	emulatorMutex.unlock();
-	for (int i = 0; i < OPL2_VOICES; ++i) {
+	for (int i = 0; i < OPL2_VOICES; ++i)
+	{
 		voiceNote[i] = OPL2_VOICE_FREE;
 		voiceLRU[i] = i;
 	}
@@ -239,9 +241,9 @@ void OpulenzInstrument::setVoiceVelocity(int voice, int vel)
 	int vel_adjusted;
 	// Velocity calculation, some kind of approximation
 	// Only calculate for operator 1 if in adding mode, don't want to change timbre
-	if (fm_mdl.value() == false) {
-		vel_adjusted = 63 - (op1_lvl_mdl.value() * vel / 127.0);
-	} else {
+	if (fm_mdl.value() == false) { vel_adjusted = 63 - (op1_lvl_mdl.value() * vel / 127.0); }
+	else
+	{
 		vel_adjusted = 63 - op1_lvl_mdl.value();
 	}
 	theEmulator->write(0x40 + adlib_opadd[voice], ((int)op1_scale_mdl.value() & 0x03 << 6) + (vel_adjusted & 0x3f));
@@ -255,7 +257,8 @@ void OpulenzInstrument::setVoiceVelocity(int voice, int vel)
 int OpulenzInstrument::popVoice()
 {
 	int tmp = voiceLRU[0];
-	for (int i = 0; i < OPL2_VOICES - 1; ++i) {
+	for (int i = 0; i < OPL2_VOICES - 1; ++i)
+	{
 		voiceLRU[i] = voiceLRU[i + 1];
 	}
 	voiceLRU[OPL2_VOICES - 1] = OPL2_NO_VOICE;
@@ -270,7 +273,8 @@ int OpulenzInstrument::pushVoice(int v)
 {
 	int i;
 	assert(voiceLRU[OPL2_VOICES - 1] == OPL2_NO_VOICE);
-	for (i = OPL2_VOICES - 1; i > 0; --i) {
+	for (i = OPL2_VOICES - 1; i > 0; --i)
+	{
 		if (voiceLRU[i - 1] != OPL2_NO_VOICE) { break; }
 	}
 	voiceLRU[i] = v;
@@ -286,13 +290,15 @@ bool OpulenzInstrument::handleMidiEvent(const MidiEvent& event, const TimePos& t
 	emulatorMutex.lock();
 	int key, vel, voice, tmp_pb;
 
-	switch (event.type()) {
+	switch (event.type())
+	{
 	case MidiNoteOn:
 		key = event.key();
 		vel = event.velocity();
 
 		voice = popVoice();
-		if (voice != OPL2_NO_VOICE) {
+		if (voice != OPL2_NO_VOICE)
+		{
 			// Turn voice on, NB! the frequencies are straight by voice number,
 			// not by the adlib_opadd table!
 			theEmulator->write(0xA0 + voice, fnums[key] & 0xff);
@@ -304,8 +310,10 @@ bool OpulenzInstrument::handleMidiEvent(const MidiEvent& event, const TimePos& t
 		break;
 	case MidiNoteOff:
 		key = event.key();
-		for (voice = 0; voice < OPL2_VOICES; ++voice) {
-			if (voiceNote[voice] == key) {
+		for (voice = 0; voice < OPL2_VOICES; ++voice)
+		{
+			if (voiceNote[voice] == key)
+			{
 				theEmulator->write(0xA0 + voice, fnums[key] & 0xff);
 				theEmulator->write(0xB0 + voice, (fnums[key] & 0x1f00) >> 8);
 				voiceNote[voice] |= OPL2_VOICE_FREE;
@@ -318,7 +326,8 @@ bool OpulenzInstrument::handleMidiEvent(const MidiEvent& event, const TimePos& t
 		key = event.key();
 		vel = event.velocity();
 		if (velocities[key] != 0) { velocities[key] = vel; }
-		for (voice = 0; voice < OPL2_VOICES; ++voice) {
+		for (voice = 0; voice < OPL2_VOICES; ++voice)
+		{
 			if (voiceNote[voice] == key) { setVoiceVelocity(voice, vel); }
 		}
 		break;
@@ -328,12 +337,14 @@ bool OpulenzInstrument::handleMidiEvent(const MidiEvent& event, const TimePos& t
 		// Neutral = 8192, full downbend = 0, full upbend = 16383
 		tmp_pb = (event.pitchBend() - 8192) * pitchBendRange / 8192;
 
-		if (tmp_pb != pitchbend) {
+		if (tmp_pb != pitchbend)
+		{
 			pitchbend = tmp_pb;
 			tuneEqual(69, 440.0);
 		}
 		// Update pitch of all voices (also released ones)
-		for (int v = 0; v < OPL2_VOICES; ++v) {
+		for (int v = 0; v < OPL2_VOICES; ++v)
+		{
 			int vn = (voiceNote[v] & ~OPL2_VOICE_FREE);			 // remove the flag bit
 			int playing = (voiceNote[v] & OPL2_VOICE_FREE) == 0; // just the flag bit
 			theEmulator->write(0xA0 + v, fnums[vn] & 0xff);
@@ -341,11 +352,13 @@ bool OpulenzInstrument::handleMidiEvent(const MidiEvent& event, const TimePos& t
 		}
 		break;
 	case MidiControlChange:
-		switch (event.controllerNumber()) {
+		switch (event.controllerNumber())
+		{
 		case MidiControllerRegisteredParameterNumberLSB: RPNfine = event.controllerValue(); break;
 		case MidiControllerRegisteredParameterNumberMSB: RPNcoarse = event.controllerValue(); break;
 		case MidiControllerDataEntry:
-			if ((RPNcoarse << 8) + RPNfine == MidiPitchBendSensitivityRPN) {
+			if ((RPNcoarse << 8) + RPNfine == MidiPitchBendSensitivityRPN)
+			{
 				pitchBendRange = event.controllerValue() * 100;
 			}
 			break;
@@ -375,9 +388,11 @@ void OpulenzInstrument::play(sampleFrame* _working_buffer)
 	emulatorMutex.lock();
 	theEmulator->update(renderbuffer, frameCount);
 
-	for (fpp_t frame = 0; frame < frameCount; ++frame) {
+	for (fpp_t frame = 0; frame < frameCount; ++frame)
+	{
 		sample_t s = float(renderbuffer[frame]) / 8192.0;
-		for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch) {
+		for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch)
+		{
 			_working_buffer[frame][ch] = s;
 		}
 	}
@@ -459,7 +474,8 @@ void OpulenzInstrument::loadSettings(const QDomElement& _this)
 void OpulenzInstrument::loadPatch(const unsigned char inst[14])
 {
 	emulatorMutex.lock();
-	for (int v = 0; v < OPL2_VOICES; ++v) {
+	for (int v = 0; v < OPL2_VOICES; ++v)
+	{
 		theEmulator->write(0x20 + adlib_opadd[v], inst[0]); // op1 AM/VIB/EG/KSR/Multiplier
 		theEmulator->write(0x23 + adlib_opadd[v], inst[1]); // op2
 		// theEmulator->write(0x40+adlib_opadd[v],inst[2]); // op1 KSL/Output Level - these are handled by
@@ -478,7 +494,8 @@ void OpulenzInstrument::loadPatch(const unsigned char inst[14])
 void OpulenzInstrument::tuneEqual(int center, float Hz)
 {
 	float tmp;
-	for (int n = 0; n < 128; ++n) {
+	for (int n = 0; n < 128; ++n)
+	{
 		tmp = Hz * pow(2.0, (n - center) * (1.0 / 12.0) + pitchbend * (1.0 / 1200.0));
 		fnums[n] = Hz2fnum(tmp);
 	}
@@ -487,7 +504,8 @@ void OpulenzInstrument::tuneEqual(int center, float Hz)
 // Find suitable F number in lowest possible block
 int OpulenzInstrument::Hz2fnum(float Hz)
 {
-	for (int block = 0; block < 8; ++block) {
+	for (int block = 0; block < 8; ++block)
+	{
 		unsigned int fnum = Hz * pow(2.0, 20.0 - (double)block) * (1.0 / 49716.0);
 		if (fnum < 1023) { return fnum + (block << 10); }
 	}
@@ -529,7 +547,8 @@ void OpulenzInstrument::updatePatch()
 	theEmulator->write(0xBD, (trem_depth_mdl.value() ? 128 : 0) + (vib_depth_mdl.value() ? 64 : 0));
 
 	// have to do this, as the level knobs might've changed
-	for (int voice = 0; voice < OPL2_VOICES; ++voice) {
+	for (int voice = 0; voice < OPL2_VOICES; ++voice)
+	{
 		if (voiceNote[voice] && OPL2_VOICE_FREE == 0) { setVoiceVelocity(voice, velocities[voiceNote[voice]]); }
 	}
 #ifdef false
@@ -545,15 +564,18 @@ void OpulenzInstrument::loadFile(const QString& file)
 {
 	// http://cd.textfiles.com/soundsensations/SYNTH/SBINS/
 	// http://cd.textfiles.com/soundsensations/SYNTH/SBI1198/1198SBI.ZIP
-	if (!file.isEmpty() && QFileInfo(file).exists()) {
+	if (!file.isEmpty() && QFileInfo(file).exists())
+	{
 		QFile sbifile(file);
-		if (!sbifile.open(QIODevice::ReadOnly)) {
+		if (!sbifile.open(QIODevice::ReadOnly))
+		{
 			printf("Can't open file\n");
 			return;
 		}
 
 		QByteArray sbidata = sbifile.read(52);
-		if (!sbidata.startsWith("SBI\0x1a")) {
+		if (!sbidata.startsWith("SBI\0x1a"))
+		{
 			printf("No SBI signature\n");
 			return;
 		}
@@ -565,7 +587,8 @@ void OpulenzInstrument::loadFile(const QString& file)
 
 		QString sbiname = sbidata.mid(4, 32);
 		// If user has changed track name... let's hope my logic is valid.
-		if (sbiname.size() > 0 && instrumentTrack()->displayName() == storedname) {
+		if (sbiname.size() > 0 && instrumentTrack()->displayName() == storedname)
+		{
 			instrumentTrack()->setName(sbiname);
 			storedname = sbiname;
 		}
@@ -713,11 +736,13 @@ OpulenzInstrumentView::~OpulenzInstrumentView()
 // Returns text for time knob formatted nicely
 inline QString OpulenzInstrumentView::knobHintHelper(float n)
 {
-	if (n > 1000) {
-		return QString::number(n / 1000, 'f', 0) + " s";
-	} else if (n > 10) {
+	if (n > 1000) { return QString::number(n / 1000, 'f', 0) + " s"; }
+	else if (n > 10)
+	{
 		return QString::number(n, 'f', 0) + " ms";
-	} else {
+	}
+	else
+	{
 		return QString::number(n, 'f', 1) + " ms";
 	}
 }

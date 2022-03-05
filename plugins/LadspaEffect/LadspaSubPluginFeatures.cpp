@@ -113,7 +113,8 @@ void LadspaSubPluginFeatures::listSubPluginKeys(const Plugin::Descriptor* _desc,
 	Ladspa2LMMS* lm = Engine::getLADSPAManager();
 
 	l_sortable_plugin_t plugins;
-	switch (m_type) {
+	switch (m_type)
+	{
 	case Plugin::Instrument: plugins = lm->getInstruments(); break;
 	case Plugin::Effect:
 		plugins = lm->getValidEffects();
@@ -124,8 +125,10 @@ void LadspaSubPluginFeatures::listSubPluginKeys(const Plugin::Descriptor* _desc,
 	default: break;
 	}
 
-	for (l_sortable_plugin_t::const_iterator it = plugins.begin(); it != plugins.end(); ++it) {
-		if (lm->getDescription((*it).second)->inputChannels <= Engine::audioEngine()->audioDev()->channels()) {
+	for (l_sortable_plugin_t::const_iterator it = plugins.begin(); it != plugins.end(); ++it)
+	{
+		if (lm->getDescription((*it).second)->inputChannels <= Engine::audioEngine()->audioDev()->channels())
+		{
 			_kl.push_back(ladspaKeyToSubPluginKey(_desc, (*it).first, (*it).second));
 		}
 	}

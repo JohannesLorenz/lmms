@@ -53,41 +53,51 @@ PeakController::PeakController(Model* _parent, PeakControllerEffect* _peak_effec
 
 PeakController::~PeakController()
 {
-	if (m_peakEffect != nullptr && m_peakEffect->effectChain() != nullptr) {
+	if (m_peakEffect != nullptr && m_peakEffect->effectChain() != nullptr)
+	{
 		m_peakEffect->effectChain()->removeEffect(m_peakEffect);
 	}
 }
 
 void PeakController::updateValueBuffer()
 {
-	if (m_coeffNeedsUpdate) {
+	if (m_coeffNeedsUpdate)
+	{
 		const float ratio = 44100.0f / Engine::audioEngine()->processingSampleRate();
 		m_attackCoeff = 1.0f - powf(2.0f, -0.3f * (1.0f - m_peakEffect->attackModel()->value()) * ratio);
 		m_decayCoeff = 1.0f - powf(2.0f, -0.3f * (1.0f - m_peakEffect->decayModel()->value()) * ratio);
 		m_coeffNeedsUpdate = false;
 	}
 
-	if (m_peakEffect) {
+	if (m_peakEffect)
+	{
 		float targetSample = m_peakEffect->lastSample();
-		if (m_currentSample != targetSample) {
+		if (m_currentSample != targetSample)
+		{
 			const f_cnt_t frames = Engine::audioEngine()->framesPerPeriod();
 			float* values = m_valueBuffer.values();
 
-			for (f_cnt_t f = 0; f < frames; ++f) {
+			for (f_cnt_t f = 0; f < frames; ++f)
+			{
 				const float diff = (targetSample - m_currentSample);
 				if (m_currentSample < targetSample) // going up...
 				{
 					m_currentSample += diff * m_attackCoeff;
-				} else if (m_currentSample > targetSample) // going down
+				}
+				else if (m_currentSample > targetSample) // going down
 				{
 					m_currentSample += diff * m_decayCoeff;
 				}
 				values[f] = m_currentSample;
 			}
-		} else {
+		}
+		else
+		{
 			m_valueBuffer.fill(m_currentSample);
 		}
-	} else {
+	}
+	else
+	{
 		m_valueBuffer.fill(0);
 	}
 	m_bufferLastUpdated = s_periods;
@@ -107,7 +117,8 @@ void PeakController::handleDestroyedEffect()
 
 void PeakController::saveSettings(QDomDocument& _doc, QDomElement& _this)
 {
-	if (m_peakEffect) {
+	if (m_peakEffect)
+	{
 		Controller::saveSettings(_doc, _this);
 
 		_this.setAttribute("effectId", m_peakEffect->m_effectId);
@@ -122,8 +133,10 @@ void PeakController::loadSettings(const QDomElement& _this)
 	if (m_buggedFile == true) { effectId = m_loadCount++; }
 
 	PeakControllerEffectVector::Iterator i;
-	for (i = s_effects.begin(); i != s_effects.end(); ++i) {
-		if ((*i)->m_effectId == effectId) {
+	for (i = s_effects.begin(); i != s_effects.end(); ++i)
+	{
+		if ((*i)->m_effectId == effectId)
+		{
 			m_peakEffect = *i;
 			return;
 		}
@@ -147,14 +160,18 @@ PeakController* PeakController::getControllerBySetting(const QDomElement& _this)
 	// Backward compatibility for bug in <= 0.4.15 . For >= 1.0.0 ,
 	// foundCount should always be 1 because m_effectId is initialized with rand()
 	int foundCount = 0;
-	if (m_buggedFile == false) {
-		for (i = s_effects.begin(); i != s_effects.end(); ++i) {
+	if (m_buggedFile == false)
+	{
+		for (i = s_effects.begin(); i != s_effects.end(); ++i)
+		{
 			if ((*i)->m_effectId == effectId) { foundCount++; }
 		}
-		if (foundCount >= 2) {
+		if (foundCount >= 2)
+		{
 			m_buggedFile = true;
 			int newEffectId = 0;
-			for (i = s_effects.begin(); i != s_effects.end(); ++i) {
+			for (i = s_effects.begin(); i != s_effects.end(); ++i)
+			{
 				(*i)->m_effectId = newEffectId++;
 			}
 			QMessageBox msgBox;
@@ -173,7 +190,8 @@ PeakController* PeakController::getControllerBySetting(const QDomElement& _this)
 	if (m_buggedFile == true) { effectId = m_getCount; }
 	m_getCount++; // NB: m_getCount should be increased even m_buggedFile is false
 
-	for (i = s_effects.begin(); i != s_effects.end(); ++i) {
+	for (i = s_effects.begin(); i != s_effects.end(); ++i)
+	{
 		if ((*i)->m_effectId == effectId) { return (*i)->controller(); }
 	}
 

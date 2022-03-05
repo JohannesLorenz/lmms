@@ -83,11 +83,13 @@ bool MidiExport::tryExport(const TrackContainer::TrackList& tracks, const TrackC
 	std::vector<std::vector<std::pair<int, int>>> plists;
 
 	// midi tracks
-	for (Track* track : tracks) {
+	for (Track* track : tracks)
+	{
 		DataFile dataFile(DataFile::SongProject);
 		MTrack mtrack;
 
-		if (track->type() == Track::InstrumentTrack) {
+		if (track->type() == Track::InstrumentTrack)
+		{
 
 			mtrack.addName(track->name().toStdString(), 0);
 			// mtrack.addProgramChange(0, 0);
@@ -102,16 +104,19 @@ bool MidiExport::tryExport(const TrackContainer::TrackList& tracks, const TrackC
 
 			MidiNoteVector midiClip;
 
-			for (QDomNode n = element.firstChild(); !n.isNull(); n = n.nextSibling()) {
+			for (QDomNode n = element.firstChild(); !n.isNull(); n = n.nextSibling())
+			{
 
-				if (n.nodeName() == "instrumenttrack") {
+				if (n.nodeName() == "instrumenttrack")
+				{
 					QDomElement it = n.toElement();
 					base_pitch = (69 - it.attribute("basenote", "69").toInt());
 					if (it.attribute("usemasterpitch", "1").toInt()) { base_pitch += masterPitch; }
 					base_volume = LocaleHelper::toDouble(it.attribute("volume", "100")) / 100.0;
 				}
 
-				if (n.nodeName() == "midiclip") {
+				if (n.nodeName() == "midiclip")
+				{
 					base_time = n.toElement().attribute("pos", "0").toInt();
 					writeMidiClip(midiClip, n, base_pitch, base_volume, base_time);
 				}
@@ -122,14 +127,17 @@ bool MidiExport::tryExport(const TrackContainer::TrackList& tracks, const TrackC
 			midiout.writeRawData((char*)buffer, size);
 		}
 
-		if (track->type() == Track::PatternTrack) {
+		if (track->type() == Track::PatternTrack)
+		{
 			patternTrack = dynamic_cast<PatternTrack*>(track);
 			element = patternTrack->saveState(dataFile, dataFile.content());
 
 			std::vector<std::pair<int, int>> plist;
-			for (QDomNode n = element.firstChild(); !n.isNull(); n = n.nextSibling()) {
+			for (QDomNode n = element.firstChild(); !n.isNull(); n = n.nextSibling())
+			{
 
-				if (n.nodeName() == "patternclip") {
+				if (n.nodeName() == "patternclip")
+				{
 					QDomElement it = n.toElement();
 					int pos = it.attribute("pos", "0").toInt();
 					int len = it.attribute("len", "0").toInt();
@@ -142,7 +150,8 @@ bool MidiExport::tryExport(const TrackContainer::TrackList& tracks, const TrackC
 	} // for each track
 
 	// for each instrument in the pattern editor
-	for (Track* track : patternStoreTracks) {
+	for (Track* track : patternStoreTracks)
+	{
 		DataFile dataFile(DataFile::SongProject);
 		MTrack mtrack;
 
@@ -164,15 +173,18 @@ bool MidiExport::tryExport(const TrackContainer::TrackList& tracks, const TrackC
 		double base_volume = 1.0;
 
 		// for each pattern in the pattern editor
-		for (QDomNode n = element.firstChild(); !n.isNull(); n = n.nextSibling()) {
-			if (n.nodeName() == "instrumenttrack") {
+		for (QDomNode n = element.firstChild(); !n.isNull(); n = n.nextSibling())
+		{
+			if (n.nodeName() == "instrumenttrack")
+			{
 				QDomElement it = n.toElement();
 				base_pitch = (69 - it.attribute("basenote", "69").toInt());
 				if (it.attribute("usemasterpitch", "1").toInt()) { base_pitch += masterPitch; }
 				base_volume = LocaleHelper::toDouble(it.attribute("volume", "100")) / 100.0;
 			}
 
-			if (n.nodeName() == "midiclip") {
+			if (n.nodeName() == "midiclip")
+			{
 				std::vector<std::pair<int, int>>& plist = *itr;
 
 				MidiNoteVector nv, midiClip;
@@ -183,17 +195,21 @@ bool MidiExport::tryExport(const TrackContainer::TrackList& tracks, const TrackC
 				int len = n.toElement().attribute("steps", "1").toInt() * 12;
 
 				// for each pattern clip of the current pattern track (in song editor)
-				for (auto it = plist.begin(); it != plist.end(); ++it) {
-					while (!st.empty() && st.back().second <= it->first) {
+				for (auto it = plist.begin(); it != plist.end(); ++it)
+				{
+					while (!st.empty() && st.back().second <= it->first)
+					{
 						writePatternClip(midiClip, nv, len, st.back().first, pos, st.back().second);
 						pos = st.back().second;
 						st.pop_back();
 					}
 
-					if (!st.empty() && st.back().second <= it->second) {
+					if (!st.empty() && st.back().second <= it->second)
+					{
 						writePatternClip(midiClip, nv, len, st.back().first, pos, it->first);
 						pos = it->first;
-						while (!st.empty() && st.back().second <= it->second) {
+						while (!st.empty() && st.back().second <= it->second)
+						{
 							st.pop_back();
 						}
 					}
@@ -202,7 +218,8 @@ bool MidiExport::tryExport(const TrackContainer::TrackList& tracks, const TrackC
 					pos = it->first;
 				}
 
-				while (!st.empty()) {
+				while (!st.empty())
+				{
 					writePatternClip(midiClip, nv, len, st.back().first, pos, st.back().second);
 					pos = st.back().second;
 					st.pop_back();
@@ -226,7 +243,8 @@ void MidiExport::writeMidiClip(
 	MidiNoteVector& midiClip, const QDomNode& n, int base_pitch, double base_volume, int base_time)
 {
 	// TODO interpret steps="12" muted="0" type="1" name="Piano1"  len="2592"
-	for (QDomNode nn = n.firstChild(); !nn.isNull(); nn = nn.nextSibling()) {
+	for (QDomNode nn = n.firstChild(); !nn.isNull(); nn = nn.nextSibling())
+	{
 		QDomElement note = nn.toElement();
 		if (note.attribute("len", "0") == "0") continue;
 		// TODO interpret pan="0" mixch="0" pitchrange="1"
@@ -243,7 +261,8 @@ void MidiExport::writeMidiClip(
 
 void MidiExport::writeMidiClipToTrack(MTrack& mtrack, MidiNoteVector& nv)
 {
-	for (auto it = nv.begin(); it != nv.end(); ++it) {
+	for (auto it = nv.begin(); it != nv.end(); ++it)
+	{
 		mtrack.addNote(it->pitch, it->volume, it->time / 48.0, it->duration / 48.0);
 	}
 }
@@ -254,8 +273,10 @@ void MidiExport::writePatternClip(MidiNoteVector& src, MidiNoteVector& dst, int 
 	start -= base;
 	end -= base;
 	std::sort(src.begin(), src.end());
-	for (auto it = src.begin(); it != src.end(); ++it) {
-		for (int time = it->time + ceil((start - it->time) / len) * len; time < end; time += len) {
+	for (auto it = src.begin(); it != src.end(); ++it)
+	{
+		for (int time = it->time + ceil((start - it->time) / len) * len; time < end; time += len)
+		{
 			MidiNote note;
 			note.duration = it->duration;
 			note.pitch = it->pitch;
@@ -270,8 +291,10 @@ void MidiExport::processPatternNotes(MidiNoteVector& nv, int cutPos)
 {
 	std::sort(nv.begin(), nv.end());
 	int cur = INT_MAX, next = INT_MAX;
-	for (auto it = nv.rbegin(); it != nv.rend(); ++it) {
-		if (it->time < cur) {
+	for (auto it = nv.rbegin(); it != nv.rend(); ++it)
+	{
+		if (it->time < cur)
+		{
 			next = cur;
 			cur = it->time;
 		}

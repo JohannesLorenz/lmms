@@ -49,7 +49,8 @@ AudioSdl::AudioSdl(bool& _success_ful, AudioEngine* _audioEngine)
 	m_convertedBuf = new Uint8[m_convertedBufSize];
 #endif
 
-	if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_NOPARACHUTE) < 0) {
+	if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_NOPARACHUTE) < 0)
+	{
 		qCritical("Couldn't initialize SDL: %s\n", SDL_GetError());
 		return;
 	}
@@ -74,13 +75,15 @@ AudioSdl::AudioSdl(bool& _success_ful, AudioEngine* _audioEngine)
 
 #ifdef LMMS_HAVE_SDL2
 	m_outputDevice = SDL_OpenAudioDevice(nullptr, 0, &m_audioHandle, &actual, 0);
-	if (m_outputDevice == 0) {
+	if (m_outputDevice == 0)
+	{
 		qCritical("Couldn't open SDL-audio: %s\n", SDL_GetError());
 		return;
 	}
 #else
 	// open the audio device, forcing the desired format
-	if (SDL_OpenAudio(&m_audioHandle, &actual) < 0) {
+	if (SDL_OpenAudio(&m_audioHandle, &actual) < 0)
+	{
 		qCritical("Couldn't open SDL-audio: %s\n", SDL_GetError());
 		return;
 	}
@@ -98,9 +101,9 @@ AudioSdl::AudioSdl(bool& _success_ful, AudioEngine* _audioEngine)
 	m_inputAudioHandle.callback = sdlInputAudioCallback;
 
 	m_inputDevice = SDL_OpenAudioDevice(nullptr, 1, &m_inputAudioHandle, &actual, 0);
-	if (m_inputDevice != 0) {
-		m_supportsCapture = true;
-	} else {
+	if (m_inputDevice != 0) { m_supportsCapture = true; }
+	else
+	{
 		m_supportsCapture = false;
 		qWarning("Couldn't open SDL capture device: %s\n", SDL_GetError());
 	}
@@ -199,18 +202,22 @@ void AudioSdl::sdlAudioCallback(void* _udata, Uint8* _buf, int _len)
 
 void AudioSdl::sdlAudioCallback(Uint8* _buf, int _len)
 {
-	if (m_stopped) {
+	if (m_stopped)
+	{
 		memset(_buf, 0, _len);
 		return;
 	}
 
 	// SDL2: process float samples
 #ifdef LMMS_HAVE_SDL2
-	while (_len) {
-		if (m_currentBufferFramePos == 0) {
+	while (_len)
+	{
+		if (m_currentBufferFramePos == 0)
+		{
 			// frames depend on the sample rate
 			const fpp_t frames = getNextBuffer(m_outBuf);
-			if (!frames) {
+			if (!frames)
+			{
 				memset(_buf, 0, _len);
 				return;
 			}
@@ -220,7 +227,8 @@ void AudioSdl::sdlAudioCallback(Uint8* _buf, int _len)
 			= qMin(_len / sizeof(sampleFrame), m_currentBufferFramesCount - m_currentBufferFramePos);
 
 		const float gain = audioEngine()->masterGain();
-		for (uint f = 0; f < min_frames_count; f++) {
+		for (uint f = 0; f < min_frames_count; f++)
+		{
 			(m_outBuf + m_currentBufferFramePos)[f][0] *= gain;
 			(m_outBuf + m_currentBufferFramePos)[f][1] *= gain;
 		}
@@ -233,11 +241,14 @@ void AudioSdl::sdlAudioCallback(Uint8* _buf, int _len)
 		m_currentBufferFramePos %= m_currentBufferFramesCount;
 	}
 #else
-	while (_len) {
-		if (m_convertedBufPos == 0) {
+	while (_len)
+	{
+		if (m_convertedBufPos == 0)
+		{
 			// frames depend on the sample rate
 			const fpp_t frames = getNextBuffer(m_outBuf);
-			if (!frames) {
+			if (!frames)
+			{
 				m_stopped = true;
 				memset(_buf, 0, _len);
 				return;

@@ -91,7 +91,8 @@ void StepRecorderWidget::paintEvent(QPaintEvent* pe)
 
 	TimePos curPos = m_curStepEndPos;
 	int x = xCoordOfTick(curPos);
-	while (x <= m_right) {
+	while (x <= m_right)
+	{
 		const int w = 2;
 		const int h = 4;
 		painter.drawRect(x - 1, m_top, w, h);
@@ -100,7 +101,8 @@ void StepRecorderWidget::paintEvent(QPaintEvent* pe)
 	}
 
 	// draw current step start/end position lines
-	if (m_curStepStartPos != m_curStepEndPos) {
+	if (m_curStepStartPos != m_curStepEndPos)
+	{
 		drawVerLine(&painter, m_curStepStartPos, m_colorLineStart, m_top, m_bottom);
 	}
 
@@ -108,7 +110,8 @@ void StepRecorderWidget::paintEvent(QPaintEvent* pe)
 
 	// if the line is adjacent to the keyboard at the left - it cannot be seen.
 	// add another line to make it clearer
-	if (m_curStepEndPos == 0) {
+	if (m_curStepEndPos == 0)
+	{
 		drawVerLine(&painter, xCoordOfTick(m_curStepEndPos) + 1, m_colorLineEnd, m_top, m_bottom);
 	}
 }
@@ -120,7 +123,8 @@ int StepRecorderWidget::xCoordOfTick(int tick)
 
 void StepRecorderWidget::drawVerLine(QPainter* painter, int x, const QColor& color, int top, int bottom)
 {
-	if (x >= m_marginLeft && x <= (width() - m_marginRight)) {
+	if (x >= m_marginLeft && x <= (width() - m_marginRight))
+	{
 		painter->setPen(color);
 		painter->drawLine(x, top, x, bottom);
 	}

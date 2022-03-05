@@ -77,7 +77,8 @@ bool waveShaperEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames
 	const float* inputPtr = inputBuffer ? &(inputBuffer->values()[0]) : &input;
 	const float* outputPtr = outputBufer ? &(outputBufer->values()[0]) : &output;
 
-	for (fpp_t f = 0; f < _frames; ++f) {
+	for (fpp_t f = 0; f < _frames; ++f)
+	{
 		float s[2] = {_buf[f][0], _buf[f][1]};
 
 		// apply input gain
@@ -85,23 +86,27 @@ bool waveShaperEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _frames
 		s[1] *= *inputPtr;
 
 		// clip if clip enabled
-		if (clip) {
+		if (clip)
+		{
 			s[0] = qBound(-1.0f, s[0], 1.0f);
 			s[1] = qBound(-1.0f, s[1], 1.0f);
 		}
 
 		// start effect
 
-		for (i = 0; i <= 1; ++i) {
+		for (i = 0; i <= 1; ++i)
+		{
 			const int lookup = static_cast<int>(qAbs(s[i]) * 200.0f);
 			const float frac = fraction(qAbs(s[i]) * 200.0f);
 			const float posneg = s[i] < 0 ? -1.0f : 1.0f;
 
-			if (lookup < 1) {
-				s[i] = frac * samples[0] * posneg;
-			} else if (lookup < 200) {
+			if (lookup < 1) { s[i] = frac * samples[0] * posneg; }
+			else if (lookup < 200)
+			{
 				s[i] = linearInterpolate(samples[lookup - 1], samples[lookup], frac) * posneg;
-			} else {
+			}
+			else
+			{
 				s[i] *= samples[199];
 			}
 		}

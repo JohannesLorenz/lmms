@@ -88,11 +88,13 @@ bool DelayEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 	float* lfoTimePtr = lfoTimeBuffer ? &(lfoTimeBuffer->values()[0]) : &lfoTime;
 	float* feedbackPtr = feedbackBuffer ? &(feedbackBuffer->values()[0]) : &feedback;
 
-	if (m_delayControls.m_outGainModel.isValueChanged()) {
+	if (m_delayControls.m_outGainModel.isValueChanged())
+	{
 		m_outGain = dbfsToAmp(m_delayControls.m_outGainModel.value());
 	}
 	int sampleLength;
-	for (fpp_t f = 0; f < frames; ++f) {
+	for (fpp_t f = 0; f < frames; ++f)
+	{
 		dryS[0] = buf[f][0];
 		dryS[1] = buf[f][1];
 

@@ -65,7 +65,8 @@ clock_t PerfTime::ticksPerSecond()
 {
 	static long clktck = 0;
 #ifdef USE_POSIX_TIME
-	if (!clktck) {
+	if (!clktck)
+	{
 		if ((clktck = sysconf(_SC_CLK_TCK)) < 0) { qWarning("PerfLog::end sysconf()"); }
 	}
 #endif

@@ -51,10 +51,13 @@ void AutomatableSlider::contextMenuEvent(QContextMenuEvent* _me)
 
 void AutomatableSlider::mousePressEvent(QMouseEvent* _me)
 {
-	if (_me->button() == Qt::LeftButton && !(_me->modifiers() & Qt::ControlModifier)) {
+	if (_me->button() == Qt::LeftButton && !(_me->modifiers() & Qt::ControlModifier))
+	{
 		m_showStatus = true;
 		QSlider::mousePressEvent(_me);
-	} else {
+	}
+	else
+	{
 		IntModelView::mousePressEvent(_me);
 	}
 }

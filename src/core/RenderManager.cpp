@@ -48,7 +48,8 @@ RenderManager::~RenderManager()
 
 void RenderManager::abortProcessing()
 {
-	if (m_activeRenderer) {
+	if (m_activeRenderer)
+	{
 		disconnect(m_activeRenderer.get(), SIGNAL(finished()), this, SLOT(renderNextTrack()));
 		m_activeRenderer->abortProcessing();
 	}
@@ -60,17 +61,21 @@ void RenderManager::renderNextTrack()
 {
 	m_activeRenderer.reset();
 
-	if (m_tracksToRender.isEmpty()) {
+	if (m_tracksToRender.isEmpty())
+	{
 		// nothing left to render
 		restoreMutedState();
 		emit finished();
-	} else {
+	}
+	else
+	{
 		// pop the next track from our rendering queue
 		Track* renderTrack = m_tracksToRender.back();
 		m_tracksToRender.pop_back();
 
 		// mute everything but the track we are about to render
-		for (auto track : m_unmuted) {
+		for (auto track : m_unmuted)
+		{
 			track->setMuted(track != renderTrack);
 		}
 
@@ -87,23 +92,27 @@ void RenderManager::renderTracks()
 	const TrackContainer::TrackList& tl = Engine::getSong()->tracks();
 
 	// find all currently unnmuted tracks -- we want to render these.
-	for (auto it = tl.begin(); it != tl.end(); ++it) {
+	for (auto it = tl.begin(); it != tl.end(); ++it)
+	{
 		Track* tk = (*it);
 		Track::TrackTypes type = tk->type();
 
 		// Don't render automation tracks
-		if (tk->isMuted() == false && (type == Track::InstrumentTrack || type == Track::SampleTrack)) {
+		if (tk->isMuted() == false && (type == Track::InstrumentTrack || type == Track::SampleTrack))
+		{
 			m_unmuted.push_back(tk);
 		}
 	}
 
 	const TrackContainer::TrackList t2 = Engine::patternStore()->tracks();
-	for (auto it = t2.begin(); it != t2.end(); ++it) {
+	for (auto it = t2.begin(); it != t2.end(); ++it)
+	{
 		Track* tk = (*it);
 		Track::TrackTypes type = tk->type();
 
 		// Don't render automation tracks
-		if (tk->isMuted() == false && (type == Track::InstrumentTrack || type == Track::SampleTrack)) {
+		if (tk->isMuted() == false && (type == Track::InstrumentTrack || type == Track::SampleTrack))
+		{
 			m_unmuted.push_back(tk);
 		}
 	}
@@ -122,7 +131,8 @@ void RenderManager::render(QString outputPath)
 {
 	m_activeRenderer = std::make_unique<ProjectRenderer>(m_qualitySettings, m_outputSettings, m_format, outputPath);
 
-	if (m_activeRenderer->isReady()) {
+	if (m_activeRenderer->isReady())
+	{
 		// pass progress signals through
 		connect(m_activeRenderer.get(), SIGNAL(progressChanged(int)), this, SIGNAL(progressChanged(int)));
 
@@ -131,7 +141,9 @@ void RenderManager::render(QString outputPath)
 		connect(m_activeRenderer.get(), SIGNAL(finished()), this, SLOT(renderNextTrack()));
 
 		m_activeRenderer->startProcessing();
-	} else {
+	}
+	else
+	{
 		qDebug("Renderer failed to acquire a file device!");
 		renderNextTrack();
 	}
@@ -140,7 +152,8 @@ void RenderManager::render(QString outputPath)
 // Unmute all tracks that were muted while rendering tracks
 void RenderManager::restoreMutedState()
 {
-	while (!m_unmuted.isEmpty()) {
+	while (!m_unmuted.isEmpty())
+	{
 		Track* restoreTrack = m_unmuted.back();
 		m_unmuted.pop_back();
 		restoreTrack->setMuted(false);
@@ -159,11 +172,13 @@ QString RenderManager::pathForTrack(const Track* track, int num)
 
 void RenderManager::updateConsoleProgress()
 {
-	if (m_activeRenderer) {
+	if (m_activeRenderer)
+	{
 		m_activeRenderer->updateConsoleProgress();
 
 		int totalNum = m_unmuted.size();
-		if (totalNum > 0) {
+		if (totalNum > 0)
+		{
 			// we are rendering multiple tracks, append a track counter to the output
 			int trackNum = totalNum - m_tracksToRender.size();
 			fprintf(stderr, "(%d/%d)", trackNum, totalNum);

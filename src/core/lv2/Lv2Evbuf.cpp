@@ -60,10 +60,13 @@ void lv2_evbuf_free(LV2_Evbuf* evbuf) { free(evbuf); }
 
 void lv2_evbuf_reset(LV2_Evbuf* evbuf, bool input)
 {
-	if (input) {
+	if (input)
+	{
 		evbuf->buf.atom.size = sizeof(LV2_Atom_Sequence_Body);
 		evbuf->buf.atom.type = evbuf->atom_Sequence;
-	} else {
+	}
+	else
+	{
 		evbuf->buf.atom.size = evbuf->capacity;
 		evbuf->buf.atom.type = evbuf->atom_Chunk;
 	}

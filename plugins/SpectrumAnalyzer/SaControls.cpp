@@ -83,12 +83,18 @@ SaControls::SaControls(Analyzer* effect)
 
 	// FFT block size labels are generated automatically, based on
 	// FFT_BLOCK_SIZES vector defined in fft_helpers.h
-	for (unsigned int i = 0; i < FFT_BLOCK_SIZES.size(); i++) {
-		if (i == 0) {
+	for (unsigned int i = 0; i < FFT_BLOCK_SIZES.size(); i++)
+	{
+		if (i == 0)
+		{
 			m_blockSizeModel.addItem((std::to_string(FFT_BLOCK_SIZES[i]) + " ").c_str() + tr("(High time res.)"));
-		} else if (i == FFT_BLOCK_SIZES.size() - 1) {
+		}
+		else if (i == FFT_BLOCK_SIZES.size() - 1)
+		{
 			m_blockSizeModel.addItem((std::to_string(FFT_BLOCK_SIZES[i]) + " ").c_str() + tr("(High freq. res.)"));
-		} else {
+		}
+		else
+		{
 			m_blockSizeModel.addItem(std::to_string(FFT_BLOCK_SIZES[i]).c_str());
 		}
 	}

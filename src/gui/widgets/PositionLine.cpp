@@ -45,12 +45,14 @@ void PositionLine::paintEvent(QPaintEvent* pe)
 	QColor c = QColor(m_lineColor);
 
 	// If width is 1, we don't need a gradient
-	if (width() == 1) {
+	if (width() == 1)
+	{
 		c.setAlpha(153);
 		p.fillRect(rect(), c);
 	}
 	// If width > 1, we need the gradient
-	else {
+	else
+	{
 		// Create the gradient trail behind the line
 		QLinearGradient gradient(rect().bottomLeft(), rect().bottomRight());
 		qreal w = (width() - 1.0) / width();
@@ -58,10 +60,13 @@ void PositionLine::paintEvent(QPaintEvent* pe)
 		// If gradient is enabled, we're in focus and we're playing, enable gradient
 		if (m_hasTailGradient && Engine::getSong()->isPlaying()
 			&& (Engine::getSong()->playMode() == Song::Mode_PlaySong
-				|| Engine::getSong()->playMode() == Song::Mode_PlayMidiClip)) {
+				|| Engine::getSong()->playMode() == Song::Mode_PlayMidiClip))
+		{
 			c.setAlpha(60);
 			gradient.setColorAt(w, c);
-		} else {
+		}
+		else
+		{
 			c.setAlpha(0);
 			gradient.setColorAt(w, c);
 		}

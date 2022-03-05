@@ -61,12 +61,14 @@ AudioJack::~AudioJack()
 {
 	stopProcessing();
 #ifdef AUDIO_PORT_SUPPORT
-	while (m_portMap.size()) {
+	while (m_portMap.size())
+	{
 		unregisterPort(m_portMap.begin().key());
 	}
 #endif
 
-	if (m_client != nullptr) {
+	if (m_client != nullptr)
+	{
 		if (m_active) { jack_deactivate(m_client); }
 		jack_client_close(m_client);
 	}
@@ -78,7 +80,8 @@ AudioJack::~AudioJack()
 
 void AudioJack::restartAfterZombified()
 {
-	if (initJackClient()) {
+	if (initJackClient())
+	{
 		m_active = false;
 		startProcessing();
 		QMessageBox::information(getGUI()->mainWindow(), tr("JACK client restarted"),
@@ -86,7 +89,9 @@ void AudioJack::restartAfterZombified()
 			   "Therefore the JACK backend of LMMS has been "
 			   "restarted. You will have to make manual "
 			   "connections again."));
-	} else {
+	}
+	else
+	{
 		QMessageBox::information(getGUI()->mainWindow(), tr("JACK server down"),
 			tr("The JACK server seems to have been shutdown "
 			   "and starting a new instance failed. "
@@ -113,12 +118,14 @@ bool AudioJack::initJackClient()
 	const char* serverName = nullptr;
 	jack_status_t status;
 	m_client = jack_client_open(clientName.toLatin1().constData(), JackNullOption, &status, serverName);
-	if (m_client == nullptr) {
+	if (m_client == nullptr)
+	{
 		printf("jack_client_open() failed, status 0x%2.0x\n", status);
 		if (status & JackServerFailed) { printf("Could not connect to JACK server.\n"); }
 		return false;
 	}
-	if (status & JackNameNotUnique) {
+	if (status & JackNameNotUnique)
+	{
 		printf("there's already a client with name '%s', so unique "
 			   "name '%s' was assigned\n",
 			clientName.toLatin1().constData(), jack_get_client_name(m_client));
@@ -132,11 +139,13 @@ bool AudioJack::initJackClient()
 
 	if (jack_get_sample_rate(m_client) != sampleRate()) { setSampleRate(jack_get_sample_rate(m_client)); }
 
-	for (ch_cnt_t ch = 0; ch < channels(); ++ch) {
+	for (ch_cnt_t ch = 0; ch < channels(); ++ch)
+	{
 		QString name = QString("master out ") + ((ch % 2) ? "R" : "L") + QString::number(ch / 2 + 1);
 		m_outputPorts.push_back(
 			jack_port_register(m_client, name.toLatin1().constData(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0));
-		if (m_outputPorts.back() == nullptr) {
+		if (m_outputPorts.back() == nullptr)
+		{
 			printf("no more JACK-ports available!\n");
 			return false;
 		}
@@ -147,12 +156,14 @@ bool AudioJack::initJackClient()
 
 void AudioJack::startProcessing()
 {
-	if (m_active || m_client == nullptr) {
+	if (m_active || m_client == nullptr)
+	{
 		m_stopped = false;
 		return;
 	}
 
-	if (jack_activate(m_client)) {
+	if (jack_activate(m_client))
+	{
 		printf("cannot activate client\n");
 		return;
 	}
@@ -163,12 +174,17 @@ void AudioJack::startProcessing()
 	//	jack_set_buffer_size( m_client, audioEngine()->framesPerPeriod() );
 
 	const char** ports = jack_get_ports(m_client, nullptr, nullptr, JackPortIsPhysical | JackPortIsInput);
-	if (ports == nullptr) {
+	if (ports == nullptr)
+	{
 		printf("no physical playback ports. you'll have to do "
 			   "connections at your own!\n");
-	} else {
-		for (ch_cnt_t ch = 0; ch < channels(); ++ch) {
-			if (jack_connect(m_client, jack_port_name(m_outputPorts[ch]), ports[ch])) {
+	}
+	else
+	{
+		for (ch_cnt_t ch = 0; ch < channels(); ++ch)
+		{
+			if (jack_connect(m_client, jack_port_name(m_outputPorts[ch]), ports[ch]))
+			{
 				printf("cannot connect output ports. you'll "
 					   "have to do connections at your own!\n");
 			}
@@ -183,7 +199,8 @@ void AudioJack::stopProcessing() { m_stopped = true; }
 
 void AudioJack::applyQualitySettings()
 {
-	if (hqAudio()) {
+	if (hqAudio())
+	{
 		setSampleRate(Engine::audioEngine()->processingSampleRate());
 
 		if (jack_get_sample_rate(m_client) != sampleRate()) { setSampleRate(jack_get_sample_rate(m_client)); }
@@ -199,7 +216,8 @@ void AudioJack::registerPort(AudioPort* _port)
 	unregisterPort(_port);
 	const QString name[2] = {_port->name() + " L", _port->name() + " R"};
 
-	for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch) {
+	for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch)
+	{
 		m_portMap[_port].ports[ch] = jack_port_register(
 			m_client, name[ch].toLatin1().constData(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
 	}
@@ -209,8 +227,10 @@ void AudioJack::registerPort(AudioPort* _port)
 void AudioJack::unregisterPort(AudioPort* _port)
 {
 #ifdef AUDIO_PORT_SUPPORT
-	if (m_portMap.contains(_port)) {
-		for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch) {
+	if (m_portMap.contains(_port))
+	{
+		for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch)
+		{
 			if (m_portMap[_port].ports[ch] != nullptr) { jack_port_unregister(m_client, m_portMap[_port].ports[ch]); }
 		}
 		m_portMap.erase(m_portMap.find(_port));
@@ -221,9 +241,11 @@ void AudioJack::unregisterPort(AudioPort* _port)
 void AudioJack::renamePort(AudioPort* _port)
 {
 #ifdef AUDIO_PORT_SUPPORT
-	if (m_portMap.contains(_port)) {
+	if (m_portMap.contains(_port))
+	{
 		const QString name[2] = {_port->name() + " L", _port->name() + " R"};
-		for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch) {
+		for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch)
+		{
 #ifdef LMMS_HAVE_JACK_PRENAME
 			jack_port_rename(m_client, m_portMap[_port].ports[ch], name[ch].toLatin1().constData());
 #else
@@ -239,23 +261,28 @@ int AudioJack::processCallback(jack_nframes_t _nframes, void* _udata)
 
 	// do midi processing first so that midi input can
 	// add to the following sound processing
-	if (m_midiClient && _nframes > 0) {
+	if (m_midiClient && _nframes > 0)
+	{
 		m_midiClient.load()->JackMidiRead(_nframes);
 		m_midiClient.load()->JackMidiWrite(_nframes);
 	}
 
-	for (int c = 0; c < channels(); ++c) {
+	for (int c = 0; c < channels(); ++c)
+	{
 		m_tempOutBufs[c] = (jack_default_audio_sample_t*)jack_port_get_buffer(m_outputPorts[c], _nframes);
 	}
 
 #ifdef AUDIO_PORT_SUPPORT
 	const int frames = qMin<int>(_nframes, audioEngine()->framesPerPeriod());
-	for (JackPortMap::iterator it = m_portMap.begin(); it != m_portMap.end(); ++it) {
-		for (ch_cnt_t ch = 0; ch < channels(); ++ch) {
+	for (JackPortMap::iterator it = m_portMap.begin(); it != m_portMap.end(); ++it)
+	{
+		for (ch_cnt_t ch = 0; ch < channels(); ++ch)
+		{
 			if (it.value().ports[ch] == nullptr) { continue; }
 			jack_default_audio_sample_t* buf
 				= (jack_default_audio_sample_t*)jack_port_get_buffer(it.value().ports[ch], _nframes);
-			for (int frame = 0; frame < frames; ++frame) {
+			for (int frame = 0; frame < frames; ++frame)
+			{
 				buf[frame] = it.key()->buffer()[frame][ch];
 			}
 		}
@@ -263,29 +290,36 @@ int AudioJack::processCallback(jack_nframes_t _nframes, void* _udata)
 #endif
 
 	jack_nframes_t done = 0;
-	while (done < _nframes && m_stopped == false) {
+	while (done < _nframes && m_stopped == false)
+	{
 		jack_nframes_t todo = qMin<jack_nframes_t>(_nframes, m_framesToDoInCurBuf - m_framesDoneInCurBuf);
 		const float gain = audioEngine()->masterGain();
-		for (int c = 0; c < channels(); ++c) {
+		for (int c = 0; c < channels(); ++c)
+		{
 			jack_default_audio_sample_t* o = m_tempOutBufs[c];
-			for (jack_nframes_t frame = 0; frame < todo; ++frame) {
+			for (jack_nframes_t frame = 0; frame < todo; ++frame)
+			{
 				o[done + frame] = m_outBuf[m_framesDoneInCurBuf + frame][c] * gain;
 			}
 		}
 		done += todo;
 		m_framesDoneInCurBuf += todo;
-		if (m_framesDoneInCurBuf == m_framesToDoInCurBuf) {
+		if (m_framesDoneInCurBuf == m_framesToDoInCurBuf)
+		{
 			m_framesToDoInCurBuf = getNextBuffer(m_outBuf);
 			m_framesDoneInCurBuf = 0;
-			if (!m_framesToDoInCurBuf) {
+			if (!m_framesToDoInCurBuf)
+			{
 				m_stopped = true;
 				break;
 			}
 		}
 	}
 
-	if (_nframes != done) {
-		for (int c = 0; c < channels(); ++c) {
+	if (_nframes != done)
+	{
+		for (int c = 0; c < channels(); ++c)
+		{
 			jack_default_audio_sample_t* b = m_tempOutBufs[c] + done;
 			memset(b, 0, sizeof(*b) * (_nframes - done));
 		}

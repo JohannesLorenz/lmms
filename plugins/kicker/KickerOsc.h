@@ -58,7 +58,8 @@ public:
 
 	void update(sampleFrame* buf, const fpp_t frames, const float sampleRate)
 	{
-		for (fpp_t frame = 0; frame < frames; ++frame) {
+		for (fpp_t frame = 0; frame < frames; ++frame)
+		{
 			const double gain = (1 - fastPow((m_counter < m_length) ? m_counter / m_length : 1, m_env));
 			const sample_t s = (Oscillator::sinSample(m_phase) * (1 - m_noise))
 				+ (Oscillator::noiseSample(0) * gain * gain * m_noise);
@@ -66,7 +67,8 @@ public:
 			buf[frame][1] = s * gain;
 
 			// update distortion envelope if necessary
-			if (m_hasDistEnv && m_counter < m_length) {
+			if (m_hasDistEnv && m_counter < m_length)
+			{
 				float thres = linearInterpolate(m_distStart, m_distEnd, m_counter / m_length);
 				m_FX.leftFX().setThreshold(thres);
 				m_FX.rightFX().setThreshold(thres);

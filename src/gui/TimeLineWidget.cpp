@@ -149,7 +149,8 @@ void TimeLineWidget::updatePosition(const TimePos&)
 {
 	const int new_x = markerX(m_pos);
 
-	if (new_x != m_posMarkerX) {
+	if (new_x != m_posMarkerX)
+	{
 		m_posMarkerX = new_x;
 		m_changedPosition = true;
 		emit positionChanged(m_pos);
@@ -206,9 +207,11 @@ void TimeLineWidget::paintEvent(QPaintEvent*)
 	int const x = m_xOffset + s_posMarkerPixmap->width() / 2
 		- ((static_cast<int>(m_begin * m_ppb) / TimePos::ticksPerBar()) % static_cast<int>(m_ppb));
 
-	for (int i = 0; x + i * m_ppb < width(); ++i) {
+	for (int i = 0; x + i * m_ppb < width(); ++i)
+	{
 		++barNumber;
-		if ((barNumber - 1) % qMax(1, qRound(1.0f / 3.0f * TimePos::ticksPerBar() / m_ppb)) == 0) {
+		if ((barNumber - 1) % qMax(1, qRound(1.0f / 3.0f * TimePos::ticksPerBar() / m_ppb)) == 0)
+		{
 			const int cx = x + qRound(i * m_ppb);
 			p.setPen(barLineColor);
 			p.drawLine(cx, 5, cx, height() - 6);
@@ -231,7 +234,8 @@ void TimeLineWidget::paintEvent(QPaintEvent*)
 	p.drawRect(innerRectangle);
 
 	// Only draw the position marker if the position line is in view
-	if (m_posMarkerX >= m_xOffset && m_posMarkerX < width() - s_posMarkerPixmap->width() / 2) {
+	if (m_posMarkerX >= m_xOffset && m_posMarkerX < width() - s_posMarkerPixmap->width() / 2)
+	{
 		// Let the position marker extrude to the left
 		p.setClipping(false);
 		p.setOpacity(0.6);
@@ -242,25 +246,30 @@ void TimeLineWidget::paintEvent(QPaintEvent*)
 void TimeLineWidget::mousePressEvent(QMouseEvent* event)
 {
 	if (event->x() < m_xOffset) { return; }
-	if (event->button() == Qt::LeftButton && !(event->modifiers() & Qt::ShiftModifier)) {
+	if (event->button() == Qt::LeftButton && !(event->modifiers() & Qt::ShiftModifier))
+	{
 		m_action = MovePositionMarker;
-		if (event->x() - m_xOffset < s_posMarkerPixmap->width()) {
-			m_moveXOff = event->x() - m_xOffset;
-		} else {
+		if (event->x() - m_xOffset < s_posMarkerPixmap->width()) { m_moveXOff = event->x() - m_xOffset; }
+		else
+		{
 			m_moveXOff = s_posMarkerPixmap->width() / 2;
 		}
-	} else if (event->button() == Qt::LeftButton && (event->modifiers() & Qt::ShiftModifier)) {
+	}
+	else if (event->button() == Qt::LeftButton && (event->modifiers() & Qt::ShiftModifier))
+	{
 		m_action = SelectSongClip;
 		m_initalXSelect = event->x();
-	} else if (event->button() == Qt::RightButton) {
+	}
+	else if (event->button() == Qt::RightButton)
+	{
 		m_moveXOff = s_posMarkerPixmap->width() / 2;
 		const TimePos t
 			= m_begin + static_cast<int>(qMax(event->x() - m_xOffset - m_moveXOff, 0) * TimePos::ticksPerBar() / m_ppb);
 		const TimePos loopMid = (m_loopPos[0] + m_loopPos[1]) / 2;
 
-		if (t < loopMid) {
-			m_action = MoveLoopBegin;
-		} else if (t > loopMid) {
+		if (t < loopMid) { m_action = MoveLoopBegin; }
+		else if (t > loopMid)
+		{
 			m_action = MoveLoopEnd;
 		}
 
@@ -269,7 +278,8 @@ void TimeLineWidget::mousePressEvent(QMouseEvent* event)
 		m_loopPos[(m_action == MoveLoopBegin) ? 0 : 1] = t;
 	}
 
-	if (m_action == MoveLoopBegin || m_action == MoveLoopEnd) {
+	if (m_action == MoveLoopBegin || m_action == MoveLoopEnd)
+	{
 		delete m_hint;
 		m_hint = TextFloat::displayMessage(tr("Hint"),
 			tr("Press <%1> to disable magnetic loop points.").arg(UI_CTRL_KEY), embed::getIconPixmap("hint"), 0);
@@ -283,11 +293,13 @@ void TimeLineWidget::mouseMoveEvent(QMouseEvent* event)
 	const TimePos t
 		= m_begin + static_cast<int>(qMax(event->x() - m_xOffset - m_moveXOff, 0) * TimePos::ticksPerBar() / m_ppb);
 
-	switch (m_action) {
+	switch (m_action)
+	{
 	case MovePositionMarker:
 		m_pos.setTicks(t.getTicks());
 		Engine::getSong()->setToTime(t, m_mode);
-		if (!(Engine::getSong()->isPlaying())) {
+		if (!(Engine::getSong()->isPlaying()))
+		{
 			// Song::Mode_None is used when nothing is being played.
 			Engine::getSong()->setToTime(t, Song::Mode_None);
 		}
@@ -300,21 +312,25 @@ void TimeLineWidget::mouseMoveEvent(QMouseEvent* event)
 	case MoveLoopBegin:
 	case MoveLoopEnd: {
 		const int i = m_action - MoveLoopBegin; // i == 0 || i == 1
-		if (event->modifiers() & Qt::ControlModifier) {
+		if (event->modifiers() & Qt::ControlModifier)
+		{
 			// no ctrl-press-hint when having ctrl pressed
 			delete m_hint;
 			m_hint = nullptr;
 			m_loopPos[i] = t;
-		} else {
+		}
+		else
+		{
 			m_loopPos[i] = t.quantize(1.0);
 		}
 		// Catch begin == end
-		if (m_loopPos[0] == m_loopPos[1]) {
+		if (m_loopPos[0] == m_loopPos[1])
+		{
 			// Note, swap 1 and 0 below and the behavior "skips" the other
 			// marking instead of pushing it.
-			if (m_action == MoveLoopBegin) {
-				m_loopPos[0] -= TimePos::ticksPerBar();
-			} else {
+			if (m_action == MoveLoopBegin) { m_loopPos[0] -= TimePos::ticksPerBar(); }
+			else
+			{
 				m_loopPos[1] += TimePos::ticksPerBar();
 			}
 		}

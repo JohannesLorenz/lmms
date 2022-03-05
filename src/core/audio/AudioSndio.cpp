@@ -48,13 +48,14 @@ AudioSndio::AudioSndio(bool& _success_ful, AudioEngine* _audioEngine)
 
 	QString dev = ConfigManager::inst()->value("audiosndio", "device");
 
-	if (dev == "") {
-		m_hdl = sio_open(nullptr, SIO_PLAY, 0);
-	} else {
+	if (dev == "") { m_hdl = sio_open(nullptr, SIO_PLAY, 0); }
+	else
+	{
 		m_hdl = sio_open(dev.toLatin1().constData(), SIO_PLAY, 0);
 	}
 
-	if (m_hdl == nullptr) {
+	if (m_hdl == nullptr)
+	{
 		printf("sndio: failed opening audio-device\n");
 		return;
 	}
@@ -72,22 +73,26 @@ AudioSndio::AudioSndio(bool& _success_ful, AudioEngine* _audioEngine)
 
 	struct sio_par reqpar = m_par;
 
-	if (!sio_setpar(m_hdl, &m_par)) {
+	if (!sio_setpar(m_hdl, &m_par))
+	{
 		printf("sndio: sio_setpar failed\n");
 		return;
 	}
-	if (!sio_getpar(m_hdl, &m_par)) {
+	if (!sio_getpar(m_hdl, &m_par))
+	{
 		printf("sndio: sio_getpar failed\n");
 		return;
 	}
 
 	if (reqpar.pchan != m_par.pchan || reqpar.bits != m_par.bits || reqpar.le != m_par.le
-		|| (::abs(static_cast<int>(reqpar.rate) - static_cast<int>(m_par.rate)) * 100) / reqpar.rate > 2) {
+		|| (::abs(static_cast<int>(reqpar.rate) - static_cast<int>(m_par.rate)) * 100) / reqpar.rate > 2)
+	{
 		printf("sndio: returned params not as requested\n");
 		return;
 	}
 
-	if (!sio_start(m_hdl)) {
+	if (!sio_start(m_hdl))
+	{
 		printf("sndio: sio_start failed\n");
 		return;
 	}
@@ -98,7 +103,8 @@ AudioSndio::AudioSndio(bool& _success_ful, AudioEngine* _audioEngine)
 AudioSndio::~AudioSndio()
 {
 	stopProcessing();
-	if (m_hdl != nullptr) {
+	if (m_hdl != nullptr)
+	{
 		sio_close(m_hdl);
 		m_hdl = nullptr;
 	}
@@ -113,7 +119,8 @@ void AudioSndio::stopProcessing(void) { stopProcessingThread(this); }
 
 void AudioSndio::applyQualitySettings(void)
 {
-	if (hqAudio()) {
+	if (hqAudio())
+	{
 		setSampleRate(Engine::audioEngine()->processingSampleRate());
 
 		/* change sample rate to sampleRate() */
@@ -127,7 +134,8 @@ void AudioSndio::run(void)
 	surroundSampleFrame* temp = new surroundSampleFrame[audioEngine()->framesPerPeriod()];
 	int_sample_t* outbuf = new int_sample_t[audioEngine()->framesPerPeriod() * channels()];
 
-	while (true) {
+	while (true)
+	{
 		const fpp_t frames = getNextBuffer(temp);
 		if (!frames) { break; }
 

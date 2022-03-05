@@ -88,7 +88,8 @@ void AutomationClipView::changeName()
 void AutomationClipView::disconnectObject(QAction* _a)
 {
 	JournallingObject* j = Engine::projectJournal()->journallingObject(_a->data().toInt());
-	if (j && dynamic_cast<AutomatableModel*>(j)) {
+	if (j && dynamic_cast<AutomatableModel*>(j))
+	{
 		float oldMin = m_clip->getMin();
 		float oldMax = m_clip->getMax();
 
@@ -100,7 +101,8 @@ void AutomationClipView::disconnectObject(QAction* _a)
 		if (getGUI()->automationEditor()) { getGUI()->automationEditor()->m_editor->updateAfterClipChange(); }
 
 		// if there is no more connection connected to the AutomationClip
-		if (m_clip->m_objects.size() == 0) {
+		if (m_clip->m_objects.size() == 0)
+		{
 			// scale the points to fit the new min. and max. value
 			this->scaleTimemapToFit(oldMin, oldMax);
 		}
@@ -142,12 +144,14 @@ void AutomationClipView::constructContextMenu(QMenu* _cm)
 	_cm->addAction(embed::getIconPixmap("record"), tr("Set/clear record"), this, SLOT(toggleRecording()));
 	_cm->addAction(embed::getIconPixmap("flip_y"), tr("Flip Vertically (Visible)"), this, SLOT(flipY()));
 	_cm->addAction(embed::getIconPixmap("flip_x"), tr("Flip Horizontally (Visible)"), this, SLOT(flipX()));
-	if (!m_clip->m_objects.isEmpty()) {
+	if (!m_clip->m_objects.isEmpty())
+	{
 		_cm->addSeparator();
 		QMenu* m = new QMenu(tr("%1 Connections").arg(m_clip->m_objects.count()), _cm);
-		for (AutomationClip::objectVector::iterator it = m_clip->m_objects.begin(); it != m_clip->m_objects.end();
-			 ++it) {
-			if (*it) {
+		for (AutomationClip::objectVector::iterator it = m_clip->m_objects.begin(); it != m_clip->m_objects.end(); ++it)
+		{
+			if (*it)
+			{
 				a = new QAction(tr("Disconnect \"%1\"").arg((*it)->fullDisplayName()), m);
 				a->setData((*it)->id());
 				m->addAction(a);
@@ -160,7 +164,8 @@ void AutomationClipView::constructContextMenu(QMenu* _cm)
 
 void AutomationClipView::mouseDoubleClickEvent(QMouseEvent* me)
 {
-	if (me->button() != Qt::LeftButton) {
+	if (me->button() != Qt::LeftButton)
+	{
 		me->ignore();
 		return;
 	}
@@ -171,7 +176,8 @@ void AutomationClipView::paintEvent(QPaintEvent*)
 {
 	QPainter painter(this);
 
-	if (!needsUpdate()) {
+	if (!needsUpdate())
+	{
 		painter.drawPixmap(0, 0, m_paintPixmap);
 		return;
 	}
@@ -193,9 +199,9 @@ void AutomationClipView::paintEvent(QPaintEvent*)
 	// paint a black rectangle under the clip to prevent glitches with transparent backgrounds
 	p.fillRect(rect(), QColor(0, 0, 0));
 
-	if (gradient()) {
-		p.fillRect(rect(), lingrad);
-	} else {
+	if (gradient()) { p.fillRect(rect(), lingrad); }
+	else
+	{
 		p.fillRect(rect(), c);
 	}
 
@@ -225,15 +231,17 @@ void AutomationClipView::paintEvent(QPaintEvent*)
 
 	p.setRenderHints(QPainter::Antialiasing, true);
 	for (AutomationClip::timeMap::const_iterator it = m_clip->getTimeMap().begin(); it != m_clip->getTimeMap().end();
-		 ++it) {
-		if (it + 1 == m_clip->getTimeMap().end()) {
+		 ++it)
+	{
+		if (it + 1 == m_clip->getTimeMap().end())
+		{
 			const float x1 = POS(it) * ppTick;
 			const float x2 = (float)(width() - BORDER_WIDTH);
 			if (x1 > (width() - BORDER_WIDTH)) break;
 			// We are drawing the space after the last node, so we use the outValue
-			if (gradient()) {
-				p.fillRect(QRectF(x1, 0.0f, x2 - x1, OUTVAL(it)), lin2grad);
-			} else {
+			if (gradient()) { p.fillRect(QRectF(x1, 0.0f, x2 - x1, OUTVAL(it)), lin2grad); }
+			else
+			{
 				p.fillRect(QRectF(x1, 0.0f, x2 - x1, OUTVAL(it)), col);
 			}
 			break;
@@ -248,9 +256,9 @@ void AutomationClipView::paintEvent(QPaintEvent*)
 		// the value of the end of the shape between the two nodes will be the inValue of
 		// the next node.
 		float nextValue;
-		if (m_clip->progressionType() == AutomationClip::DiscreteProgression) {
-			nextValue = OUTVAL(it);
-		} else {
+		if (m_clip->progressionType() == AutomationClip::DiscreteProgression) { nextValue = OUTVAL(it); }
+		else
+		{
 			nextValue = INVAL(it + 1);
 		}
 
@@ -259,7 +267,8 @@ void AutomationClipView::paintEvent(QPaintEvent*)
 		path.moveTo(origin);
 		path.moveTo(QPointF(POS(it) * ppTick, values[0]));
 		float x;
-		for (int i = POS(it) + 1; i < POS(it + 1); i++) {
+		for (int i = POS(it) + 1; i < POS(it + 1); i++)
+		{
 			x = i * ppTick;
 			if (x > (width() - BORDER_WIDTH)) break;
 			float value = values[i - POS(it)];
@@ -269,9 +278,9 @@ void AutomationClipView::paintEvent(QPaintEvent*)
 		path.lineTo((POS(it + 1)) * ppTick, 0.0f);
 		path.lineTo(origin);
 
-		if (gradient()) {
-			p.fillPath(path, lin2grad);
-		} else {
+		if (gradient()) { p.fillPath(path, lin2grad); }
+		else
+		{
 			p.fillPath(path, col);
 		}
 		delete[] values;
@@ -284,7 +293,8 @@ void AutomationClipView::paintEvent(QPaintEvent*)
 	const int lineSize = 3;
 	p.setPen(c.darker(300));
 
-	for (bar_t b = 1; b < width() - BORDER_WIDTH; ++b) {
+	for (bar_t b = 1; b < width() - BORDER_WIDTH; ++b)
+	{
 		const int bx = BORDER_WIDTH + static_cast<int>(ppb * b) - 2;
 
 		// top line
@@ -309,7 +319,8 @@ void AutomationClipView::paintEvent(QPaintEvent*)
 	p.drawRect(0, 0, rect().right(), rect().bottom());
 
 	// draw the 'muted' pixmap only if the clip was manualy muted
-	if (m_clip->isMuted()) {
+	if (m_clip->isMuted())
+	{
 		const int spacing = BORDER_WIDTH;
 		const int size = 14;
 		p.drawPixmap(spacing, height() - (size + spacing), embed::getIconPixmap("muted", size, size));
@@ -330,12 +341,15 @@ void AutomationClipView::dropEvent(QDropEvent* _de)
 {
 	QString type = StringPairDrag::decodeKey(_de);
 	QString val = StringPairDrag::decodeValue(_de);
-	if (type == "automatable_model") {
+	if (type == "automatable_model")
+	{
 		AutomatableModel* mod
 			= dynamic_cast<AutomatableModel*>(Engine::projectJournal()->journallingObject(val.toInt()));
-		if (mod != nullptr) {
+		if (mod != nullptr)
+		{
 			bool added = m_clip->addObject(mod);
-			if (!added) {
+			if (!added)
+			{
 				TextFloat::displayMessage(mod->displayName(),
 					tr("Model is already connected "
 					   "to this clip."),
@@ -344,10 +358,13 @@ void AutomationClipView::dropEvent(QDropEvent* _de)
 		}
 		update();
 
-		if (getGUI()->automationEditor() && getGUI()->automationEditor()->currentClip() == m_clip) {
+		if (getGUI()->automationEditor() && getGUI()->automationEditor()->currentClip() == m_clip)
+		{
 			getGUI()->automationEditor()->setCurrentClip(m_clip);
 		}
-	} else {
+	}
+	else
+	{
 		ClipView::dropEvent(_de);
 	}
 }
@@ -366,12 +383,13 @@ void AutomationClipView::scaleTimemapToFit(float oldMin, float oldMax)
 	// only the inValue is being considered and the outValue is being reset to the inValue (so discrete jumps
 	// are discarded). Possibly later we will want discrete jumps to be maintained so we will need to upgrade
 	// the logic to account for them.
-	for (AutomationClip::timeMap::iterator it = m_clip->m_timeMap.begin(); it != m_clip->m_timeMap.end(); ++it) {
+	for (AutomationClip::timeMap::iterator it = m_clip->m_timeMap.begin(); it != m_clip->m_timeMap.end(); ++it)
+	{
 		// If the values are out of the previous range, fix them so they are
 		// between oldMin and oldMax.
-		if (INVAL(it) < oldMin) {
-			it.value().setInValue(oldMin);
-		} else if (INVAL(it) > oldMax) {
+		if (INVAL(it) < oldMin) { it.value().setInValue(oldMin); }
+		else if (INVAL(it) > oldMax)
+		{
 			it.value().setInValue(oldMax);
 		}
 		// Calculate what the value would be proportionally in the new range

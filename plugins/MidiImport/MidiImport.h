@@ -53,7 +53,8 @@ private:
 	inline int readInt(int _bytes)
 	{
 		int c, value = 0;
-		do {
+		do
+		{
 			c = readByte();
 			if (c == -1) { return (-1); }
 			value = (value << 8) | c;
@@ -72,13 +73,16 @@ private:
 	{
 		int c = readByte();
 		int value = c & 0x7f;
-		if (c & 0x80) {
+		if (c & 0x80)
+		{
 			c = readByte();
 			value = (value << 7) | (c & 0x7f);
-			if (c & 0x80) {
+			if (c & 0x80)
+			{
 				c = readByte();
 				value = (value << 7) | (c & 0x7f);
-				if (c & 0x80) {
+				if (c & 0x80)
+				{
 					c = readByte();
 					value = (value << 7) | c;
 					if (c & 0x80) { return -1; }
@@ -91,7 +95,8 @@ private:
 	inline int readID() { return read32LE(); }
 	inline void skip(int _bytes)
 	{
-		while (_bytes > 0) {
+		while (_bytes > 0)
+		{
 			readByte();
 			--_bytes;
 		}

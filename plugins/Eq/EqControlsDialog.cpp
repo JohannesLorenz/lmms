@@ -98,7 +98,8 @@ EqControlsDialog::EqControlsDialog(EqControls* controls)
 
 	// Gain Fader for each Filter exepts the pass filter
 	int distance = 126;
-	for (int i = 1; i < m_parameterWidget->bandCount() - 1; i++) {
+	for (int i = 1; i < m_parameterWidget->bandCount() - 1; i++)
+	{
 		EqFader* gainFader = new EqFader(m_parameterWidget->getBandModels(i)->gain, tr(""), this, faderBg, faderLeds,
 			faderKnob, m_parameterWidget->getBandModels(i)->peakL, m_parameterWidget->getBandModels(i)->peakR);
 		gainFader->move(distance, 295);
@@ -111,14 +112,15 @@ EqControlsDialog::EqControlsDialog(EqControls* controls)
 
 	// Control Button and Knobs for each Band
 	distance = 81;
-	for (int i = 0; i < m_parameterWidget->bandCount(); i++) {
+	for (int i = 0; i < m_parameterWidget->bandCount(); i++)
+	{
 		Knob* resKnob = new Knob(knobBright_26, this);
 		resKnob->move(distance, 440);
 		resKnob->setVolumeKnob(false);
 		resKnob->setModel(m_parameterWidget->getBandModels(i)->res);
-		if (i > 1 && i < 6) {
-			resKnob->setHintText(tr("Bandwidth: "), tr(" Octave"));
-		} else {
+		if (i > 1 && i < 6) { resKnob->setHintText(tr("Bandwidth: "), tr(" Octave")); }
+		else
+		{
 			resKnob->setHintText(tr("Resonance : "), "");
 		}
 

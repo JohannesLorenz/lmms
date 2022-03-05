@@ -118,7 +118,8 @@ void SubWindow::paintEvent(QPaintEvent*)
 	p.drawLine(width() - 1, m_titleBarHeight, width() - 1, height() - 1);
 
 	// window icon
-	if (widget()) {
+	if (widget())
+	{
 		QPixmap winicon(widget()->windowIcon().pixmap(m_buttonSize));
 		p.drawPixmap(3, 3, m_buttonSize.width(), m_buttonSize.height(), winicon);
 	}
@@ -224,7 +225,8 @@ void SubWindow::adjustTitleBar()
 
 	// here we ask: is the Subwindow maximizable and
 	// then we set the buttons and show them if needed
-	if (windowFlags() & Qt::WindowMaximizeButtonHint) {
+	if (windowFlags() & Qt::WindowMaximizeButtonHint)
+	{
 		buttonBarWidth = buttonBarWidth + m_buttonSize.width() + buttonGap;
 		m_maximizeBtn->move(middleButtonPos);
 		m_restoreBtn->move(middleButtonPos);
@@ -236,7 +238,8 @@ void SubWindow::adjustTitleBar()
 	m_restoreBtn->setVisible(isMaximized() || isMinimized());
 	if (isMinimized()) { m_restoreBtn->move(m_maximizeBtn->isHidden() ? middleButtonPos : leftButtonPos); }
 
-	if (widget()) {
+	if (widget())
+	{
 		// title QLabel adjustments
 		m_windowTitle->setAlignment(Qt::AlignHCenter);
 		m_windowTitle->setFixedWidth(widget()->width() - (menuButtonSpace + buttonBarWidth));
@@ -255,10 +258,13 @@ void SubWindow::adjustTitleBar()
 
 void SubWindow::focusChanged(QMdiSubWindow* subWindow)
 {
-	if (m_hasFocus && subWindow != this) {
+	if (m_hasFocus && subWindow != this)
+	{
 		m_hasFocus = false;
 		emit focusLost();
-	} else if (subWindow == this) {
+	}
+	else if (subWindow == this)
+	{
 		m_hasFocus = true;
 	}
 }

@@ -330,7 +330,8 @@ void MonstroSynth::renderOutput(fpp_t _frames, sampleFrame* _buf)
 	updateModulators(m_env[0].data(), m_env[1].data(), m_lfo[0].data(), m_lfo[1].data(), _frames);
 
 	// begin for loop
-	for (f_cnt_t f = 0; f < _frames; ++f) {
+	for (f_cnt_t f = 0; f < _frames; ++f)
+	{
 		/*	// debug code
 				if( f % 10 == 0 ) {
 					qDebug( "env1 %f -- env1 phase %f", m_env1_buf[f], m_env1_phase );
@@ -363,90 +364,116 @@ void MonstroSynth::renderOutput(fpp_t _frames, sampleFrame* _buf)
 
 		// check for rise/fall, and sync if appropriate
 		// sync on rise
-		if (o1ssr) {
+		if (o1ssr)
+		{
 			// hard sync
-			if (o2sync) {
-				if (O1L > m_osc1l_last) {
+			if (o2sync)
+			{
+				if (O1L > m_osc1l_last)
+				{
 					o2l_p = o2lpo;
 					m_counter2l = m_parent->m_counterMax;
 				}
-				if (O1R > m_osc1r_last) {
+				if (O1R > m_osc1r_last)
+				{
 					o2r_p = o2rpo;
 					m_counter2r = m_parent->m_counterMax;
 				}
 			}
-			if (o3sync) {
-				if (O1L > m_osc1l_last) {
+			if (o3sync)
+			{
+				if (O1L > m_osc1l_last)
+				{
 					o3l_p = o3lpo;
 					m_counter3l = m_parent->m_counterMax;
 				}
-				if (O1R > m_osc1r_last) {
+				if (O1R > m_osc1r_last)
+				{
 					o3r_p = o3rpo;
 					m_counter3r = m_parent->m_counterMax;
 				}
 			}
 			// reverse sync
-			if (o2syncr) {
-				if (O1L > m_osc1l_last) {
+			if (o2syncr)
+			{
+				if (O1L > m_osc1l_last)
+				{
 					m_invert2l = !m_invert2l;
 					m_counter2l = m_parent->m_counterMax;
 				}
-				if (O1R > m_osc1r_last) {
+				if (O1R > m_osc1r_last)
+				{
 					m_invert2r = !m_invert2r;
 					m_counter2r = m_parent->m_counterMax;
 				}
 			}
-			if (o3syncr) {
-				if (O1L > m_osc1l_last) {
+			if (o3syncr)
+			{
+				if (O1L > m_osc1l_last)
+				{
 					m_invert3l = !m_invert3l;
 					m_counter3l = m_parent->m_counterMax;
 				}
-				if (O1R > m_osc1r_last) {
+				if (O1R > m_osc1r_last)
+				{
 					m_invert3r = !m_invert3r;
 					m_counter3r = m_parent->m_counterMax;
 				}
 			}
 		}
 		// sync on fall
-		if (o1ssf) {
+		if (o1ssf)
+		{
 			// hard sync
-			if (o2sync) {
-				if (O1L < m_osc1l_last) {
+			if (o2sync)
+			{
+				if (O1L < m_osc1l_last)
+				{
 					o2l_p = o2lpo;
 					m_counter2l = m_parent->m_counterMax;
 				}
-				if (O1R < m_osc1r_last) {
+				if (O1R < m_osc1r_last)
+				{
 					o2r_p = o2rpo;
 					m_counter2r = m_parent->m_counterMax;
 				}
 			}
-			if (o3sync) {
-				if (O1L < m_osc1l_last) {
+			if (o3sync)
+			{
+				if (O1L < m_osc1l_last)
+				{
 					o3l_p = o3lpo;
 					m_counter3l = m_parent->m_counterMax;
 				}
-				if (O1R < m_osc1r_last) {
+				if (O1R < m_osc1r_last)
+				{
 					o3r_p = o3rpo;
 					m_counter3r = m_parent->m_counterMax;
 				}
 			}
 			// reverse sync
-			if (o2syncr) {
-				if (O1L < m_osc1l_last) {
+			if (o2syncr)
+			{
+				if (O1L < m_osc1l_last)
+				{
 					m_invert2l = !m_invert2l;
 					m_counter2l = m_parent->m_counterMax;
 				}
-				if (O1R < m_osc1r_last) {
+				if (O1R < m_osc1r_last)
+				{
 					m_invert2r = !m_invert2r;
 					m_counter2r = m_parent->m_counterMax;
 				}
 			}
-			if (o3syncr) {
-				if (O1L < m_osc1l_last) {
+			if (o3syncr)
+			{
+				if (O1L < m_osc1l_last)
+				{
 					m_invert3l = !m_invert3l;
 					m_counter3l = m_parent->m_counterMax;
 				}
-				if (O1R < m_osc1r_last) {
+				if (O1R < m_osc1r_last)
+				{
 					m_invert3r = !m_invert3r;
 					m_counter3r = m_parent->m_counterMax;
 				}
@@ -500,11 +527,13 @@ void MonstroSynth::renderOutput(fpp_t _frames, sampleFrame* _buf)
 		// multi-wave DC Oscillator
 		len_l = BandLimitedWave::pdToLen(pd_l);
 		len_r = BandLimitedWave::pdToLen(pd_r);
-		if (m_counter2l > 0) {
+		if (m_counter2l > 0)
+		{
 			len_l /= m_counter2l;
 			m_counter2l--;
 		}
-		if (m_counter2r > 0) {
+		if (m_counter2r > 0)
+		{
 			len_r /= m_counter2r;
 			m_counter2r--;
 		}
@@ -542,7 +571,8 @@ void MonstroSynth::renderOutput(fpp_t _frames, sampleFrame* _buf)
 		if (o3p_mod) { modulatephs(leftph, o3p) modulatephs(rightph, o3p) }
 
 		// o2 modulation?
-		if (omod == MOD_PM) {
+		if (omod == MOD_PM)
+		{
 			leftph += O2L * 0.5f;
 			rightph += O2R * 0.5f;
 		}
@@ -558,11 +588,13 @@ void MonstroSynth::renderOutput(fpp_t _frames, sampleFrame* _buf)
 		// multi-wave DC Oscillator
 		len_l = BandLimitedWave::pdToLen(pd_l);
 		len_r = BandLimitedWave::pdToLen(pd_r);
-		if (m_counter3l > 0) {
+		if (m_counter3l > 0)
+		{
 			len_l /= m_counter3l;
 			m_counter3l--;
 		}
-		if (m_counter3r > 0) {
+		if (m_counter3r > 0)
+		{
 			len_r /= m_counter3r;
 			m_counter3r--;
 		}
@@ -586,7 +618,8 @@ void MonstroSynth::renderOutput(fpp_t _frames, sampleFrame* _buf)
 		O3R *= o3rv;
 		if (o3v_mod) { modulatevol(O3L, o3v) modulatevol(O3R, o3v) }
 		// o2 modulation?
-		if (omod == MOD_AM) {
+		if (omod == MOD_AM)
+		{
 			O3L = qBound(-MODCLIP, O3L * qMax(0.0f, 1.0f + O2L), MODCLIP);
 			O3R = qBound(-MODCLIP, O3R * qMax(0.0f, 1.0f + O2R), MODCLIP);
 		}
@@ -601,7 +634,8 @@ void MonstroSynth::renderOutput(fpp_t _frames, sampleFrame* _buf)
 		len_l = 1.0f / (static_cast<float>(m_parent->m_samplerate) / o3l_f);
 		len_r = 1.0f / (static_cast<float>(m_parent->m_samplerate) / o3r_f);
 		// handle FM as PM
-		if (omod == MOD_FM) {
+		if (omod == MOD_FM)
+		{
 			len_l += O2L * m_parent->m_fmCorrection;
 			len_r += O2R * m_parent->m_fmCorrection;
 		}
@@ -643,73 +677,87 @@ inline void MonstroSynth::updateModulators(float* env1, float* env2, float* lfo1
 	env[0] = env1;
 	env[1] = env2;
 
-	for (int i = 0; i < 2; ++i) {
-		switch (m_lfovalue[i]) {
+	for (int i = 0; i < 2; ++i)
+	{
+		switch (m_lfovalue[i])
+		{
 		case WAVE_SINE:
-			for (f_cnt_t f = 0; f < frames; ++f) {
+			for (f_cnt_t f = 0; f < frames; ++f)
+			{
 				lfo[i][f] = Oscillator::sinSample(m_lfo_phase[i]);
 				m_lfo_phase[i] += m_lfo_inc[i];
 			}
 			break;
 		case WAVE_TRI:
-			for (f_cnt_t f = 0; f < frames; ++f) {
+			for (f_cnt_t f = 0; f < frames; ++f)
+			{
 				lfo[i][f] = Oscillator::triangleSample(m_lfo_phase[i]);
 				m_lfo_phase[i] += m_lfo_inc[i];
 			}
 			break;
 		case WAVE_SAW:
-			for (f_cnt_t f = 0; f < frames; ++f) {
+			for (f_cnt_t f = 0; f < frames; ++f)
+			{
 				lfo[i][f] = Oscillator::sawSample(m_lfo_phase[i]);
 				m_lfo_phase[i] += m_lfo_inc[i];
 			}
 			break;
 		case WAVE_RAMP:
-			for (f_cnt_t f = 0; f < frames; ++f) {
+			for (f_cnt_t f = 0; f < frames; ++f)
+			{
 				lfo[i][f] = Oscillator::sawSample(m_lfo_phase[i]) * -1.0f;
 				m_lfo_phase[i] += m_lfo_inc[i];
 			}
 			break;
 		case WAVE_SQR:
-			for (f_cnt_t f = 0; f < frames; ++f) {
+			for (f_cnt_t f = 0; f < frames; ++f)
+			{
 				lfo[i][f] = Oscillator::squareSample(m_lfo_phase[i]);
 				m_lfo_phase[i] += m_lfo_inc[i];
 			}
 			break;
 		case WAVE_SQRSOFT:
-			for (f_cnt_t f = 0; f < frames; ++f) {
+			for (f_cnt_t f = 0; f < frames; ++f)
+			{
 				lfo[i][f] = oscillate(WAVE_SQRSOFT, m_lfo_phase[i], 0);
 				m_lfo_phase[i] += m_lfo_inc[i];
 			}
 			break;
 		case WAVE_MOOG:
-			for (f_cnt_t f = 0; f < frames; ++f) {
+			for (f_cnt_t f = 0; f < frames; ++f)
+			{
 				lfo[i][f] = Oscillator::moogSawSample(m_lfo_phase[i]);
 				m_lfo_phase[i] += m_lfo_inc[i];
 			}
 			break;
 		case WAVE_SINABS:
-			for (f_cnt_t f = 0; f < frames; ++f) {
+			for (f_cnt_t f = 0; f < frames; ++f)
+			{
 				lfo[i][f] = oscillate(WAVE_SINABS, m_lfo_phase[i], 0);
 				m_lfo_phase[i] += m_lfo_inc[i];
 			}
 			break;
 		case WAVE_EXP:
-			for (f_cnt_t f = 0; f < frames; ++f) {
+			for (f_cnt_t f = 0; f < frames; ++f)
+			{
 				lfo[i][f] = Oscillator::expSample(m_lfo_phase[i]);
 				m_lfo_phase[i] += m_lfo_inc[i];
 			}
 			break;
 		case WAVE_RANDOM:
-			for (f_cnt_t f = 0; f < frames; ++f) {
+			for (f_cnt_t f = 0; f < frames; ++f)
+			{
 				if ((tfp + f) % static_cast<int>(m_lfo_rate[i]) == 0) m_lfo_last[i] = Oscillator::noiseSample(0.0f);
 				lfo[i][f] = m_lfo_last[i];
 				m_lfo_phase[i] += m_lfo_inc[i];
 			}
 			break;
 		case WAVE_RANDOM_SMOOTH:
-			for (f_cnt_t f = 0; f < frames; ++f) {
+			for (f_cnt_t f = 0; f < frames; ++f)
+			{
 				const f_cnt_t tm = (tfp + f) % static_cast<int>(m_lfo_rate[i]);
-				if (tm == 0) {
+				if (tm == 0)
+				{
 					m_lfo_last[i] = m_lfo_next[i];
 					m_lfo_next[i] = Oscillator::noiseSample(0.0f);
 				}
@@ -720,7 +768,8 @@ inline void MonstroSynth::updateModulators(float* env1, float* env2, float* lfo1
 		}
 
 		// attack
-		for (f_cnt_t f = 0; f < frames; ++f) {
+		for (f_cnt_t f = 0; f < frames; ++f)
+		{
 			if (tfp + f < m_lfoatt[i]) lfo[i][f] *= (static_cast<sample_t>(tfp) / m_lfoatt[i]);
 		}
 
@@ -732,8 +781,10 @@ inline void MonstroSynth::updateModulators(float* env1, float* env2, float* lfo1
 		//                                         //
 		/////////////////////////////////////////////
 
-		for (f_cnt_t f = 0; f < frames; ++f) {
-			if (m_env_phase[i] < 4.0f && m_nph->isReleased() && f >= m_nph->framesBeforeRelease()) {
+		for (f_cnt_t f = 0; f < frames; ++f)
+		{
+			if (m_env_phase[i] < 4.0f && m_nph->isReleased() && f >= m_nph->framesBeforeRelease())
+			{
 				if (m_env_phase[i] < 1.0f) m_env_phase[i] = 5.0f;
 				else if (m_env_phase[i] < 2.0f)
 					m_env_phase[i] = 5.0f - fraction(m_env_phase[i]);
@@ -748,30 +799,35 @@ inline void MonstroSynth::updateModulators(float* env1, float* env2, float* lfo1
 			{
 				env[i][f] = 0.0f;
 				m_env_phase[i] = qMin(1.0f, m_env_phase[i] + m_env_pre[i]);
-			} else if (m_env_phase[i] < 2.0f) // attack phase
+			}
+			else if (m_env_phase[i] < 2.0f) // attack phase
 			{
 				env[i][f] = calcSlope(i, fraction(m_env_phase[i]));
 				m_env_phase[i] = qMin(2.0f, m_env_phase[i] + m_env_att[i]);
-			} else if (m_env_phase[i] < 3.0f) // hold phase
+			}
+			else if (m_env_phase[i] < 3.0f) // hold phase
 			{
 				env[i][f] = 1.0f;
 				m_env_phase[i] = qMin(3.0f, m_env_phase[i] + m_env_hold[i]);
-			} else if (m_env_phase[i] < 4.0f) // decay phase
+			}
+			else if (m_env_phase[i] < 4.0f) // decay phase
 			{
 				const sample_t s = calcSlope(i, 1.0f - fraction(m_env_phase[i]));
-				if (s <= m_env_sus[i]) {
-					env[i][f] = m_env_sus[i];
-				} else {
+				if (s <= m_env_sus[i]) { env[i][f] = m_env_sus[i]; }
+				else
+				{
 					env[i][f] = s;
 					m_env_phase[i] = qMin(4.0f - m_env_sus[i], m_env_phase[i] + m_env_dec[i]);
 					if (m_env_phase[i] == 4.0f)
 						m_env_phase[i] = 5.0f; // jump over release if sustain is zero - fix for clicking
 				}
-			} else if (m_env_phase[i] < 5.0f) // release phase
+			}
+			else if (m_env_phase[i] < 5.0f) // release phase
 			{
 				env[i][f] = calcSlope(i, 1.0f - fraction(m_env_phase[i]));
 				m_env_phase[i] += m_env_rel[i];
-			} else
+			}
+			else
 				env[i][f] = 0.0f;
 		}
 	}
@@ -1425,7 +1481,8 @@ MonstroView::~MonstroView() {}
 
 void MonstroView::updateLayout()
 {
-	switch (m_selectedViewGroup->model()->value()) {
+	switch (m_selectedViewGroup->model()->value())
+	{
 	case OPVIEW:
 		m_operatorsView->show();
 		m_matrixView->hide();

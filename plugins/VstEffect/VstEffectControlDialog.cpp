@@ -52,26 +52,32 @@ VstEffectControlDialog::VstEffectControlDialog(VstEffectControls* _ctl)
 
 	bool embed_vst = false;
 
-	if (_ctl != nullptr && _ctl->m_effect != nullptr && _ctl->m_effect->m_plugin != nullptr) {
+	if (_ctl != nullptr && _ctl->m_effect != nullptr && _ctl->m_effect->m_plugin != nullptr)
+	{
 		m_plugin = _ctl->m_effect->m_plugin;
 		embed_vst = m_plugin->embedMethod() != "none";
 
-		if (embed_vst) {
+		if (embed_vst)
+		{
 			if (m_plugin->hasEditor() && !m_plugin->pluginWidget()) { m_plugin->createUI(this); }
 			m_pluginWidget = m_plugin->pluginWidget();
 		}
 	}
 
-	if (m_plugin) {
+	if (m_plugin)
+	{
 		setWindowTitle(m_plugin->name());
 
 		QPushButton* btn = new QPushButton(tr("Show/hide"));
 
-		if (embed_vst) {
+		if (embed_vst)
+		{
 			btn->setCheckable(true);
 			btn->setChecked(true);
 			connect(btn, SIGNAL(toggled(bool)), SLOT(togglePluginUI(bool)));
-		} else {
+		}
+		else
+		{
 			connect(btn, SIGNAL(clicked()), m_plugin.data(), SLOT(toggleUI()));
 		}
 
@@ -213,7 +219,8 @@ VstEffectControlDialog::VstEffectControlDialog(VstEffectControls* _ctl)
 
 void VstEffectControlDialog::paintEvent(QPaintEvent*)
 {
-	if (m_plugin != nullptr && tbLabel != nullptr) {
+	if (m_plugin != nullptr && tbLabel != nullptr)
+	{
 		tbLabel->setText(tr("Effect by: ") + m_plugin->vendorString()
 			+ tr("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />") + m_plugin->currentProgramName());
 	}
@@ -230,7 +237,8 @@ void VstEffectControlDialog::showEvent(QShowEvent* _se)
 
 VstEffectControlDialog::~VstEffectControlDialog()
 {
-	if (m_pluginWidget && layout()) {
+	if (m_pluginWidget && layout())
+	{
 		layout()->removeWidget(m_pluginWidget);
 		m_pluginWidget->setParent(nullptr);
 	}
@@ -242,9 +250,9 @@ void VstEffectControlDialog::togglePluginUI(bool checked)
 
 	if (m_togglePluginButton->isChecked() != checked) { m_togglePluginButton->setChecked(checked); }
 
-	if (checked) {
-		m_plugin->showUI();
-	} else {
+	if (checked) { m_plugin->showUI(); }
+	else
+	{
 		m_plugin->hideUI();
 	}
 }

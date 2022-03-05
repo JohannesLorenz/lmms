@@ -28,7 +28,8 @@
 
 const char* PluginIssue::msgFor(const PluginIssueType& it)
 {
-	switch (it) {
+	switch (it)
+	{
 	case unknownPortFlow: return "unknown port flow for mandatory port";
 	case unknownPortType: return "unknown port type for mandatory port";
 	case tooManyInputChannels: return "too many audio input channels";

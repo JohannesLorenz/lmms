@@ -99,7 +99,8 @@ void ControllerRackView::deleteController(ControllerView* _view)
 {
 	Controller* c = _view->getController();
 
-	if (c->connectionCount() > 0) {
+	if (c->connectionCount() > 0)
+	{
 		QMessageBox msgBox;
 		msgBox.setIcon(QMessageBox::Question);
 		msgBox.setWindowTitle(tr("Confirm Delete"));
@@ -133,15 +134,18 @@ void ControllerRackView::onControllerRemoved(Controller* removedController)
 	ControllerView* viewOfRemovedController = 0;
 
 	QVector<ControllerView*>::const_iterator end = m_controllerViews.end();
-	for (QVector<ControllerView*>::const_iterator it = m_controllerViews.begin(); it != end; ++it) {
+	for (QVector<ControllerView*>::const_iterator it = m_controllerViews.begin(); it != end; ++it)
+	{
 		ControllerView* currentControllerView = *it;
-		if (currentControllerView->getController() == removedController) {
+		if (currentControllerView->getController() == removedController)
+		{
 			viewOfRemovedController = currentControllerView;
 			break;
 		}
 	}
 
-	if (viewOfRemovedController) {
+	if (viewOfRemovedController)
+	{
 		m_controllerViews.erase(std::find(m_controllerViews.begin(), m_controllerViews.end(), viewOfRemovedController));
 
 		delete viewOfRemovedController;
@@ -162,9 +166,9 @@ void ControllerRackView::addController()
 
 void ControllerRackView::closeEvent(QCloseEvent* _ce)
 {
-	if (parentWidget()) {
-		parentWidget()->hide();
-	} else {
+	if (parentWidget()) { parentWidget()->hide(); }
+	else
+	{
 		hide();
 	}
 	_ce->ignore();

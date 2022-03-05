@@ -48,7 +48,8 @@ void RenameDialog::resizeEvent(QResizeEvent* event) { m_stringLE->setGeometry(10
 
 void RenameDialog::keyPressEvent(QKeyEvent* _ke)
 {
-	if (_ke->key() == Qt::Key_Escape) {
+	if (_ke->key() == Qt::Key_Escape)
+	{
 		m_stringLE->setText(m_originalString);
 		accept();
 	}

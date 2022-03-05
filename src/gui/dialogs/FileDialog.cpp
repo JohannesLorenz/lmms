@@ -76,7 +76,8 @@ QString FileDialog::getOpenFileName(
 {
 	FileDialog dialog(parent, caption, directory, filter);
 	if (selectedFilter && !selectedFilter->isEmpty()) dialog.selectNameFilter(*selectedFilter);
-	if (dialog.exec() == QDialog::Accepted) {
+	if (dialog.exec() == QDialog::Accepted)
+	{
 		if (selectedFilter) *selectedFilter = dialog.selectedNameFilter();
 		return dialog.selectedFiles().value(0);
 	}

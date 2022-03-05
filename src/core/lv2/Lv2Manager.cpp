@@ -103,10 +103,12 @@ void Lv2Manager::initPlugins()
 		std::sort(issues.begin(), issues.end());
 		auto last = std::unique(issues.begin(), issues.end());
 		issues.erase(last, issues.end());
-		if (m_debug && issues.size()) {
+		if (m_debug && issues.size())
+		{
 			qDebug() << "Lv2 plugin" << qStringFromPluginNode(curPlug, lilv_plugin_get_name)
 					 << "(URI:" << lilv_node_as_uri(lilv_plugin_get_uri(curPlug)) << ") can not be loaded:";
-			for (const PluginIssue& iss : issues) {
+			for (const PluginIssue& iss : issues)
+			{
 				qDebug() << "  - " << iss;
 			}
 		}
@@ -114,11 +116,12 @@ void Lv2Manager::initPlugins()
 		Lv2Info info(curPlug, type, issues.empty());
 
 		m_lv2InfoMap[lilv_node_as_uri(lilv_plugin_get_uri(curPlug))] = std::move(info);
-		if (issues.empty()) {
-			++pluginsLoaded;
-		} else {
+		if (issues.empty()) { ++pluginsLoaded; }
+		else
+		{
 			if (std::any_of(issues.begin(), issues.end(),
-					[](const PluginIssue& iss) { return iss.type() == PluginIssueType::blacklisted; })) {
+					[](const PluginIssue& iss) { return iss.type() == PluginIssueType::blacklisted; }))
+			{
 				++blacklisted;
 			}
 		}
@@ -127,23 +130,30 @@ void Lv2Manager::initPlugins()
 
 	qDebug() << "Lv2 plugin SUMMARY:" << pluginsLoaded << "of" << pluginCount << " loaded in" << timer.elapsed()
 			 << "msecs.";
-	if (pluginsLoaded != pluginCount) {
-		if (m_debug) {
+	if (pluginsLoaded != pluginCount)
+	{
+		if (m_debug)
+		{
 			qDebug() << "If you don't want to see all this debug output, please set\n"
 						"  environment variable \"LMMS_LV2_DEBUG\" to empty or\n"
 						"  do not set it.";
-		} else {
+		}
+		else
+		{
 			qDebug() << "For details about not loaded plugins, please set\n"
 						"  environment variable \"LMMS_LV2_DEBUG\" to nonempty.";
 		}
 	}
 
 	// TODO: might be better in the LMMS core
-	if (Engine::ignorePluginBlacklist()) {
+	if (Engine::ignorePluginBlacklist())
+	{
 		qWarning() << "WARNING! Plugin blacklist disabled! If you want to use the blacklist,\n"
 					  "  please set environment variable \"LMMS_IGNORE_BLACKLIST\" to empty or\n"
 					  "  do not set it.";
-	} else if (blacklisted > 0) {
+	}
+	else if (blacklisted > 0)
+	{
 		qDebug() << "Lv2 Plugins blacklisted:" << blacklisted << "of" << pluginCount
 				 << "\n"
 					"  If you want to ignore the blacklist (dangerous!), please set\n"
@@ -174,7 +184,8 @@ bool Lv2Manager::isSubclassOf(const LilvPluginClass* clvss, const char* uriStr)
 		return lilv_node_equals(lilv_plugin_class_get_uri(pc1), lilv_plugin_class_get_uri(pc2));
 	};
 	bool isFound = false;
-	while (!(isFound = clssEq(clvss, search)) && !clssEq(clvss, root)) {
+	while (!(isFound = clssEq(clvss, search)) && !clssEq(clvss, root))
+	{
 		clvss = lilv_plugin_classes_get_by_uri(allClasses, lilv_plugin_class_get_parent_uri(clvss));
 	}
 	return isFound;

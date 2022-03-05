@@ -80,18 +80,20 @@ void AutomatableModelView::addDefaultActions(QMenu* menu)
 
 	menu->addSeparator();
 
-	if (model->hasLinkedModels()) {
+	if (model->hasLinkedModels())
+	{
 		menu->addAction(embed::getIconPixmap("edit-delete"), AutomatableModel::tr("Remove all linked controls"),
 			amvSlots, SLOT(unlinkAllModels()));
 		menu->addSeparator();
 	}
 
 	QString controllerTxt;
-	if (model->controllerConnection()) {
+	if (model->controllerConnection())
+	{
 		Controller* cont = model->controllerConnection()->getController();
-		if (cont) {
-			controllerTxt = AutomatableModel::tr("Connected to %1").arg(cont->name());
-		} else {
+		if (cont) { controllerTxt = AutomatableModel::tr("Connected to %1").arg(cont->name()); }
+		else
+		{
 			controllerTxt = AutomatableModel::tr("Connected to controller");
 		}
 
@@ -101,7 +103,9 @@ void AutomatableModelView::addDefaultActions(QMenu* menu)
 			SLOT(execConnectionDialog()));
 		contMenu->addAction(embed::getIconPixmap("cancel"), AutomatableModel::tr("Remove connection"), amvSlots,
 			SLOT(removeConnection()));
-	} else {
+	}
+	else
+	{
 		menu->addAction(embed::getIconPixmap("controller"), AutomatableModel::tr("Connect to controller..."), amvSlots,
 			SLOT(execConnectionDialog()));
 	}
@@ -113,23 +117,30 @@ void AutomatableModelView::setModel(Model* model, bool isOldModelValid) { ModelV
 // "defaultConstructed", so the next call to setModel will delete it.
 void AutomatableModelView::unsetModel()
 {
-	if (dynamic_cast<FloatModelView*>(this)) {
-		setModel(new FloatModel(0, 0, 0, 1, nullptr, QString(), true));
-	} else if (dynamic_cast<IntModelView*>(this)) {
+	if (dynamic_cast<FloatModelView*>(this)) { setModel(new FloatModel(0, 0, 0, 1, nullptr, QString(), true)); }
+	else if (dynamic_cast<IntModelView*>(this))
+	{
 		setModel(new IntModel(0, 0, 0, nullptr, QString(), true));
-	} else if (dynamic_cast<BoolModelView*>(this)) {
+	}
+	else if (dynamic_cast<BoolModelView*>(this))
+	{
 		setModel(new BoolModel(false, nullptr, QString(), true));
-	} else {
+	}
+	else
+	{
 		ModelView::unsetModel();
 	}
 }
 
 void AutomatableModelView::mousePressEvent(QMouseEvent* event)
 {
-	if (event->button() == Qt::LeftButton && event->modifiers() & Qt::ControlModifier) {
+	if (event->button() == Qt::LeftButton && event->modifiers() & Qt::ControlModifier)
+	{
 		new StringPairDrag("automatable_model", QString::number(modelUntyped()->id()), QPixmap(), widget());
 		event->accept();
-	} else if (event->button() == Qt::MidButton) {
+	}
+	else if (event->button() == Qt::MidButton)
+	{
 		modelUntyped()->reset();
 	}
 }
@@ -157,22 +168,24 @@ void AutomatableModelViewSlots::execConnectionDialog()
 	m->displayName();
 	ControllerConnectionDialog d(getGUI()->mainWindow(), m);
 
-	if (d.exec() == 1) {
+	if (d.exec() == 1)
+	{
 		// Actually chose something
-		if (d.chosenController()) {
+		if (d.chosenController())
+		{
 			// Update
-			if (m->controllerConnection()) {
-				m->controllerConnection()->setController(d.chosenController());
-			}
+			if (m->controllerConnection()) { m->controllerConnection()->setController(d.chosenController()); }
 			// New
-			else {
+			else
+			{
 				ControllerConnection* cc = new ControllerConnection(d.chosenController());
 				m->setControllerConnection(cc);
 				// cc->setTargetName( m->displayName() );
 			}
 		}
 		// no controller, so delete existing connection
-		else {
+		else
+		{
 			removeConnection();
 		}
 	}
@@ -182,7 +195,8 @@ void AutomatableModelViewSlots::removeConnection()
 {
 	AutomatableModel* m = m_amv->modelUntyped();
 
-	if (m->controllerConnection()) {
+	if (m->controllerConnection())
+	{
 		delete m->controllerConnection();
 		m->setControllerConnection(nullptr);
 	}

@@ -171,7 +171,8 @@ void LfoControllerDialog::askUserDefWave()
 {
 	SampleBuffer* sampleBuffer = dynamic_cast<LfoController*>(this->model())->m_userDefSampleBuffer;
 	QString fileName = sampleBuffer->openAndSetWaveformFile();
-	if (fileName.isEmpty() == false) {
+	if (fileName.isEmpty() == false)
+	{
 		// TODO:
 		ToolTip::add(m_userWaveBtn, sampleBuffer->audioFile());
 	}

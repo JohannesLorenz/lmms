@@ -42,11 +42,13 @@ LocalZynAddSubFx::LocalZynAddSubFx()
 	: m_master(nullptr)
 	, m_ioEngine(nullptr)
 {
-	for (int i = 0; i < NumKeys; ++i) {
+	for (int i = 0; i < NumKeys; ++i)
+	{
 		m_runningNotes[i] = 0;
 	}
 
-	if (s_instanceCount == 0) {
+	if (s_instanceCount == 0)
+	{
 #ifdef LMMS_BUILD_WIN32
 #ifndef __WINPTHREADS_VERSION
 		// (non-portable) initialization of statically linked pthread library
@@ -64,7 +66,8 @@ LocalZynAddSubFx::LocalZynAddSubFx()
 		srand(time(nullptr));
 
 		denormalkillbuf = new float[synth->buffersize];
-		for (int i = 0; i < synth->buffersize; ++i) {
+		for (int i = 0; i < synth->buffersize; ++i)
+		{
 			denormalkillbuf[i] = (RND - 0.5) * 1e-16;
 		}
 	}
@@ -143,11 +146,15 @@ void LocalZynAddSubFx::loadPreset(const std::string& _filename, int _part)
 void LocalZynAddSubFx::setPresetDir(const std::string& _dir)
 {
 	m_presetsDir = _dir;
-	for (int i = 0; i < MAX_BANK_ROOT_DIRS; ++i) {
-		if (config.cfg.bankRootDirList[i].empty()) {
+	for (int i = 0; i < MAX_BANK_ROOT_DIRS; ++i)
+	{
+		if (config.cfg.bankRootDirList[i].empty())
+		{
 			config.cfg.bankRootDirList[i] = m_presetsDir;
 			break;
-		} else if (config.cfg.bankRootDirList[i] == m_presetsDir) {
+		}
+		else if (config.cfg.bankRootDirList[i] == m_presetsDir)
+		{
 			break;
 		}
 	}
@@ -163,16 +170,19 @@ void LocalZynAddSubFx::setLmmsWorkingDir(const std::string& _dir)
 
 void LocalZynAddSubFx::setPitchWheelBendRange(int semitones)
 {
-	for (int i = 0; i < NUM_MIDI_PARTS; ++i) {
+	for (int i = 0; i < NUM_MIDI_PARTS; ++i)
+	{
 		m_master->part[i]->ctl.setpitchwheelbendrange(semitones * 100);
 	}
 }
 
 void LocalZynAddSubFx::processMidiEvent(const MidiEvent& event)
 {
-	switch (event.type()) {
+	switch (event.type())
+	{
 	case MidiNoteOn:
-		if (event.velocity() > 0) {
+		if (event.velocity() > 0)
+		{
 			if (event.key() < 0 || event.key() > MidiMaxKey) { break; }
 			if (m_runningNotes[event.key()] > 0) { m_master->noteOff(event.channel(), event.key()); }
 			++m_runningNotes[event.key()];
@@ -199,7 +209,8 @@ void LocalZynAddSubFx::processAudio(sampleFrame* _out)
 	m_master->GetAudioOutSamples(synth->buffersize, synth->samplerate, outputl, outputr);
 
 	// TODO: move to MixHelpers
-	for (int f = 0; f < synth->buffersize; ++f) {
+	for (int f = 0; f < synth->buffersize; ++f)
+	{
 		_out[f][0] = outputl[f];
 		_out[f][1] = outputr[f];
 	}

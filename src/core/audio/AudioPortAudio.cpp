@@ -58,7 +58,8 @@ AudioPortAudio::AudioPortAudio(bool& _success_ful, AudioEngine* _audioEngine)
 
 	PaError err = Pa_Initialize();
 
-	if (err != paNoError) {
+	if (err != paNoError)
+	{
 		printf("Couldn't initialize PortAudio: %s\n", Pa_GetErrorText(err));
 		m_wasPAInitError = true;
 		return;
@@ -72,9 +73,11 @@ AudioPortAudio::AudioPortAudio(bool& _success_ful, AudioEngine* _audioEngine)
 	PaDeviceIndex inDevIdx = -1;
 	PaDeviceIndex outDevIdx = -1;
 	const PaDeviceInfo* di;
-	for (int i = 0; i < Pa_GetDeviceCount(); ++i) {
+	for (int i = 0; i < Pa_GetDeviceCount(); ++i)
+	{
 		di = Pa_GetDeviceInfo(i);
-		if (di->name == device && Pa_GetHostApiInfo(di->hostApi)->name == backend) {
+		if (di->name == device && Pa_GetHostApiInfo(di->hostApi)->name == backend)
+		{
 			inDevIdx = i;
 			outDevIdx = i;
 		}
@@ -116,7 +119,8 @@ AudioPortAudio::AudioPortAudio(bool& _success_ful, AudioEngine* _audioEngine)
 		_process_callback, // our callback function
 		this);
 
-	if (err == paInvalidDevice && sampleRate() < 48000) {
+	if (err == paInvalidDevice && sampleRate() < 48000)
+	{
 		printf("Pa_OpenStream() failed with 44,1 KHz, trying again with 48 KHz\n");
 		// some backends or drivers do not allow 32 bit floating point data
 		// with a samplerate of 44100 Hz
@@ -130,7 +134,8 @@ AudioPortAudio::AudioPortAudio(bool& _success_ful, AudioEngine* _audioEngine)
 			this);
 	}
 
-	if (err != paNoError) {
+	if (err != paNoError)
+	{
 		printf("Couldn't open PortAudio: %s\n", Pa_GetErrorText(err));
 		return;
 	}
@@ -159,7 +164,8 @@ void AudioPortAudio::startProcessing()
 	m_stopped = false;
 	PaError err = Pa_StartStream(m_paStream);
 
-	if (err != paNoError) {
+	if (err != paNoError)
+	{
 		m_stopped = true;
 		printf("PortAudio error: %s\n", Pa_GetErrorText(err));
 	}
@@ -167,7 +173,8 @@ void AudioPortAudio::startProcessing()
 
 void AudioPortAudio::stopProcessing()
 {
-	if (m_paStream && Pa_IsStreamActive(m_paStream)) {
+	if (m_paStream && Pa_IsStreamActive(m_paStream))
+	{
 		m_stopped = true;
 		PaError err = Pa_StopStream(m_paStream);
 
@@ -177,7 +184,8 @@ void AudioPortAudio::stopProcessing()
 
 void AudioPortAudio::applyQualitySettings()
 {
-	if (hqAudio()) {
+	if (hqAudio())
+	{
 
 		setSampleRate(Engine::audioEngine()->processingSampleRate());
 		int samples = audioEngine()->framesPerPeriod();
@@ -190,7 +198,8 @@ void AudioPortAudio::applyQualitySettings()
 			_process_callback, // our callback function
 			this);
 
-		if (err != paNoError) {
+		if (err != paNoError)
+		{
 			printf("Couldn't open PortAudio: %s\n", Pa_GetErrorText(err));
 			return;
 		}
@@ -203,16 +212,20 @@ int AudioPortAudio::process_callback(const float* _inputBuffer, float* _outputBu
 {
 	if (supportsCapture()) { audioEngine()->pushInputFrames((sampleFrame*)_inputBuffer, _framesPerBuffer); }
 
-	if (m_stopped) {
+	if (m_stopped)
+	{
 		memset(_outputBuffer, 0, _framesPerBuffer * channels() * sizeof(float));
 		return paComplete;
 	}
 
-	while (_framesPerBuffer) {
-		if (m_outBufPos == 0) {
+	while (_framesPerBuffer)
+	{
+		if (m_outBufPos == 0)
+		{
 			// frames depend on the sample rate
 			const fpp_t frames = getNextBuffer(m_outBuf);
-			if (!frames) {
+			if (!frames)
+			{
 				m_stopped = true;
 				memset(_outputBuffer, 0, _framesPerBuffer * channels() * sizeof(float));
 				return paComplete;
@@ -223,8 +236,10 @@ int AudioPortAudio::process_callback(const float* _inputBuffer, float* _outputBu
 
 		float master_gain = audioEngine()->masterGain();
 
-		for (fpp_t frame = 0; frame < min_len; ++frame) {
-			for (ch_cnt_t chnl = 0; chnl < channels(); ++chnl) {
+		for (fpp_t frame = 0; frame < min_len; ++frame)
+		{
+			for (ch_cnt_t chnl = 0; chnl < channels(); ++chnl)
+			{
 				(_outputBuffer + frame * channels())[chnl] = AudioEngine::clip(m_outBuf[frame][chnl] * master_gain);
 			}
 		}
@@ -251,13 +266,15 @@ int AudioPortAudio::_process_callback(const void* _inputBuffer, void* _outputBuf
 void AudioPortAudioSetupUtil::updateBackends()
 {
 	PaError err = Pa_Initialize();
-	if (err != paNoError) {
+	if (err != paNoError)
+	{
 		printf("Couldn't initialize PortAudio: %s\n", Pa_GetErrorText(err));
 		return;
 	}
 
 	const PaHostApiInfo* hi;
-	for (int i = 0; i < Pa_GetHostApiCount(); ++i) {
+	for (int i = 0; i < Pa_GetHostApiCount(); ++i)
+	{
 		hi = Pa_GetHostApiInfo(i);
 		m_backendModel.addItem(hi->name);
 	}
@@ -268,7 +285,8 @@ void AudioPortAudioSetupUtil::updateBackends()
 void AudioPortAudioSetupUtil::updateDevices()
 {
 	PaError err = Pa_Initialize();
-	if (err != paNoError) {
+	if (err != paNoError)
+	{
 		printf("Couldn't initialize PortAudio: %s\n", Pa_GetErrorText(err));
 		return;
 	}
@@ -277,9 +295,11 @@ void AudioPortAudioSetupUtil::updateDevices()
 	const QString& backend = m_backendModel.currentText();
 	int hostApi = 0;
 	const PaHostApiInfo* hi;
-	for (int i = 0; i < Pa_GetHostApiCount(); ++i) {
+	for (int i = 0; i < Pa_GetHostApiCount(); ++i)
+	{
 		hi = Pa_GetHostApiInfo(i);
-		if (backend == hi->name) {
+		if (backend == hi->name)
+		{
 			hostApi = i;
 			break;
 		}
@@ -288,7 +308,8 @@ void AudioPortAudioSetupUtil::updateDevices()
 	// get devices for selected backend
 	m_deviceModel.clear();
 	const PaDeviceInfo* di;
-	for (int i = 0; i < Pa_GetDeviceCount(); ++i) {
+	for (int i = 0; i < Pa_GetDeviceCount(); ++i)
+	{
 		di = Pa_GetDeviceInfo(i);
 		if (di->hostApi == hostApi) { m_deviceModel.addItem(di->name); }
 	}
@@ -298,7 +319,8 @@ void AudioPortAudioSetupUtil::updateDevices()
 void AudioPortAudioSetupUtil::updateChannels()
 {
 	PaError err = Pa_Initialize();
-	if (err != paNoError) {
+	if (err != paNoError)
+	{
 		printf("Couldn't initialize PortAudio: %s\n", Pa_GetErrorText(err));
 		return;
 	}
@@ -360,7 +382,8 @@ void AudioPortAudio::setupWidget::saveSettings()
 
 void AudioPortAudio::setupWidget::show()
 {
-	if (m_setupUtil.m_backendModel.size() == 0) {
+	if (m_setupUtil.m_backendModel.size() == 0)
+	{
 		// populate the backend model the first time we are shown
 		m_setupUtil.updateBackends();
 

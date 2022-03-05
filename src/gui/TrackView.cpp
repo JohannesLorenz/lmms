@@ -99,7 +99,8 @@ TrackView::TrackView(Track* track, TrackContainerView* tcv)
 	connect(&m_track->m_soloModel, SIGNAL(dataChanged()), m_track, SLOT(toggleSolo()), Qt::DirectConnection);
 
 	// create views for already existing clips
-	for (Track::clipVector::iterator it = m_track->m_clips.begin(); it != m_track->m_clips.end(); ++it) {
+	for (Track::clipVector::iterator it = m_track->m_clips.begin(); it != m_track->m_clips.end(); ++it)
+	{
 		createClipView(*it);
 	}
 
@@ -117,10 +118,13 @@ TrackView::~TrackView() {}
  */
 void TrackView::resizeEvent(QResizeEvent* re)
 {
-	if (ConfigManager::inst()->value("ui", "compacttrackbuttons").toInt()) {
+	if (ConfigManager::inst()->value("ui", "compacttrackbuttons").toInt())
+	{
 		m_trackOperationsWidget.setFixedSize(TRACK_OP_WIDTH_COMPACT, height() - 1);
 		m_trackSettingsWidget.setFixedSize(DEFAULT_SETTINGS_WIDGET_WIDTH_COMPACT, height() - 1);
-	} else {
+	}
+	else
+	{
 		m_trackOperationsWidget.setFixedSize(TRACK_OP_WIDTH, height() - 1);
 		m_trackSettingsWidget.setFixedSize(DEFAULT_SETTINGS_WIDGET_WIDTH, height() - 1);
 	}
@@ -191,7 +195,8 @@ void TrackView::dropEvent(QDropEvent* de)
 {
 	QString type = StringPairDrag::decodeKey(de);
 	QString value = StringPairDrag::decodeValue(de);
-	if (type == ("track_" + QString::number(m_track->type()))) {
+	if (type == ("track_" + QString::number(m_track->type())))
+	{
 		// value contains our XML-data so simply create a
 		// DataFile which does the rest for us...
 		DataFile dataFile(value.toUtf8());
@@ -219,7 +224,8 @@ void TrackView::mousePressEvent(QMouseEvent* me)
 {
 
 	// If previously dragged too small, restore on shift-leftclick
-	if (height() < DEFAULT_TRACK_HEIGHT && me->modifiers() & Qt::ShiftModifier && me->button() == Qt::LeftButton) {
+	if (height() < DEFAULT_TRACK_HEIGHT && me->modifiers() & Qt::ShiftModifier && me->button() == Qt::LeftButton)
+	{
 		setFixedHeight(DEFAULT_TRACK_HEIGHT);
 		m_track->setHeight(DEFAULT_TRACK_HEIGHT);
 	}
@@ -227,15 +233,18 @@ void TrackView::mousePressEvent(QMouseEvent* me)
 	int widgetTotal = ConfigManager::inst()->value("ui", "compacttrackbuttons").toInt() == 1
 		? DEFAULT_SETTINGS_WIDGET_WIDTH_COMPACT + TRACK_OP_WIDTH_COMPACT
 		: DEFAULT_SETTINGS_WIDGET_WIDTH + TRACK_OP_WIDTH;
-	if (m_trackContainerView->allowRubberband() == true && me->x() > widgetTotal) {
-		QWidget::mousePressEvent(me);
-	} else if (me->button() == Qt::LeftButton) {
-		if (me->modifiers() & Qt::ShiftModifier) {
+	if (m_trackContainerView->allowRubberband() == true && me->x() > widgetTotal) { QWidget::mousePressEvent(me); }
+	else if (me->button() == Qt::LeftButton)
+	{
+		if (me->modifiers() & Qt::ShiftModifier)
+		{
 			m_action = ResizeTrack;
 			QCursor::setPos(mapToGlobal(QPoint(me->x(), height())));
 			QCursor c(Qt::SizeVerCursor);
 			QApplication::setOverrideCursor(c);
-		} else {
+		}
+		else
+		{
 			if (me->x() > 10) // 10 = The width of the grip + 2 pixels to the left and right.
 			{
 				QWidget::mousePressEvent(me);
@@ -252,7 +261,9 @@ void TrackView::mousePressEvent(QMouseEvent* me)
 		}
 
 		me->accept();
-	} else {
+	}
+	else
+	{
 		QWidget::mousePressEvent(me);
 	}
 }
@@ -278,9 +289,9 @@ void TrackView::mouseMoveEvent(QMouseEvent* me)
 	int widgetTotal = ConfigManager::inst()->value("ui", "compacttrackbuttons").toInt() == 1
 		? DEFAULT_SETTINGS_WIDGET_WIDTH_COMPACT + TRACK_OP_WIDTH_COMPACT
 		: DEFAULT_SETTINGS_WIDGET_WIDTH + TRACK_OP_WIDTH;
-	if (m_trackContainerView->allowRubberband() == true && me->x() > widgetTotal) {
-		QWidget::mouseMoveEvent(me);
-	} else if (m_action == MoveTrack) {
+	if (m_trackContainerView->allowRubberband() == true && me->x() > widgetTotal) { QWidget::mouseMoveEvent(me); }
+	else if (m_action == MoveTrack)
+	{
 		// look which track-widget the mouse-cursor is over
 		const int yPos = m_trackContainerView->contentWidget()->mapFromGlobal(me->globalPos()).y();
 		const TrackView* trackAtY = m_trackContainerView->trackViewAt(yPos);
@@ -289,15 +300,18 @@ void TrackView::mouseMoveEvent(QMouseEvent* me)
 		//	qDebug( "y position %d", yPos );
 
 		// a track-widget not equal to ourself?
-		if (trackAtY != nullptr && trackAtY != this) {
+		if (trackAtY != nullptr && trackAtY != this)
+		{
 			// then move us up/down there!
-			if (me->y() < 0) {
-				m_trackContainerView->moveTrackViewUp(this);
-			} else {
+			if (me->y() < 0) { m_trackContainerView->moveTrackViewUp(this); }
+			else
+			{
 				m_trackContainerView->moveTrackViewDown(this);
 			}
 		}
-	} else if (m_action == ResizeTrack) {
+	}
+	else if (m_action == ResizeTrack)
+	{
 		setFixedHeight(qMax<int>(me->y(), MINIMAL_TRACK_HEIGHT));
 		m_trackContainerView->realignTracks();
 		m_track->setHeight(height());
@@ -313,7 +327,8 @@ void TrackView::mouseMoveEvent(QMouseEvent* me)
 void TrackView::mouseReleaseEvent(QMouseEvent* me)
 {
 	m_action = NoAction;
-	while (QApplication::overrideCursor() != nullptr) {
+	while (QApplication::overrideCursor() != nullptr)
+	{
 		QApplication::restoreOverrideCursor();
 	}
 	m_trackOperationsWidget.update();

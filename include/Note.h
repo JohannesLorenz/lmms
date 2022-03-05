@@ -114,9 +114,9 @@ public:
 	{
 		// function to compare two notes - must be called explictly when
 		// using qSort
-		if ((int)(*lhs).pos() < (int)(*rhs).pos()) {
-			return true;
-		} else if ((int)(*lhs).pos() > (int)(*rhs).pos()) {
+		if ((int)(*lhs).pos() < (int)(*rhs).pos()) { return true; }
+		else if ((int)(*lhs).pos() > (int)(*rhs).pos())
+		{
 			return false;
 		}
 		return ((int)(*lhs).key() > (int)(*rhs).key());

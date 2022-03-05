@@ -63,22 +63,29 @@ bool SampleTrack::play(const TimePos& _start, const fpp_t _frames, const f_cnt_t
 
 	clipVector clips;
 	::PatternTrack* pattern_track = nullptr;
-	if (_clip_num >= 0) {
+	if (_clip_num >= 0)
+	{
 		if (_start > getClip(_clip_num)->length()) { setPlaying(false); }
 		if (_start != 0) { return false; }
 		clips.push_back(getClip(_clip_num));
-		if (trackContainer() == Engine::patternStore()) {
+		if (trackContainer() == Engine::patternStore())
+		{
 			pattern_track = PatternTrack::findPatternTrack(_clip_num);
 			setPlaying(true);
 		}
-	} else {
+	}
+	else
+	{
 		bool nowPlaying = false;
-		for (int i = 0; i < numOfClips(); ++i) {
+		for (int i = 0; i < numOfClips(); ++i)
+		{
 			Clip* clip = getClip(i);
 			SampleClip* sClip = dynamic_cast<SampleClip*>(clip);
 
-			if (_start >= sClip->startPosition() && _start < sClip->endPosition()) {
-				if (sClip->isPlaying() == false && _start >= (sClip->startPosition() + sClip->startTimeOffset())) {
+			if (_start >= sClip->startPosition() && _start < sClip->endPosition())
+			{
+				if (sClip->isPlaying() == false && _start >= (sClip->startPosition() + sClip->startTimeOffset()))
+				{
 					auto bufferFramesPerTick = Engine::framesPerTick(sClip->sampleBuffer()->sampleRate());
 					f_cnt_t sampleStart
 						= bufferFramesPerTick * (_start - sClip->startPosition() - sClip->startTimeOffset());
@@ -90,7 +97,8 @@ bool SampleTrack::play(const TimePos& _start, const fpp_t _frames, const f_cnt_t
 					f_cnt_t samplePlayLength
 						= clipFrameLength > sampleBufferLength ? sampleBufferLength : clipFrameLength;
 					// we only play within the sampleBuffer limits
-					if (sampleStart < sampleBufferLength) {
+					if (sampleStart < sampleBufferLength)
+					{
 						sClip->setSampleStartFrame(sampleStart);
 						sClip->setSamplePlayLength(samplePlayLength);
 						clips.push_back(sClip);
@@ -98,7 +106,9 @@ bool SampleTrack::play(const TimePos& _start, const fpp_t _frames, const f_cnt_t
 						nowPlaying = true;
 					}
 				}
-			} else {
+			}
+			else
+			{
 				sClip->setIsPlaying(false);
 			}
 			nowPlaying = nowPlaying || sClip->isPlaying();
@@ -106,15 +116,20 @@ bool SampleTrack::play(const TimePos& _start, const fpp_t _frames, const f_cnt_t
 		setPlaying(nowPlaying);
 	}
 
-	for (clipVector::Iterator it = clips.begin(); it != clips.end(); ++it) {
+	for (clipVector::Iterator it = clips.begin(); it != clips.end(); ++it)
+	{
 		SampleClip* st = dynamic_cast<SampleClip*>(*it);
-		if (!st->isMuted()) {
+		if (!st->isMuted())
+		{
 			PlayHandle* handle;
-			if (st->isRecord()) {
+			if (st->isRecord())
+			{
 				if (!Engine::getSong()->isRecording()) { return played_a_note; }
 				SampleRecordHandle* smpHandle = new SampleRecordHandle(st);
 				handle = smpHandle;
-			} else {
+			}
+			else
+			{
 				SamplePlayHandle* smpHandle = new SamplePlayHandle(st);
 				smpHandle->setVolumeModel(&m_volumeModel);
 				smpHandle->setPatternTrack(pattern_track);
@@ -154,9 +169,12 @@ void SampleTrack::loadTrackSpecificSettings(const QDomElement& _this)
 {
 	QDomNode node = _this.firstChild();
 	m_audioPort.effects()->clear();
-	while (!node.isNull()) {
-		if (node.isElement()) {
-			if (m_audioPort.effects()->nodeName() == node.nodeName()) {
+	while (!node.isNull())
+	{
+		if (node.isElement())
+		{
+			if (m_audioPort.effects()->nodeName() == node.nodeName())
+			{
 				m_audioPort.effects()->restoreState(node.toElement());
 			}
 		}
@@ -176,7 +194,8 @@ void SampleTrack::updateClips()
 
 void SampleTrack::setPlayingClips(bool isPlaying)
 {
-	for (int i = 0; i < numOfClips(); ++i) {
+	for (int i = 0; i < numOfClips(); ++i)
+	{
 		Clip* clip = getClip(i);
 		SampleClip* sClip = dynamic_cast<SampleClip*>(clip);
 		sClip->setIsPlaying(isPlaying);

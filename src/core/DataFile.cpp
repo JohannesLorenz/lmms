@@ -124,8 +124,10 @@ DataFile::DataFile(const QString& _fileName)
 	, m_fileVersion(UPGRADE_METHODS.size())
 {
 	QFile inFile(_fileName);
-	if (!inFile.open(QIODevice::ReadOnly)) {
-		if (getGUI() != nullptr) {
+	if (!inFile.open(QIODevice::ReadOnly))
+	{
+		if (getGUI() != nullptr)
+		{
 			QMessageBox::critical(nullptr, SongEditor::tr("Could not open file"),
 				SongEditor::tr("Could not open file %1. You probably "
 							   "have no permissions to read this "
@@ -155,7 +157,8 @@ DataFile::~DataFile() {}
 
 bool DataFile::validate(QString extension)
 {
-	switch (m_type) {
+	switch (m_type)
+	{
 	case Type::SongProject:
 		if (extension == "mmp" || extension == "mmpz") { return true; }
 		break;
@@ -180,7 +183,8 @@ bool DataFile::validate(QString extension)
 #ifdef LMMS_HAVE_LV2
 				|| extension == "lv2"
 #endif
-				)) {
+				))
+		{
 			return true;
 		}
 		if (extension == "wav" || extension == "ogg" || extension == "ds") { return true; }
@@ -194,9 +198,11 @@ QString DataFile::nameWithExtension(const QString& _fn) const
 {
 	const QString extension = _fn.section('.', -1);
 
-	switch (type()) {
+	switch (type())
+	{
 	case SongProject:
-		if (extension != "mmp" && extension != "mpt" && extension != "mmpz") {
+		if (extension != "mmp" && extension != "mpt" && extension != "mmpz")
+		{
 			if (ConfigManager::inst()->value("app", "nommpz").toInt() == 0) { return _fn + ".mmpz"; }
 			return _fn + ".mmp";
 		}
@@ -214,7 +220,8 @@ QString DataFile::nameWithExtension(const QString& _fn) const
 
 void DataFile::write(QTextStream& _strm)
 {
-	if (type() == SongProject || type() == SongProjectTemplate || type() == InstrumentTrackSettings) {
+	if (type() == SongProject || type() == SongProjectTemplate || type() == InstrumentTrackSettings)
+	{
 		cleanMetaNodes(documentElement());
 	}
 
@@ -225,14 +232,17 @@ bool DataFile::writeFile(const QString& filename, bool withResources)
 {
 	// Small lambda function for displaying errors
 	auto showError = [this](QString title, QString body) {
-		if (getGUI() != nullptr) {
+		if (getGUI() != nullptr)
+		{
 			QMessageBox mb;
 			mb.setWindowTitle(title);
 			mb.setText(body);
 			mb.setIcon(QMessageBox::Warning);
 			mb.setStandardButtons(QMessageBox::Ok);
 			mb.exec();
-		} else {
+		}
+		else
+		{
 			qWarning() << body;
 		}
 	};
@@ -252,11 +262,13 @@ bool DataFile::writeFile(const QString& filename, bool withResources)
 	const QString fullNameBak = fullName + ".bak";
 
 	// If we are saving with resources, setup the bundle folder first
-	if (withResources) {
+	if (withResources)
+	{
 		// First check if there's a bundle folder with the same name in
 		// the path already. If so, warns user that we can't overwrite a
 		// project bundle.
-		if (QDir(bundleDir).exists()) {
+		if (QDir(bundleDir).exists())
+		{
 			showError(SongEditor::tr("Operation denied"),
 				SongEditor::tr("A bundle folder with that name already eists on the "
 							   "selected path. Can't overwrite a project bundle. Please select a different "
@@ -266,19 +278,22 @@ bool DataFile::writeFile(const QString& filename, bool withResources)
 		}
 
 		// Create bundle folder
-		if (!QDir().mkdir(bundleDir)) {
+		if (!QDir().mkdir(bundleDir))
+		{
 			showError(SongEditor::tr("Error"), SongEditor::tr("Couldn't create bundle folder."));
 			return false;
 		}
 
 		// Create resources folder
-		if (!QDir().mkdir(resourcesDir)) {
+		if (!QDir().mkdir(resourcesDir))
+		{
 			showError(SongEditor::tr("Error"), SongEditor::tr("Couldn't create resources folder."));
 			return false;
 		}
 
 		// Copy resources to folder and update paths
-		if (!copyResources(resourcesDir)) {
+		if (!copyResources(resourcesDir))
+		{
 			showError(SongEditor::tr("Error"), SongEditor::tr("Failed to copy resources."));
 			return false;
 		}
@@ -286,7 +301,8 @@ bool DataFile::writeFile(const QString& filename, bool withResources)
 
 	QFile outfile(fullNameTemp);
 
-	if (!outfile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+	if (!outfile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+	{
 		showError(SongEditor::tr("Could not write file"),
 			SongEditor::tr("Could not open %1 for writing. You probably are not permitted to"
 						   "write to this file. Please make sure you have write-access to "
@@ -297,12 +313,15 @@ bool DataFile::writeFile(const QString& filename, bool withResources)
 	}
 
 	const QString extension = fullName.section('.', -1);
-	if (extension == "mmpz" || extension == "xptz") {
+	if (extension == "mmpz" || extension == "xptz")
+	{
 		QString xml;
 		QTextStream ts(&xml);
 		write(ts);
 		outfile.write(qCompress(xml.toUtf8()));
-	} else {
+	}
+	else
+	{
 		QTextStream ts(&outfile);
 		write(ts);
 	}
@@ -310,11 +329,15 @@ bool DataFile::writeFile(const QString& filename, bool withResources)
 	outfile.close();
 
 	// make sure the file has been written correctly
-	if (QFileInfo(outfile.fileName()).size() > 0) {
-		if (ConfigManager::inst()->value("app", "disablebackup").toInt()) {
+	if (QFileInfo(outfile.fileName()).size() > 0)
+	{
+		if (ConfigManager::inst()->value("app", "disablebackup").toInt())
+		{
 			// remove current file
 			QFile::remove(fullName);
-		} else {
+		}
+		else
+		{
 			// remove old backup file
 			QFile::remove(fullNameBak);
 			// move current file to backup file
@@ -338,25 +361,30 @@ bool DataFile::copyResources(const QString& resourcesDir)
 	ResourcesMap::const_iterator it = ELEMENTS_WITH_RESOURCES.begin();
 
 	// Copy resources and manipulate the DataFile to have local paths to them
-	while (it != ELEMENTS_WITH_RESOURCES.end()) {
+	while (it != ELEMENTS_WITH_RESOURCES.end())
+	{
 		QDomNodeList list = elementsByTagName(it->first);
 
 		// Go through all elements with the tagname from our map
-		for (int i = 0; !list.item(i).isNull(); ++i) {
+		for (int i = 0; !list.item(i).isNull(); ++i)
+		{
 			QDomElement el = list.item(i).toElement();
 
 			std::vector<QString>::const_iterator res = it->second.begin();
 
 			// Search for attributes that point to resources
-			while (res != it->second.end()) {
+			while (res != it->second.end())
+			{
 				// If the element has that attribute
-				if (el.hasAttribute(*res)) {
+				if (el.hasAttribute(*res))
+				{
 					// Get absolute path to resource
 					bool error;
 					QString resPath = PathUtil::toAbsolute(el.attribute(*res), &error);
 					// If we are running without the project loaded (from CLI), "local:" base
 					// prefixes aren't converted, so we need to convert it ourselves
-					if (error) {
+					if (error)
+					{
 						resPath = QFileInfo(m_fileName).path() + "/"
 							+ resPath.remove(0, PathUtil::basePrefix(PathUtil::Base::LocalDir).length());
 					}
@@ -365,12 +393,14 @@ bool DataFile::copyResources(const QString& resourcesDir)
 					QString finalFileName = QFileInfo(resPath).fileName();
 					QString extension = resPath.section('.', -1);
 					int repeatedNames = 0;
-					for (QString name : namesList) {
+					for (QString name : namesList)
+					{
 						if (finalFileName == name) { ++repeatedNames; }
 					}
 					// Add the name to the list before modifying it
 					namesList.push_back(finalFileName);
-					if (repeatedNames) {
+					if (repeatedNames)
+					{
 						// Remove the extension, add the counter and add the
 						// extension again to get the final file name
 						finalFileName.truncate(finalFileName.lastIndexOf('.'));
@@ -381,7 +411,8 @@ bool DataFile::copyResources(const QString& resourcesDir)
 					QString finalPath = resourcesDir + "/" + finalFileName;
 
 					// Copy resource file to the resources folder
-					if (!QFile::copy(resPath, finalPath)) {
+					if (!QFile::copy(resPath, finalPath))
+					{
 						qWarning("ERROR: Failed to copy resource");
 						return false;
 					}
@@ -419,7 +450,8 @@ bool DataFile::hasLocalPlugins(QDomElement parent /* = QDomElement()*/, bool fir
 	if (firstCall) { parent = documentElement(); }
 
 	auto children = parent.childNodes();
-	for (int i = 0; i < children.size(); ++i) {
+	for (int i = 0; i < children.size(); ++i)
+	{
 		QDomNode child = children.at(i);
 		QDomElement childElement = child.toElement();
 
@@ -427,8 +459,10 @@ bool DataFile::hasLocalPlugins(QDomElement parent /* = QDomElement()*/, bool fir
 		// Skip the nodes allowed to have "local:" attributes, but
 		// still check its children
 		for (ResourcesMap::const_iterator it = ELEMENTS_WITH_RESOURCES.begin(); it != ELEMENTS_WITH_RESOURCES.end();
-			 ++it) {
-			if (childElement.tagName() == it->first) {
+			 ++it)
+		{
+			if (childElement.tagName() == it->first)
+			{
 				skipNode = true;
 				break;
 			}
@@ -436,12 +470,15 @@ bool DataFile::hasLocalPlugins(QDomElement parent /* = QDomElement()*/, bool fir
 
 		// Check if they have "local:" attribute (unless they are allowed to
 		// and skipNode is true)
-		if (!skipNode) {
+		if (!skipNode)
+		{
 			auto attributes = childElement.attributes();
-			for (int i = 0; i < attributes.size(); ++i) {
+			for (int i = 0; i < attributes.size(); ++i)
+			{
 				QDomNode attribute = attributes.item(i);
 				QDomAttr attr = attribute.toAttr();
-				if (attr.value().startsWith(PathUtil::basePrefix(PathUtil::Base::LocalDir), Qt::CaseInsensitive)) {
+				if (attr.value().startsWith(PathUtil::basePrefix(PathUtil::Base::LocalDir), Qt::CaseInsensitive))
+				{
 					return true;
 				}
 			}
@@ -458,7 +495,8 @@ bool DataFile::hasLocalPlugins(QDomElement parent /* = QDomElement()*/, bool fir
 
 DataFile::Type DataFile::type(const QString& typeName)
 {
-	for (int i = 0; i < TypeCount; ++i) {
+	for (int i = 0; i < TypeCount; ++i)
+	{
 		if (s_types[i].m_name == typeName) { return static_cast<DataFile::Type>(i); }
 	}
 
@@ -478,9 +516,12 @@ QString DataFile::typeName(Type type)
 void DataFile::cleanMetaNodes(QDomElement _de)
 {
 	QDomNode node = _de.firstChild();
-	while (!node.isNull()) {
-		if (node.isElement()) {
-			if (node.toElement().attribute("metadata").toInt()) {
+	while (!node.isNull())
+	{
+		if (node.isElement())
+		{
+			if (node.toElement().attribute("metadata").toInt())
+			{
 				QDomNode ns = node.nextSibling();
 				_de.removeChild(node);
 				node = ns;
@@ -496,38 +537,45 @@ void DataFile::upgrade_0_2_1_20070501()
 {
 	// Upgrade to version 0.2.1-20070501
 	QDomNodeList list = elementsByTagName("arpandchords");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
-		if (el.hasAttribute("arpdir")) {
+		if (el.hasAttribute("arpdir"))
+		{
 			int arpdir = el.attribute("arpdir").toInt();
-			if (arpdir > 0) {
-				el.setAttribute("arpdir", arpdir - 1);
-			} else {
+			if (arpdir > 0) { el.setAttribute("arpdir", arpdir - 1); }
+			else
+			{
 				el.setAttribute("arpdisabled", "1");
 			}
 		}
 	}
 
 	list = elementsByTagName("sampletrack");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
-		if (el.attribute("vol") != "") {
-			el.setAttribute("vol", LocaleHelper::toFloat(el.attribute("vol")) * 100.0f);
-		} else {
+		if (el.attribute("vol") != "") { el.setAttribute("vol", LocaleHelper::toFloat(el.attribute("vol")) * 100.0f); }
+		else
+		{
 			QDomNode node = el.namedItem("automation-pattern");
 			if (!node.isElement() || !node.namedItem("vol").isElement()) { el.setAttribute("vol", 100.0f); }
 		}
 	}
 
 	list = elementsByTagName("ladspacontrols");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
 		QDomNode anode = el.namedItem("automation-pattern");
 		QDomNode node = anode.firstChild();
-		while (!node.isNull()) {
-			if (node.isElement()) {
+		while (!node.isNull())
+		{
+			if (node.isElement())
+			{
 				QString name = node.nodeName();
-				if (name.endsWith("link")) {
+				if (name.endsWith("link"))
+				{
 					el.setAttribute(name, node.namedItem("time").toElement().attribute("value"));
 					QDomNode oldNode = node;
 					node = node.nextSibling();
@@ -540,27 +588,36 @@ void DataFile::upgrade_0_2_1_20070501()
 	}
 
 	QDomNode node = m_head.firstChild();
-	while (!node.isNull()) {
-		if (node.isElement()) {
-			if (node.nodeName() == "bpm") {
+	while (!node.isNull())
+	{
+		if (node.isElement())
+		{
+			if (node.nodeName() == "bpm")
+			{
 				int value = node.toElement().attribute("value").toInt();
-				if (value > 0) {
+				if (value > 0)
+				{
 					m_head.setAttribute("bpm", value);
 					QDomNode oldNode = node;
 					node = node.nextSibling();
 					m_head.removeChild(oldNode);
 					continue;
 				}
-			} else if (node.nodeName() == "mastervol") {
+			}
+			else if (node.nodeName() == "mastervol")
+			{
 				int value = node.toElement().attribute("value").toInt();
-				if (value > 0) {
+				if (value > 0)
+				{
 					m_head.setAttribute("mastervol", value);
 					QDomNode oldNode = node;
 					node = node.nextSibling();
 					m_head.removeChild(oldNode);
 					continue;
 				}
-			} else if (node.nodeName() == "masterpitch") {
+			}
+			else if (node.nodeName() == "masterpitch")
+			{
 				m_head.setAttribute("masterpitch", -node.toElement().attribute("value").toInt());
 				QDomNode oldNode = node;
 				node = node.nextSibling();
@@ -576,33 +633,43 @@ void DataFile::upgrade_0_2_1_20070508()
 {
 	// Upgrade to version 0.2.1-20070508 from some version greater than or equal to 0.2.1-20070501
 	QDomNodeList list = elementsByTagName("arpandchords");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
-		if (el.hasAttribute("chorddisabled")) {
+		if (el.hasAttribute("chorddisabled"))
+		{
 			el.setAttribute("chord-enabled", !el.attribute("chorddisabled").toInt());
 			el.setAttribute("arp-enabled", !el.attribute("arpdisabled").toInt());
-		} else if (!el.hasAttribute("chord-enabled")) {
+		}
+		else if (!el.hasAttribute("chord-enabled"))
+		{
 			el.setAttribute("chord-enabled", true);
 			el.setAttribute("arp-enabled", el.attribute("arpdir").toInt() != 0);
 		}
 	}
 
-	while (!(list = elementsByTagName("channeltrack")).isEmpty()) {
+	while (!(list = elementsByTagName("channeltrack")).isEmpty())
+	{
 		QDomElement el = list.item(0).toElement();
 		el.setTagName("instrumenttrack");
 	}
 
 	list = elementsByTagName("instrumenttrack");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
-		if (el.hasAttribute("vol")) {
+		if (el.hasAttribute("vol"))
+		{
 			float value = LocaleHelper::toFloat(el.attribute("vol"));
 			value = roundf(value * 0.585786438f);
 			el.setAttribute("vol", value);
-		} else {
+		}
+		else
+		{
 			QDomNodeList vol_list
 				= el.namedItem("automation-pattern").namedItem("vol").toElement().elementsByTagName("time");
-			for (int j = 0; !vol_list.item(j).isNull(); ++j) {
+			for (int j = 0; !vol_list.item(j).isNull(); ++j)
+			{
 				QDomElement timeEl = list.item(j).toElement();
 				int value = timeEl.attribute("value").toInt();
 				value = (int)roundf(value * 0.585786438f);
@@ -616,7 +683,8 @@ void DataFile::upgrade_0_3_0_rc2()
 {
 	// Upgrade to version 0.3.0-rc2 from some version greater than or equal to 0.2.1-20070508
 	QDomNodeList list = elementsByTagName("arpandchords");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
 		if (el.attribute("arpdir").toInt() > 0) { el.setAttribute("arpdir", el.attribute("arpdir").toInt() - 1); }
 	}
@@ -626,18 +694,21 @@ void DataFile::upgrade_0_3_0()
 {
 	// Upgrade to version 0.3.0 (final) from some version greater than or equal to 0.3.0-rc2
 	QDomNodeList list;
-	while (!(list = elementsByTagName("pluckedstringsynth")).isEmpty()) {
+	while (!(list = elementsByTagName("pluckedstringsynth")).isEmpty())
+	{
 		QDomElement el = list.item(0).toElement();
 		el.setTagName("vibedstrings");
 		el.setAttribute("active0", 1);
 	}
 
-	while (!(list = elementsByTagName("lb303")).isEmpty()) {
+	while (!(list = elementsByTagName("lb303")).isEmpty())
+	{
 		QDomElement el = list.item(0).toElement();
 		el.setTagName("lb302");
 	}
 
-	while (!(list = elementsByTagName("channelsettings")).isEmpty()) {
+	while (!(list = elementsByTagName("channelsettings")).isEmpty())
+	{
 		QDomElement el = list.item(0).toElement();
 		el.setTagName("instrumenttracksettings");
 	}
@@ -647,7 +718,8 @@ void DataFile::upgrade_0_4_0_20080104()
 {
 	// Upgrade to version 0.4.0-20080104 from some version greater than or equal to 0.3.0 (final)
 	QDomNodeList list = elementsByTagName("fx");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
 		if (el.hasAttribute("fxdisabled") && el.attribute("fxdisabled").toInt() == 0) { el.setAttribute("enabled", 1); }
 	}
@@ -657,13 +729,15 @@ void DataFile::upgrade_0_4_0_20080118()
 {
 	// Upgrade to version 0.4.0-20080118 from some version greater than or equal to 0.4.0-20080104
 	QDomNodeList list;
-	while (!(list = elementsByTagName("fx")).isEmpty()) {
+	while (!(list = elementsByTagName("fx")).isEmpty())
+	{
 		QDomElement fxchain = list.item(0).toElement();
 		fxchain.setTagName("fxchain");
 		QDomNode rack = list.item(0).firstChild();
 		QDomNodeList effects = rack.childNodes();
 		// move items one level up
-		while (effects.count()) {
+		while (effects.count())
+		{
 			fxchain.appendChild(effects.at(0));
 		}
 		fxchain.setAttribute("numofeffects", rack.toElement().attribute("numofeffects"));
@@ -675,7 +749,8 @@ void DataFile::upgrade_0_4_0_20080129()
 {
 	// Upgrade to version 0.4.0-20080129 from some version greater than or equal to 0.4.0-20080118
 	QDomNodeList list;
-	while (!(list = elementsByTagName("arpandchords")).isEmpty()) {
+	while (!(list = elementsByTagName("arpandchords")).isEmpty())
+	{
 		QDomElement aac = list.item(0).toElement();
 		aac.setTagName("arpeggiator");
 		QDomNode cloned = aac.cloneNode();
@@ -693,16 +768,19 @@ void DataFile::upgrade_0_4_0_20080409()
 	  << "bbtco"
 	  << "sampletco"
 	  << "time";
-	for (QStringList::iterator it = s.begin(); it < s.end(); ++it) {
+	for (QStringList::iterator it = s.begin(); it < s.end(); ++it)
+	{
 		QDomNodeList list = elementsByTagName(*it);
-		for (int i = 0; !list.item(i).isNull(); ++i) {
+		for (int i = 0; !list.item(i).isNull(); ++i)
+		{
 			QDomElement el = list.item(i).toElement();
 			el.setAttribute("pos", el.attribute("pos").toInt() * 3);
 			el.setAttribute("len", el.attribute("len").toInt() * 3);
 		}
 	}
 	QDomNodeList list = elementsByTagName("timeline");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
 		el.setAttribute("lp0pos", el.attribute("lp0pos").toInt() * 3);
 		el.setAttribute("lp1pos", el.attribute("lp1pos").toInt() * 3);
@@ -713,7 +791,8 @@ void DataFile::upgrade_0_4_0_20080607()
 {
 	// Upgrade to version 0.4.0-20080607 from some version greater than or equal to 0.3.0-20080409
 	QDomNodeList list;
-	while (!(list = elementsByTagName("midi")).isEmpty()) {
+	while (!(list = elementsByTagName("midi")).isEmpty())
+	{
 		QDomElement el = list.item(0).toElement();
 		el.setTagName("midiport");
 	}
@@ -723,13 +802,15 @@ void DataFile::upgrade_0_4_0_20080622()
 {
 	// Upgrade to version 0.4.0-20080622 from some version greater than or equal to 0.3.0-20080607
 	QDomNodeList list;
-	while (!(list = elementsByTagName("automation-pattern")).isEmpty()) {
+	while (!(list = elementsByTagName("automation-pattern")).isEmpty())
+	{
 		QDomElement el = list.item(0).toElement();
 		el.setTagName("automationpattern");
 	}
 
 	list = elementsByTagName("bbtrack");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
 		QString s = el.attribute("name");
 		s.replace(QRegExp("^Beat/Baseline "), "Beat/Bassline ");
@@ -743,21 +824,23 @@ void DataFile::upgrade_0_4_0_beta1()
 	// convert binary effect-key-blobs to XML
 	QDomNodeList list;
 	list = elementsByTagName("effect");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
 		QString k = el.attribute("key");
-		if (!k.isEmpty()) {
+		if (!k.isEmpty())
+		{
 			const QList<QVariant> l = base64::decode(k, QVariant::List).toList();
-			if (!l.isEmpty()) {
+			if (!l.isEmpty())
+			{
 				QString name = l[0].toString();
 				QVariant u = l[1];
 				EffectKey::AttributeMap m;
 				// VST-effect?
-				if (u.type() == QVariant::String) {
-					m["file"] = u.toString();
-				}
+				if (u.type() == QVariant::String) { m["file"] = u.toString(); }
 				// LADSPA-effect?
-				else if (u.type() == QVariant::StringList) {
+				else if (u.type() == QVariant::StringList)
+				{
 					const QStringList sl = u.toStringList();
 					m["plugin"] = sl.value(0);
 					m["file"] = sl.value(1);
@@ -773,7 +856,8 @@ void DataFile::upgrade_0_4_0_rc2()
 {
 	// Upgrade to version 0.4.0-rc2 from some version greater than or equal to 0.4.0-beta1
 	QDomNodeList list = elementsByTagName("audiofileprocessor");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
 		QString s = el.attribute("src");
 		s.replace("drumsynth/misc ", "drumsynth/misc_");
@@ -782,7 +866,8 @@ void DataFile::upgrade_0_4_0_rc2()
 		el.setAttribute("src", s);
 	}
 	list = elementsByTagName("lb302");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
 		int s = el.attribute("shape").toInt();
 		if (s >= 1) { s--; }
@@ -798,12 +883,16 @@ void DataFile::upgrade_1_0_99()
 	findIds(documentElement(), idList);
 
 	QDomNodeList list = elementsByTagName("ladspacontrols");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
-		for (QDomNode node = list.item(i).firstChild(); !node.isNull(); node = node.nextSibling()) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
+		for (QDomNode node = list.item(i).firstChild(); !node.isNull(); node = node.nextSibling())
+		{
 			QDomElement el = node.toElement();
 			QDomNode data_child = el.namedItem("data");
-			if (!data_child.isElement()) {
-				if (el.attribute("scale_type") == "log") {
+			if (!data_child.isElement())
+			{
+				if (el.attribute("scale_type") == "log")
+				{
 					QDomElement me = createElement("data");
 					me.setAttribute("value", el.attribute("data"));
 					me.setAttribute("scale_type", "log");
@@ -824,7 +913,8 @@ void DataFile::upgrade_1_0_99()
 void DataFile::upgrade_1_1_0()
 {
 	QDomNodeList list = elementsByTagName("fxchannel");
-	for (int i = 1; !list.item(i).isNull(); ++i) {
+	for (int i = 1; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
 		QDomElement send = createElement("send");
 		send.setAttribute("channel", "0");
@@ -837,7 +927,8 @@ void DataFile::upgrade_1_1_91()
 {
 	// Upgrade to version 1.1.91 from some version less than 1.1.91
 	QDomNodeList list = elementsByTagName("audiofileprocessor");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
 		QString s = el.attribute("src");
 		s.replace(QRegExp("/samples/bassloopes/"), "/samples/bassloops/");
@@ -845,30 +936,35 @@ void DataFile::upgrade_1_1_91()
 	}
 
 	list = elementsByTagName("attribute");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
-		if (el.attribute("name") == "plugin" && el.attribute("value") == "vocoder-lmms") {
+		if (el.attribute("name") == "plugin" && el.attribute("value") == "vocoder-lmms")
+		{
 			el.setAttribute("value", "vocoder");
 		}
 	}
 
 	list = elementsByTagName("crossoevereqcontrols");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
 		// invert the mute LEDs
-		for (int j = 1; j <= 4; ++j) {
+		for (int j = 1; j <= 4; ++j)
+		{
 			QString a = QString("mute%1").arg(j);
 			el.setAttribute(a, (el.attribute(a) == "0") ? "1" : "0");
 		}
 	}
 
 	list = elementsByTagName("arpeggiator");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
 		// Swap elements ArpDirRandom and ArpDirDownAndUp
-		if (el.attribute("arpdir") == "3") {
-			el.setAttribute("arpdir", "4");
-		} else if (el.attribute("arpdir") == "4") {
+		if (el.attribute("arpdir") == "3") { el.setAttribute("arpdir", "4"); }
+		else if (el.attribute("arpdir") == "4")
+		{
 			el.setAttribute("arpdir", "3");
 		}
 	}
@@ -876,21 +972,25 @@ void DataFile::upgrade_1_1_91()
 
 static void upgradeElement_1_2_0_rc2_42(QDomElement& el)
 {
-	if (el.hasAttribute("syncmode")) {
+	if (el.hasAttribute("syncmode"))
+	{
 		int syncmode = el.attribute("syncmode").toInt();
 		QStringList names;
 		QDomNamedNodeMap atts = el.attributes();
-		for (uint i = 0; i < atts.length(); i++) {
+		for (uint i = 0; i < atts.length(); i++)
+		{
 			QString name = atts.item(i).nodeName();
 			if (name.endsWith("_numerator")) { names << name.remove("_numerator") + "_syncmode"; }
 		}
-		for (QStringList::iterator it = names.begin(); it < names.end(); ++it) {
+		for (QStringList::iterator it = names.begin(); it < names.end(); ++it)
+		{
 			el.setAttribute(*it, syncmode);
 		}
 	}
 
 	QDomElement child = el.firstChildElement();
-	while (!child.isNull()) {
+	while (!child.isNull())
+	{
 		upgradeElement_1_2_0_rc2_42(child);
 		child = child.nextSiblingElement();
 	}
@@ -901,12 +1001,15 @@ void DataFile::upgrade_1_2_0_rc3()
 	// Upgrade from earlier bbtrack beat note behaviour of adding
 	// steps if a note is placed after the last step.
 	QDomNodeList bbtracks = elementsByTagName("bbtrack");
-	for (int i = 0; !bbtracks.item(i).isNull(); ++i) {
+	for (int i = 0; !bbtracks.item(i).isNull(); ++i)
+	{
 		QDomNodeList patterns = bbtracks.item(i).toElement().elementsByTagName("pattern");
-		for (int j = 0; !patterns.item(j).isNull(); ++j) {
+		for (int j = 0; !patterns.item(j).isNull(); ++j)
+		{
 			int patternLength, steps;
 			QDomElement el = patterns.item(j).toElement();
-			if (el.attribute("len") != "") {
+			if (el.attribute("len") != "")
+			{
 				patternLength = el.attribute("len").toInt();
 				steps = patternLength / 12;
 				el.setAttribute("steps", steps);
@@ -916,7 +1019,8 @@ void DataFile::upgrade_1_2_0_rc3()
 
 	// DataFile::upgrade_1_2_0_rc2_42
 	QDomElement el = firstChildElement();
-	while (!el.isNull()) {
+	while (!el.isNull())
+	{
 		upgradeElement_1_2_0_rc2_42(el);
 		el = el.nextSiblingElement();
 	}
@@ -931,11 +1035,13 @@ template <class Ftor> void iterate_ladspa_ports(QDomElement& effect, Ftor& ftor)
 {
 	// Head back up the DOM to upgrade ports
 	QDomNodeList ladspacontrols = effect.elementsByTagName("ladspacontrols");
-	for (int m = 0; !ladspacontrols.item(m).isNull(); ++m) {
+	for (int m = 0; !ladspacontrols.item(m).isNull(); ++m)
+	{
 		QList<QDomElement> addList, removeList;
 		QDomElement ladspacontrol = ladspacontrols.item(m).toElement();
 		for (QDomElement port = ladspacontrol.firstChild().toElement(); !port.isNull();
-			 port = port.nextSibling().toElement()) {
+			 port = port.nextSibling().toElement())
+		{
 			QStringList parts = port.tagName().split("port");
 			// Not a "port"
 			if (parts.size() < 2) { continue; }
@@ -955,11 +1061,13 @@ template <class Ftor> void iterate_ladspa_ports(QDomElement& effect, Ftor& ftor)
 		}
 
 		// Add ports marked for adding
-		for (QDomElement e : addList) {
+		for (QDomElement e : addList)
+		{
 			ladspacontrol.appendChild(e);
 		}
 		// Remove ports marked for removal
-		for (QDomElement e : removeList) {
+		for (QDomElement e : removeList)
+		{
 			ladspacontrol.removeChild(e);
 		}
 	}
@@ -978,19 +1086,25 @@ QDebug operator<<(QDebug dbg, const QDomNode& node)
 void DataFile::upgrade_1_3_0()
 {
 	QDomNodeList list = elementsByTagName("instrument");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement el = list.item(i).toElement();
-		if (el.attribute("name") == "papu") {
+		if (el.attribute("name") == "papu")
+		{
 			el.setAttribute("name", "freeboy");
 			QDomNodeList children = el.elementsByTagName("papu");
-			for (int j = 0; !children.item(j).isNull(); ++j) {
+			for (int j = 0; !children.item(j).isNull(); ++j)
+			{
 				QDomElement child = children.item(j).toElement();
 				child.setTagName("freeboy");
 			}
-		} else if (el.attribute("name") == "OPL2") {
+		}
+		else if (el.attribute("name") == "OPL2")
+		{
 			el.setAttribute("name", "opulenz");
 			QDomNodeList children = el.elementsByTagName("OPL2");
-			for (int j = 0; !children.item(j).isNull(); ++j) {
+			for (int j = 0; !children.item(j).isNull(); ++j)
+			{
 				QDomElement child = children.item(j).toElement();
 				child.setTagName("opulenz");
 			}
@@ -998,34 +1112,47 @@ void DataFile::upgrade_1_3_0()
 	}
 
 	list = elementsByTagName("effect");
-	for (int i = 0; !list.item(i).isNull(); ++i) {
+	for (int i = 0; !list.item(i).isNull(); ++i)
+	{
 		QDomElement effect = list.item(i).toElement();
-		if (effect.attribute("name") == "ladspaeffect") {
+		if (effect.attribute("name") == "ladspaeffect")
+		{
 			QDomNodeList keys = effect.elementsByTagName("key");
-			for (int j = 0; !keys.item(j).isNull(); ++j) {
+			for (int j = 0; !keys.item(j).isNull(); ++j)
+			{
 				QDomElement key = keys.item(j).toElement();
 				QDomNodeList attributes = key.elementsByTagName("attribute");
-				for (int k = 0; !attributes.item(k).isNull(); ++k) {
+				for (int k = 0; !attributes.item(k).isNull(); ++k)
+				{
 					// Effect name changes
 
 					QDomElement attribute = attributes.item(k).toElement();
 					if (attribute.attribute("name") == "file"
-						&& (attribute.attribute("value") == "calf" || attribute.attribute("value") == "calf.so")) {
+						&& (attribute.attribute("value") == "calf" || attribute.attribute("value") == "calf.so"))
+					{
 						attribute.setAttribute("value", "veal");
-					} else if (attribute.attribute("name") == "plugin"
-						&& attribute.attribute("value") == "Sidechaincompressor") {
+					}
+					else if (attribute.attribute("name") == "plugin"
+						&& attribute.attribute("value") == "Sidechaincompressor")
+					{
 						attribute.setAttribute("value", "SidechainCompressor");
-					} else if (attribute.attribute("name") == "plugin"
-						&& attribute.attribute("value") == "Sidechaingate") {
+					}
+					else if (attribute.attribute("name") == "plugin" && attribute.attribute("value") == "Sidechaingate")
+					{
 						attribute.setAttribute("value", "SidechainGate");
-					} else if (attribute.attribute("name") == "plugin"
-						&& attribute.attribute("value") == "Multibandcompressor") {
+					}
+					else if (attribute.attribute("name") == "plugin"
+						&& attribute.attribute("value") == "Multibandcompressor")
+					{
 						attribute.setAttribute("value", "MultibandCompressor");
-					} else if (attribute.attribute("name") == "plugin"
-						&& attribute.attribute("value") == "Multibandgate") {
+					}
+					else if (attribute.attribute("name") == "plugin" && attribute.attribute("value") == "Multibandgate")
+					{
 						attribute.setAttribute("value", "MultibandGate");
-					} else if (attribute.attribute("name") == "plugin"
-						&& attribute.attribute("value") == "Multibandlimiter") {
+					}
+					else if (attribute.attribute("name") == "plugin"
+						&& attribute.attribute("value") == "Multibandlimiter")
+					{
 						attribute.setAttribute("value", "MultibandLimiter");
 					}
 
@@ -1034,14 +1161,14 @@ void DataFile::upgrade_1_3_0()
 					if (attribute.attribute("name") == "plugin"
 						&& (attribute.attribute("value") == "MultibandLimiter"
 							|| attribute.attribute("value") == "MultibandCompressor"
-							|| attribute.attribute("value") == "MultibandGate")) {
+							|| attribute.attribute("value") == "MultibandGate"))
+					{
 						auto fn = [&](QDomElement& port, int num, QList<QDomElement>&, QList<QDomElement>& removeList) {
 							// Mark ports for removal
-							if (num >= 18 && num <= 23) {
-								removeList << port;
-							}
+							if (num >= 18 && num <= 23) { removeList << port; }
 							// Bump higher ports up 6 positions
-							else if (num >= 24) {
+							else if (num >= 24)
+							{
 								// port01...port010, etc
 								QString name("port0");
 								name.append(QString::number(num - 6));
@@ -1051,10 +1178,12 @@ void DataFile::upgrade_1_3_0()
 						iterate_ladspa_ports(effect, fn);
 					}
 
-					if (attribute.attribute("name") == "plugin" && (attribute.attribute("value") == "Pulsator")) {
+					if (attribute.attribute("name") == "plugin" && (attribute.attribute("value") == "Pulsator"))
+					{
 						auto fn = [&](QDomElement& port, int num, QList<QDomElement>& addList,
 									  QList<QDomElement>& removeList) {
-							switch (num) {
+							switch (num)
+							{
 							case 16: {
 								// old freq is now at port 25
 								QDomElement portCopy = createElement("port025");
@@ -1086,9 +1215,11 @@ void DataFile::upgrade_1_3_0()
 						iterate_ladspa_ports(effect, fn);
 					}
 
-					if (attribute.attribute("name") == "plugin" && (attribute.attribute("value") == "VintageDelay")) {
+					if (attribute.attribute("name") == "plugin" && (attribute.attribute("value") == "VintageDelay"))
+					{
 						auto fn = [&](QDomElement& port, int num, QList<QDomElement>& addList, QList<QDomElement>&) {
-							switch (num) {
+							switch (num)
+							{
 							case 4: {
 								// BPM is now port028
 								port.setTagName("port028");
@@ -1120,12 +1251,14 @@ void DataFile::upgrade_1_3_0()
 					if (attribute.attribute("name") == "plugin"
 						&& ((attribute.attribute("value") == "Equalizer5Band")
 							|| (attribute.attribute("value") == "Equalizer8Band")
-							|| (attribute.attribute("value") == "Equalizer12Band"))) {
+							|| (attribute.attribute("value") == "Equalizer12Band")))
+					{
 						// NBand equalizers got 4 q nobs inserted. We need to shift everything else...
 						// HOWEVER: 5 band eq has only 2 q nobs inserted (no LS/HS filters)
 						bool band5 = (attribute.attribute("value") == "Equalizer5Band");
 						auto fn = [&](QDomElement& port, int num, QList<QDomElement>& addList, QList<QDomElement>&) {
-							if (num == 4) {
+							if (num == 4)
+							{
 								// don't modify port 4, but some other ones:
 								int zoom_port;
 								if (attribute.attribute("value") == "Equalizer5Band") zoom_port = 36;
@@ -1142,50 +1275,65 @@ void DataFile::upgrade_1_3_0()
 							}
 							// the following code could be refactored, but I did careful code-reading
 							// to prevent copy-paste-errors
-							if (num == 18) {
+							if (num == 18)
+							{
 								// 18 => 19
 								port.setTagName("port019");
 								// insert port 18 (q)
 								QDomElement q = createElement("port018");
 								q.setAttribute("data", 0.707f);
 								addList << q;
-							} else if (num >= 19 && num <= 20) {
+							}
+							else if (num >= 19 && num <= 20)
+							{
 								// num += 1
 								QString name("port0");
 								name.append(QString::number(num + 1));
 								port.setTagName(name);
-							} else if (num == 21) {
+							}
+							else if (num == 21)
+							{
 								// 21 => 23
 								port.setTagName("port023");
 								// insert port 22 (q)
 								QDomElement q = createElement("port022");
 								q.setAttribute("data", 0.707f);
 								addList << q;
-							} else if (num >= 22 && (num <= 23 || band5)) {
+							}
+							else if (num >= 22 && (num <= 23 || band5))
+							{
 								// num += 2
 								QString name("port0");
 								name.append(QString::number(num + 2));
 								port.setTagName(name);
-							} else if (num == 24 && !band5) {
+							}
+							else if (num == 24 && !band5)
+							{
 								// 24 => 27
 								port.setTagName("port027");
 								// insert port 26 (q)
 								QDomElement q = createElement("port026");
 								q.setAttribute("data", 0.707f);
 								addList << q;
-							} else if (num >= 25 && num <= 26 && !band5) {
+							}
+							else if (num >= 25 && num <= 26 && !band5)
+							{
 								// num += 3
 								QString name("port0");
 								name.append(QString::number(num + 3));
 								port.setTagName(name);
-							} else if (num == 27 && !band5) {
+							}
+							else if (num == 27 && !band5)
+							{
 								// 27 => 31
 								port.setTagName("port031");
 								// insert port 30 (q)
 								QDomElement q = createElement("port030");
 								q.setAttribute("data", 0.707f);
 								addList << q;
-							} else if (num >= 28 && !band5) {
+							}
+							else if (num >= 28 && !band5)
+							{
 								// num += 4
 								QString name("port0");
 								name.append(QString::number(num + 4));
@@ -1195,16 +1343,21 @@ void DataFile::upgrade_1_3_0()
 						iterate_ladspa_ports(effect, fn);
 					}
 
-					if (attribute.attribute("name") == "plugin" && attribute.attribute("value") == "Saturator") {
+					if (attribute.attribute("name") == "plugin" && attribute.attribute("value") == "Saturator")
+					{
 						auto fn = [&](QDomElement& port, int num, QList<QDomElement>&, QList<QDomElement>&) {
 							// These ports have been shifted a bit weird...
-							if (num == 7) {
-								port.setTagName("port015");
-							} else if (num == 12) {
+							if (num == 7) { port.setTagName("port015"); }
+							else if (num == 12)
+							{
 								port.setTagName("port016");
-							} else if (num == 13) {
+							}
+							else if (num == 13)
+							{
 								port.setTagName("port017");
-							} else if (num >= 15) {
+							}
+							else if (num >= 15)
+							{
 								QString name("port0");
 								name.append(QString::number(num + 3));
 								port.setTagName(name);
@@ -1213,7 +1366,8 @@ void DataFile::upgrade_1_3_0()
 						iterate_ladspa_ports(effect, fn);
 					}
 
-					if (attribute.attribute("name") == "plugin" && attribute.attribute("value") == "StereoTools") {
+					if (attribute.attribute("name") == "plugin" && attribute.attribute("value") == "StereoTools")
+					{
 						auto fn = [&](QDomElement& port, int num, QList<QDomElement>&, QList<QDomElement>&) {
 							// This effect can not be back-ported due to bugs in the old version,
 							// or due to different behaviour. We thus port all parameters we can,
@@ -1235,14 +1389,16 @@ void DataFile::upgrade_noHiddenClipNames()
 	QDomNodeList tracks = elementsByTagName("track");
 
 	auto clearDefaultNames = [](QDomNodeList clips, QString trackName) {
-		for (int j = 0; j < clips.size(); ++j) {
+		for (int j = 0; j < clips.size(); ++j)
+		{
 			QDomElement clip = clips.item(j).toElement();
 			QString clipName = clip.attribute("name", "");
 			if (clipName == trackName) { clip.setAttribute("name", ""); }
 		}
 	};
 
-	for (int i = 0; i < tracks.size(); ++i) {
+	for (int i = 0; i < tracks.size(); ++i)
+	{
 		QDomElement track = tracks.item(i).toElement();
 		QString trackName = track.attribute("name", "");
 
@@ -1261,14 +1417,16 @@ void DataFile::upgrade_automationNodes()
 	QDomNodeList autoPatterns = elementsByTagName("automationpattern");
 
 	// Go through all automation patterns
-	for (int i = 0; i < autoPatterns.size(); ++i) {
+	for (int i = 0; i < autoPatterns.size(); ++i)
+	{
 		QDomElement autoPattern = autoPatterns.item(i).toElement();
 
 		// On each automation pattern, get all <time> elements
 		QDomNodeList times = autoPattern.elementsByTagName("time");
 
 		// Loop through all <time> elements and change what we need
-		for (int j = 0; j < times.size(); ++j) {
+		for (int j = 0; j < times.size(); ++j)
+		{
 			QDomElement el = times.item(j).toElement();
 
 			float value = LocaleHelper::toFloat(el.attribute("value"));
@@ -1293,10 +1451,12 @@ void DataFile::upgrade_extendedNoteRange()
 			|| instrument.attribute("name") == "carlarack";
 	};
 
-	if (!elementsByTagName("song").item(0).isNull()) {
+	if (!elementsByTagName("song").item(0).isNull())
+	{
 		// Dealing with a project file, go through all the tracks
 		QDomNodeList tracks = elementsByTagName("track");
-		for (int i = 0; !tracks.item(i).isNull(); i++) {
+		for (int i = 0; !tracks.item(i).isNull(); i++)
+		{
 			// Ignore BB container tracks
 			if (tracks.item(i).toElement().attribute("type").toInt() == 1) { continue; }
 
@@ -1311,18 +1471,23 @@ void DataFile::upgrade_extendedNoteRange()
 			// by #1857 by an octave. This negates the base note change for normal instruments,
 			// but leaves the MIDI-based instruments sounding an octave lower, preserving their
 			// pitch in existing projects.
-			if (!affected(instrument)) {
+			if (!affected(instrument))
+			{
 				QDomNodeList patterns = tracks.item(i).toElement().elementsByTagName("pattern");
-				for (int i = 0; !patterns.item(i).isNull(); i++) {
+				for (int i = 0; !patterns.item(i).isNull(); i++)
+				{
 					QDomNodeList notes = patterns.item(i).toElement().elementsByTagName("note");
-					for (int i = 0; !notes.item(i).isNull(); i++) {
+					for (int i = 0; !notes.item(i).isNull(); i++)
+					{
 						notes.item(i).toElement().setAttribute(
 							"key", notes.item(i).toElement().attribute("key").toInt() + 12);
 					}
 				}
 			}
 		}
-	} else {
+	}
+	else
+	{
 		// Dealing with a preset, not a song
 		QDomNodeList presets = elementsByTagName("instrumenttrack");
 		if (presets.item(0).isNull()) { return; }
@@ -1349,10 +1514,13 @@ void DataFile::upgrade_extendedNoteRange()
 void DataFile::upgrade_defaultTripleOscillatorHQ()
 {
 	QDomNodeList tripleoscillators = elementsByTagName("tripleoscillator");
-	for (int i = 0; !tripleoscillators.item(i).isNull(); i++) {
-		for (int j = 1; j <= 3; j++) {
+	for (int i = 0; !tripleoscillators.item(i).isNull(); i++)
+	{
+		for (int j = 1; j <= 3; j++)
+		{
 			// Only set the attribute if it does not exist (default template has it but reports as 1.2.0)
-			if (tripleoscillators.item(i).toElement().attribute("useWaveTable" + QString::number(j)) == "") {
+			if (tripleoscillators.item(i).toElement().attribute("useWaveTable" + QString::number(j)) == "")
+			{
 				tripleoscillators.item(i).toElement().setAttribute("useWaveTable" + QString::number(j), 0);
 			}
 		}
@@ -1364,20 +1532,24 @@ void DataFile::upgrade_mixerRename()
 {
 	// Change nodename <fxmixer> to <mixer>
 	QDomNodeList fxmixer = elementsByTagName("fxmixer");
-	for (int i = 0; !fxmixer.item(i).isNull(); ++i) {
+	for (int i = 0; !fxmixer.item(i).isNull(); ++i)
+	{
 		fxmixer.item(i).toElement().setTagName("mixer");
 	}
 
 	// Change nodename <fxchannel> to <mixerchannel>
 	QDomNodeList fxchannel = elementsByTagName("fxchannel");
-	for (int i = 0; !fxchannel.item(i).isNull(); ++i) {
+	for (int i = 0; !fxchannel.item(i).isNull(); ++i)
+	{
 		fxchannel.item(i).toElement().setTagName("mixerchannel");
 	}
 
 	// Change the attribute fxch of element <instrumenttrack> to mixch
 	QDomNodeList fxch = elementsByTagName("instrumenttrack");
-	for (int i = 0; !fxch.item(i).isNull(); ++i) {
-		if (fxch.item(i).toElement().hasAttribute("fxch")) {
+	for (int i = 0; !fxch.item(i).isNull(); ++i)
+	{
+		if (fxch.item(i).toElement().hasAttribute("fxch"))
+		{
 			fxch.item(i).toElement().setAttribute("mixch", fxch.item(i).toElement().attribute("fxch"));
 			fxch.item(i).toElement().removeAttribute("fxch");
 		}
@@ -1396,18 +1568,22 @@ void DataFile::upgrade_bbTcoRename()
 		{"bbtrackcontainer", "patternstore"},
 	};
 	// Replace names of XML tags
-	for (auto name : names) {
+	for (auto name : names)
+	{
 		QDomNodeList elements = elementsByTagName(name.first);
-		for (int i = 0; !elements.item(i).isNull(); ++i) {
+		for (int i = 0; !elements.item(i).isNull(); ++i)
+		{
 			elements.item(i).toElement().setTagName(name.second);
 		}
 	}
 	// Replace "Beat/Bassline" with "Pattern" in track names
 	QDomNodeList elements = elementsByTagName("track");
-	for (int i = 0; !elements.item(i).isNull(); ++i) {
+	for (int i = 0; !elements.item(i).isNull(); ++i)
+	{
 		auto e = elements.item(i).toElement();
 		static_assert(Track::PatternTrack == 1, "Must be type=1 for backwards compatibility");
-		if (e.attribute("type").toInt() == Track::PatternTrack) {
+		if (e.attribute("type").toInt() == Track::PatternTrack)
+		{
 			e.setAttribute("name", e.attribute("name").replace("Beat/Bassline", "Pattern"));
 		}
 	}
@@ -1428,9 +1604,11 @@ void DataFile::upgrade()
 	documentElement().setAttribute("creator", "LMMS");
 	documentElement().setAttribute("creatorversion", LMMS_VERSION);
 
-	if (type() == SongProject || type() == SongProjectTemplate) {
+	if (type() == SongProject || type() == SongProjectTemplate)
+	{
 		// Time-signature
-		if (!m_head.hasAttribute("timesig_numerator")) {
+		if (!m_head.hasAttribute("timesig_numerator"))
+		{
 			m_head.setAttribute("timesig_numerator", 4);
 			m_head.setAttribute("timesig_denominator", 4);
 		}
@@ -1443,15 +1621,19 @@ void DataFile::loadData(const QByteArray& _data, const QString& _sourceFile)
 {
 	QString errorMsg;
 	int line = -1, col = -1;
-	if (!setContent(_data, &errorMsg, &line, &col)) {
+	if (!setContent(_data, &errorMsg, &line, &col))
+	{
 		// parsing failed? then try to uncompress data
 		QByteArray uncompressed = qUncompress(_data);
-		if (!uncompressed.isEmpty()) {
+		if (!uncompressed.isEmpty())
+		{
 			if (setContent(uncompressed, &errorMsg, &line, &col)) { line = col = -1; }
 		}
-		if (line >= 0 && col >= 0) {
+		if (line >= 0 && col >= 0)
+		{
 			qWarning() << "at line" << line << "column" << errorMsg;
-			if (getGUI() != nullptr) {
+			if (getGUI() != nullptr)
+			{
 				QMessageBox::critical(nullptr, SongEditor::tr("Error in file"),
 					SongEditor::tr("The file %1 seems to contain "
 								   "errors and therefore can't be "
@@ -1467,17 +1649,21 @@ void DataFile::loadData(const QByteArray& _data, const QString& _sourceFile)
 	m_type = type(root.attribute("type"));
 	m_head = root.elementsByTagName("head").item(0).toElement();
 
-	if (!root.hasAttribute("version") || root.attribute("version") == "1.0") {
+	if (!root.hasAttribute("version") || root.attribute("version") == "1.0")
+	{
 		// The file versioning is now a unsigned int, not maj.min, so we use
 		// legacyFileVersion() to retrieve the appropriate version
 		m_fileVersion = legacyFileVersion();
-	} else {
+	}
+	else
+	{
 		bool success;
 		m_fileVersion = root.attribute("version").toUInt(&success);
 		if (!success) qWarning("File Version conversion failure.");
 	}
 
-	if (root.hasAttribute("creatorversion")) {
+	if (root.hasAttribute("creatorversion"))
+	{
 		// compareType defaults to All, so it doesn't have to be set here
 		ProjectVersion createdWith = root.attribute("creatorversion");
 		ProjectVersion openedWith = LMMS_VERSION;
@@ -1485,7 +1671,8 @@ void DataFile::loadData(const QByteArray& _data, const QString& _sourceFile)
 		if (createdWith < openedWith) { upgrade(); }
 
 		if (createdWith.setCompareType(ProjectVersion::Minor) != openedWith.setCompareType(ProjectVersion::Minor)
-			&& getGUI() != nullptr && root.attribute("type") == "song") {
+			&& getGUI() != nullptr && root.attribute("type") == "song")
+		{
 			auto projectType = _sourceFile.endsWith(".mpt") ? SongEditor::tr("template") : SongEditor::tr("project");
 
 			TextFloat::displayMessage(SongEditor::tr("Version difference"),
@@ -1501,7 +1688,8 @@ void findIds(const QDomElement& elem, QList<jo_id_t>& idList)
 {
 	if (elem.hasAttribute("id")) { idList.append(elem.attribute("id").toInt()); }
 	QDomElement child = elem.firstChildElement();
-	while (!child.isNull()) {
+	while (!child.isNull())
+	{
 		findIds(child, idList);
 		child = child.nextSiblingElement();
 	}

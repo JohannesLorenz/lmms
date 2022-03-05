@@ -119,7 +119,8 @@ void MidiClipView::constructContextMenu(QMenu* _cm)
 	_cm->addAction(embed::getIconPixmap("reload"), tr("Reset name"), this, SLOT(resetName()));
 	_cm->addAction(embed::getIconPixmap("edit_rename"), tr("Change name"), this, SLOT(changeName()));
 
-	if (m_clip->type() == MidiClip::BeatClip) {
+	if (m_clip->type() == MidiClip::BeatClip)
+	{
 		_cm->addSeparator();
 
 		_cm->addAction(embed::getIconPixmap("step_btn_add"), tr("Add steps"), m_clip, SLOT(addSteps()));
@@ -146,16 +147,16 @@ void MidiClipView::mousePressEvent(QMouseEvent* _me)
 		//	debugging to ensure we get the correct step...
 		//		qDebug( "Step (%f) %d", tmp, step );
 
-		if (step >= m_clip->m_steps) {
+		if (step >= m_clip->m_steps)
+		{
 			qDebug("Something went wrong in clip.cpp: step %d doesn't exist in clip!", step);
 			return;
 		}
 
 		Note* n = m_clip->noteAtStep(step);
 
-		if (n == nullptr) {
-			m_clip->addStepNote(step);
-		} else // note at step found
+		if (n == nullptr) { m_clip->addStepNote(step); }
+		else // note at step found
 		{
 			m_clip->addJournalCheckPoint();
 			m_clip->setStep(step, false);
@@ -165,7 +166,8 @@ void MidiClipView::mousePressEvent(QMouseEvent* _me)
 		update();
 
 		if (getGUI()->pianoRoll()->currentMidiClip() == m_clip) { getGUI()->pianoRoll()->update(); }
-	} else
+	}
+	else
 
 	// if not in pattern mode, let parent class handle the event
 
@@ -176,7 +178,8 @@ void MidiClipView::mousePressEvent(QMouseEvent* _me)
 
 void MidiClipView::mouseDoubleClickEvent(QMouseEvent* _me)
 {
-	if (_me->button() != Qt::LeftButton) {
+	if (_me->button() != Qt::LeftButton)
+	{
 		_me->ignore();
 		return;
 	}
@@ -186,7 +189,8 @@ void MidiClipView::mouseDoubleClickEvent(QMouseEvent* _me)
 void MidiClipView::wheelEvent(QWheelEvent* we)
 {
 	if (m_clip->m_clipType == MidiClip::BeatClip && (fixedClips() || pixelsPerBar() >= 96)
-		&& position(we).y() > height() - s_stepBtnOff->height()) {
+		&& position(we).y() > height() - s_stepBtnOff->height())
+	{
 		//	get the step number that was wheeled on and
 		//	do calculations in floats to prevent rounding errors...
 		float tmp
@@ -197,16 +201,18 @@ void MidiClipView::wheelEvent(QWheelEvent* we)
 		if (step >= m_clip->m_steps) { return; }
 
 		Note* n = m_clip->noteAtStep(step);
-		if (!n && we->angleDelta().y() > 0) {
+		if (!n && we->angleDelta().y() > 0)
+		{
 			n = m_clip->addStepNote(step);
 			n->setVolume(0);
 		}
-		if (n != nullptr) {
+		if (n != nullptr)
+		{
 			int vol = n->getVolume();
 
-			if (we->angleDelta().y() > 0) {
-				n->setVolume(qMin(100, vol + 5));
-			} else {
+			if (we->angleDelta().y() > 0) { n->setVolume(qMin(100, vol + 5)); }
+			else
+			{
 				n->setVolume(qMax(0, vol - 5));
 			}
 
@@ -215,7 +221,9 @@ void MidiClipView::wheelEvent(QWheelEvent* we)
 			if (getGUI()->pianoRoll()->currentMidiClip() == m_clip) { getGUI()->pianoRoll()->update(); }
 		}
 		we->accept();
-	} else {
+	}
+	else
+	{
 		ClipView::wheelEvent(we);
 	}
 }
@@ -226,7 +234,8 @@ void MidiClipView::paintEvent(QPaintEvent*)
 {
 	QPainter painter(this);
 
-	if (!needsUpdate()) {
+	if (!needsUpdate())
+	{
 		painter.drawPixmap(0, 0, m_paintPixmap);
 		return;
 	}
@@ -242,10 +251,13 @@ void MidiClipView::paintEvent(QPaintEvent*)
 	bool current = getGUI()->pianoRoll()->currentMidiClip() == m_clip;
 	bool beatClip = m_clip->m_clipType == MidiClip::BeatClip;
 
-	if (beatClip) {
+	if (beatClip)
+	{
 		// Do not paint PatternClips how we paint MidiClips
 		c = patternClipBackground();
-	} else {
+	}
+	else
+	{
 		c = getColorForDisplay(painter.background().color());
 	}
 
@@ -257,9 +269,9 @@ void MidiClipView::paintEvent(QPaintEvent*)
 	// paint a black rectangle under the clip to prevent glitches with transparent backgrounds
 	p.fillRect(rect(), QColor(0, 0, 0));
 
-	if (gradient()) {
-		p.fillRect(rect(), lingrad);
-	} else {
+	if (gradient()) { p.fillRect(rect(), lingrad); }
+	else
+	{
 		p.fillRect(rect(), c);
 	}
 
@@ -271,7 +283,8 @@ void MidiClipView::paintEvent(QPaintEvent*)
 	// TODO Warning! This might cause problems if ClipView::paintTextLabel changes
 	int textBoxHeight = 0;
 	const int textTop = BORDER_WIDTH + 1;
-	if (drawTextBox) {
+	if (drawTextBox)
+	{
 		QFont labelFont = this->font();
 		labelFont.setHintingPreference(QFont::PreferFullHinting);
 
@@ -292,13 +305,15 @@ void MidiClipView::paintEvent(QPaintEvent*)
 	bool displayPattern = fixedClips() || (pixelsPerBar >= 96 && m_legacySEPattern);
 	// melody clip paint event
 	NoteVector const& noteCollection = m_clip->m_notes;
-	if (m_clip->m_clipType == MidiClip::MelodyClip && !noteCollection.empty()) {
+	if (m_clip->m_clipType == MidiClip::MelodyClip && !noteCollection.empty())
+	{
 		// Compute the minimum and maximum key in the clip
 		// so that we know how much there is to draw.
 		int maxKey = std::numeric_limits<int>::min();
 		int minKey = std::numeric_limits<int>::max();
 
-		for (Note const* note : noteCollection) {
+		for (Note const* note : noteCollection)
+		{
 			int const key = note->key();
 			maxKey = qMax(maxKey, key);
 			minKey = qMin(minKey, key);
@@ -308,11 +323,13 @@ void MidiClipView::paintEvent(QPaintEvent*)
 		int const minimalNoteRange = 12; // Always paint at least one octave
 		int const actualNoteRange = computeNoteRange(minKey, maxKey);
 
-		if (actualNoteRange < minimalNoteRange) {
+		if (actualNoteRange < minimalNoteRange)
+		{
 			int missingNumberOfNotes = minimalNoteRange - actualNoteRange;
 			minKey = std::max(0, minKey - missingNumberOfNotes / 2);
 			maxKey = maxKey + missingNumberOfNotes / 2;
-			if (missingNumberOfNotes % 2 == 1) {
+			if (missingNumberOfNotes % 2 == 1)
+			{
 				// Put more range at the top to bias drawing towards the bottom
 				++maxKey;
 			}
@@ -327,10 +344,11 @@ void MidiClipView::paintEvent(QPaintEvent*)
 		int widgetHeight = height();
 		int fullyAtTopAtLimit = MINIMAL_TRACK_HEIGHT;
 		int fullyBelowAtLimit = 4 * fullyAtTopAtLimit;
-		if (widgetHeight <= fullyBelowAtLimit) {
-			if (widgetHeight <= fullyAtTopAtLimit) {
-				distanceToTop = 0;
-			} else {
+		if (widgetHeight <= fullyBelowAtLimit)
+		{
+			if (widgetHeight <= fullyAtTopAtLimit) { distanceToTop = 0; }
+			else
+			{
 				float const a = 1. / (fullyAtTopAtLimit - fullyBelowAtLimit);
 				float const b = -float(fullyBelowAtLimit) / (fullyAtTopAtLimit - fullyBelowAtLimit);
 				float const scale = a * widgetHeight + b;
@@ -352,9 +370,9 @@ void MidiClipView::paintEvent(QPaintEvent*)
 			= muted ? getMutedNoteBorderColor() : (m_clip->hasColor() ? c.lighter(200) : getNoteBorderColor());
 
 		bool const drawAsLines = height() < 64;
-		if (drawAsLines) {
-			p.setPen(noteFillColor);
-		} else {
+		if (drawAsLines) { p.setPen(noteFillColor); }
+		else
+		{
 			p.setPen(noteBorderColor);
 			p.setRenderHint(QPainter::Antialiasing);
 		}
@@ -368,7 +386,8 @@ void MidiClipView::paintEvent(QPaintEvent*)
 		float const noteHeight = 1. / adjustedNoteRange;
 
 		// scan through all the notes and draw them on the clip
-		for (Note const* currentNote : noteCollection) {
+		for (Note const* currentNote : noteCollection)
+		{
 			// Map to 0, 1, 2, ...
 			int mappedNoteKey = currentNote->key() - minKey;
 			int invertedMappedNoteKey = adjustedNoteRange - mappedNoteKey - 1;
@@ -379,10 +398,13 @@ void MidiClipView::paintEvent(QPaintEvent*)
 			float const noteStartY = invertedMappedNoteKey * noteHeight;
 
 			QRectF noteRectF(noteStartX, noteStartY, noteLength, noteHeight);
-			if (drawAsLines) {
+			if (drawAsLines)
+			{
 				p.drawLine(QPointF(noteStartX, noteStartY + 0.5 * noteHeight),
 					QPointF(noteStartX + noteLength, noteStartY + 0.5 * noteHeight));
-			} else {
+			}
+			else
+			{
 				p.fillRect(noteRectF, noteFillColor);
 				p.drawRect(noteRectF);
 			}
@@ -391,7 +413,8 @@ void MidiClipView::paintEvent(QPaintEvent*)
 		p.restore();
 	}
 	// beat clip paint event
-	else if (beatClip && displayPattern) {
+	else if (beatClip && displayPattern)
+	{
 		QPixmap stepon0;
 		QPixmap stepon200;
 		QPixmap stepoff;
@@ -417,22 +440,28 @@ void MidiClipView::paintEvent(QPaintEvent*)
 			const int x = BORDER_WIDTH + static_cast<int>(it * w / steps);
 			const int y = height() - s_stepBtnOff->height() - 1;
 
-			if (n) {
+			if (n)
+			{
 				const int vol = n->getVolume();
 				p.drawPixmap(x, y, stepoffl);
 				p.drawPixmap(x, y, stepon0);
 				p.setOpacity(sqrt(vol / 200.0));
 				p.drawPixmap(x, y, stepon200);
 				p.setOpacity(1);
-			} else if ((it / 4) % 2) {
+			}
+			else if ((it / 4) % 2)
+			{
 				p.drawPixmap(x, y, stepoffl);
-			} else {
+			}
+			else
+			{
 				p.drawPixmap(x, y, stepoff);
 			}
 		} // end for loop
 
 		// draw a transparent rectangle over muted clips
-		if (muted) {
+		if (muted)
+		{
 			p.setBrush(mutedBackgroundColor());
 			p.setOpacity(0.5);
 			p.drawRect(0, 0, width(), height());
@@ -443,7 +472,8 @@ void MidiClipView::paintEvent(QPaintEvent*)
 	const int lineSize = 3;
 	p.setPen(c.darker(200));
 
-	for (bar_t t = 1; t < m_clip->length().getBar(); ++t) {
+	for (bar_t t = 1; t < m_clip->length().getBar(); ++t)
+	{
 		p.drawLine(x_base + static_cast<int>(pixelsPerBar * t) - 1, BORDER_WIDTH,
 			x_base + static_cast<int>(pixelsPerBar * t) - 1, BORDER_WIDTH + lineSize);
 		p.drawLine(x_base + static_cast<int>(pixelsPerBar * t) - 1, rect().bottom() - (lineSize + BORDER_WIDTH),
@@ -453,7 +483,8 @@ void MidiClipView::paintEvent(QPaintEvent*)
 	// clip name
 	if (drawTextBox) { paintTextLabel(m_clip->name(), p); }
 
-	if (!(fixedClips() && beatClip)) {
+	if (!(fixedClips() && beatClip))
+	{
 		// inner border
 		p.setPen(c.lighter(current ? 160 : 130));
 		p.drawRect(1, 1, rect().right() - BORDER_WIDTH, rect().bottom() - BORDER_WIDTH);
@@ -464,7 +495,8 @@ void MidiClipView::paintEvent(QPaintEvent*)
 	}
 
 	// draw the 'muted' pixmap only if the clip was manually muted
-	if (m_clip->isMuted()) {
+	if (m_clip->isMuted())
+	{
 		const int spacing = BORDER_WIDTH;
 		const int size = 14;
 		p.drawPixmap(spacing, height() - (size + spacing), embed::getIconPixmap("muted", size, size));

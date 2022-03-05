@@ -75,7 +75,8 @@ bool stereoEnhancerEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _fr
 	const float d = dryLevel();
 	const float w = wetLevel();
 
-	for (fpp_t f = 0; f < _frames; ++f) {
+	for (fpp_t f = 0; f < _frames; ++f)
+	{
 
 		// copy samples into the delay buffer
 		m_delayBuffer[m_currFrame][0] = _buf[f][0];
@@ -87,7 +88,8 @@ bool stereoEnhancerEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _fr
 		// Calculate the correct sample frame for processing
 		frameIndex = m_currFrame - width;
 
-		if (frameIndex < 0) {
+		if (frameIndex < 0)
+		{
 			// e.g. difference = -10, frameIndex = DBS - 10
 			frameIndex += DEFAULT_BUFFER_SIZE;
 		}
@@ -115,7 +117,8 @@ bool stereoEnhancerEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _fr
 void stereoEnhancerEffect::clearMyBuffer()
 {
 	int i;
-	for (i = 0; i < DEFAULT_BUFFER_SIZE; i++) {
+	for (i = 0; i < DEFAULT_BUFFER_SIZE; i++)
+	{
 		m_delayBuffer[i][0] = 0.0f;
 		m_delayBuffer[i][1] = 0.0f;
 	}

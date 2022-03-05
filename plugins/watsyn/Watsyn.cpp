@@ -94,7 +94,8 @@ void WatsynObject::renderOutput(fpp_t _frames)
 	if (m_abuf == nullptr) m_abuf = new sampleFrame[m_fpp];
 	if (m_bbuf == nullptr) m_bbuf = new sampleFrame[m_fpp];
 
-	for (fpp_t frame = 0; frame < _frames; frame++) {
+	for (fpp_t frame = 0; frame < _frames; frame++)
+	{
 		// put phases of 1-series oscs into variables because phase modulation might happen
 		float A1_lphase = m_lphase[A1_OSC];
 		float A1_rphase = m_rphase[A1_OSC];
@@ -112,7 +113,8 @@ void WatsynObject::renderOutput(fpp_t _frames)
 			* m_parent->m_rvol[A2_OSC];
 
 		// if phase mod, add to phases
-		if (m_amod == MOD_PM) {
+		if (m_amod == MOD_PM)
+		{
 			A1_lphase = fmodf(A1_lphase + A2_L * PMOD_AMT, WAVELEN);
 			if (A1_lphase < 0) A1_lphase += WAVELEN;
 			A1_rphase = fmodf(A1_rphase + A2_R * PMOD_AMT, WAVELEN);
@@ -138,13 +140,15 @@ void WatsynObject::renderOutput(fpp_t _frames)
 
 		// if crosstalk active, add a1
 		const float xt = m_parent->m_xtalk.value();
-		if (xt > 0.0) {
+		if (xt > 0.0)
+		{
 			B2_L += (A1_L * xt) * 0.01f;
 			B2_R += (A1_R * xt) * 0.01f;
 		}
 
 		// if phase mod, add to phases
-		if (m_bmod == MOD_PM) {
+		if (m_bmod == MOD_PM)
+		{
 			B1_lphase = fmodf(B1_lphase + B2_L * PMOD_AMT, WAVELEN);
 			if (B1_lphase < 0) B1_lphase += WAVELEN;
 			B1_rphase = fmodf(B1_rphase + B2_R * PMOD_AMT, WAVELEN);
@@ -159,7 +163,8 @@ void WatsynObject::renderOutput(fpp_t _frames)
 			* m_parent->m_rvol[B1_OSC];
 
 		// A-series modulation)
-		switch (m_amod) {
+		switch (m_amod)
+		{
 		case MOD_MIX:
 			A1_L = (A1_L + A2_L) / 2.0;
 			A1_R = (A1_R + A2_R) / 2.0;
@@ -177,7 +182,8 @@ void WatsynObject::renderOutput(fpp_t _frames)
 		m_abuf[frame][1] = A1_R;
 
 		// B-series modulation (other than phase mod)
-		switch (m_bmod) {
+		switch (m_bmod)
+		{
 		case MOD_MIX:
 			B1_L = (B1_L + B2_L) / 2.0;
 			B1_R = (B1_R + B2_R) / 2.0;
@@ -195,7 +201,8 @@ void WatsynObject::renderOutput(fpp_t _frames)
 		m_bbuf[frame][1] = B1_R;
 
 		// update phases
-		for (int i = 0; i < NUM_OSCS; i++) {
+		for (int i = 0; i < NUM_OSCS; i++)
+		{
 			m_lphase[i] += (static_cast<float>(WAVELEN) / (m_samplerate / (m_nph->frequency() * m_parent->m_lfreq[i])));
 			m_lphase[i] = fmodf(m_lphase[i], WAVELEN);
 			m_rphase[i] += (static_cast<float>(WAVELEN) / (m_samplerate / (m_nph->frequency() * m_parent->m_rfreq[i])));
@@ -312,7 +319,8 @@ WatsynInstrument::~WatsynInstrument() {}
 
 void WatsynInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
 {
-	if (_n->totalFramesPlayed() == 0 || _n->m_pluginData == nullptr) {
+	if (_n->totalFramesPlayed() == 0 || _n->m_pluginData == nullptr)
+	{
 		WatsynObject* w
 			= new WatsynObject(&A1_wave[0], &A2_wave[0], &B1_wave[0], &B2_wave[0], m_amod.value(), m_bmod.value(),
 				Engine::audioEngine()->processingSampleRate(), _n, Engine::audioEngine()->framesPerPeriod(), this);
@@ -379,17 +387,21 @@ void WatsynInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer
 
 	// if sample-exact is not enabled, use simpler calculations:
 	// if mix envelope is active, and we haven't gone past the envelope end, use envelope-aware calculation...
-	if (envAmt != 0.0f && tfp_ < envLen) {
+	if (envAmt != 0.0f && tfp_ < envLen)
+	{
 		const float mixvalue_ = m_abmix.value();
-		for (fpp_t f = 0; f < frames; f++) {
+		for (fpp_t f = 0; f < frames; f++)
+		{
 			float mixvalue = mixvalue_;
 			const float tfp = tfp_ + f;
 			// handle mixing envelope
-			if (tfp < envAtt) {
-				mixvalue = qBound(-100.0f, mixvalue + (tfp / envAtt * envAmt), 100.0f);
-			} else if (tfp >= envAtt && tfp < envAtt + envHold) {
+			if (tfp < envAtt) { mixvalue = qBound(-100.0f, mixvalue + (tfp / envAtt * envAmt), 100.0f); }
+			else if (tfp >= envAtt && tfp < envAtt + envHold)
+			{
 				mixvalue = qBound(-100.0f, mixvalue + envAmt, 100.0f);
-			} else {
+			}
+			else
+			{
 				mixvalue = qBound(-100.0f, mixvalue + envAmt - ((tfp - (envAtt + envHold)) / envDec * envAmt), 100.0f);
 			}
 
@@ -404,11 +416,13 @@ void WatsynInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer
 	}
 
 	// ... mix envelope is inactive or we've past the end of envelope, so use a faster calculation to save cpu
-	else {
+	else
+	{
 		// get knob values
 		const float bmix = ((m_abmix.value() + 100.0) / 200.0);
 		const float amix = 1.0 - bmix;
-		for (fpp_t f = 0; f < frames; f++) {
+		for (fpp_t f = 0; f < frames; f++)
+		{
 			// mix a/b streams according to mixing knob
 			buffer[f][0] = (abuf[f][0] * amix) + (bbuf[f][0] * bmix);
 			buffer[f][1] = (abuf[f][1] * amix) + (bbuf[f][1] * bmix);
@@ -872,7 +886,8 @@ WatsynView::~WatsynView() {}
 
 void WatsynView::updateLayout()
 {
-	switch (m_selectedGraphGroup->model()->value()) {
+	switch (m_selectedGraphGroup->model()->value())
+	{
 	case A1_OSC:
 		a1_graph->show();
 		a2_graph->hide();
@@ -902,7 +917,8 @@ void WatsynView::updateLayout()
 
 void WatsynView::sinWaveClicked()
 {
-	switch (m_selectedGraphGroup->model()->value()) {
+	switch (m_selectedGraphGroup->model()->value())
+	{
 	case A1_OSC:
 		a1_graph->model()->setWaveToSine();
 		Engine::getSong()->setModified();
@@ -924,7 +940,8 @@ void WatsynView::sinWaveClicked()
 
 void WatsynView::triWaveClicked()
 {
-	switch (m_selectedGraphGroup->model()->value()) {
+	switch (m_selectedGraphGroup->model()->value())
+	{
 	case A1_OSC:
 		a1_graph->model()->setWaveToTriangle();
 		Engine::getSong()->setModified();
@@ -946,7 +963,8 @@ void WatsynView::triWaveClicked()
 
 void WatsynView::sawWaveClicked()
 {
-	switch (m_selectedGraphGroup->model()->value()) {
+	switch (m_selectedGraphGroup->model()->value())
+	{
 	case A1_OSC:
 		a1_graph->model()->setWaveToSaw();
 		Engine::getSong()->setModified();
@@ -968,7 +986,8 @@ void WatsynView::sawWaveClicked()
 
 void WatsynView::sqrWaveClicked()
 {
-	switch (m_selectedGraphGroup->model()->value()) {
+	switch (m_selectedGraphGroup->model()->value())
+	{
 	case A1_OSC:
 		a1_graph->model()->setWaveToSquare();
 		Engine::getSong()->setModified();
@@ -990,7 +1009,8 @@ void WatsynView::sqrWaveClicked()
 
 void WatsynView::normalizeClicked()
 {
-	switch (m_selectedGraphGroup->model()->value()) {
+	switch (m_selectedGraphGroup->model()->value())
+	{
 	case A1_OSC:
 		a1_graph->model()->normalize();
 		Engine::getSong()->setModified();
@@ -1012,7 +1032,8 @@ void WatsynView::normalizeClicked()
 
 void WatsynView::invertClicked()
 {
-	switch (m_selectedGraphGroup->model()->value()) {
+	switch (m_selectedGraphGroup->model()->value())
+	{
 	case A1_OSC:
 		a1_graph->model()->invert();
 		Engine::getSong()->setModified();
@@ -1034,7 +1055,8 @@ void WatsynView::invertClicked()
 
 void WatsynView::smoothClicked()
 {
-	switch (m_selectedGraphGroup->model()->value()) {
+	switch (m_selectedGraphGroup->model()->value())
+	{
 	case A1_OSC:
 		a1_graph->model()->smooth();
 		Engine::getSong()->setModified();
@@ -1056,7 +1078,8 @@ void WatsynView::smoothClicked()
 
 void WatsynView::phaseLeftClicked()
 {
-	switch (m_selectedGraphGroup->model()->value()) {
+	switch (m_selectedGraphGroup->model()->value())
+	{
 	case A1_OSC:
 		a1_graph->model()->shiftPhase(-15);
 		Engine::getSong()->setModified();
@@ -1078,7 +1101,8 @@ void WatsynView::phaseLeftClicked()
 
 void WatsynView::phaseRightClicked()
 {
-	switch (m_selectedGraphGroup->model()->value()) {
+	switch (m_selectedGraphGroup->model()->value())
+	{
 	case A1_OSC:
 		a1_graph->model()->shiftPhase(15);
 		Engine::getSong()->setModified();
@@ -1101,7 +1125,8 @@ void WatsynView::phaseRightClicked()
 void WatsynView::loadClicked()
 {
 	QString fileName;
-	switch (m_selectedGraphGroup->model()->value()) {
+	switch (m_selectedGraphGroup->model()->value())
+	{
 	case A1_OSC:
 		a1_graph->model()->setWaveToUser();
 		Engine::getSong()->setModified();

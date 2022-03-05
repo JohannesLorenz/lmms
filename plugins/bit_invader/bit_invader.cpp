@@ -68,7 +68,8 @@ bSynth::bSynth(
 	, interpolation(_interpolation)
 {
 	sample_shape = new float[wavetableSize];
-	for (int i = 0; i < wavetableSize; ++i) {
+	for (int i = 0; i < wavetableSize; ++i)
+	{
 		float buf = _shape[i] * _factor;
 
 		/* Double check that normalization has been performed correctly,
@@ -87,20 +88,22 @@ sample_t bSynth::nextStringSample(float sample_length)
 	float sample_step = static_cast<float>(sample_length / (sample_rate / nph->frequency()));
 
 	// check overflow
-	while (sample_realindex >= sample_length) {
+	while (sample_realindex >= sample_length)
+	{
 		sample_realindex -= sample_length;
 	}
 
 	sample_t sample;
 
-	if (interpolation) {
+	if (interpolation)
+	{
 
 		// find position in shape
 		int a = static_cast<int>(sample_realindex);
 		int b;
-		if (a < (sample_length - 1)) {
-			b = static_cast<int>(sample_realindex + 1);
-		} else {
+		if (a < (sample_length - 1)) { b = static_cast<int>(sample_realindex + 1); }
+		else
+		{
 			b = 0;
 		}
 
@@ -108,8 +111,9 @@ sample_t bSynth::nextStringSample(float sample_length)
 		const float frac = fraction(sample_realindex);
 
 		sample = linearInterpolate(sample_shape[a], sample_shape[b], frac);
-
-	} else {
+	}
+	else
+	{
 		// No interpolation
 		sample_index = static_cast<int>(sample_realindex);
 		sample = sample_shape[sample_index];
@@ -211,7 +215,8 @@ void bitInvader::normalize()
 	// analyze
 	float max = std::numeric_limits<float>::epsilon();
 	const float* samples = m_graph.samples();
-	for (int i = 0; i < m_graph.length(); i++) {
+	for (int i = 0; i < m_graph.length(); i++)
+	{
 		const float f = fabsf(samples[i]);
 		if (f > max) { max = f; }
 	}
@@ -222,12 +227,13 @@ QString bitInvader::nodeName() const { return (bitinvader_plugin_descriptor.name
 
 void bitInvader::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
 {
-	if (_n->totalFramesPlayed() == 0 || _n->m_pluginData == nullptr) {
+	if (_n->totalFramesPlayed() == 0 || _n->m_pluginData == nullptr)
+	{
 
 		float factor;
-		if (!m_normalize.value()) {
-			factor = defaultNormalizationFactor;
-		} else {
+		if (!m_normalize.value()) { factor = defaultNormalizationFactor; }
+		else
+		{
 			factor = m_normalizeFactor;
 		}
 
@@ -239,9 +245,11 @@ void bitInvader::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
 	const f_cnt_t offset = _n->noteOffset();
 
 	bSynth* ps = static_cast<bSynth*>(_n->m_pluginData);
-	for (fpp_t frame = offset; frame < frames + offset; ++frame) {
+	for (fpp_t frame = offset; frame < frames + offset; ++frame)
+	{
 		const sample_t cur = ps->nextStringSample(m_graph.length());
-		for (ch_cnt_t chnl = 0; chnl < DEFAULT_CHANNELS; ++chnl) {
+		for (ch_cnt_t chnl = 0; chnl < DEFAULT_CHANNELS; ++chnl)
+		{
 			_working_buffer[frame][chnl] = cur;
 		}
 	}
@@ -391,7 +399,8 @@ void bitInvaderView::noiseWaveClicked()
 void bitInvaderView::usrWaveClicked()
 {
 	QString fileName = m_graph->model()->setWaveToUser();
-	if (!fileName.isEmpty()) {
+	if (!fileName.isEmpty())
+	{
 		ToolTip::add(m_usrWaveBtn, fileName);
 		m_graph->model()->clearInvisible();
 		Engine::getSong()->setModified();

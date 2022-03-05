@@ -60,7 +60,8 @@ protected:
 		QStylePainter p(this);
 		QStyleOptionToolButton opt;
 		initStyleOption(&opt);
-		if (orientation() == Qt::Vertical) {
+		if (orientation() == Qt::Vertical)
+		{
 			const QSize s = sizeHint();
 			p.rotate(270);
 			p.translate(-s.height(), 0);
@@ -110,14 +111,18 @@ void SideBar::toggleButton(QAbstractButton* button)
 	QToolButton* toolButton = nullptr;
 	QWidget* activeWidget = nullptr;
 
-	for (auto it = m_widgets.begin(); it != m_widgets.end(); ++it) {
+	for (auto it = m_widgets.begin(); it != m_widgets.end(); ++it)
+	{
 		QToolButton* curBtn = it.key();
 		QWidget* curWidget = it.value();
 
-		if (curBtn == button) {
+		if (curBtn == button)
+		{
 			toolButton = curBtn;
 			activeWidget = curWidget;
-		} else {
+		}
+		else
+		{
 			curBtn->setChecked(false);
 			curBtn->setToolButtonStyle(Qt::ToolButtonIconOnly);
 		}
@@ -125,7 +130,8 @@ void SideBar::toggleButton(QAbstractButton* button)
 		if (curWidget) { curWidget->hide(); }
 	}
 
-	if (toolButton && activeWidget) {
+	if (toolButton && activeWidget)
+	{
 		activeWidget->setVisible(button->isChecked());
 		toolButton->setToolButtonStyle(button->isChecked() ? Qt::ToolButtonTextBesideIcon : Qt::ToolButtonIconOnly);
 	}

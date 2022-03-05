@@ -30,7 +30,8 @@ stringContainer::stringContainer(
 	, m_sampleRate(_sample_rate)
 	, m_bufferLength(_buffer_length)
 {
-	for (int i = 0; i < _strings; i++) {
+	for (int i = 0; i < _strings; i++)
+	{
 		m_exists.append(false);
 	}
 }
@@ -40,7 +41,8 @@ void stringContainer::addString(int _harm, const float _pick, const float _picku
 	const int _id)
 {
 	float harm;
-	switch (_harm) {
+	switch (_harm)
+	{
 	case 0: harm = 0.25f; break;
 	case 1: harm = 0.5f; break;
 	case 2: harm = 1.0f; break;

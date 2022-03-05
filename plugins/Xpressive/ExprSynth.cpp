@@ -83,7 +83,8 @@ template <typename T> struct IntegrateFunction : public exprtk::ifunction<T>
 
 	inline T operator()(const T& x)
 	{
-		if (*m_frame == 0) {
+		if (*m_frame == 0)
+		{
 			++m_nCountersCalls;
 			if (m_nCountersCalls > m_max_counters) { return 0; }
 			m_cc = m_nCounters;
@@ -91,7 +92,8 @@ template <typename T> struct IntegrateFunction : public exprtk::ifunction<T>
 		}
 
 		T res = 0;
-		if (m_cc < m_nCounters) {
+		if (m_cc < m_nCounters)
+		{
 			res = m_counters[m_cc];
 			m_counters[m_cc] += x;
 		}
@@ -125,7 +127,8 @@ template <typename T> struct LastSampleFunction : public exprtk::ifunction<T>
 
 	inline T operator()(const T& x)
 	{
-		if (!std::isnan(x) && !std::isinf(x)) {
+		if (!std::isnan(x) && !std::isinf(x))
+		{
 			const int ix = (int)x;
 			if (ix >= 1 && ix <= m_history_size) { return m_samples[(ix + m_pivot_last) % m_history_size]; }
 		}
@@ -134,9 +137,9 @@ template <typename T> struct LastSampleFunction : public exprtk::ifunction<T>
 	void setLastSample(const T& sample)
 	{
 		if (!std::isnan(sample) && !std::isinf(sample)) { m_samples[m_pivot_last] = sample; }
-		if (m_pivot_last == 0) {
-			m_pivot_last = m_history_size - 1;
-		} else {
+		if (m_pivot_last == 0) { m_pivot_last = m_history_size - 1; }
+		else
+		{
 			--m_pivot_last;
 		}
 	}
@@ -213,10 +216,11 @@ static const unsigned int random_data[257] = {0xd76a33ec, 0x4a767724, 0xb34ebd08
 
 inline unsigned int rotateLeft(unsigned int x, const int b)
 {
-	if (b > -32 && b < 32 && b != 0) {
-		if (b < 0) {
-			x = (x >> (-b)) | (x << (32 + b));
-		} else {
+	if (b > -32 && b < 32 && b != 0)
+	{
+		if (b < 0) { x = (x >> (-b)) | (x << (32 + b)); }
+		else
+		{
 			x = (x << b) | (x >> (32 - b));
 		}
 	}
@@ -249,9 +253,8 @@ struct RandomVectorSeedFunction : public exprtk::ifunction<float>
 	inline float operator()(const float& index, const float& seed)
 	{
 		int irseed;
-		if (seed < 0 || std::isnan(seed) || std::isinf(seed)) {
-			irseed = 0;
-		} else
+		if (seed < 0 || std::isnan(seed) || std::isinf(seed)) { irseed = 0; }
+		else
 			irseed = (int)seed;
 		return randv(index, irseed);
 	}
@@ -298,10 +301,12 @@ public:
 	}
 	~ExprFrontData()
 	{
-		for (int i = 0; i < m_cyclics.size(); ++i) {
+		for (int i = 0; i < m_cyclics.size(); ++i)
+		{
 			delete m_cyclics[i];
 		}
-		for (int i = 0; i < m_cyclics_interp.size(); ++i) {
+		for (int i = 0; i < m_cyclics_interp.size(); ++i)
+		{
 			delete m_cyclics_interp[i];
 		}
 		if (m_integ_func) { delete m_integ_func; }
@@ -331,9 +336,9 @@ struct square_wave
 	static inline float process(float x)
 	{
 		x = positiveFraction(x);
-		if (x >= 0.5f) {
-			return -1.0f;
-		} else {
+		if (x >= 0.5f) { return -1.0f; }
+		else
+		{
 			return 1.0f;
 		}
 	}
@@ -344,14 +349,13 @@ struct triangle_wave
 	static inline float process(float x)
 	{
 		x = positiveFraction(x);
-		if (x < 0.25f) {
-			return x * 4.0f;
-		} else {
-			if (x < 0.75f) {
-				return 2.0f - x * 4.0f;
-			}
+		if (x < 0.25f) { return x * 4.0f; }
+		else
+		{
+			if (x < 0.75f) { return 2.0f - x * 4.0f; }
 
-			else {
+			else
+			{
 				return x * 4.0f - 4.0f;
 			}
 		}
@@ -382,7 +386,8 @@ struct moog_wave
 	static inline float process(float x)
 	{
 		x = positiveFraction(x);
-		if (x > 0.5f) {
+		if (x > 0.5f)
+		{
 			x = 1.0f - x;
 			return -1.0f + 4.0f * x * x;
 		}
@@ -424,7 +429,8 @@ static freefunc1<float, harmonic_semitone, true> harmonic_semitone_func;
 ExprFront::ExprFront(const char* expr, int last_func_samples)
 {
 	m_valid = false;
-	try {
+	try
+	{
 		m_data = new ExprFrontData(last_func_samples);
 
 		m_data->m_expression_string = expr;
@@ -448,15 +454,20 @@ ExprFront::ExprFront(const char* expr, int last_func_samples)
 		m_data->m_symbol_table.add_function("randv", m_data->m_rand_vec);
 		m_data->m_symbol_table.add_function("randsv", randsv_func);
 		m_data->m_symbol_table.add_function("last", m_data->m_last_func);
-	} catch (...) {
+	}
+	catch (...)
+	{
 		WARN_EXPRTK;
 	}
 }
 ExprFront::~ExprFront()
 {
-	try {
+	try
+	{
 		delete m_data;
-	} catch (...) {
+	}
+	catch (...)
+	{
 		WARN_EXPRTK;
 	}
 }
@@ -464,7 +475,8 @@ ExprFront::~ExprFront()
 bool ExprFront::compile()
 {
 	m_valid = false;
-	try {
+	try
+	{
 		m_data->m_expression.register_symbol_table(m_data->m_symbol_table);
 		parser_t::settings_store sstore;
 		sstore.disable_all_logic_ops();
@@ -473,28 +485,36 @@ bool ExprFront::compile()
 		parser_t parser(sstore);
 
 		m_valid = parser.compile(m_data->m_expression_string, m_data->m_expression);
-	} catch (...) {
+	}
+	catch (...)
+	{
 		WARN_EXPRTK;
 	}
 	return m_valid;
 }
 float ExprFront::evaluate()
 {
-	try {
+	try
+	{
 		if (!m_valid) return 0;
 		float res = m_data->m_expression.value();
 		m_data->m_last_func.setLastSample(res);
 		return res;
-	} catch (...) {
+	}
+	catch (...)
+	{
 		WARN_EXPRTK;
 	}
 	return 0;
 }
 bool ExprFront::add_variable(const char* name, float& ref)
 {
-	try {
+	try
+	{
 		return m_data->m_symbol_table.add_variable(name, ref);
-	} catch (...) {
+	}
+	catch (...)
+	{
 		WARN_EXPRTK;
 	}
 	return false;
@@ -502,9 +522,12 @@ bool ExprFront::add_variable(const char* name, float& ref)
 
 bool ExprFront::add_constant(const char* name, float ref)
 {
-	try {
+	try
+	{
 		return m_data->m_symbol_table.add_constant(name, ref);
-	} catch (...) {
+	}
+	catch (...)
+	{
 		WARN_EXPRTK;
 	}
 	return false;
@@ -512,17 +535,23 @@ bool ExprFront::add_constant(const char* name, float ref)
 
 bool ExprFront::add_cyclic_vector(const char* name, const float* data, size_t length, bool interp)
 {
-	try {
-		if (interp) {
+	try
+	{
+		if (interp)
+		{
 			WaveValueFunctionInterpolate<float>* wvf = new WaveValueFunctionInterpolate<float>(data, length);
 			m_data->m_cyclics_interp.push_back(wvf);
 			return m_data->m_symbol_table.add_function(name, *wvf);
-		} else {
+		}
+		else
+		{
 			WaveValueFunction<float>* wvf = new WaveValueFunction<float>(data, length);
 			m_data->m_cyclics.push_back(wvf);
 			return m_data->m_symbol_table.add_function(name, *wvf);
 		}
-	} catch (...) {
+	}
+	catch (...)
+	{
 		WARN_EXPRTK;
 	}
 	return false;
@@ -532,8 +561,10 @@ size_t find_occurances(const std::string& haystack, const char* const needle)
 	size_t last_pos = 0;
 	size_t count = 0;
 	const size_t len = strlen(needle);
-	if (len > 0) {
-		while (last_pos + len <= haystack.length()) {
+	if (len > 0)
+	{
+		while (last_pos + len <= haystack.length())
+		{
 			last_pos = haystack.find(needle, last_pos);
 			if (last_pos == std::string::npos) break;
 			++count;
@@ -545,13 +576,18 @@ size_t find_occurances(const std::string& haystack, const char* const needle)
 
 void ExprFront::setIntegrate(const unsigned int* const frameCounter, const unsigned int sample_rate)
 {
-	if (m_data->m_integ_func == nullptr) {
+	if (m_data->m_integ_func == nullptr)
+	{
 		const unsigned int ointeg = find_occurances(m_data->m_expression_string, "integrate");
-		if (ointeg > 0) {
+		if (ointeg > 0)
+		{
 			m_data->m_integ_func = new IntegrateFunction<float>(frameCounter, sample_rate, ointeg);
-			try {
+			try
+			{
 				m_data->m_symbol_table.add_function("integrate", *m_data->m_integ_func);
-			} catch (...) {
+			}
+			catch (...)
+			{
 				WARN_EXPRTK;
 			}
 		}
@@ -604,7 +640,8 @@ ExprSynth::~ExprSynth()
 
 void ExprSynth::renderOutput(fpp_t frames, sampleFrame* buf)
 {
-	try {
+	try
+	{
 		bool o1_valid = m_exprO1->isValid();
 		bool o2_valid = m_exprO2->isValid();
 		if (!o1_valid && !o2_valid) { return; }
@@ -620,8 +657,10 @@ void ExprSynth::renderOutput(fpp_t frames, sampleFrame* buf)
 		LastSampleFunction<float>* last_func1 = &m_exprO1->getData()->m_last_func;
 		LastSampleFunction<float>* last_func2 = &m_exprO2->getData()->m_last_func;
 		if (is_released && m_note_rel_sample == 0) { m_note_rel_sample = m_note_sample; }
-		if (o1_valid && o2_valid) {
-			for (fpp_t frame = 0; frame < frames; ++frame) {
+		if (o1_valid && o2_valid)
+		{
+			for (fpp_t frame = 0; frame < frames; ++frame)
+			{
 				if (is_released && m_released < 1) { m_released = fmin(m_released + m_rel_inc, 1); }
 				o1 = o1_rawExpr->value();
 				o2 = o2_rawExpr->value();
@@ -634,14 +673,18 @@ void ExprSynth::renderOutput(fpp_t frames, sampleFrame* buf)
 				if (is_released) { m_note_rel_sec = (m_note_sample - m_note_rel_sample) / (float)m_sample_rate; }
 				m_frequency += freq_inc;
 			}
-		} else {
+		}
+		else
+		{
 
-			if (o2_valid) {
+			if (o2_valid)
+			{
 				o1_rawExpr = o2_rawExpr;
 				last_func1 = last_func2;
 				pn1 = pn2;
 			}
-			for (fpp_t frame = 0; frame < frames; ++frame) {
+			for (fpp_t frame = 0; frame < frames; ++frame)
+			{
 				if (is_released && m_released < 1) { m_released = fmin(m_released + m_rel_inc, 1); }
 				o1 = o1_rawExpr->value();
 				last_func1->setLastSample(o1);
@@ -654,7 +697,9 @@ void ExprSynth::renderOutput(fpp_t frames, sampleFrame* buf)
 			}
 		}
 		m_frequency = new_freq;
-	} catch (...) {
+	}
+	catch (...)
+	{
 		WARN_EXPRTK;
 	}
 }

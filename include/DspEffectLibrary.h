@@ -38,7 +38,8 @@ public:
 
 	static void process(sample_t** _buf, const f_cnt_t _frames)
 	{
-		for (f_cnt_t f = 0; f < _frames; ++f) {
+		for (f_cnt_t f = 0; f < _frames; ++f)
+		{
 			_buf[f][0] = T::nextSample(_buf[f][0]);
 		}
 	}
@@ -51,7 +52,8 @@ public:
 
 	static void process(sample_t** _buf, const f_cnt_t _frames)
 	{
-		for (f_cnt_t f = 0; f < _frames; ++f) {
+		for (f_cnt_t f = 0; f < _frames; ++f)
+		{
 			T::nextSample(_buf[f][0], _buf[f][1]);
 		}
 	}
@@ -230,7 +232,8 @@ public:
 
 	sample_t nextSample(sample_t in)
 	{
-		if (in >= m_threshold || in < -m_threshold) {
+		if (in >= m_threshold || in < -m_threshold)
+		{
 			return (fabsf(fabsf(fmodf(in - m_threshold, m_threshold * 4)) - m_threshold * 2) - m_threshold) * m_gain;
 		}
 		return in * m_gain;

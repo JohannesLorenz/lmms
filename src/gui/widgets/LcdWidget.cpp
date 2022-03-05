@@ -60,7 +60,8 @@ LcdWidget::~LcdWidget() { delete m_lcdPixmap; }
 void LcdWidget::setValue(int value)
 {
 	QString s = m_textForValue[value];
-	if (s.isEmpty()) {
+	if (s.isEmpty())
+	{
 		s = QString::number(value);
 		if (m_leadingZero) { s = s.rightJustified(m_numDigits, '0'); }
 	}
@@ -93,9 +94,9 @@ void LcdWidget::paintEvent(QPaintEvent*)
 	p.save();
 
 	// Don't skip any space and don't draw margin on the left side in seamless mode
-	if (m_seamlessLeft) {
-		p.translate(0, margin);
-	} else {
+	if (m_seamlessLeft) { p.translate(0, margin); }
+	else
+	{
 		p.translate(margin, margin);
 		// Left Margin
 		p.drawPixmap(cellRect, *m_lcdPixmap,
@@ -105,15 +106,18 @@ void LcdWidget::paintEvent(QPaintEvent*)
 	}
 
 	// Padding
-	for (int i = 0; i < m_numDigits - m_display.length(); i++) {
+	for (int i = 0; i < m_numDigits - m_display.length(); i++)
+	{
 		p.drawPixmap(cellRect, *m_lcdPixmap, QRect(QPoint(10 * m_cellWidth, isEnabled() ? 0 : m_cellHeight), cellSize));
 		p.translate(m_cellWidth, 0);
 	}
 
 	// Digits
-	for (int i = 0; i < m_display.length(); i++) {
+	for (int i = 0; i < m_display.length(); i++)
+	{
 		int val = m_display[i].digitValue();
-		if (val < 0) {
+		if (val < 0)
+		{
 			if (m_display[i] == '-') val = 11;
 			else
 				val = 10;
@@ -132,7 +136,8 @@ void LcdWidget::paintEvent(QPaintEvent*)
 	// Border
 	// When either the left or right edge is seamless, the border drawing must be done
 	// by the encapsulating class (usually LcdFloatSpinBox).
-	if (!m_seamlessLeft && !m_seamlessRight) {
+	if (!m_seamlessLeft && !m_seamlessRight)
+	{
 		QStyleOptionFrame opt;
 		opt.initFrom(this);
 		opt.state = QStyle::State_Sunken;
@@ -145,7 +150,8 @@ void LcdWidget::paintEvent(QPaintEvent*)
 	p.resetTransform();
 
 	// Label
-	if (!m_label.isEmpty()) {
+	if (!m_label.isEmpty())
+	{
 		p.setFont(pointSizeF(p.font(), 6.5));
 		p.setPen(textShadowColor());
 		p.drawText(width() / 2 - horizontalAdvance(p.fontMetrics(), m_label) / 2 + 1, height(), m_label);
@@ -172,9 +178,12 @@ void LcdWidget::updateSize()
 	const int marginX1 = m_seamlessLeft ? 0 : 1 + m_marginWidth;
 	const int marginX2 = m_seamlessRight ? 0 : 1 + m_marginWidth;
 	const int marginY = 1;
-	if (m_label.isEmpty()) {
+	if (m_label.isEmpty())
+	{
 		setFixedSize(m_cellWidth * m_numDigits + marginX1 + marginX2, m_cellHeight + (2 * marginY));
-	} else {
+	}
+	else
+	{
 		setFixedSize(qMax<int>(m_cellWidth * m_numDigits + marginX1 + marginX2,
 						 horizontalAdvance(QFontMetrics(pointSizeF(font(), 6.5)), m_label)),
 			m_cellHeight + (2 * marginY) + 9);

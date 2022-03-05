@@ -130,7 +130,8 @@ void ProjectNotes::setupActions()
 	m_comboSize->setEditable(true);
 	QList<int> sizes = db.standardSizes();
 	QList<int>::Iterator it = sizes.begin();
-	for (; it != sizes.end(); ++it) {
+	for (; it != sizes.end(); ++it)
+	{
 		m_comboSize->addItem(QString::number(*it));
 	}
 	connect(m_comboSize, SIGNAL(activated(const QString&)), this, SLOT(textSize(const QString&)));
@@ -239,13 +240,17 @@ void ProjectNotes::textColor()
 
 void ProjectNotes::textAlign(QAction* _a)
 {
-	if (_a == m_actionAlignLeft) {
-		m_edit->setAlignment(Qt::AlignLeft);
-	} else if (_a == m_actionAlignCenter) {
+	if (_a == m_actionAlignLeft) { m_edit->setAlignment(Qt::AlignLeft); }
+	else if (_a == m_actionAlignCenter)
+	{
 		m_edit->setAlignment(Qt::AlignHCenter);
-	} else if (_a == m_actionAlignRight) {
+	}
+	else if (_a == m_actionAlignRight)
+	{
 		m_edit->setAlignment(Qt::AlignRight);
-	} else if (_a == m_actionAlignJustify) {
+	}
+	else if (_a == m_actionAlignJustify)
+	{
 		m_edit->setAlignment(Qt::AlignJustify);
 	}
 }
@@ -268,13 +273,17 @@ void ProjectNotes::formatChanged(const QTextCharFormat& _f)
 
 void ProjectNotes::alignmentChanged(int _a)
 {
-	if (_a & Qt::AlignLeft) {
-		m_actionAlignLeft->setChecked(true);
-	} else if ((_a & Qt::AlignHCenter)) {
+	if (_a & Qt::AlignLeft) { m_actionAlignLeft->setChecked(true); }
+	else if ((_a & Qt::AlignHCenter))
+	{
 		m_actionAlignCenter->setChecked(true);
-	} else if ((_a & Qt::AlignRight)) {
+	}
+	else if ((_a & Qt::AlignRight))
+	{
 		m_actionAlignRight->setChecked(true);
-	} else if ((_a & Qt::AlignJustify)) {
+	}
+	else if ((_a & Qt::AlignJustify))
+	{
 		m_actionAlignJustify->setChecked(true);
 	}
 	Engine::getSong()->setModified();
@@ -296,9 +305,9 @@ void ProjectNotes::loadSettings(const QDomElement& _this)
 
 void ProjectNotes::closeEvent(QCloseEvent* _ce)
 {
-	if (parentWidget()) {
-		parentWidget()->hide();
-	} else {
+	if (parentWidget()) { parentWidget()->hide(); }
+	else
+	{
 		hide();
 	}
 	_ce->ignore();

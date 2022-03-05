@@ -123,12 +123,14 @@ Plugin* Plugin::instantiateWithKey(
 	const Descriptor::SubPluginFeatures::Key* keyPtr
 		= keyFromDnd ? static_cast<Plugin::Descriptor::SubPluginFeatures::Key*>(Engine::pickDndPluginKey()) : key;
 	const PluginFactory::PluginInfo& pi = getPluginFactory()->pluginInfo(pluginName.toUtf8());
-	if (keyPtr) {
+	if (keyPtr)
+	{
 		// descriptor is not yet set when loading - set it now
 		Descriptor::SubPluginFeatures::Key keyCopy = *keyPtr;
 		keyCopy.desc = pi.descriptor;
 		return Plugin::instantiate(pluginName, parent, &keyCopy);
-	} else
+	}
+	else
 		return Plugin::instantiate(pluginName, parent,
 			// the keys are never touched anywhere
 			const_cast<Descriptor::SubPluginFeatures::Key*>(keyPtr));
@@ -139,8 +141,10 @@ Plugin* Plugin::instantiate(const QString& pluginName, Model* parent, void* data
 	const PluginFactory::PluginInfo& pi = getPluginFactory()->pluginInfo(pluginName.toUtf8());
 
 	Plugin* inst;
-	if (pi.isNull()) {
-		if (getGUI() != nullptr) {
+	if (pi.isNull())
+	{
+		if (getGUI() != nullptr)
+		{
 			QMessageBox::information(nullptr, tr("Plugin not found"),
 				tr("The plugin \"%1\" wasn't found or could not be loaded!\nReason: \"%2\"")
 					.arg(pluginName)
@@ -148,13 +152,19 @@ Plugin* Plugin::instantiate(const QString& pluginName, Model* parent, void* data
 				QMessageBox::Ok | QMessageBox::Default);
 		}
 		inst = new DummyPlugin();
-	} else {
+	}
+	else
+	{
 		InstantiationHook instantiationHook;
-		if ((instantiationHook = (InstantiationHook)pi.library->resolve("lmms_plugin_main"))) {
+		if ((instantiationHook = (InstantiationHook)pi.library->resolve("lmms_plugin_main")))
+		{
 			inst = instantiationHook(parent, data);
 			if (!inst) { inst = new DummyPlugin(); }
-		} else {
-			if (getGUI() != nullptr) {
+		}
+		else
+		{
+			if (getGUI() != nullptr)
+			{
 				QMessageBox::information(nullptr, tr("Error while loading plugin"),
 					tr("Failed to load plugin \"%1\"!").arg(pluginName), QMessageBox::Ok | QMessageBox::Default);
 			}
@@ -180,7 +190,8 @@ Plugin::Descriptor::SubPluginFeatures::Key::Key(const QDomElement& key)
 	, attributes()
 {
 	QDomNodeList l = key.elementsByTagName("attribute");
-	for (int i = 0; !l.item(i).isNull(); ++i) {
+	for (int i = 0; !l.item(i).isNull(); ++i)
+	{
 		QDomElement e = l.item(i).toElement();
 		attributes[e.attribute("name")] = e.attribute("value");
 	}
@@ -189,7 +200,8 @@ Plugin::Descriptor::SubPluginFeatures::Key::Key(const QDomElement& key)
 QDomElement Plugin::Descriptor::SubPluginFeatures::Key::saveXML(QDomDocument& doc) const
 {
 	QDomElement e = doc.createElement("key");
-	for (AttributeMap::ConstIterator it = attributes.begin(); it != attributes.end(); ++it) {
+	for (AttributeMap::ConstIterator it = attributes.begin(); it != attributes.end(); ++it)
+	{
 		QDomElement a = doc.createElement("attribute");
 		a.setAttribute("name", it.key());
 		a.setAttribute("value", it.value());

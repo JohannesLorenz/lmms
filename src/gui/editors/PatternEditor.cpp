@@ -53,8 +53,10 @@ void PatternEditor::removeSteps()
 {
 	TrackContainer::TrackList tl = model()->tracks();
 
-	for (TrackContainer::TrackList::iterator it = tl.begin(); it != tl.end(); ++it) {
-		if ((*it)->type() == Track::InstrumentTrack) {
+	for (TrackContainer::TrackList::iterator it = tl.begin(); it != tl.end(); ++it)
+	{
+		if ((*it)->type() == Track::InstrumentTrack)
+		{
 			MidiClip* p = static_cast<MidiClip*>((*it)->getClip(m_ps->currentPattern()));
 			p->removeSteps();
 		}
@@ -67,7 +69,8 @@ void PatternEditor::addAutomationTrack() { (void)Track::create(Track::Automation
 
 void PatternEditor::removeViewsForPattern(int pattern)
 {
-	for (TrackView* view : trackViews()) {
+	for (TrackView* view : trackViews())
+	{
 		view->getTrackContentWidget()->removeClipView(pattern);
 	}
 }
@@ -87,29 +90,36 @@ void PatternEditor::dropEvent(QDropEvent* de)
 	QString type = StringPairDrag::decodeKey(de);
 	QString value = StringPairDrag::decodeValue(de);
 
-	if (type.left(6) == "track_") {
+	if (type.left(6) == "track_")
+	{
 		DataFile dataFile(value.toUtf8());
 		Track* t = Track::create(dataFile.content().firstChild().toElement(), model());
 
 		// Ensure pattern clips exist
 		bool hasValidPatternClips = false;
-		if (t->getClips().size() == m_ps->numOfPatterns()) {
+		if (t->getClips().size() == m_ps->numOfPatterns())
+		{
 			hasValidPatternClips = true;
-			for (int i = 0; i < t->getClips().size(); ++i) {
-				if (t->getClips()[i]->startPosition() != TimePos(i, 0)) {
+			for (int i = 0; i < t->getClips().size(); ++i)
+			{
+				if (t->getClips()[i]->startPosition() != TimePos(i, 0))
+				{
 					hasValidPatternClips = false;
 					break;
 				}
 			}
 		}
-		if (!hasValidPatternClips) {
+		if (!hasValidPatternClips)
+		{
 			t->deleteClips();
 			t->createClipsForPattern(m_ps->numOfPatterns() - 1);
 		}
 		m_ps->updateAfterTrackAdd();
 
 		de->accept();
-	} else {
+	}
+	else
+	{
 		TrackContainerView::dropEvent(de);
 	}
 }
@@ -124,12 +134,14 @@ void PatternEditor::makeSteps(bool clone)
 {
 	TrackContainer::TrackList tl = model()->tracks();
 
-	for (TrackContainer::TrackList::iterator it = tl.begin(); it != tl.end(); ++it) {
-		if ((*it)->type() == Track::InstrumentTrack) {
+	for (TrackContainer::TrackList::iterator it = tl.begin(); it != tl.end(); ++it)
+	{
+		if ((*it)->type() == Track::InstrumentTrack)
+		{
 			MidiClip* p = static_cast<MidiClip*>((*it)->getClip(m_ps->currentPattern()));
-			if (clone) {
-				p->cloneSteps();
-			} else {
+			if (clone) { p->cloneSteps(); }
+			else
+			{
 				p->addSteps();
 			}
 		}
@@ -146,7 +158,8 @@ void PatternEditor::cloneClip()
 
 	PatternTrack* pt = PatternTrack::findPatternTrack(currentPattern);
 
-	if (pt) {
+	if (pt)
+	{
 		// Clone the track
 		Track* newTrack = pt->clone();
 		ps->setCurrentPattern(static_cast<PatternTrack*>(newTrack)->patternIndex());
@@ -172,10 +185,13 @@ PatternEditorWindow::PatternEditorWindow(PatternStore* ps)
 	connect(m_toolBar, SIGNAL(dropped(QDropEvent*)), m_editor, SLOT(dropEvent(QDropEvent*)));
 
 	// TODO: Use style sheet
-	if (ConfigManager::inst()->value("ui", "compacttrackbuttons").toInt()) {
+	if (ConfigManager::inst()->value("ui", "compacttrackbuttons").toInt())
+	{
 		setMinimumWidth(
 			TRACK_OP_WIDTH_COMPACT + DEFAULT_SETTINGS_WIDGET_WIDTH_COMPACT + 2 * ClipView::BORDER_WIDTH + 384);
-	} else {
+	}
+	else
+	{
 		setMinimumWidth(TRACK_OP_WIDTH + DEFAULT_SETTINGS_WIDGET_WIDTH + 2 * ClipView::BORDER_WIDTH + 384);
 	}
 
@@ -234,9 +250,9 @@ QSize PatternEditorWindow::sizeHint() const { return {minimumWidth() + 10, 300};
 
 void PatternEditorWindow::play()
 {
-	if (Engine::getSong()->playMode() != Song::Mode_PlayPattern) {
-		Engine::getSong()->playPattern();
-	} else {
+	if (Engine::getSong()->playMode() != Song::Mode_PlayPattern) { Engine::getSong()->playPattern(); }
+	else
+	{
 		Engine::getSong()->togglePause();
 	}
 }

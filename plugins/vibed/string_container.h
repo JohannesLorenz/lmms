@@ -44,7 +44,8 @@ public:
 	~stringContainer()
 	{
 		int strings = m_strings.count();
-		for (int i = 0; i < strings; i++) {
+		for (int i = 0; i < strings; i++)
+		{
 			delete m_strings[i];
 		}
 	}

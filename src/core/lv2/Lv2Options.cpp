@@ -41,7 +41,8 @@ void Lv2Options::supportOption(LV2_URID key)
 void Lv2Options::createOptionVectors()
 {
 	// create vector of options
-	for (LV2_URID urid : s_supportedOptions) {
+	for (LV2_URID urid : s_supportedOptions)
+	{
 		auto itr = m_optionByUrid.find(urid);
 		Q_ASSERT(itr != m_optionByUrid.end());
 		m_options.push_back(itr->second);

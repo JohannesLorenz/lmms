@@ -56,15 +56,15 @@ SpacesInParentheses: false
 BreakBeforeBraces: Custom
 BraceWrapping:
   AfterClass: true
-  AfterControlStatement: Never
+  AfterControlStatement: Always
   AfterEnum: true
   AfterFunction: true
   AfterNamespace: false
   AfterStruct: true
   AfterUnion: true
   AfterExternBlock: false
-  BeforeCatch: false
-  BeforeElse: false
+  BeforeCatch: true
+  BeforeElse: true
   IndentBraces: false
   SplitEmptyFunction: true
   SplitEmptyRecord: true

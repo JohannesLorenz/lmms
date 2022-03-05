@@ -47,9 +47,9 @@ public:
 
 	QString getString() const
 	{
-		if (m_denominator) {
-			return QString::number(m_numerator) + "/" + QString::number(m_denominator);
-		} else {
+		if (m_denominator) { return QString::number(m_numerator) + "/" + QString::number(m_denominator); }
+		else
+		{
 			return QString().sprintf("%.4f", m_cents);
 		}
 	}

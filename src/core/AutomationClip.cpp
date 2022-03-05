@@ -53,8 +53,10 @@ AutomationClip::AutomationClip(AutomationTrack* _auto_track)
 	, m_lastRecordedValue(0)
 {
 	changeLength(TimePos(1, 0));
-	if (getTrack()) {
-		switch (getTrack()->trackContainer()->type()) {
+	if (getTrack())
+	{
+		switch (getTrack()->trackContainer()->type())
+		{
 		case TrackContainer::PatternContainer: setAutoResize(true); break;
 
 		case TrackContainer::SongContainer:
@@ -76,14 +78,16 @@ AutomationClip::AutomationClip(const AutomationClip& _clip_to_copy)
 	// doesn't change while it's being copied
 	QMutexLocker m(&_clip_to_copy.m_clipMutex);
 
-	for (timeMap::const_iterator it = _clip_to_copy.m_timeMap.begin(); it != _clip_to_copy.m_timeMap.end(); ++it) {
+	for (timeMap::const_iterator it = _clip_to_copy.m_timeMap.begin(); it != _clip_to_copy.m_timeMap.end(); ++it)
+	{
 		// Copies the automation node (in/out values and in/out tangents)
 		m_timeMap[POS(it)] = it.value();
 		// Sets the node's clip to this one
 		m_timeMap[POS(it)].setClip(this);
 	}
 	if (!getTrack()) { return; }
-	switch (getTrack()->trackContainer()->type()) {
+	switch (getTrack()->trackContainer()->type())
+	{
 	case TrackContainer::PatternContainer: setAutoResize(true); break;
 
 	case TrackContainer::SongContainer:
@@ -99,7 +103,8 @@ bool AutomationClip::addObject(AutomatableModel* _obj, bool _search_dup)
 	if (_search_dup && m_objects.contains(_obj)) { return false; }
 
 	// the automation track is unconnected and there is nothing in the track
-	if (m_objects.isEmpty() && hasAutomation() == false) {
+	if (m_objects.isEmpty() && hasAutomation() == false)
+	{
 		// then initialize first value
 		putValue(TimePos(0), _obj->inverseScaledValue(_obj->value<float>()), false);
 	}
@@ -118,7 +123,8 @@ void AutomationClip::setProgressionType(ProgressionTypes _new_progression_type)
 	QMutexLocker m(&m_clipMutex);
 
 	if (_new_progression_type == DiscreteProgression || _new_progression_type == LinearProgression
-		|| _new_progression_type == CubicHermiteProgression) {
+		|| _new_progression_type == CubicHermiteProgression)
+	{
 		m_progressionType = _new_progression_type;
 		emit dataChanged();
 	}
@@ -199,10 +205,12 @@ TimePos AutomationClip::putValue(
 
 	// Remove control points that are covered by the new points
 	// quantization value. Control Key to override
-	if (!ignoreSurroundingPoints) {
+	if (!ignoreSurroundingPoints)
+	{
 		// We need to check that to avoid removing nodes from
 		// newTime + 1 to newTime (removing the node we are adding)
-		if (quantization() > 1) {
+		if (quantization() > 1)
+		{
 			// Remove nodes between the quantization points, them not
 			// being included
 			removeNodes(newTime + 1, newTime + quantization() - 1);
@@ -244,10 +252,12 @@ TimePos AutomationClip::putValues(const TimePos& time, const float inValue, cons
 
 	// Remove control points that are covered by the new points
 	// quantization value. Control Key to override
-	if (!ignoreSurroundingPoints) {
+	if (!ignoreSurroundingPoints)
+	{
 		// We need to check that to avoid removing nodes from
 		// newTime + 1 to newTime (removing the node we are adding)
-		if (quantization() > 1) {
+		if (quantization() > 1)
+		{
 			// Remove nodes between the quantization points, them not
 			// being included
 			removeNodes(newTime + 1, newTime + quantization() - 1);
@@ -286,7 +296,8 @@ void AutomationClip::removeNode(const TimePos& time)
  */
 void AutomationClip::removeNodes(const int tick0, const int tick1)
 {
-	if (tick0 == tick1) {
+	if (tick0 == tick1)
+	{
 		removeNode(TimePos(tick0));
 		return;
 	}
@@ -299,11 +310,13 @@ void AutomationClip::removeNodes(const int tick0, const int tick1)
 	// the timeMap while we are iterating it.
 	QVector<TimePos> nodesToRemove;
 
-	for (auto it = m_timeMap.lowerBound(start), endIt = m_timeMap.upperBound(end); it != endIt; ++it) {
+	for (auto it = m_timeMap.lowerBound(start), endIt = m_timeMap.upperBound(end); it != endIt; ++it)
+	{
 		nodesToRemove.append(POS(it));
 	}
 
-	for (auto node : nodesToRemove) {
+	for (auto node : nodesToRemove)
+	{
 		removeNode(node);
 	}
 }
@@ -315,7 +328,8 @@ void AutomationClip::removeNodes(const int tick0, const int tick1)
  */
 void AutomationClip::resetNodes(const int tick0, const int tick1)
 {
-	if (tick0 == tick1) {
+	if (tick0 == tick1)
+	{
 		auto it = m_timeMap.find(TimePos(tick0));
 		if (it != m_timeMap.end()) { it.value().resetOutValue(); }
 		return;
@@ -324,7 +338,8 @@ void AutomationClip::resetNodes(const int tick0, const int tick1)
 	TimePos start = TimePos(qMin(tick0, tick1));
 	TimePos end = TimePos(qMax(tick0, tick1));
 
-	for (auto it = m_timeMap.lowerBound(start), endIt = m_timeMap.upperBound(end); it != endIt; ++it) {
+	for (auto it = m_timeMap.lowerBound(start), endIt = m_timeMap.upperBound(end); it != endIt; ++it)
+	{
 		it.value().resetOutValue();
 	}
 }
@@ -333,10 +348,13 @@ void AutomationClip::recordValue(TimePos time, float value)
 {
 	QMutexLocker m(&m_clipMutex);
 
-	if (value != m_lastRecordedValue) {
+	if (value != m_lastRecordedValue)
+	{
 		putValue(time, value, true);
 		m_lastRecordedValue = value;
-	} else if (valueAt(time) != value) {
+	}
+	else if (valueAt(time) != value)
+	{
 		removeNode(time);
 	}
 }
@@ -355,7 +373,8 @@ TimePos AutomationClip::setDragValue(const TimePos& time, const float value, con
 {
 	QMutexLocker m(&m_clipMutex);
 
-	if (m_dragging == false) {
+	if (m_dragging == false)
+	{
 		TimePos newTime = quantPos ? Note::quantized(time, quantization()) : time;
 
 		// We will keep the same outValue only if it's different from the
@@ -365,8 +384,10 @@ TimePos AutomationClip::setDragValue(const TimePos& time, const float value, con
 		// Check if we already have a node on the position we are dragging
 		// and if we do, store the outValue so the discrete jump can be kept
 		timeMap::iterator it = m_timeMap.find(newTime);
-		if (it != m_timeMap.end()) {
-			if (OFFSET(it) != 0) {
+		if (it != m_timeMap.end())
+		{
+			if (OFFSET(it) != 0)
+			{
 				m_dragKeepOutValue = true;
 				m_dragOutValue = OUTVAL(it);
 			}
@@ -404,7 +425,8 @@ float AutomationClip::valueAt(const TimePos& _time) const
 	if (m_timeMap.isEmpty()) { return 0; }
 
 	// If we have a node at that time, just return its value
-	if (m_timeMap.contains(_time)) {
+	if (m_timeMap.contains(_time))
+	{
 		// When the time is exactly the node's time, we want the inValue
 		return m_timeMap[_time].getInValue();
 	}
@@ -415,7 +437,8 @@ float AutomationClip::valueAt(const TimePos& _time) const
 	timeMap::const_iterator v = m_timeMap.lowerBound(_time);
 
 	if (v == m_timeMap.begin()) { return 0; }
-	if (v == m_timeMap.end()) {
+	if (v == m_timeMap.end())
+	{
 		// When the time is after the last node, we want the outValue of it
 		return OUTVAL(v - 1);
 	}
@@ -433,13 +456,14 @@ float AutomationClip::valueAt(timeMap::const_iterator v, int offset) const
 	// value if we do
 	if (offset == 0) { return INVAL(v); }
 
-	if (m_progressionType == DiscreteProgression) {
-		return OUTVAL(v);
-	} else if (m_progressionType == LinearProgression) {
+	if (m_progressionType == DiscreteProgression) { return OUTVAL(v); }
+	else if (m_progressionType == LinearProgression)
+	{
 		float slope = (INVAL(v + 1) - OUTVAL(v)) / (POS(v + 1) - POS(v));
 
 		return OUTVAL(v) + offset * slope;
-	} else /* CubicHermiteProgression */
+	}
+	else /* CubicHermiteProgression */
 	{
 		// Implements a Cubic Hermite spline as explained at:
 		// http://en.wikipedia.org/wiki/Cubic_Hermite_spline#Unit_interval_.280.2C_1.29
@@ -471,7 +495,8 @@ float* AutomationClip::valuesAfter(const TimePos& _time) const
 	int numValues = POS(v + 1) - POS(v);
 	float* ret = new float[numValues];
 
-	for (int i = 0; i < numValues; i++) {
+	for (int i = 0; i < numValues; i++)
+	{
 		ret[i] = valueAt(v, i);
 	}
 
@@ -484,7 +509,8 @@ void AutomationClip::flipY(int min, int max)
 
 	bool changedTimeMap = false;
 
-	for (auto it = m_timeMap.begin(); it != m_timeMap.end(); ++it) {
+	for (auto it = m_timeMap.begin(); it != m_timeMap.end(); ++it)
+	{
 		// Get distance from IN/OUT values to max value
 		float inValDist = max - INVAL(it);
 		float outValDist = max - OUTVAL(it);
@@ -497,7 +523,8 @@ void AutomationClip::flipY(int min, int max)
 		changedTimeMap = true;
 	}
 
-	if (changedTimeMap) {
+	if (changedTimeMap)
+	{
 		generateTangents();
 		emit dataChanged();
 	}
@@ -526,16 +553,19 @@ void AutomationClip::flipX(int length)
 	// If we have a positive length, we want to flip the area covered by that
 	// length, even if it goes beyond the clip. A negative length means that
 	// we just want to flip the nodes we have
-	if (length >= 0 && length != realLength) {
+	if (length >= 0 && length != realLength)
+	{
 		// If length to be flipped is bigger than the real length
-		if (realLength < length) {
+		if (realLength < length)
+		{
 			// We are flipping an area that goes beyond the last node. So we add a node to the
 			// beginning of the flipped timeMap representing the value of the end of the area
 			tempValue = valueAt(length);
 			tempMap[0] = AutomationNode(this, tempValue, 0);
 
 			// Now flip the nodes we have in relation to the length
-			do {
+			do
+			{
 				// We swap the inValue and outValue when flipping horizontally
 				tempValue = OUTVAL(it);
 				tempOutValue = INVAL(it);
@@ -545,18 +575,23 @@ void AutomationClip::flipX(int length)
 
 				++it;
 			} while (it != m_timeMap.end());
-		} else // If the length to be flipped is smaller than the real length
+		}
+		else // If the length to be flipped is smaller than the real length
 		{
-			do {
+			do
+			{
 				TimePos newTime;
 
 				// Only flips the length to be flipped and keep the remaining values in place
 				// We also only swap the inValue and outValue if we are flipping the node
-				if (POS(it) <= length) {
+				if (POS(it) <= length)
+				{
 					newTime = length - POS(it);
 					tempValue = OUTVAL(it);
 					tempOutValue = INVAL(it);
-				} else {
+				}
+				else
+				{
 					newTime = POS(it);
 					tempValue = INVAL(it);
 					tempOutValue = OUTVAL(it);
@@ -567,9 +602,11 @@ void AutomationClip::flipX(int length)
 				++it;
 			} while (it != m_timeMap.end());
 		}
-	} else // Length to be flipped is the same as the real length
+	}
+	else // Length to be flipped is the same as the real length
 	{
-		do {
+		do
+		{
 			// Swap the inValue and outValue
 			tempValue = OUTVAL(it);
 			tempOutValue = INVAL(it);
@@ -604,7 +641,8 @@ void AutomationClip::saveSettings(QDomDocument& _doc, QDomElement& _this)
 
 	if (usesCustomClipColor()) { _this.setAttribute("color", color().name()); }
 
-	for (timeMap::const_iterator it = m_timeMap.begin(); it != m_timeMap.end(); ++it) {
+	for (timeMap::const_iterator it = m_timeMap.begin(); it != m_timeMap.end(); ++it)
+	{
 		QDomElement element = _doc.createElement("time");
 		element.setAttribute("pos", POS(it));
 		element.setAttribute("value", INVAL(it));
@@ -612,8 +650,10 @@ void AutomationClip::saveSettings(QDomDocument& _doc, QDomElement& _this)
 		_this.appendChild(element);
 	}
 
-	for (objectVector::const_iterator it = m_objects.begin(); it != m_objects.end(); ++it) {
-		if (*it) {
+	for (objectVector::const_iterator it = m_objects.begin(); it != m_objects.end(); ++it)
+	{
+		if (*it)
+		{
 			QDomElement element = _doc.createElement("object");
 			element.setAttribute("id", ProjectJournal::idToSave((*it)->id()));
 			_this.appendChild(element);
@@ -633,30 +673,38 @@ void AutomationClip::loadSettings(const QDomElement& _this)
 	setTension(_this.attribute("tens"));
 	setMuted(_this.attribute("mute", QString::number(false)).toInt());
 
-	for (QDomNode node = _this.firstChild(); !node.isNull(); node = node.nextSibling()) {
+	for (QDomNode node = _this.firstChild(); !node.isNull(); node = node.nextSibling())
+	{
 		QDomElement element = node.toElement();
 		if (element.isNull()) { continue; }
-		if (element.tagName() == "time") {
+		if (element.tagName() == "time")
+		{
 			int timeMapPos = element.attribute("pos").toInt();
 			float timeMapInValue = LocaleHelper::toFloat(element.attribute("value"));
 			float timeMapOutValue = LocaleHelper::toFloat(element.attribute("outValue"));
 
 			m_timeMap[timeMapPos] = AutomationNode(this, timeMapInValue, timeMapOutValue, timeMapPos);
-		} else if (element.tagName() == "object") {
+		}
+		else if (element.tagName() == "object")
+		{
 			m_idsToResolve << element.attribute("id").toInt();
 		}
 	}
 
-	if (_this.hasAttribute("color")) {
+	if (_this.hasAttribute("color"))
+	{
 		useCustomClipColor(true);
 		setColor(_this.attribute("color"));
 	}
 
 	int len = _this.attribute("len").toInt();
-	if (len <= 0) {
+	if (len <= 0)
+	{
 		// TODO: Handle with an upgrade method
 		updateLength();
-	} else {
+	}
+	else
+	{
 		changeLength(len);
 	}
 	generateTangents();
@@ -685,13 +733,18 @@ bool AutomationClip::isAutomated(const AutomatableModel* _m)
 	l += Engine::patternStore()->tracks();
 	l += Engine::getSong()->globalAutomationTrack();
 
-	for (TrackContainer::TrackList::ConstIterator it = l.begin(); it != l.end(); ++it) {
-		if ((*it)->type() == Track::AutomationTrack || (*it)->type() == Track::HiddenAutomationTrack) {
+	for (TrackContainer::TrackList::ConstIterator it = l.begin(); it != l.end(); ++it)
+	{
+		if ((*it)->type() == Track::AutomationTrack || (*it)->type() == Track::HiddenAutomationTrack)
+		{
 			const Track::clipVector& v = (*it)->getClips();
-			for (Track::clipVector::ConstIterator j = v.begin(); j != v.end(); ++j) {
+			for (Track::clipVector::ConstIterator j = v.begin(); j != v.end(); ++j)
+			{
 				const AutomationClip* a = dynamic_cast<const AutomationClip*>(*j);
-				if (a && a->hasAutomation()) {
-					for (objectVector::const_iterator k = a->m_objects.begin(); k != a->m_objects.end(); ++k) {
+				if (a && a->hasAutomation())
+				{
+					for (objectVector::const_iterator k = a->m_objects.begin(); k != a->m_objects.end(); ++k)
+					{
 						if (*k == _m) { return true; }
 					}
 				}
@@ -714,20 +767,25 @@ QVector<AutomationClip*> AutomationClip::clipsForModel(const AutomatableModel* _
 	l += Engine::getSong()->globalAutomationTrack();
 
 	// go through all tracks...
-	for (TrackContainer::TrackList::ConstIterator it = l.begin(); it != l.end(); ++it) {
+	for (TrackContainer::TrackList::ConstIterator it = l.begin(); it != l.end(); ++it)
+	{
 		// we want only automation tracks...
-		if ((*it)->type() == Track::AutomationTrack || (*it)->type() == Track::HiddenAutomationTrack) {
+		if ((*it)->type() == Track::AutomationTrack || (*it)->type() == Track::HiddenAutomationTrack)
+		{
 			// get clips in those tracks....
 			const Track::clipVector& v = (*it)->getClips();
 			// go through all the clips...
-			for (Track::clipVector::ConstIterator j = v.begin(); j != v.end(); ++j) {
+			for (Track::clipVector::ConstIterator j = v.begin(); j != v.end(); ++j)
+			{
 				AutomationClip* a = dynamic_cast<AutomationClip*>(*j);
 				// check that the clip has automation
-				if (a && a->hasAutomation()) {
+				if (a && a->hasAutomation())
+				{
 					// now check is the clip is connected to the model we want by going through all the connections
 					// of the clip
 					bool has_object = false;
-					for (objectVector::const_iterator k = a->m_objects.begin(); k != a->m_objects.end(); ++k) {
+					for (objectVector::const_iterator k = a->m_objects.begin(); k != a->m_objects.end(); ++k)
+					{
 						if (*k == _m) { has_object = true; }
 					}
 					// if the clips is connected to the model, add it to the list
@@ -743,10 +801,13 @@ AutomationClip* AutomationClip::globalAutomationClip(AutomatableModel* _m)
 {
 	AutomationTrack* t = Engine::getSong()->globalAutomationTrack();
 	Track::clipVector v = t->getClips();
-	for (Track::clipVector::const_iterator j = v.begin(); j != v.end(); ++j) {
+	for (Track::clipVector::const_iterator j = v.begin(); j != v.end(); ++j)
+	{
 		AutomationClip* a = dynamic_cast<AutomationClip*>(*j);
-		if (a) {
-			for (objectVector::const_iterator k = a->m_objects.begin(); k != a->m_objects.end(); ++k) {
+		if (a)
+		{
+			for (objectVector::const_iterator k = a->m_objects.begin(); k != a->m_objects.end(); ++k)
+			{
 				if (*k == _m) { return a; }
 			}
 		}
@@ -761,27 +822,39 @@ void AutomationClip::resolveAllIDs()
 {
 	TrackContainer::TrackList l = Engine::getSong()->tracks() + Engine::patternStore()->tracks();
 	l += Engine::getSong()->globalAutomationTrack();
-	for (TrackContainer::TrackList::iterator it = l.begin(); it != l.end(); ++it) {
-		if ((*it)->type() == Track::AutomationTrack || (*it)->type() == Track::HiddenAutomationTrack) {
+	for (TrackContainer::TrackList::iterator it = l.begin(); it != l.end(); ++it)
+	{
+		if ((*it)->type() == Track::AutomationTrack || (*it)->type() == Track::HiddenAutomationTrack)
+		{
 			Track::clipVector v = (*it)->getClips();
-			for (Track::clipVector::iterator j = v.begin(); j != v.end(); ++j) {
+			for (Track::clipVector::iterator j = v.begin(); j != v.end(); ++j)
+			{
 				AutomationClip* a = dynamic_cast<AutomationClip*>(*j);
-				if (a) {
-					for (QVector<jo_id_t>::Iterator k = a->m_idsToResolve.begin(); k != a->m_idsToResolve.end(); ++k) {
+				if (a)
+				{
+					for (QVector<jo_id_t>::Iterator k = a->m_idsToResolve.begin(); k != a->m_idsToResolve.end(); ++k)
+					{
 						JournallingObject* o = Engine::projectJournal()->journallingObject(*k);
-						if (o && dynamic_cast<AutomatableModel*>(o)) {
+						if (o && dynamic_cast<AutomatableModel*>(o))
+						{
 							a->addObject(dynamic_cast<AutomatableModel*>(o), false);
-						} else {
+						}
+						else
+						{
 							// FIXME: Remove this block once the automation system gets fixed
 							// This is a temporary fix for https://github.com/LMMS/lmms/issues/3781
 							o = Engine::projectJournal()->journallingObject(ProjectJournal::idFromSave(*k));
-							if (o && dynamic_cast<AutomatableModel*>(o)) {
+							if (o && dynamic_cast<AutomatableModel*>(o))
+							{
 								a->addObject(dynamic_cast<AutomatableModel*>(o), false);
-							} else {
+							}
+							else
+							{
 								// FIXME: Remove this block once the automation system gets fixed
 								// This is a temporary fix for https://github.com/LMMS/lmms/issues/4781
 								o = Engine::projectJournal()->journallingObject(ProjectJournal::idToSave(*k));
-								if (o && dynamic_cast<AutomatableModel*>(o)) {
+								if (o && dynamic_cast<AutomatableModel*>(o))
+								{
 									a->addObject(dynamic_cast<AutomatableModel*>(o), false);
 								}
 							}
@@ -814,9 +887,11 @@ void AutomationClip::objectDestroyed(jo_id_t _id)
 	// clip of the destroyed object
 	m_idsToResolve += _id;
 
-	for (objectVector::Iterator objIt = m_objects.begin(); objIt != m_objects.end(); objIt++) {
+	for (objectVector::Iterator objIt = m_objects.begin(); objIt != m_objects.end(); objIt++)
+	{
 		Q_ASSERT(!(*objIt).isNull());
-		if ((*objIt)->id() == _id) {
+		if ((*objIt)->id() == _id)
+		{
 			// Assign to objIt so that this loop work even break; is removed.
 			objIt = m_objects.erase(objIt);
 			break;
@@ -830,10 +905,11 @@ void AutomationClip::cleanObjects()
 {
 	QMutexLocker m(&m_clipMutex);
 
-	for (objectVector::iterator it = m_objects.begin(); it != m_objects.end();) {
-		if (*it) {
-			++it;
-		} else {
+	for (objectVector::iterator it = m_objects.begin(); it != m_objects.end();)
+	{
+		if (*it) { ++it; }
+		else
+		{
 			it = m_objects.erase(it);
 		}
 	}
@@ -849,26 +925,33 @@ void AutomationClip::generateTangents(timeMap::iterator it, int numToGenerate)
 {
 	QMutexLocker m(&m_clipMutex);
 
-	if (m_timeMap.size() < 2 && numToGenerate > 0) {
+	if (m_timeMap.size() < 2 && numToGenerate > 0)
+	{
 		it.value().setInTangent(0);
 		it.value().setOutTangent(0);
 		return;
 	}
 
-	for (int i = 0; i < numToGenerate; i++) {
-		if (it == m_timeMap.begin()) {
+	for (int i = 0; i < numToGenerate; i++)
+	{
+		if (it == m_timeMap.begin())
+		{
 			// On the first node there's no curve behind it, so we will only calculate the outTangent
 			// and inTangent will be set to 0.
 			float tangent = (INVAL(it + 1) - OUTVAL(it)) / (POS(it + 1) - POS(it));
 			it.value().setInTangent(0);
 			it.value().setOutTangent(tangent);
-		} else if (it + 1 == m_timeMap.end()) {
+		}
+		else if (it + 1 == m_timeMap.end())
+		{
 			// Previously, the last value's tangent was always set to 0. That logic was kept for both tangents
 			// of the last node
 			it.value().setInTangent(0);
 			it.value().setOutTangent(0);
 			return;
-		} else {
+		}
+		else
+		{
 			// When we are in a node that is in the middle of two other nodes, we need to check if we
 			// have a discrete jump at this node. If we do not, then we can calculate the tangents normally.
 			// If we do have a discrete jump, then we have to calculate the tangents differently for each side
@@ -878,12 +961,15 @@ void AutomationClip::generateTangents(timeMap::iterator it, int numToGenerate)
 			// the tangents would be better.
 			float inTangent;
 			float outTangent;
-			if (OFFSET(it) == 0) {
+			if (OFFSET(it) == 0)
+			{
 				inTangent = (INVAL(it + 1) - OUTVAL(it - 1)) / (POS(it + 1) - POS(it - 1));
 				it.value().setInTangent(inTangent);
 				// inTangent == outTangent in this case
 				it.value().setOutTangent(inTangent);
-			} else {
+			}
+			else
+			{
 				// Calculate the left side of the curve
 				inTangent = (INVAL(it) - OUTVAL(it - 1)) / (POS(it) - POS(it - 1));
 				// Calculate the right side of the curve

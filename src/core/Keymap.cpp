@@ -77,9 +77,9 @@ int Keymap::getOctave(int key) const
 	if (m_map.empty() || getDegree(key) == -1) { return 0; }
 
 	const int keyOffset = key - m_middleKey;
-	if (keyOffset >= 0) {
-		return keyOffset / static_cast<int>(m_map.size());
-	} else {
+	if (keyOffset >= 0) { return keyOffset / static_cast<int>(m_map.size()); }
+	else
+	{
 		return (keyOffset + 1) / static_cast<int>(m_map.size()) - 1;
 	}
 }
@@ -98,7 +98,8 @@ void Keymap::saveSettings(QDomDocument& document, QDomElement& element)
 	element.setAttribute("base_key", m_baseKey);
 	element.setAttribute("base_freq", m_baseFreq);
 
-	for (int i = 0; i < m_map.size(); i++) {
+	for (int i = 0; i < m_map.size(); i++)
+	{
 		QDomElement degree = document.createElement("degree");
 		element.appendChild(degree);
 		degree.setAttribute("value", m_map[i]);
@@ -118,7 +119,8 @@ void Keymap::loadSettings(const QDomElement& element)
 	QDomNode node = element.firstChild();
 	m_map.clear();
 
-	for (int i = 0; !node.isNull(); i++) {
+	for (int i = 0; !node.isNull(); i++)
+	{
 		m_map.push_back(node.toElement().attribute("value").toInt());
 		node = node.nextSibling();
 	}

@@ -49,8 +49,10 @@ ExportProjectDialog::ExportProjectDialog(const QString& _file_name, QWidget* _pa
 	if (parts.size() > 0) { fileExt = "." + parts[parts.size() - 1]; }
 
 	int cbIndex = 0;
-	for (int i = 0; i < ProjectRenderer::NumFileFormats; ++i) {
-		if (ProjectRenderer::fileEncodeDevices[i].isAvailable()) {
+	for (int i = 0; i < ProjectRenderer::NumFileFormats; ++i)
+	{
+		if (ProjectRenderer::fileEncodeDevices[i].isAvailable())
+		{
 			// Get the extension of this format.
 			QString renderExt = ProjectRenderer::fileEncodeDevices[i].m_extension;
 
@@ -61,7 +63,8 @@ ExportProjectDialog::ExportProjectDialog(const QString& _file_name, QWidget* _pa
 			);
 
 			// If this is our extension, select it.
-			if (QString::compare(renderExt, fileExt, Qt::CaseInsensitive) == 0) {
+			if (QString::compare(renderExt, fileExt, Qt::CaseInsensitive) == 0)
+			{
 				fileFormatCB->setCurrentIndex(cbIndex);
 			}
 
@@ -70,11 +73,12 @@ ExportProjectDialog::ExportProjectDialog(const QString& _file_name, QWidget* _pa
 	}
 
 	int const MAX_LEVEL = 8;
-	for (int i = 0; i <= MAX_LEVEL; ++i) {
+	for (int i = 0; i <= MAX_LEVEL; ++i)
+	{
 		QString info = "";
-		if (i == 0) {
-			info = tr("( Fastest - biggest )");
-		} else if (i == MAX_LEVEL) {
+		if (i == 0) { info = tr("( Fastest - biggest )"); }
+		else if (i == MAX_LEVEL)
+		{
 			info = tr("( Slowest - smallest )");
 		}
 
@@ -115,7 +119,8 @@ void ExportProjectDialog::closeEvent(QCloseEvent* _ce)
 
 OutputSettings::StereoMode mapToStereoMode(int index)
 {
-	switch (index) {
+	switch (index)
+	{
 	case 0: return OutputSettings::StereoMode_Mono;
 	case 1: return OutputSettings::StereoMode_Stereo;
 	case 2: return OutputSettings::StereoMode_JointStereo;
@@ -139,7 +144,8 @@ void ExportProjectDialog::startExport()
 		static_cast<OutputSettings::BitDepth>(depthCB->currentIndex()),
 		mapToStereoMode(stereoModeComboBox->currentIndex()));
 
-	if (compressionWidget->isVisible()) {
+	if (compressionWidget->isVisible())
+	{
 		double level = compLevelCB->itemData(compLevelCB->currentIndex()).toDouble();
 		os.setCompressionLevel(level);
 	}
@@ -147,7 +153,8 @@ void ExportProjectDialog::startExport()
 	// Make sure we have the the correct file extension
 	// so there's no confusion about the codec in use.
 	auto output_name = m_fileName;
-	if (!(m_multiExport || output_name.endsWith(m_fileExtension, Qt::CaseInsensitive))) {
+	if (!(m_multiExport || output_name.endsWith(m_fileExtension, Qt::CaseInsensitive)))
+	{
 		output_name += m_fileExtension;
 	}
 	m_renderManager.reset(new RenderManager(qs, os, m_ft, output_name));
@@ -161,9 +168,9 @@ void ExportProjectDialog::startExport()
 	connect(m_renderManager.get(), SIGNAL(finished()), this, SLOT(accept()));
 	connect(m_renderManager.get(), SIGNAL(finished()), getGUI()->mainWindow(), SLOT(resetWindowTitle()));
 
-	if (m_multiExport) {
-		m_renderManager->renderTracks();
-	} else {
+	if (m_multiExport) { m_renderManager->renderTracks(); }
+	else
+	{
 		m_renderManager->renderProject();
 	}
 }
@@ -213,7 +220,8 @@ void ExportProjectDialog::startBtnClicked()
 	QVariant tag = fileFormatCB->itemData(fileFormatCB->currentIndex());
 	m_ft = static_cast<ProjectRenderer::ExportFileFormats>(tag.toInt(&successful_conversion));
 
-	if (!successful_conversion) {
+	if (!successful_conversion)
+	{
 		QMessageBox::information(this, tr("Error"),
 			tr("Error while determining file-encoder device. "
 			   "Please try to choose a different output "
@@ -223,8 +231,10 @@ void ExportProjectDialog::startBtnClicked()
 	}
 
 	// Find proper file extension.
-	for (int i = 0; i < ProjectRenderer::NumFileFormats; ++i) {
-		if (m_ft == ProjectRenderer::fileEncodeDevices[i].m_fileFormat) {
+	for (int i = 0; i < ProjectRenderer::NumFileFormats; ++i)
+	{
+		if (m_ft == ProjectRenderer::fileEncodeDevices[i].m_fileFormat)
+		{
 			m_fileExtension = QString(QLatin1String(ProjectRenderer::fileEncodeDevices[i].m_extension));
 			break;
 		}

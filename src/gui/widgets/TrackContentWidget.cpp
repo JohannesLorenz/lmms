@@ -97,12 +97,14 @@ void TrackContentWidget::updateBackground()
 	// draw lines
 	// vertical lines
 	pmp.setPen(QPen(gridColor(), 1));
-	for (float x = 0; x < w * 2; x += ppb) {
+	for (float x = 0; x < w * 2; x += ppb)
+	{
 		pmp.drawLine(QLineF(x, 0.0, x, h));
 	}
 
 	pmp.setPen(QPen(embossColor(), 1));
-	for (float x = 1.0; x < w * 2; x += ppb) {
+	for (float x = 1.0; x < w * 2; x += ppb)
+	{
 		pmp.drawLine(QLineF(x, 0.0, x, h));
 	}
 
@@ -143,7 +145,8 @@ void TrackContentWidget::addClipView(ClipView* clipv)
 void TrackContentWidget::removeClipView(ClipView* clipv)
 {
 	clipViewVector::iterator it = std::find(m_clipViews.begin(), m_clipViews.end(), clipv);
-	if (it != m_clipViews.end()) {
+	if (it != m_clipViews.end())
+	{
 		m_clipViews.erase(it);
 		Engine::getSong()->setModified();
 	}
@@ -154,7 +157,8 @@ void TrackContentWidget::removeClipView(ClipView* clipv)
  */
 void TrackContentWidget::update()
 {
-	for (clipViewVector::iterator it = m_clipViews.begin(); it != m_clipViews.end(); ++it) {
+	for (clipViewVector::iterator it = m_clipViews.begin(); it != m_clipViews.end(); ++it)
+	{
 		(*it)->setFixedHeight(height() - 1);
 		(*it)->update();
 	}
@@ -169,22 +173,28 @@ void TrackContentWidget::update()
  */
 void TrackContentWidget::changePosition(const TimePos& newPos)
 {
-	if (m_trackView->trackContainerView() == getGUI()->patternEditor()->m_editor) {
+	if (m_trackView->trackContainerView() == getGUI()->patternEditor()->m_editor)
+	{
 		const int curPattern = Engine::patternStore()->currentPattern();
 		setUpdatesEnabled(false);
 
 		// first show clip for current pattern...
-		for (clipViewVector::iterator it = m_clipViews.begin(); it != m_clipViews.end(); ++it) {
-			if ((*it)->getClip()->startPosition().getBar() == curPattern) {
+		for (clipViewVector::iterator it = m_clipViews.begin(); it != m_clipViews.end(); ++it)
+		{
+			if ((*it)->getClip()->startPosition().getBar() == curPattern)
+			{
 				(*it)->move(0, (*it)->y());
 				(*it)->raise();
 				(*it)->show();
-			} else {
+			}
+			else
+			{
 				(*it)->lower();
 			}
 		}
 		// ...then hide others to avoid flickering
-		for (clipViewVector::iterator it = m_clipViews.begin(); it != m_clipViews.end(); ++it) {
+		for (clipViewVector::iterator it = m_clipViews.begin(); it != m_clipViews.end(); ++it)
+		{
 			if ((*it)->getClip()->startPosition().getBar() != curPattern) { (*it)->hide(); }
 		}
 		setUpdatesEnabled(true);
@@ -199,7 +209,8 @@ void TrackContentWidget::changePosition(const TimePos& newPos)
 	const float ppb = m_trackView->trackContainerView()->pixelsPerBar();
 
 	setUpdatesEnabled(false);
-	for (clipViewVector::iterator it = m_clipViews.begin(); it != m_clipViews.end(); ++it) {
+	for (clipViewVector::iterator it = m_clipViews.begin(); it != m_clipViews.end(); ++it)
+	{
 		ClipView* clipv = *it;
 		Clip* clip = clipv->getClip();
 
@@ -207,10 +218,13 @@ void TrackContentWidget::changePosition(const TimePos& newPos)
 
 		const int ts = clip->startPosition();
 		const int te = clip->endPosition() - 3;
-		if ((ts >= begin && ts <= end) || (te >= begin && te <= end) || (ts <= begin && te >= end)) {
+		if ((ts >= begin && ts <= end) || (te >= begin && te <= end) || (ts <= begin && te >= end))
+		{
 			clipv->move(static_cast<int>((ts - begin) * ppb / TimePos::ticksPerBar()), clipv->y());
 			if (!clipv->isVisible()) { clipv->show(); }
-		} else {
+		}
+		else
+		{
 			clipv->move(-clipv->width() - 10, clipv->y());
 		}
 	}
@@ -237,9 +251,9 @@ TimePos TrackContentWidget::getPosition(int mouseX)
 void TrackContentWidget::dragEnterEvent(QDragEnterEvent* dee)
 {
 	TimePos clipPos = getPosition(dee->pos().x());
-	if (canPasteSelection(clipPos, dee) == false) {
-		dee->ignore();
-	} else {
+	if (canPasteSelection(clipPos, dee) == false) { dee->ignore(); }
+	else
+	{
 		StringPairDrag::processDragEnterEvent(dee, "clip_" + QString::number(getTrack()->type()));
 	}
 }
@@ -269,7 +283,8 @@ bool TrackContentWidget::canPasteSelection(TimePos clipPos, const QMimeData* md,
 	QString value = decodeValue(md);
 
 	// We can only paste into tracks of the same type
-	if (type != ("clip_" + QString::number(t->type())) || m_trackView->trackContainerView()->fixedClips() == true) {
+	if (type != ("clip_" + QString::number(t->type())) || m_trackView->trackContainerView()->fixedClips() == true)
+	{
 		return false;
 	}
 
@@ -293,7 +308,8 @@ bool TrackContentWidget::canPasteSelection(TimePos clipPos, const QMimeData* md,
 	// Don't paste if we're on the same bar and allowSameBar is false
 	auto sourceTrackContainerId = metadata.attributeNode("trackContainerId").value().toUInt();
 	if (!allowSameBar && sourceTrackContainerId == t->trackContainer()->id() && clipPos == grabbedClipBar
-		&& currentTrackIndex == initialTrackIndex) {
+		&& currentTrackIndex == initialTrackIndex)
+	{
 		return false;
 	}
 
@@ -302,7 +318,8 @@ bool TrackContentWidget::canPasteSelection(TimePos clipPos, const QMimeData* md,
 	QDomNodeList clipNodes = clipParent.childNodes();
 
 	// Determine if all the Clips will land on a valid track
-	for (int i = 0; i < clipNodes.length(); i++) {
+	for (int i = 0; i < clipNodes.length(); i++)
+	{
 		QDomElement clipElement = clipNodes.item(i).toElement();
 		int trackIndex = clipElement.attributeNode("trackIndex").value().toInt();
 		int finalTrackIndex = trackIndex + currentTrackIndex - initialTrackIndex;
@@ -370,7 +387,8 @@ bool TrackContentWidget::pasteSelection(TimePos clipPos, const QMimeData* md, bo
 
 	// Unselect the old group
 	const QVector<selectableObject*> so = m_trackView->trackContainerView()->selectedObjects();
-	for (QVector<selectableObject*>::const_iterator it = so.begin(); it != so.end(); ++it) {
+	for (QVector<selectableObject*>::const_iterator it = so.begin(); it != so.end(); ++it)
+	{
 		(*it)->setSelected(false);
 	}
 
@@ -387,7 +405,8 @@ bool TrackContentWidget::pasteSelection(TimePos clipPos, const QMimeData* md, bo
 
 	// Get the leftmost Clip and fix the offset if it reaches below bar 0
 	TimePos leftmostPos = grabbedClipPos;
-	for (int i = 0; i < clipNodes.length(); ++i) {
+	for (int i = 0; i < clipNodes.length(); ++i)
+	{
 		QDomElement outerClipElement = clipNodes.item(i).toElement();
 		QDomElement clipElement = outerClipElement.firstChildElement();
 
@@ -398,7 +417,8 @@ bool TrackContentWidget::pasteSelection(TimePos clipPos, const QMimeData* md, bo
 	// Fix offset if it sets the left most Clip to a negative position
 	offset = std::max(offset.getTicks(), -leftmostPos.getTicks());
 
-	for (int i = 0; i < clipNodes.length(); i++) {
+	for (int i = 0; i < clipNodes.length(); i++)
+	{
 		QDomElement outerClipElement = clipNodes.item(i).toElement();
 		QDomElement clipElement = outerClipElement.firstChildElement();
 
@@ -441,21 +461,23 @@ void TrackContentWidget::mousePressEvent(QMouseEvent* me)
 {
 	// Enable box select if control is held when clicking an empty space
 	// (If we had clicked a Clip it would have intercepted the mouse event)
-	if (me->modifiers() & Qt::ControlModifier) {
+	if (me->modifiers() & Qt::ControlModifier)
+	{
 		getGUI()->songEditor()->m_editor->setEditMode(SongEditor::EditMode::SelectMode);
 	}
 	// Forward event to allow box select if the editor supports it and is in that mode
-	if (m_trackView->trackContainerView()->allowRubberband() == true) {
-		QWidget::mousePressEvent(me);
-	}
+	if (m_trackView->trackContainerView()->allowRubberband() == true) { QWidget::mousePressEvent(me); }
 	// Forward shift clicks so tracks can be resized
-	else if (me->modifiers() & Qt::ShiftModifier) {
+	else if (me->modifiers() & Qt::ShiftModifier)
+	{
 		QWidget::mousePressEvent(me);
 	}
 	// For an unmodified click, create a new Clip
-	else if (me->button() == Qt::LeftButton && !m_trackView->trackContainerView()->fixedClips()) {
+	else if (me->button() == Qt::LeftButton && !m_trackView->trackContainerView()->fixedClips())
+	{
 		QVector<selectableObject*> so = m_trackView->trackContainerView()->rubberBand()->selectedObjects();
-		for (int i = 0; i < so.count(); ++i) {
+		for (int i = 0; i < so.count(); ++i)
+		{
 			so.at(i)->setSelected(false);
 		}
 		getTrack()->addJournalCheckPoint();
@@ -481,7 +503,8 @@ void TrackContentWidget::paintEvent(QPaintEvent* pe)
 	int ppb = static_cast<int>(tcv->pixelsPerBar());
 	QPainter p(this);
 	// Don't draw background on Pattern Editor
-	if (m_trackView->trackContainerView() != getGUI()->patternEditor()->m_editor) {
+	if (m_trackView->trackContainerView() != getGUI()->patternEditor()->m_editor)
+	{
 		p.drawTiledPixmap(rect(), m_background, QPoint(tcv->currentPosition().getBar() * ppb, 0));
 	}
 }
@@ -539,7 +562,8 @@ void TrackContentWidget::contextMenuAction(QContextMenuEvent* cme, ContextMenuAc
 	// For getMimeData()
 	using namespace Clipboard;
 
-	switch (action) {
+	switch (action)
+	{
 	case Paste:
 		// Paste the selection on the TimePos of the context menu event
 		TimePos clipPos = getPosition(cme->x());

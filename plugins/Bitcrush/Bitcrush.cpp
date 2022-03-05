@@ -88,15 +88,18 @@ bool BitcrushEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 	if (!isEnabled() || !isRunning()) { return (false); }
 
 	// update values
-	if (m_needsUpdate || m_controls.m_rateEnabled.isValueChanged()) {
+	if (m_needsUpdate || m_controls.m_rateEnabled.isValueChanged())
+	{
 		m_rateEnabled = m_controls.m_rateEnabled.value();
 		m_bitCounterL = 0.0f;
 		m_bitCounterR = 0.0f;
 	}
-	if (m_needsUpdate || m_controls.m_depthEnabled.isValueChanged()) {
+	if (m_needsUpdate || m_controls.m_depthEnabled.isValueChanged())
+	{
 		m_depthEnabled = m_controls.m_depthEnabled.value();
 	}
-	if (m_needsUpdate || m_controls.m_rate.isValueChanged() || m_controls.m_stereoDiff.isValueChanged()) {
+	if (m_needsUpdate || m_controls.m_rate.isValueChanged() || m_controls.m_stereoDiff.isValueChanged())
+	{
 		const float rate = m_controls.m_rate.value();
 		const float diff = m_controls.m_stereoDiff.value() * 0.005 * rate;
 
@@ -106,7 +109,8 @@ bool BitcrushEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 		m_bitCounterL = 0.0f;
 		m_bitCounterR = 0.0f;
 	}
-	if (m_needsUpdate || m_controls.m_levels.isValueChanged()) {
+	if (m_needsUpdate || m_controls.m_levels.isValueChanged())
+	{
 		m_levels = m_controls.m_levels.value();
 		m_levelsRatio = 1.0f / (float)m_levels;
 	}
@@ -120,28 +124,35 @@ bool BitcrushEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 	// read input buffer and write it to oversampled buffer
 	if (m_rateEnabled) // rate crushing enabled so do that
 	{
-		for (int f = 0; f < frames; ++f) {
-			for (int o = 0; o < OS_RATE; ++o) {
+		for (int f = 0; f < frames; ++f)
+		{
+			for (int o = 0; o < OS_RATE; ++o)
+			{
 				m_buffer[f * OS_RATE + o][0] = m_left;
 				m_buffer[f * OS_RATE + o][1] = m_right;
 				m_bitCounterL += 1.0f;
 				m_bitCounterR += 1.0f;
-				if (m_bitCounterL > m_rateCoeffL) {
+				if (m_bitCounterL > m_rateCoeffL)
+				{
 					m_bitCounterL -= m_rateCoeffL;
 					m_left = m_depthEnabled ? depthCrush(buf[f][0] * m_inGain + noise(buf[f][0] * noiseAmt))
 											: buf[f][0] * m_inGain + noise(buf[f][0] * noiseAmt);
 				}
-				if (m_bitCounterR > m_rateCoeffR) {
+				if (m_bitCounterR > m_rateCoeffR)
+				{
 					m_bitCounterR -= m_rateCoeffR;
 					m_right = m_depthEnabled ? depthCrush(buf[f][1] * m_inGain + noise(buf[f][1] * noiseAmt))
 											 : buf[f][1] * m_inGain + noise(buf[f][1] * noiseAmt);
 				}
 			}
 		}
-	} else // rate crushing disabled: simply oversample with zero-order hold
+	}
+	else // rate crushing disabled: simply oversample with zero-order hold
 	{
-		for (int f = 0; f < frames; ++f) {
-			for (int o = 0; o < OS_RATE; ++o) {
+		for (int f = 0; f < frames; ++f)
+		{
+			for (int o = 0; o < OS_RATE; ++o)
+			{
 				m_buffer[f * OS_RATE + o][0] = m_depthEnabled
 					? depthCrush(buf[f][0] * m_inGain + noise(buf[f][0] * noiseAmt))
 					: buf[f][0] * m_inGain + noise(buf[f][0] * noiseAmt);
@@ -154,15 +165,19 @@ bool BitcrushEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 
 	// the oversampled buffer is now written, so filter it to reduce aliasing
 
-	for (int f = 0; f < frames * OS_RATE; ++f) {
-		if (qMax(qAbs(m_buffer[f][0]), qAbs(m_buffer[f][1])) >= 1.0e-10f) {
+	for (int f = 0; f < frames * OS_RATE; ++f)
+	{
+		if (qMax(qAbs(m_buffer[f][0]), qAbs(m_buffer[f][1])) >= 1.0e-10f)
+		{
 			m_silenceCounter = 0;
 			m_buffer[f][0] = m_filter.update(m_buffer[f][0], 0);
 			m_buffer[f][1] = m_filter.update(m_buffer[f][1], 1);
-		} else {
-			if (m_silenceCounter > SILENCEFRAMES) {
-				m_buffer[f][0] = m_buffer[f][1] = 0.0f;
-			} else {
+		}
+		else
+		{
+			if (m_silenceCounter > SILENCEFRAMES) { m_buffer[f][0] = m_buffer[f][1] = 0.0f; }
+			else
+			{
 				++m_silenceCounter;
 				m_buffer[f][0] = m_filter.update(m_buffer[f][0], 0);
 				m_buffer[f][1] = m_filter.update(m_buffer[f][1], 1);
@@ -175,10 +190,12 @@ bool BitcrushEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames)
 	double outSum = 0.0;
 	const float d = dryLevel();
 	const float w = wetLevel();
-	for (int f = 0; f < frames; ++f) {
+	for (int f = 0; f < frames; ++f)
+	{
 		float lsum = 0.0f;
 		float rsum = 0.0f;
-		for (int o = 0; o < OS_RATE; ++o) {
+		for (int o = 0; o < OS_RATE; ++o)
+		{
 			lsum += m_buffer[f * OS_RATE + o][0] * OS_RESAMPLE[o];
 			rsum += m_buffer[f * OS_RATE + o][1] * OS_RESAMPLE[o];
 		}

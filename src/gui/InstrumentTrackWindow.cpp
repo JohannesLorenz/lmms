@@ -280,7 +280,8 @@ InstrumentTrackWindow::~InstrumentTrackWindow()
 {
 	delete m_instrumentView;
 
-	if (parentWidget()) {
+	if (parentWidget())
+	{
 		parentWidget()->hide();
 		parentWidget()->deleteLater();
 	}
@@ -311,14 +312,17 @@ void InstrumentTrackWindow::modelChanged()
 	m_mixerChannelNumber->setModel(&m_track->m_mixerChannelModel);
 	m_pianoView->setModel(&m_track->m_piano);
 
-	if (m_track->instrument() && m_track->instrument()->flags().testFlag(Instrument::IsNotBendable) == false) {
+	if (m_track->instrument() && m_track->instrument()->flags().testFlag(Instrument::IsNotBendable) == false)
+	{
 		m_pitchKnob->setModel(&m_track->m_pitchModel);
 		m_pitchRangeSpinBox->setModel(&m_track->m_pitchRangeModel);
 		m_pitchKnob->show();
 		m_pitchLabel->show();
 		m_pitchRangeSpinBox->show();
 		m_pitchRangeLabel->show();
-	} else {
+	}
+	else
+	{
 		m_pitchKnob->hide();
 		m_pitchLabel->hide();
 		m_pitchKnob->setModel(nullptr);
@@ -326,10 +330,13 @@ void InstrumentTrackWindow::modelChanged()
 		m_pitchRangeLabel->hide();
 	}
 
-	if (m_track->instrument() && m_track->instrument()->flags().testFlag(Instrument::IsMidiBased)) {
+	if (m_track->instrument() && m_track->instrument()->flags().testFlag(Instrument::IsMidiBased))
+	{
 		m_miscView->microtunerGroupBox()->hide();
 		m_track->m_microtuner.enabledModel()->setValue(false);
-	} else {
+	}
+	else
+	{
 		m_miscView->microtunerGroupBox()->show();
 	}
 
@@ -361,7 +368,8 @@ void InstrumentTrackWindow::saveSettingsBtnClicked()
 	sfd.selectFile(fname.remove(QRegExp(FILENAME_FILTER)));
 	sfd.setDefaultSuffix("xpf");
 
-	if (sfd.exec() == QDialog::Accepted && !sfd.selectedFiles().isEmpty() && !sfd.selectedFiles().first().isEmpty()) {
+	if (sfd.exec() == QDialog::Accepted && !sfd.selectedFiles().isEmpty() && !sfd.selectedFiles().first().isEmpty())
+	{
 		DataFile dataFile(DataFile::InstrumentTrackSettings);
 		QDomElement& content(dataFile.content());
 
@@ -386,7 +394,8 @@ void InstrumentTrackWindow::updateName()
 void InstrumentTrackWindow::updateInstrumentView()
 {
 	delete m_instrumentView;
-	if (m_track->m_instrument != nullptr) {
+	if (m_track->m_instrument != nullptr)
+	{
 		m_instrumentView = m_track->m_instrument->createView(m_tabWidget);
 		m_tabWidget->addTab(m_instrumentView, tr("Plugin"), "plugin_tab", 0);
 		m_tabWidget->setActiveTab(0);
@@ -415,11 +424,14 @@ void InstrumentTrackWindow::textChanged(const QString& newName)
 
 void InstrumentTrackWindow::toggleVisibility(bool on)
 {
-	if (on) {
+	if (on)
+	{
 		show();
 		parentWidget()->show();
 		parentWidget()->raise();
-	} else {
+	}
+	else
+	{
 		parentWidget()->hide();
 	}
 }
@@ -428,9 +440,9 @@ void InstrumentTrackWindow::closeEvent(QCloseEvent* event)
 {
 	event->ignore();
 
-	if (getGUI()->mainWindow()->workspace()) {
-		parentWidget()->hide();
-	} else {
+	if (getGUI()->mainWindow()->workspace()) { parentWidget()->hide(); }
+	else
+	{
 		hide();
 	}
 
@@ -455,23 +467,29 @@ void InstrumentTrackWindow::dropEvent(QDropEvent* event)
 	QString type = StringPairDrag::decodeKey(event);
 	QString value = StringPairDrag::decodeValue(event);
 
-	if (type == "instrument") {
+	if (type == "instrument")
+	{
 		m_track->loadInstrument(value, nullptr, true /* DnD */);
 
 		Engine::getSong()->setModified();
 
 		event->accept();
 		setFocus();
-	} else if (type == "presetfile") {
+	}
+	else if (type == "presetfile")
+	{
 		DataFile dataFile(value);
 		m_track->replaceInstrument(dataFile);
 		event->accept();
 		setFocus();
-	} else if (type == "pluginpresetfile") {
+	}
+	else if (type == "pluginpresetfile")
+	{
 		const QString ext = FileItem::extension(value);
 		Instrument* i = m_track->instrument();
 
-		if (!i->descriptor()->supportsFileType(ext)) {
+		if (!i->descriptor()->supportsFileType(ext))
+		{
 			PluginFactory::PluginInfoAndKey piakn = getPluginFactory()->pluginSupportingExtension(ext);
 			i = m_track->loadInstrument(piakn.info.name(), &piakn.key);
 		}
@@ -512,7 +530,8 @@ void InstrumentTrackWindow::viewInstrumentInDirection(int d)
 	int idxOfNext = idxOfMe;
 	InstrumentTrackView* newView = nullptr;
 	InstrumentTrackView* bringToFront = nullptr;
-	do {
+	do
+	{
 		idxOfNext = (idxOfNext + d + trackViews.size()) % trackViews.size();
 		newView = dynamic_cast<InstrumentTrackView*>(trackViews[idxOfNext]);
 		// the window that should be brought to focus is the FIRST InstrumentTrackView that comes after us
@@ -522,7 +541,8 @@ void InstrumentTrackWindow::viewInstrumentInDirection(int d)
 	} while (idxOfNext != idxOfMe);
 
 	// avoid reloading the window if there is only one instrument, as that will just change the active tab
-	if (idxOfNext != idxOfMe) {
+	if (idxOfNext != idxOfMe)
+	{
 		// save current window pos and then hide the window by unchecking its button in the track list
 		QPoint curPos = parentWidget()->pos();
 		m_itv->m_tlb->setChecked(false);

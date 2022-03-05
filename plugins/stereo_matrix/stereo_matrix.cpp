@@ -59,7 +59,8 @@ bool stereoMatrixEffect::processAudioBuffer(sampleFrame* _buf, const fpp_t _fram
 
 	double out_sum = 0.0;
 
-	for (fpp_t f = 0; f < _frames; ++f) {
+	for (fpp_t f = 0; f < _frames; ++f)
+	{
 		const float d = dryLevel();
 		const float w = wetLevel();
 

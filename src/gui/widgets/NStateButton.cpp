@@ -37,7 +37,8 @@ NStateButton::NStateButton(QWidget* _parent)
 
 NStateButton::~NStateButton()
 {
-	while (m_states.size()) {
+	while (m_states.size())
+	{
 		m_states.erase(m_states.begin());
 	}
 }
@@ -46,7 +47,8 @@ void NStateButton::addState(const QPixmap& _pm, const QString& _tooltip)
 {
 	m_states.push_back(qMakePair(_pm, _tooltip));
 	// first inserted pixmap?
-	if (m_states.size() == 1) {
+	if (m_states.size() == 1)
+	{
 		// and set state to first pixmap
 		changeState(0);
 	}
@@ -54,7 +56,8 @@ void NStateButton::addState(const QPixmap& _pm, const QString& _tooltip)
 
 void NStateButton::changeState(int _n)
 {
-	if (_n >= 0 && _n < (int)m_states.size()) {
+	if (_n >= 0 && _n < (int)m_states.size())
+	{
 		m_curState = _n;
 
 		const QString& _tooltip = (m_states[m_curState].second != "") ? m_states[m_curState].second : m_generalToolTip;

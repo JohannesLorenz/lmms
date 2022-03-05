@@ -60,7 +60,8 @@ Piano::Piano(InstrumentTrack* track)
 	m_instrumentTrack(track)
 	, m_midiEvProc(track) /*!< the InstrumentTrack Model */
 {
-	for (int i = 0; i < NumKeys; ++i) {
+	for (int i = 0; i < NumKeys; ++i)
+	{
 		m_pressedKeys[i] = false;
 	}
 }
@@ -72,7 +73,8 @@ Piano::Piano(InstrumentTrack* track)
  */
 void Piano::setKeyState(int key, bool state)
 {
-	if (isValidKey(key)) {
+	if (isValidKey(key))
+	{
 		m_pressedKeys[key] = state;
 
 		emit dataChanged();
@@ -86,7 +88,8 @@ void Piano::setKeyState(int key, bool state)
 void Piano::handleKeyPress(int key, int midiVelocity)
 {
 	if (midiVelocity == -1) { midiVelocity = m_instrumentTrack->midiPort()->baseVelocity(); }
-	if (isValidKey(key)) {
+	if (isValidKey(key))
+	{
 		m_midiEvProc->processInEvent(MidiEvent(MidiNoteOn, -1, key, midiVelocity));
 		m_pressedKeys[key] = true;
 	}
@@ -98,7 +101,8 @@ void Piano::handleKeyPress(int key, int midiVelocity)
  */
 void Piano::handleKeyRelease(int key)
 {
-	if (isValidKey(key)) {
+	if (isValidKey(key))
+	{
 		m_midiEvProc->processInEvent(MidiEvent(MidiNoteOff, -1, key, 0));
 		m_pressedKeys[key] = false;
 	}

@@ -38,9 +38,9 @@ ControllerConnection::ControllerConnection(Controller* _controller)
 	, m_controllerId(-1)
 	, m_ownsController(false)
 {
-	if (_controller != nullptr) {
-		setController(_controller);
-	} else {
+	if (_controller != nullptr) { setController(_controller); }
+	else
+	{
 		m_controller = Controller::create(Controller::DummyController, nullptr);
 	}
 	s_connections.append(this);
@@ -65,21 +65,23 @@ void ControllerConnection::setController(int /*_controllerId*/) {}
 
 void ControllerConnection::setController(Controller* _controller)
 {
-	if (m_ownsController && m_controller) {
+	if (m_ownsController && m_controller)
+	{
 		delete m_controller;
 		m_controller = nullptr;
 	}
 
 	if (m_controller && m_controller->type() != Controller::DummyController) { m_controller->removeConnection(this); }
 
-	if (!_controller) {
-		m_controller = Controller::create(Controller::DummyController, nullptr);
-	} else {
+	if (!_controller) { m_controller = Controller::create(Controller::DummyController, nullptr); }
+	else
+	{
 		m_controller = _controller;
 	}
 	m_controllerId = -1;
 
-	if (_controller->type() != Controller::DummyController) {
+	if (_controller->type() != Controller::DummyController)
+	{
 		_controller->addConnection(this);
 		QObject::connect(_controller, SIGNAL(valueChanged()), this, SIGNAL(valueChanged()), Qt::DirectConnection);
 	}
@@ -94,7 +96,8 @@ void ControllerConnection::setController(Controller* _controller)
 inline void ControllerConnection::setTargetName(const QString& _name)
 {
 	m_targetName = _name;
-	if (m_controller) {
+	if (m_controller)
+	{
 		//	m_controller->getMidiPort()->setName( _name );
 	}
 }
@@ -108,11 +111,15 @@ inline void ControllerConnection::setTargetName(const QString& _name)
  */
 void ControllerConnection::finalizeConnections()
 {
-	for (int i = 0; i < s_connections.size(); ++i) {
+	for (int i = 0; i < s_connections.size(); ++i)
+	{
 		ControllerConnection* c = s_connections[i];
-		if (!c->isFinalized() && c->m_controllerId < Engine::getSong()->controllers().size()) {
+		if (!c->isFinalized() && c->m_controllerId < Engine::getSong()->controllers().size())
+		{
 			c->setController(Engine::getSong()->controllers().at(c->m_controllerId));
-		} else if (c->getController()->type() == Controller::DummyController) {
+		}
+		else if (c->getController()->type() == Controller::DummyController)
+		{
 			delete c;
 			--i;
 		}
@@ -121,10 +128,11 @@ void ControllerConnection::finalizeConnections()
 
 void ControllerConnection::saveSettings(QDomDocument& _doc, QDomElement& _this)
 {
-	if (Engine::getSong()) {
-		if (m_ownsController) {
-			m_controller->saveState(_doc, _this);
-		} else {
+	if (Engine::getSong())
+	{
+		if (m_ownsController) { m_controller->saveState(_doc, _this); }
+		else
+		{
 			int id = Engine::getSong()->controllers().indexOf(m_controller);
 			if (id >= 0) { _this.setAttribute("id", id); }
 		}
@@ -134,19 +142,23 @@ void ControllerConnection::saveSettings(QDomDocument& _doc, QDomElement& _this)
 void ControllerConnection::loadSettings(const QDomElement& _this)
 {
 	QDomNode node = _this.firstChild();
-	if (!node.isNull()) {
-		setController(Controller::create(node.toElement(), Engine::getSong()));
-	} else {
+	if (!node.isNull()) { setController(Controller::create(node.toElement(), Engine::getSong())); }
+	else
+	{
 		m_controllerId = _this.attribute("id", "-1").toInt();
-		if (m_controllerId < 0) {
+		if (m_controllerId < 0)
+		{
 			qWarning("controller index invalid\n");
 			m_controllerId = -1;
 		}
 
 		if (!Engine::getSong()->isLoadingProject() && m_controllerId != -1
-			&& m_controllerId < Engine::getSong()->controllers().size()) {
+			&& m_controllerId < Engine::getSong()->controllers().size())
+		{
 			setController(Engine::getSong()->controllers().at(m_controllerId));
-		} else {
+		}
+		else
+		{
 			m_controller = Controller::create(Controller::DummyController, nullptr);
 		}
 	}

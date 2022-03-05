@@ -114,13 +114,16 @@ public:
 
 	template <class T> inline T value(int frameOffset = 0) const
 	{
-		if (m_controllerConnection) {
-			if (!m_useControllerValue) {
-				return castValue<T>(m_value);
-			} else {
+		if (m_controllerConnection)
+		{
+			if (!m_useControllerValue) { return castValue<T>(m_value); }
+			else
+			{
 				return castValue<T>(controllerValue(frameOffset));
 			}
-		} else if (hasLinkedModels()) {
+		}
+		else if (hasLinkedModels())
+		{
 			return castValue<T>(controllerValue(frameOffset));
 		}
 
@@ -199,7 +202,8 @@ public:
 	// your model has to be accessed by more than one object, then this function shouldn't be used.
 	bool isValueChanged()
 	{
-		if (m_valueChanged || valueBuffer()) {
+		if (m_valueChanged || valueBuffer())
+		{
 			m_valueChanged = false;
 			return true;
 		}

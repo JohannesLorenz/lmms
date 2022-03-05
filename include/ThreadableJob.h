@@ -56,7 +56,8 @@ public:
 	void process()
 	{
 		auto expected = ProcessingState::Queued;
-		if (m_state.compare_exchange_strong(expected, ProcessingState::InProgress)) {
+		if (m_state.compare_exchange_strong(expected, ProcessingState::InProgress))
+		{
 			doProcessing();
 			m_state = ProcessingState::Done;
 		}

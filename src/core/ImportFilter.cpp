@@ -53,9 +53,11 @@ void ImportFilter::import(const QString& _file_to_import, TrackContainer* tc)
 	const bool j = Engine::projectJournal()->isJournalling();
 	Engine::projectJournal()->setJournalling(false);
 
-	for (const Plugin::Descriptor* desc : getPluginFactory()->descriptors(Plugin::ImportFilter)) {
+	for (const Plugin::Descriptor* desc : getPluginFactory()->descriptors(Plugin::ImportFilter))
+	{
 		unique_ptr<Plugin> p(Plugin::instantiate(desc->name, nullptr, s.data()));
-		if (dynamic_cast<ImportFilter*>(p.get()) != nullptr && dynamic_cast<ImportFilter*>(p.get())->tryImport(tc)) {
+		if (dynamic_cast<ImportFilter*>(p.get()) != nullptr && dynamic_cast<ImportFilter*>(p.get())->tryImport(tc))
+		{
 			successful = true;
 			break;
 		}
@@ -63,7 +65,8 @@ void ImportFilter::import(const QString& _file_to_import, TrackContainer* tc)
 
 	Engine::projectJournal()->setJournalling(j);
 
-	if (successful == false) {
+	if (successful == false)
+	{
 		QMessageBox::information(nullptr, TrackContainer::tr("Couldn't import file"),
 			TrackContainer::tr("Couldn't find a filter for "
 							   "importing file %1.\n"
@@ -77,7 +80,8 @@ void ImportFilter::import(const QString& _file_to_import, TrackContainer* tc)
 
 bool ImportFilter::openFile()
 {
-	if (m_file.open(QFile::ReadOnly) == false) {
+	if (m_file.open(QFile::ReadOnly) == false)
+	{
 		QMessageBox::critical(nullptr, TrackContainer::tr("Couldn't open file"),
 			TrackContainer::tr("Couldn't open file %1 "
 							   "for reading.\nPlease make "

@@ -39,10 +39,11 @@ ModelView::~ModelView()
 
 void ModelView::setModel(Model* model, bool isOldModelValid)
 {
-	if (isOldModelValid && m_model != nullptr) {
-		if (m_model->isDefaultConstructed()) {
-			delete m_model;
-		} else {
+	if (isOldModelValid && m_model != nullptr)
+	{
+		if (m_model->isDefaultConstructed()) { delete m_model; }
+		else
+		{
 			m_model->disconnect(widget());
 		}
 	}
@@ -62,7 +63,8 @@ void ModelView::unsetModel() { setModel(new Model(nullptr, QString(), true)); }
 
 void ModelView::doConnections()
 {
-	if (m_model != nullptr) {
+	if (m_model != nullptr)
+	{
 		QObject::connect(m_model, SIGNAL(dataChanged()), widget(), SLOT(update()));
 		QObject::connect(m_model, SIGNAL(propertiesChanged()), widget(), SLOT(update()));
 	}

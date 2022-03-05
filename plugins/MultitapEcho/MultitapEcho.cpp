@@ -61,8 +61,10 @@ MultitapEchoEffect::~MultitapEchoEffect() { MM_FREE(m_work); }
 
 void MultitapEchoEffect::updateFilters(int begin, int end)
 {
-	for (int i = begin; i <= end; ++i) {
-		for (int s = 0; s < m_stages; ++s) {
+	for (int i = begin; i <= end; ++i)
+	{
+		for (int s = 0; s < m_stages; ++s)
+		{
 			setFilterFreq(m_lpFreq[i] * m_sampleRatio, m_filter[i][s]);
 		}
 	}
@@ -70,7 +72,8 @@ void MultitapEchoEffect::updateFilters(int begin, int end)
 
 void MultitapEchoEffect::runFilter(sampleFrame* dst, sampleFrame* src, StereoOnePole& filter, const fpp_t frames)
 {
-	for (int f = 0; f < frames; ++f) {
+	for (int f = 0; f < frames; ++f)
+	{
 		dst[f][0] = filter.update(src[f][0], 0);
 		dst[f][1] = filter.update(src[f][1], 1);
 	}
@@ -91,7 +94,8 @@ bool MultitapEchoEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames
 	const bool swapInputs = m_controls.m_swapInputs.value();
 
 	// check if number of stages has changed
-	if (m_controls.m_stages.isValueChanged()) {
+	if (m_controls.m_stages.isValueChanged())
+	{
 		m_stages = static_cast<int>(m_controls.m_stages.value());
 		updateFilters(0, steps - 1);
 	}
@@ -100,21 +104,26 @@ bool MultitapEchoEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames
 	m_buffer.writeAddingMultiplied(buf, 0, frames, dryGain);
 
 	// swapped inputs?
-	if (swapInputs) {
+	if (swapInputs)
+	{
 		float offset = stepLength;
 		for (int i = 0; i < steps; ++i) // add all steps swapped
 		{
-			for (int s = 0; s < m_stages; ++s) {
+			for (int s = 0; s < m_stages; ++s)
+			{
 				runFilter(m_work, buf, m_filter[i][s], frames);
 			}
 			m_buffer.writeSwappedAddingMultiplied(m_work, offset, frames, m_amp[i]);
 			offset += stepLength;
 		}
-	} else {
+	}
+	else
+	{
 		float offset = stepLength;
 		for (int i = 0; i < steps; ++i) // add all steps
 		{
-			for (int s = 0; s < m_stages; ++s) {
+			for (int s = 0; s < m_stages; ++s)
+			{
 				runFilter(m_work, buf, m_filter[i][s], frames);
 			}
 			m_buffer.writeAddingMultiplied(m_work, offset, frames, m_amp[i]);
@@ -125,7 +134,8 @@ bool MultitapEchoEffect::processAudioBuffer(sampleFrame* buf, const fpp_t frames
 	// pop the buffer and mix it into output
 	m_buffer.pop(m_work);
 
-	for (int f = 0; f < frames; ++f) {
+	for (int f = 0; f < frames; ++f)
+	{
 		buf[f][0] = d * buf[f][0] + w * m_work[f][0];
 		buf[f][1] = d * buf[f][1] + w * m_work[f][1];
 		outSum += buf[f][0] * buf[f][0] + buf[f][1] * buf[f][1];

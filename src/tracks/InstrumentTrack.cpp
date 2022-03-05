@@ -74,7 +74,8 @@ InstrumentTrack::InstrumentTrack(TrackContainer* tc)
 
 	m_mixerChannelModel.setRange(0, Engine::mixer()->numChannels() - 1, 1);
 
-	for (int i = 0; i < NumKeys; ++i) {
+	for (int i = 0; i < NumKeys; ++i)
+	{
 		m_notes[i] = nullptr;
 		m_runningMidiNotes[i] = 0;
 	}
@@ -85,7 +86,8 @@ InstrumentTrack::InstrumentTrack(TrackContainer* tc)
 
 	// Initialize the MIDI CC controller models and connect them to the method that processes
 	// the midi cc events
-	for (int i = 0; i < MidiControllerCount; ++i) {
+	for (int i = 0; i < MidiControllerCount; ++i)
+	{
 		m_midiCCModel[i]
 			= std::make_unique<FloatModel>(0.0f, 0.0f, 127.0f, 1.0f, nullptr, tr("CC Controller %1").arg(i));
 
@@ -122,9 +124,9 @@ bool InstrumentTrack::isKeyMapped(int key) const
  */
 int InstrumentTrack::firstKey() const
 {
-	if (keyRangeImport()) {
-		return Engine::getSong()->getKeymap(m_microtuner.currentKeymap())->getFirstKey();
-	} else {
+	if (keyRangeImport()) { return Engine::getSong()->getKeymap(m_microtuner.currentKeymap())->getFirstKey(); }
+	else
+	{
 		return m_firstKeyModel.value();
 	}
 }
@@ -134,9 +136,9 @@ int InstrumentTrack::firstKey() const
  */
 int InstrumentTrack::lastKey() const
 {
-	if (keyRangeImport()) {
-		return Engine::getSong()->getKeymap(m_microtuner.currentKeymap())->getLastKey();
-	} else {
+	if (keyRangeImport()) { return Engine::getSong()->getKeymap(m_microtuner.currentKeymap())->getLastKey(); }
+	else
+	{
 		return m_lastKeyModel.value();
 	}
 }
@@ -148,9 +150,9 @@ int InstrumentTrack::baseNote() const
 {
 	int mp = m_useMasterPitchModel.value() ? Engine::getSong()->masterPitch() : 0;
 
-	if (keyRangeImport()) {
-		return Engine::getSong()->getKeymap(m_microtuner.currentKeymap())->getBaseKey() - mp;
-	} else {
+	if (keyRangeImport()) { return Engine::getSong()->getKeymap(m_microtuner.currentKeymap())->getBaseKey() - mp; }
+	else
+	{
 		return m_baseNoteModel.value() - mp;
 	}
 }
@@ -160,9 +162,9 @@ int InstrumentTrack::baseNote() const
  */
 float InstrumentTrack::baseFreq() const
 {
-	if (m_microtuner.enabled()) {
-		return Engine::getSong()->getKeymap(m_microtuner.currentKeymap())->getBaseFreq();
-	} else {
+	if (m_microtuner.enabled()) { return Engine::getSong()->getKeymap(m_microtuner.currentKeymap())->getBaseFreq(); }
+	else
+	{
 		return DefaultBaseFreq;
 	}
 }
@@ -170,7 +172,8 @@ float InstrumentTrack::baseFreq() const
 InstrumentTrack::~InstrumentTrack()
 {
 	// De-assign midi device
-	if (m_hasAutoMidiDev) {
+	if (m_hasAutoMidiDev)
+	{
 		autoAssignMidiDevice(false);
 		s_autoAssignedTrack = nullptr;
 	}
@@ -186,7 +189,8 @@ void InstrumentTrack::processAudioBuffer(sampleFrame* buf, const fpp_t frames, N
 {
 	// we must not play the sound if this InstrumentTrack is muted...
 	if (isMuted() || (Engine::getSong()->playMode() != Song::Mode_PlayMidiClip && n && n->isPatternTrackMuted())
-		|| !m_instrument) {
+		|| !m_instrument)
+	{
 		return;
 	}
 
@@ -194,14 +198,18 @@ void InstrumentTrack::processAudioBuffer(sampleFrame* buf, const fpp_t frames, N
 	// We could do that in all other cases as well but the overhead for silence test is bigger than
 	// what we potentially save. While playing a note, a NotePlayHandle-driven instrument will produce sound in
 	// 99 of 100 cases so that test would be a waste of time.
-	if (m_instrument->flags().testFlag(Instrument::IsSingleStreamed) && MixHelpers::isSilent(buf, frames)) {
+	if (m_instrument->flags().testFlag(Instrument::IsSingleStreamed) && MixHelpers::isSilent(buf, frames))
+	{
 		// at least pass one silent buffer to allow
-		if (m_silentBuffersProcessed) {
+		if (m_silentBuffersProcessed)
+		{
 			// skip further processing
 			return;
 		}
 		m_silentBuffersProcessed = true;
-	} else {
+	}
+	else
+	{
 		m_silentBuffersProcessed = false;
 	}
 
@@ -219,14 +227,17 @@ void InstrumentTrack::processAudioBuffer(sampleFrame* buf, const fpp_t frames, N
 	// instruments using instrument-play-handles will call this method
 	// without any knowledge about notes, so they pass NULL for n, which
 	// is no problem for us since we just bypass the envelopes+LFOs
-	if (m_instrument->flags().testFlag(Instrument::IsSingleStreamed) == false && n != nullptr) {
+	if (m_instrument->flags().testFlag(Instrument::IsSingleStreamed) == false && n != nullptr)
+	{
 		const f_cnt_t offset = n->noteOffset();
 		m_soundShaping.processAudioBuffer(buf + offset, frames - offset, n);
 		const float vol = ((float)n->getVolume() * DefaultVolumeRatio);
 		const panning_t pan = qBound(PanningLeft, n->getPanning(), PanningRight);
 		stereoVolumeVector vv = panningToVolumeVector(pan, vol);
-		for (f_cnt_t f = offset; f < frames; ++f) {
-			for (int c = 0; c < 2; ++c) {
+		for (f_cnt_t f = offset; f < frames; ++f)
+		{
+			for (int c = 0; c < 2; ++c)
+			{
 				buf[f][c] *= vv.vol[c];
 			}
 		}
@@ -236,7 +247,8 @@ void InstrumentTrack::processAudioBuffer(sampleFrame* buf, const fpp_t frames, N
 MidiEvent InstrumentTrack::applyMasterKey(const MidiEvent& event)
 {
 	MidiEvent copy(event);
-	switch (event.type()) {
+	switch (event.type())
+	{
 	case MidiNoteOn:
 	case MidiNoteOff:
 	case MidiKeyPressure: copy.setKey(masterKey(event.key())); break;
@@ -266,14 +278,17 @@ void InstrumentTrack::processInEvent(const MidiEvent& event, const TimePos& time
 
 	bool eventHandled = false;
 
-	switch (event.type()) {
+	switch (event.type())
+	{
 	// we don't send MidiNoteOn, MidiNoteOff and MidiKeyPressure
 	// events to instrument as NotePlayHandle will send them on its
 	// own
 	case MidiNoteOn:
-		if (event.velocity() > 0) {
+		if (event.velocity() > 0)
+		{
 			// play a note only if it is not already playing and if it is within configured bounds
-			if (m_notes[event.key()] == nullptr && event.key() >= firstKey() && event.key() <= lastKey()) {
+			if (m_notes[event.key()] == nullptr && event.key() >= firstKey() && event.key() <= lastKey())
+			{
 				NotePlayHandle* nph = NotePlayHandleManager::acquire(this, offset, typeInfo<f_cnt_t>::max() / 2,
 					Note(TimePos(), TimePos(), event.key(), event.volume(midiPort()->baseVelocity())), nullptr,
 					event.channel(), NotePlayHandle::OriginMidiInput);
@@ -285,12 +300,14 @@ void InstrumentTrack::processInEvent(const MidiEvent& event, const TimePos& time
 		}
 
 	case MidiNoteOff:
-		if (m_notes[event.key()] != nullptr) {
+		if (m_notes[event.key()] != nullptr)
+		{
 			// do actual note off and remove internal reference to NotePlayHandle (which itself will
 			// be deleted later automatically)
 			Engine::audioEngine()->requestChangeInModel();
 			m_notes[event.key()]->noteOff(offset);
-			if (isSustainPedalPressed() && m_notes[event.key()]->origin() == m_notes[event.key()]->OriginMidiInput) {
+			if (isSustainPedalPressed() && m_notes[event.key()]->origin() == m_notes[event.key()]->OriginMidiInput)
+			{
 				m_sustainedNotes << m_notes[event.key()];
 			}
 			m_notes[event.key()] = nullptr;
@@ -300,7 +317,8 @@ void InstrumentTrack::processInEvent(const MidiEvent& event, const TimePos& time
 		break;
 
 	case MidiKeyPressure:
-		if (m_notes[event.key()] != nullptr) {
+		if (m_notes[event.key()] != nullptr)
+		{
 			// setVolume() calls processOutEvent() with MidiKeyPressure so the
 			// attached instrument will receive the event as well
 			m_notes[event.key()]->setVolume(event.volume(midiPort()->baseVelocity()));
@@ -315,13 +333,17 @@ void InstrumentTrack::processInEvent(const MidiEvent& event, const TimePos& time
 		break;
 
 	case MidiControlChange:
-		if (event.controllerNumber() == MidiControllerSustain) {
-			if (event.controllerValue() > MidiMaxControllerValue / 2) {
-				m_sustainPedalPressed = true;
-			} else if (isSustainPedalPressed()) {
-				for (NotePlayHandle* nph : m_sustainedNotes) {
-					if (nph && nph->isReleased()) {
-						if (nph->origin() == nph->OriginMidiInput) {
+		if (event.controllerNumber() == MidiControllerSustain)
+		{
+			if (event.controllerValue() > MidiMaxControllerValue / 2) { m_sustainPedalPressed = true; }
+			else if (isSustainPedalPressed())
+			{
+				for (NotePlayHandle* nph : m_sustainedNotes)
+				{
+					if (nph && nph->isReleased())
+					{
+						if (nph->origin() == nph->OriginMidiInput)
+						{
 							nph->setLength(
 								TimePos(static_cast<f_cnt_t>(nph->totalFramesPlayed() / Engine::framesPerTick())));
 							midiNoteOff(*nph);
@@ -335,16 +357,19 @@ void InstrumentTrack::processInEvent(const MidiEvent& event, const TimePos& time
 		if (event.controllerNumber() == MidiControllerAllSoundOff
 			|| event.controllerNumber() == MidiControllerAllNotesOff || event.controllerNumber() == MidiControllerOmniOn
 			|| event.controllerNumber() == MidiControllerOmniOff || event.controllerNumber() == MidiControllerMonoOn
-			|| event.controllerNumber() == MidiControllerPolyOn) {
+			|| event.controllerNumber() == MidiControllerPolyOn)
+		{
 			silenceAllNotes();
 		}
 		break;
 
 	case MidiMetaEvent:
 		// handle special cases such as note panning
-		switch (event.metaEvent()) {
+		switch (event.metaEvent())
+		{
 		case MidiNotePanning:
-			if (m_notes[event.key()] != nullptr) {
+			if (m_notes[event.key()] != nullptr)
+			{
 				eventHandled = true;
 				m_notes[event.key()]->setPanning(event.panning());
 			}
@@ -358,7 +383,8 @@ void InstrumentTrack::processInEvent(const MidiEvent& event, const TimePos& time
 
 	// If the event wasn't handled, check if there's a loaded instrument and if so send the
 	// event to it. If it returns false means the instrument didn't handle the event, so we trigger a warning.
-	if (eventHandled == false && !(instrument() && instrument()->handleMidiEvent(event, time, offset))) {
+	if (eventHandled == false && !(instrument() && instrument()->handleMidiEvent(event, time, offset)))
+	{
 		qWarning("InstrumentTrack: unhandled MIDI event %d", event.type());
 	}
 }
@@ -376,13 +402,16 @@ void InstrumentTrack::processOutEvent(const MidiEvent& event, const TimePos& tim
 	const auto handleEventOutputChannel
 		= midiPort()->outputChannel() == 0 ? event.channel() : midiPort()->realOutputChannel();
 
-	switch (event.type()) {
+	switch (event.type())
+	{
 	case MidiNoteOn:
 		m_midiNotesMutex.lock();
 		m_piano.setKeyState(event.key(), true); // event.key() = original key
 
-		if (key >= 0 && key < NumKeys) {
-			if (m_runningMidiNotes[key] > 0) {
+		if (key >= 0 && key < NumKeys)
+		{
+			if (m_runningMidiNotes[key] > 0)
+			{
 				m_instrument->handleMidiEvent(MidiEvent(MidiNoteOff, handleEventOutputChannel, key, 0), time, offset);
 			}
 			++m_runningMidiNotes[key];
@@ -397,7 +426,8 @@ void InstrumentTrack::processOutEvent(const MidiEvent& event, const TimePos& tim
 		m_midiNotesMutex.lock();
 		m_piano.setKeyState(event.key(), false); // event.key() = original key
 
-		if (key >= 0 && key < NumKeys && --m_runningMidiNotes[key] <= 0) {
+		if (key >= 0 && key < NumKeys && --m_runningMidiNotes[key] <= 0)
+		{
 			m_instrument->handleMidiEvent(MidiEvent(MidiNoteOff, handleEventOutputChannel, key, 0), time, offset);
 		}
 		m_midiNotesMutex.unlock();
@@ -414,7 +444,8 @@ void InstrumentTrack::processOutEvent(const MidiEvent& event, const TimePos& tim
 void InstrumentTrack::silenceAllNotes(bool removeIPH)
 {
 	m_midiNotesMutex.lock();
-	for (int i = 0; i < NumKeys; ++i) {
+	for (int i = 0; i < NumKeys; ++i)
+	{
 		m_notes[i] = nullptr;
 		m_runningMidiNotes[i] = 0;
 	}
@@ -432,7 +463,8 @@ void InstrumentTrack::silenceAllNotes(bool removeIPH)
 
 f_cnt_t InstrumentTrack::beatLen(NotePlayHandle* _n) const
 {
-	if (m_instrument != nullptr) {
+	if (m_instrument != nullptr)
+	{
 		const f_cnt_t len = m_instrument->beatLen(_n);
 		if (len > 0) { return len; }
 	}
@@ -446,7 +478,8 @@ void InstrumentTrack::playNote(NotePlayHandle* n, sampleFrame* workingBuffer)
 	m_noteStacking.processNote(n);
 	m_arpeggio.processNote(n);
 
-	if (n->isMasterNote() == false && m_instrument != nullptr) {
+	if (n->isMasterNote() == false && m_instrument != nullptr)
+	{
 		// all is done, so now lets play the note!
 		m_instrument->playNote(n, workingBuffer);
 	}
@@ -475,7 +508,8 @@ void InstrumentTrack::setName(const QString& _new_name)
 void InstrumentTrack::updateBaseNote()
 {
 	Engine::audioEngine()->requestChangeInModel();
-	for (NotePlayHandleList::Iterator it = m_processHandles.begin(); it != m_processHandles.end(); ++it) {
+	for (NotePlayHandleList::Iterator it = m_processHandles.begin(); it != m_processHandles.end(); ++it)
+	{
 		(*it)->setFrequencyUpdate();
 	}
 	Engine::audioEngine()->doneChangeInModel();
@@ -523,31 +557,38 @@ bool InstrumentTrack::play(const TimePos& _start, const fpp_t _frames, const f_c
 
 	clipVector clips;
 	::PatternTrack* pattern_track = nullptr;
-	if (_clip_num >= 0) {
+	if (_clip_num >= 0)
+	{
 		Clip* clip = getClip(_clip_num);
 		clips.push_back(clip);
 		if (trackContainer() == Engine::patternStore()) { pattern_track = PatternTrack::findPatternTrack(_clip_num); }
-	} else {
+	}
+	else
+	{
 		getClipsInRange(clips, _start, _start + static_cast<int>(_frames / frames_per_tick));
 	}
 
 	// Handle automation: detuning
-	for (NotePlayHandleList::Iterator it = m_processHandles.begin(); it != m_processHandles.end(); ++it) {
+	for (NotePlayHandleList::Iterator it = m_processHandles.begin(); it != m_processHandles.end(); ++it)
+	{
 		(*it)->processTimePos(_start);
 	}
 
-	if (clips.size() == 0) {
+	if (clips.size() == 0)
+	{
 		unlock();
 		return false;
 	}
 
 	bool played_a_note = false; // will be return variable
 
-	for (clipVector::Iterator it = clips.begin(); it != clips.end(); ++it) {
+	for (clipVector::Iterator it = clips.begin(); it != clips.end(); ++it)
+	{
 		MidiClip* c = dynamic_cast<MidiClip*>(*it);
 		// everything which is not a MIDI clip won't be played
 		// A MIDI clip playing in the Piano Roll window will always play
-		if (c == nullptr || (Engine::getSong()->playMode() != Song::Mode_PlayMidiClip && (*it)->isMuted())) {
+		if (c == nullptr || (Engine::getSong()->playMode() != Song::Mode_PlayMidiClip && (*it)->isMuted()))
+		{
 			continue;
 		}
 		TimePos cur_start = _start;
@@ -561,21 +602,25 @@ bool InstrumentTrack::play(const TimePos& _start, const fpp_t _frames, const f_c
 		// very effective algorithm for playing notes that are
 		// posated within the current sample-frame
 
-		if (cur_start > 0) {
+		if (cur_start > 0)
+		{
 			// skip notes which are posated before start-bar
-			while (nit != notes.end() && (*nit)->pos() < cur_start) {
+			while (nit != notes.end() && (*nit)->pos() < cur_start)
+			{
 				++nit;
 			}
 		}
 
 		Note* cur_note;
-		while (nit != notes.end() && (cur_note = *nit)->pos() == cur_start) {
+		while (nit != notes.end() && (cur_note = *nit)->pos() == cur_start)
+		{
 			const f_cnt_t note_frames = cur_note->length().frames(frames_per_tick);
 
 			NotePlayHandle* notePlayHandle = NotePlayHandleManager::acquire(this, _offset, note_frames, *cur_note);
 			notePlayHandle->setPatternTrack(pattern_track);
 			// are we playing global song?
-			if (_clip_num < 0) {
+			if (_clip_num < 0)
+			{
 				// then set song-global offset of clip in order to
 				// properly perform the note detuning
 				notePlayHandle->setSongGlobalParentOffset(c->startPosition());
@@ -617,11 +662,13 @@ void InstrumentTrack::saveTrackSpecificSettings(QDomDocument& doc, QDomElement& 
 	m_midiCCEnable->saveSettings(doc, thisElement, "enablecc");
 	QDomElement midiCC = doc.createElement("midicontrollers");
 	thisElement.appendChild(midiCC);
-	for (int i = 0; i < MidiControllerCount; ++i) {
+	for (int i = 0; i < MidiControllerCount; ++i)
+	{
 		m_midiCCModel[i]->saveSettings(doc, midiCC, "cc" + QString::number(i));
 	}
 
-	if (m_instrument != nullptr) {
+	if (m_instrument != nullptr)
+	{
 		QDomElement i = doc.createElement("instrument");
 		i.setAttribute("name", m_instrument->descriptor()->name);
 		QDomElement ins = m_instrument->saveState(doc, i);
@@ -633,7 +680,8 @@ void InstrumentTrack::saveTrackSpecificSettings(QDomDocument& doc, QDomElement& 
 	m_arpeggio.saveState(doc, thisElement);
 
 	// Don't save midi port info if the user chose to.
-	if (Engine::getSong()->isSavingProject() && !Engine::getSong()->getSaveOptions().discardMIDIConnections.value()) {
+	if (Engine::getSong()->isSavingProject() && !Engine::getSong()->getSaveOptions().discardMIDIConnections.value())
+	{
 		// Don't save auto assigned midi device connection
 		bool hasAuto = m_hasAutoMidiDev;
 		autoAssignMidiDevice(false);
@@ -677,33 +725,46 @@ void InstrumentTrack::loadTrackSpecificSettings(const QDomElement& thisElement)
 	m_midiCCEnable->setValue(false);
 
 	QDomNode node = thisElement.firstChild();
-	while (!node.isNull()) {
-		if (node.isElement()) {
-			if (m_soundShaping.nodeName() == node.nodeName()) {
-				m_soundShaping.restoreState(node.toElement());
-			} else if (m_noteStacking.nodeName() == node.nodeName()) {
+	while (!node.isNull())
+	{
+		if (node.isElement())
+		{
+			if (m_soundShaping.nodeName() == node.nodeName()) { m_soundShaping.restoreState(node.toElement()); }
+			else if (m_noteStacking.nodeName() == node.nodeName())
+			{
 				m_noteStacking.restoreState(node.toElement());
-			} else if (m_arpeggio.nodeName() == node.nodeName()) {
+			}
+			else if (m_arpeggio.nodeName() == node.nodeName())
+			{
 				m_arpeggio.restoreState(node.toElement());
-			} else if (m_midiPort.nodeName() == node.nodeName()) {
+			}
+			else if (m_midiPort.nodeName() == node.nodeName())
+			{
 				m_midiPort.restoreState(node.toElement());
-			} else if (m_audioPort.effects()->nodeName() == node.nodeName()) {
+			}
+			else if (m_audioPort.effects()->nodeName() == node.nodeName())
+			{
 				m_audioPort.effects()->restoreState(node.toElement());
-			} else if (node.nodeName() == "instrument") {
+			}
+			else if (node.nodeName() == "instrument")
+			{
 				typedef Plugin::Descriptor::SubPluginFeatures::Key PluginKey;
 				PluginKey key(node.toElement().elementsByTagName("key").item(0).toElement());
 
-				if (reuseInstrument) {
-					m_instrument->restoreState(node.firstChildElement());
-				} else {
+				if (reuseInstrument) { m_instrument->restoreState(node.firstChildElement()); }
+				else
+				{
 					delete m_instrument;
 					m_instrument = nullptr;
 					m_instrument = Instrument::instantiate(node.toElement().attribute("name"), this, &key);
 					m_instrument->restoreState(node.firstChildElement());
 					emit instrumentChanged();
 				}
-			} else if (node.nodeName() == "midicontrollers") {
-				for (int i = 0; i < MidiControllerCount; ++i) {
+			}
+			else if (node.nodeName() == "midicontrollers")
+			{
+				for (int i = 0; i < MidiControllerCount; ++i)
+				{
 					m_midiCCModel[i]->loadSettings(node.toElement(), "cc" + QString::number(i));
 				}
 			}
@@ -711,7 +772,8 @@ void InstrumentTrack::loadTrackSpecificSettings(const QDomElement& thisElement)
 			// one, we assume that it is an instrument-plugin
 			// which we'll try to load
 			else if (AutomationClip::classNodeName() != node.nodeName()
-				&& ControllerConnection::classNodeName() != node.nodeName() && !node.toElement().hasAttribute("id")) {
+				&& ControllerConnection::classNodeName() != node.nodeName() && !node.toElement().hasAttribute("id"))
+			{
 				delete m_instrument;
 				m_instrument = nullptr;
 				m_instrument = Instrument::instantiate(node.nodeName(), this, nullptr, true);
@@ -787,19 +849,22 @@ InstrumentTrack* InstrumentTrack::s_autoAssignedTrack = nullptr;
  */
 void InstrumentTrack::autoAssignMidiDevice(bool assign)
 {
-	if (assign) {
+	if (assign)
+	{
 		if (s_autoAssignedTrack) { s_autoAssignedTrack->autoAssignMidiDevice(false); }
 		s_autoAssignedTrack = this;
 	}
 
 	const QString& device = ConfigManager::inst()->value("midi", "midiautoassign");
-	if (Engine::audioEngine()->midiClient()->isRaw() && device != "none") {
+	if (Engine::audioEngine()->midiClient()->isRaw() && device != "none")
+	{
 		m_midiPort.setReadable(assign);
 		return;
 	}
 
 	// Check if the device exists
-	if (Engine::audioEngine()->midiClient()->readablePorts().indexOf(device) >= 0) {
+	if (Engine::audioEngine()->midiClient()->readablePorts().indexOf(device) >= 0)
+	{
 		m_midiPort.subscribeReadablePort(device, assign);
 		m_hasAutoMidiDev = assign;
 	}

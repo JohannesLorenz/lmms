@@ -63,7 +63,8 @@ void PatternClipView::paintEvent(QPaintEvent*)
 {
 	QPainter painter(this);
 
-	if (!needsUpdate()) {
+	if (!needsUpdate())
+	{
 		painter.drawPixmap(0, 0, m_paintPixmap);
 		return;
 	}
@@ -83,9 +84,9 @@ void PatternClipView::paintEvent(QPaintEvent*)
 	// paint a black rectangle under the clip to prevent glitches with transparent backgrounds
 	p.fillRect(rect(), QColor(0, 0, 0));
 
-	if (gradient()) {
-		p.fillRect(rect(), lingrad);
-	} else {
+	if (gradient()) { p.fillRect(rect(), lingrad); }
+	else
+	{
 		p.fillRect(rect(), c);
 	}
 
@@ -94,8 +95,10 @@ void PatternClipView::paintEvent(QPaintEvent*)
 	p.setPen(c.darker(200));
 
 	bar_t t = Engine::patternStore()->lengthOfPattern(m_patternClip->patternIndex());
-	if (m_patternClip->length() > TimePos::ticksPerBar() && t > 0) {
-		for (int x = static_cast<int>(t * pixelsPerBar()); x < width() - 2; x += static_cast<int>(t * pixelsPerBar())) {
+	if (m_patternClip->length() > TimePos::ticksPerBar() && t > 0)
+	{
+		for (int x = static_cast<int>(t * pixelsPerBar()); x < width() - 2; x += static_cast<int>(t * pixelsPerBar()))
+		{
 			p.drawLine(x, BORDER_WIDTH, x, BORDER_WIDTH + lineSize);
 			p.drawLine(x, rect().bottom() - (BORDER_WIDTH + lineSize), x, rect().bottom() - BORDER_WIDTH);
 		}
@@ -113,7 +116,8 @@ void PatternClipView::paintEvent(QPaintEvent*)
 	p.drawRect(0, 0, rect().right(), rect().bottom());
 
 	// draw the 'muted' pixmap only if the clip was manualy muted
-	if (m_patternClip->isMuted()) {
+	if (m_patternClip->isMuted())
+	{
 		const int spacing = BORDER_WIDTH;
 		const int size = 14;
 		p.drawPixmap(spacing, height() - (size + spacing), embed::getIconPixmap("muted", size, size));

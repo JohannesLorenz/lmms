@@ -116,16 +116,20 @@ void LcdFloatSpinBox::contextMenuEvent(QContextMenuEvent* event)
 void LcdFloatSpinBox::mousePressEvent(QMouseEvent* event)
 {
 	if (event->button() == Qt::LeftButton && !(event->modifiers() & Qt::ControlModifier)
-		&& event->y() < m_wholeDisplay.cellHeight() + 2) {
+		&& event->y() < m_wholeDisplay.cellHeight() + 2)
+	{
 		m_mouseMoving = true;
 		m_origMousePos = event->globalPos();
 
 		AutomatableModel* thisModel = model();
-		if (thisModel) {
+		if (thisModel)
+		{
 			thisModel->addJournalCheckPoint();
 			thisModel->saveJournallingState(false);
 		}
-	} else {
+	}
+	else
+	{
 		FloatModelView::mousePressEvent(event);
 	}
 }
@@ -133,16 +137,18 @@ void LcdFloatSpinBox::mousePressEvent(QMouseEvent* event)
 void LcdFloatSpinBox::mouseMoveEvent(QMouseEvent* event)
 {
 	// switch between integer and fractional step based on cursor position
-	if (event->x() < m_wholeDisplay.width()) {
-		m_intStep = true;
-	} else {
+	if (event->x() < m_wholeDisplay.width()) { m_intStep = true; }
+	else
+	{
 		m_intStep = false;
 	}
 
-	if (m_mouseMoving) {
+	if (m_mouseMoving)
+	{
 		int dy = event->globalY() - m_origMousePos.y();
 		if (getGUI()->mainWindow()->isShiftPressed()) { dy = qBound(-4, dy / 4, 4); }
-		if (dy > 1 || dy < -1) {
+		if (dy > 1 || dy < -1)
+		{
 			model()->setValue(model()->value() - dy / 2 * getStep());
 			emit manualChange();
 			m_origMousePos = event->globalPos();
@@ -152,7 +158,8 @@ void LcdFloatSpinBox::mouseMoveEvent(QMouseEvent* event)
 
 void LcdFloatSpinBox::mouseReleaseEvent(QMouseEvent*)
 {
-	if (m_mouseMoving) {
+	if (m_mouseMoving)
+	{
 		model()->restoreJournallingState();
 		m_mouseMoving = false;
 	}
@@ -161,9 +168,9 @@ void LcdFloatSpinBox::mouseReleaseEvent(QMouseEvent*)
 void LcdFloatSpinBox::wheelEvent(QWheelEvent* event)
 {
 	// switch between integer and fractional step based on cursor position
-	if (event->x() < m_wholeDisplay.width()) {
-		m_intStep = true;
-	} else {
+	if (event->x() < m_wholeDisplay.width()) { m_intStep = true; }
+	else
+	{
 		m_intStep = false;
 	}
 
@@ -188,9 +195,9 @@ void LcdFloatSpinBox::enterValue()
 
 float LcdFloatSpinBox::getStep() const
 {
-	if (m_intStep) {
-		return 1;
-	} else {
+	if (m_intStep) { return 1; }
+	else
+	{
 		return model()->step<float>();
 	}
 }
@@ -207,7 +214,8 @@ void LcdFloatSpinBox::paintEvent(QPaintEvent*)
 	style()->drawPrimitive(QStyle::PE_Frame, &opt, &p, this);
 
 	// Label
-	if (!m_label.isEmpty()) {
+	if (!m_label.isEmpty())
+	{
 		p.setFont(pointSizeF(p.font(), 6.5));
 		p.setPen(m_wholeDisplay.textShadowColor());
 		p.drawText(width() / 2 - p.fontMetrics().width(m_label) / 2 + 1, height(), m_label);

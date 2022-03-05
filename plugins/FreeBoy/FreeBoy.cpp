@@ -221,7 +221,8 @@ void FreeBoyInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffe
 	int data = 0;
 	int freq = _n->frequency();
 
-	if (tfp == 0) {
+	if (tfp == 0)
+	{
 		Gb_Apu_Buffer* papu = new Gb_Apu_Buffer();
 		papu->set_sample_rate(samplerate, CLOCK_RATE);
 
@@ -303,17 +304,20 @@ void FreeBoyInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffe
 
 	const float* wpm = m_graphModel.samples();
 
-	for (char i = 0; i < 16; i++) {
+	for (char i = 0; i < 16; i++)
+	{
 		data = (int)floor(wpm[i * 2]) << 4;
 		data += (int)floor(wpm[i * 2 + 1]);
 		papu->write_register(fakeClock(), 0xff30 + i, data);
 	}
 
-	if ((freq >= 65) && (freq <= 4000)) {
+	if ((freq >= 65) && (freq <= 4000))
+	{
 		int initflag = (tfp == 0) ? 128 : 0;
 		// Hz = 4194304 / ( ( 2048 - ( 11-bit-freq ) ) << 5 )
 		data = 2048 - ((4194304 / freq) >> 5);
-		if (tfp == 0) {
+		if (tfp == 0)
+		{
 			papu->write_register(fakeClock(), 0xff13, data & 0xff);
 			papu->write_register(fakeClock(), 0xff14, (data >> 8) | initflag);
 		}
@@ -323,16 +327,19 @@ void FreeBoyInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffe
 		papu->write_register(fakeClock(), 0xff1e, (data >> 8) | initflag);
 	}
 
-	if (tfp == 0) {
+	if (tfp == 0)
+	{
 		// PRNG Frequency = (1048576 Hz / (ratio + 1)) / 2 ^ (shiftclockfreq + 1)
 		char sopt = 0;
 		char ropt = 1;
 		float fopt = 524288.0 / (ropt * pow(2.0, sopt + 1.0));
 		float f;
 		for (char s = 0; s < 16; s++)
-			for (char r = 0; r < 8; r++) {
+			for (char r = 0; r < 8; r++)
+			{
 				f = 524288.0 / (r * pow(2.0, s + 1.0));
-				if (fabs(freq - fopt) > fabs(freq - f)) {
+				if (fabs(freq - fopt) > fabs(freq - f))
+				{
 					fopt = f;
 					ropt = r;
 					sopt = s;
@@ -353,9 +360,11 @@ void FreeBoyInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffe
 	int framesleft = frames;
 	int datalen = 0;
 	blip_sample_t buf[buf_size * 2];
-	while (framesleft > 0) {
+	while (framesleft > 0)
+	{
 		int avail = papu->samples_avail();
-		if (avail <= 0) {
+		if (avail <= 0)
+		{
 			m_time = 0;
 			papu->end_frame(FRAME_LENGTH);
 			avail = papu->samples_avail();
@@ -365,8 +374,10 @@ void FreeBoyInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffe
 
 		long count = papu->read_samples(buf, datalen * 2) / 2;
 
-		for (fpp_t frame = 0; frame < count; ++frame) {
-			for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch) {
+		for (fpp_t frame = 0; frame < count; ++frame)
+		{
+			for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch)
+			{
 				sample_t s = float(buf[frame * 2 + ch]) / 32768.0;
 				_working_buffer[frames - framesleft + frame + offset][ch] = s;
 			}

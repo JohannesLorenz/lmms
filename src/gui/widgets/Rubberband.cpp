@@ -35,10 +35,11 @@ RubberBand::~RubberBand() {}
 QVector<selectableObject*> RubberBand::selectedObjects() const
 {
 	QVector<selectableObject*> so = selectableObjects();
-	for (QVector<selectableObject*>::iterator it = so.begin(); it != so.end();) {
-		if ((*it)->isSelected() == false) {
-			it = so.erase(it);
-		} else {
+	for (QVector<selectableObject*>::iterator it = so.begin(); it != so.end();)
+	{
+		if ((*it)->isSelected() == false) { it = so.erase(it); }
+		else
+		{
 			++it;
 		}
 	}
@@ -53,7 +54,8 @@ QVector<selectableObject*> RubberBand::selectableObjects() const
 	if (parentWidget() == nullptr) { return (so); }
 
 	QList<selectableObject*> l = parentWidget()->findChildren<selectableObject*>();
-	for (QList<selectableObject*>::iterator it = l.begin(); it != l.end(); ++it) {
+	for (QList<selectableObject*>::iterator it = l.begin(); it != l.end(); ++it)
+	{
 		so.push_back(*it);
 	}
 	return (so);

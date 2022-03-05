@@ -41,7 +41,8 @@ ladspaDescription::ladspaDescription(QWidget* _parent, ladspaPluginType _type)
 	Ladspa2LMMS* manager = Engine::getLADSPAManager();
 
 	l_sortable_plugin_t plugins;
-	switch (_type) {
+	switch (_type)
+	{
 	case SOURCE: plugins = manager->getInstruments(); break;
 	case TRANSFER: plugins = manager->getValidEffects(); break;
 	case VALID: plugins = manager->getValidEffects(); break;
@@ -52,9 +53,11 @@ ladspaDescription::ladspaDescription(QWidget* _parent, ladspaPluginType _type)
 	}
 
 	QList<QString> pluginNames;
-	for (l_sortable_plugin_t::iterator it = plugins.begin(); it != plugins.end(); ++it) {
+	for (l_sortable_plugin_t::iterator it = plugins.begin(); it != plugins.end(); ++it)
+	{
 		if (_type != VALID
-			|| manager->getDescription((*it).second)->inputChannels <= Engine::audioEngine()->audioDev()->channels()) {
+			|| manager->getDescription((*it).second)->inputChannels <= Engine::audioEngine()->audioDev()->channels())
+		{
 			pluginNames.push_back((*it).first);
 			m_pluginKeys.push_back((*it).second);
 		}
@@ -79,7 +82,8 @@ ladspaDescription::ladspaDescription(QWidget* _parent, ladspaPluginType _type)
 	layout->addWidget(pluginsBox);
 	layout->addWidget(descriptionBox);
 
-	if (pluginList->count() > 0) {
+	if (pluginList->count() > 0)
+	{
 		pluginList->setCurrentRow(0);
 		m_currentSelection = m_pluginKeys[0];
 		update(m_currentSelection);

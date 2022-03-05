@@ -68,25 +68,31 @@ void LcdSpinBox::contextMenuEvent(QContextMenuEvent* event)
 void LcdSpinBox::mousePressEvent(QMouseEvent* event)
 {
 	if (event->button() == Qt::LeftButton && !(event->modifiers() & Qt::ControlModifier)
-		&& event->y() < cellHeight() + 2) {
+		&& event->y() < cellHeight() + 2)
+	{
 		m_mouseMoving = true;
 		m_lastMousePos = event->globalPos();
 
 		AutomatableModel* thisModel = model();
-		if (thisModel) {
+		if (thisModel)
+		{
 			thisModel->addJournalCheckPoint();
 			thisModel->saveJournallingState(false);
 		}
-	} else {
+	}
+	else
+	{
 		IntModelView::mousePressEvent(event);
 	}
 }
 
 void LcdSpinBox::mouseMoveEvent(QMouseEvent* event)
 {
-	if (m_mouseMoving) {
+	if (m_mouseMoving)
+	{
 		int dy = event->globalY() - m_lastMousePos.y();
-		if (dy) {
+		if (dy)
+		{
 			float fdy = static_cast<float>(dy);
 			if (event->modifiers() & Qt::ShiftModifier) { fdy = qBound(-4.f, fdy / 4.f, 4.f); }
 			float floatValNotRounded = model()->value() + m_remainder - fdy / 2.f * model()->step<int>();
@@ -101,7 +107,8 @@ void LcdSpinBox::mouseMoveEvent(QMouseEvent* event)
 
 void LcdSpinBox::mouseReleaseEvent(QMouseEvent*)
 {
-	if (m_mouseMoving) {
+	if (m_mouseMoving)
+	{
 		model()->restoreJournallingState();
 		m_mouseMoving = false;
 	}

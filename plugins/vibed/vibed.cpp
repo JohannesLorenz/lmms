@@ -67,7 +67,8 @@ vibed::vibed(InstrumentTrack* _instrumentTrack)
 	nineButtonSelectorModel* harmonic;
 	graphModel* graphTmp;
 
-	for (int harm = 0; harm < 9; harm++) {
+	for (int harm = 0; harm < 9; harm++)
+	{
 		knob = new FloatModel(DefaultVolume, MinVolume, MaxVolume, 1.0f, this, tr("String %1 volume").arg(harm + 1));
 		m_volumeKnobs.append(knob);
 
@@ -118,11 +119,13 @@ void vibed::saveSettings(QDomDocument& _doc, QDomElement& _this)
 	// Save plugin version
 	_this.setAttribute("version", "0.1");
 
-	for (int i = 0; i < 9; i++) {
+	for (int i = 0; i < 9; i++)
+	{
 		name = "active" + QString::number(i);
 		_this.setAttribute(name, QString::number(m_powerButtons[i]->value()));
 
-		if (m_powerButtons[i]->value()) {
+		if (m_powerButtons[i]->value())
+		{
 			name = "volume" + QString::number(i);
 			m_volumeKnobs[i]->saveSettings(_doc, _this, name);
 
@@ -166,11 +169,13 @@ void vibed::loadSettings(const QDomElement& _this)
 
 	QString name;
 
-	for (int i = 0; i < 9; i++) {
+	for (int i = 0; i < 9; i++)
+	{
 		name = "active" + QString::number(i);
 		m_powerButtons[i]->setValue(_this.attribute(name).toInt());
 
-		if (m_powerButtons[i]->value() && _this.hasAttribute("volume" + QString::number(i))) {
+		if (m_powerButtons[i]->value() && _this.hasAttribute("volume" + QString::number(i)))
+		{
 			name = "volume" + QString::number(i);
 			m_volumeKnobs[i]->loadSettings(_this, name);
 
@@ -225,12 +230,15 @@ QString vibed::nodeName() const { return (vibedstrings_plugin_descriptor.name); 
 
 void vibed::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
 {
-	if (_n->totalFramesPlayed() == 0 || _n->m_pluginData == nullptr) {
+	if (_n->totalFramesPlayed() == 0 || _n->m_pluginData == nullptr)
+	{
 		_n->m_pluginData
 			= new stringContainer(_n->frequency(), Engine::audioEngine()->processingSampleRate(), __sampleLength);
 
-		for (int i = 0; i < 9; ++i) {
-			if (m_powerButtons[i]->value()) {
+		for (int i = 0; i < 9; ++i)
+		{
+			if (m_powerButtons[i]->value())
+			{
 				static_cast<stringContainer*>(_n->m_pluginData)
 					->addString(m_harmonics[i]->value(), m_pickKnobs[i]->value(), m_pickupKnobs[i]->value(),
 						m_graphs[i]->samples(), m_randomKnobs[i]->value(), m_stiffnessKnobs[i]->value(),
@@ -244,12 +252,15 @@ void vibed::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
 	const f_cnt_t offset = _n->noteOffset();
 	stringContainer* ps = static_cast<stringContainer*>(_n->m_pluginData);
 
-	for (fpp_t i = offset; i < frames + offset; ++i) {
+	for (fpp_t i = offset; i < frames + offset; ++i)
+	{
 		_working_buffer[i][0] = 0.0f;
 		_working_buffer[i][1] = 0.0f;
 		int s = 0;
-		for (int string = 0; string < 9; ++string) {
-			if (ps->exists(string)) {
+		for (int string = 0; string < 9; ++string)
+		{
+			if (ps->exists(string))
+			{
 				// pan: 0 -> left, 1 -> right
 				const float pan = (m_panKnobs[string]->value() + 1) / 2.0f;
 				const sample_t sample = ps->getStringSample(s) * m_volumeKnobs[string]->value() / 100.0f;

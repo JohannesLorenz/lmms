@@ -217,17 +217,19 @@ void EnvelopeAndLfoView::mousePressEvent(QMouseEvent* _me)
 {
 	if (_me->button() != Qt::LeftButton) { return; }
 
-	if (QRect(ENV_GRAPH_X, ENV_GRAPH_Y, s_envGraph->width(), s_envGraph->height()).contains(_me->pos()) == true) {
-		if (m_params->m_amountModel.value() < 1.0f) {
-			m_params->m_amountModel.setValue(1.0f);
-		} else {
+	if (QRect(ENV_GRAPH_X, ENV_GRAPH_Y, s_envGraph->width(), s_envGraph->height()).contains(_me->pos()) == true)
+	{
+		if (m_params->m_amountModel.value() < 1.0f) { m_params->m_amountModel.setValue(1.0f); }
+		else
+		{
 			m_params->m_amountModel.setValue(0.0f);
 		}
-	} else if (QRect(LFO_GRAPH_X, LFO_GRAPH_Y, s_lfoGraph->width(), s_lfoGraph->height()).contains(_me->pos())
-		== true) {
-		if (m_params->m_lfoAmountModel.value() < 1.0f) {
-			m_params->m_lfoAmountModel.setValue(1.0f);
-		} else {
+	}
+	else if (QRect(LFO_GRAPH_X, LFO_GRAPH_Y, s_lfoGraph->width(), s_lfoGraph->height()).contains(_me->pos()) == true)
+	{
+		if (m_params->m_lfoAmountModel.value() < 1.0f) { m_params->m_lfoAmountModel.setValue(1.0f); }
+		else
+		{
 			m_params->m_lfoAmountModel.setValue(0.0f);
 		}
 	}
@@ -242,13 +244,16 @@ void EnvelopeAndLfoView::dropEvent(QDropEvent* _de)
 {
 	QString type = StringPairDrag::decodeKey(_de);
 	QString value = StringPairDrag::decodeValue(_de);
-	if (type == "samplefile") {
+	if (type == "samplefile")
+	{
 		m_params->m_userWave.setAudioFile(StringPairDrag::decodeValue(_de));
 		m_userLfoBtn->model()->setValue(true);
 		m_params->m_lfoWaveModel.setValue(EnvelopeAndLfoParameters::UserDefinedWave);
 		_de->accept();
 		update();
-	} else if (type == QString("clip_%1").arg(Track::SampleTrack)) {
+	}
+	else if (type == QString("clip_%1").arg(Track::SampleTrack))
+	{
 		DataFile dataFile(value.toUtf8());
 		m_params->m_userWave.setAudioFile(
 			dataFile.content().firstChildElement().firstChildElement().firstChildElement().attribute("src"));
@@ -290,7 +295,8 @@ void EnvelopeAndLfoView::paintEvent(QPaintEvent*)
 		= x3 + static_cast<int>((m_decayKnob->value<float>() * (1 - m_sustainKnob->value<float>())) * TIME_UNIT_WIDTH);
 	int x5 = x4 + static_cast<int>(m_releaseKnob->value<float>() * TIME_UNIT_WIDTH);
 
-	if (x5 > 174) {
+	if (x5 > 174)
+	{
 		x1 = (x1 * 174) / x5;
 		x2 = (x2 * 174) / x5;
 		x3 = (x3 * 174) / x5;
@@ -344,25 +350,30 @@ void EnvelopeAndLfoView::paintEvent(QPaintEvent*)
 	// userWaveSample() may be used, called out of loop for efficiency
 	m_params->m_userWave.dataReadLock();
 	float old_y = 0;
-	for (int x = 0; x <= LFO_GRAPH_W; ++x) {
+	for (int x = 0; x <= LFO_GRAPH_W; ++x)
+	{
 		float val = 0.0;
 		float cur_sample = x * frames_for_graph / LFO_GRAPH_W;
-		if (static_cast<f_cnt_t>(cur_sample) > m_params->m_lfoPredelayFrames) {
+		if (static_cast<f_cnt_t>(cur_sample) > m_params->m_lfoPredelayFrames)
+		{
 			float phase = (cur_sample -= m_params->m_lfoPredelayFrames) / osc_frames;
-			switch (m_params->m_lfoWaveModel.value()) {
+			switch (m_params->m_lfoWaveModel.value())
+			{
 			case EnvelopeAndLfoParameters::SineWave: val = Oscillator::sinSample(phase); break;
 			case EnvelopeAndLfoParameters::TriangleWave: val = Oscillator::triangleSample(phase); break;
 			case EnvelopeAndLfoParameters::SawWave: val = Oscillator::sawSample(phase); break;
 			case EnvelopeAndLfoParameters::SquareWave: val = Oscillator::squareSample(phase); break;
 			case EnvelopeAndLfoParameters::RandomWave:
-				if (x % (int)(900 * m_lfoSpeedKnob->value<float>() + 1) == 0) {
+				if (x % (int)(900 * m_lfoSpeedKnob->value<float>() + 1) == 0)
+				{
 					m_randomGraph = Oscillator::noiseSample(0.0f);
 				}
 				val = m_randomGraph;
 				break;
 			case EnvelopeAndLfoParameters::UserDefinedWave: val = m_params->m_userWave.userWaveSample(phase); break;
 			}
-			if (static_cast<f_cnt_t>(cur_sample) <= m_params->m_lfoAttackFrames) {
+			if (static_cast<f_cnt_t>(cur_sample) <= m_params->m_lfoAttackFrames)
+			{
 				val *= cur_sample / m_params->m_lfoAttackFrames;
 			}
 		}
@@ -380,8 +391,10 @@ void EnvelopeAndLfoView::paintEvent(QPaintEvent*)
 
 void EnvelopeAndLfoView::lfoUserWaveChanged()
 {
-	if (m_params->m_lfoWaveModel.value() == EnvelopeAndLfoParameters::UserDefinedWave) {
-		if (m_params->m_userWave.frames() <= 1) {
+	if (m_params->m_lfoWaveModel.value() == EnvelopeAndLfoParameters::UserDefinedWave)
+	{
+		if (m_params->m_userWave.frames() <= 1)
+		{
 			TextFloat::displayMessage(
 				tr("Hint"), tr("Drag and drop a sample into this window."), embed::getIconPixmap("hint"), 3000);
 		}

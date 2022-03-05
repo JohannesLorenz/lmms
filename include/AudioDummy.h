@@ -71,7 +71,8 @@ private:
 	void run() override
 	{
 		MicroTimer timer;
-		while (true) {
+		while (true)
+		{
 			timer.reset();
 			const surroundSampleFrame* b = audioEngine()->nextBuffer();
 			if (!b) { break; }

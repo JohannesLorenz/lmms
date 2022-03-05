@@ -55,7 +55,8 @@ PatternTrack::~PatternTrack()
 
 	const int pattern = s_infoMap[this];
 	Engine::patternStore()->removePattern(pattern);
-	for (infoMap::iterator it = s_infoMap.begin(); it != s_infoMap.end(); ++it) {
+	for (infoMap::iterator it = s_infoMap.begin(); it != s_infoMap.end(); ++it)
+	{
 		if (it.value() > pattern) { --it.value(); }
 	}
 	s_infoMap.remove(this);
@@ -79,14 +80,17 @@ bool PatternTrack::play(const TimePos& _start, const fpp_t _frames, const f_cnt_
 
 	TimePos lastPosition;
 	TimePos lastLen;
-	for (clipVector::iterator it = clips.begin(); it != clips.end(); ++it) {
-		if (!(*it)->isMuted() && (*it)->startPosition() >= lastPosition) {
+	for (clipVector::iterator it = clips.begin(); it != clips.end(); ++it)
+	{
+		if (!(*it)->isMuted() && (*it)->startPosition() >= lastPosition)
+		{
 			lastPosition = (*it)->startPosition();
 			lastLen = (*it)->length();
 		}
 	}
 
-	if (_start - lastPosition < lastLen) {
+	if (_start - lastPosition < lastLen)
+	{
 		return Engine::patternStore()->play(_start - lastPosition, _frames, _offset, s_infoMap[this]);
 	}
 	return false;
@@ -107,11 +111,13 @@ void PatternTrack::saveTrackSpecificSettings(QDomDocument& doc, QDomElement& _th
 	/*	_this.setAttribute( "current", s_infoMap[this] ==
 						engine::getPatternEditor()->currentPattern() );*/
 	if (s_infoMap[this] == 0 && _this.parentNode().parentNode().nodeName() != "clonedtrack"
-		&& _this.parentNode().parentNode().nodeName() != "journaldata") {
+		&& _this.parentNode().parentNode().nodeName() != "journaldata")
+	{
 		Engine::patternStore()->saveState(doc, _this);
 	}
 	// If we are creating drag-n-drop data for Track::clone() only save pattern ID, not pattern content
-	if (_this.parentNode().parentNode().nodeName() == "clonedtrack") {
+	if (_this.parentNode().parentNode().nodeName() == "clonedtrack")
+	{
 		_this.setAttribute("sourcepattern", s_infoMap[this]);
 	}
 }
@@ -125,17 +131,21 @@ void PatternTrack::loadTrackSpecificSettings(const QDomElement& _this)
 
 	// If data was created by Track::clone(), do not add any tracks to the pattern(-editor)
 	// instead create a new copy of the clip on each track
-	if (_this.hasAttribute("sourcepattern")) {
+	if (_this.hasAttribute("sourcepattern"))
+	{
 		const int src = _this.attribute("sourcepattern").toInt();
 		const int dst = s_infoMap[this];
 		TrackContainer::TrackList tl = Engine::patternStore()->tracks();
 		// copy clips of all tracks from source pattern (at bar "src") to destination
 		// clips (which are created if they do not exist yet)
-		for (TrackContainer::TrackList::iterator it = tl.begin(); it != tl.end(); ++it) {
+		for (TrackContainer::TrackList::iterator it = tl.begin(); it != tl.end(); ++it)
+		{
 			Clip::copyStateTo((*it)->getClip(src), (*it)->getClip(dst));
 		}
 		setName(tr("Clone of %1").arg(_this.parentNode().toElement().attribute("name")));
-	} else {
+	}
+	else
+	{
 		QDomNode node = _this.namedItem(TrackContainer::classNodeName());
 		if (node.isElement()) { Engine::patternStore()->restoreState(node.toElement()); }
 	}
@@ -151,7 +161,8 @@ void PatternTrack::loadTrackSpecificSettings(const QDomElement& _this)
 // return pointer to PatternTrack specified by pattern_num
 PatternTrack* PatternTrack::findPatternTrack(int pattern_num)
 {
-	for (infoMap::iterator it = s_infoMap.begin(); it != s_infoMap.end(); ++it) {
+	for (infoMap::iterator it = s_infoMap.begin(); it != s_infoMap.end(); ++it)
+	{
 		if (it.value() == pattern_num) { return it.key(); }
 	}
 	return nullptr;
@@ -161,7 +172,8 @@ void PatternTrack::swapPatternTracks(Track* track1, Track* track2)
 {
 	PatternTrack* t1 = dynamic_cast<PatternTrack*>(track1);
 	PatternTrack* t2 = dynamic_cast<PatternTrack*>(track2);
-	if (t1 != nullptr && t2 != nullptr) {
+	if (t1 != nullptr && t2 != nullptr)
+	{
 		qSwap(s_infoMap[t1], s_infoMap[t2]);
 		Engine::patternStore()->swapPattern(s_infoMap[t1], s_infoMap[t2]);
 		Engine::patternStore()->setCurrentPattern(s_infoMap[t1]);

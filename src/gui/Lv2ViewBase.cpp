@@ -57,10 +57,12 @@ Lv2ViewProc::Lv2ViewProc(QWidget* parent, Lv2Proc* ctrlBase, int colNum)
 		Control* m_control = nullptr; // output
 		void visit(const Lv2Ports::Control& port) override
 		{
-			if (port.m_flow == Lv2Ports::Flow::Input) {
+			if (port.m_flow == Lv2Ports::Flow::Input)
+			{
 				using PortVis = Lv2Ports::Vis;
 
-				switch (port.m_vis) {
+				switch (port.m_vis)
+				{
 				case PortVis::Generic: m_control = new KnobControl(m_par); break;
 				case PortVis::Integer: {
 					sample_rate_t sr = Engine::audioEngine()->processingSampleRate();
@@ -85,13 +87,15 @@ Lv2ViewProc::Lv2ViewProc(QWidget* parent, Lv2Proc* ctrlBase, int colNum)
 
 	AutoLilvNode commentUri = uri(LILV_NS_RDFS "comment");
 	ctrlBase->foreach_port([this, &commentUri](const Lv2Ports::PortBase* port) {
-		if (!lilv_port_has_property(port->m_plugin, port->m_port, uri(LV2_PORT_PROPS__notOnGUI).get())) {
+		if (!lilv_port_has_property(port->m_plugin, port->m_port, uri(LV2_PORT_PROPS__notOnGUI).get()))
+		{
 			SetupWidget setup;
 			setup.m_par = this;
 			setup.m_commentUri = commentUri.get();
 			port->accept(setup);
 
-			if (setup.m_control) {
+			if (setup.m_control)
+			{
 				addControl(setup.m_control, lilv_node_as_string(lilv_port_get_symbol(port->m_plugin, port->m_port)),
 					port->name().toUtf8().data(), false);
 			}
@@ -108,7 +112,8 @@ Lv2ViewBase::Lv2ViewBase(QWidget* meAsWidget, Lv2ControlBase* ctrlBase)
 	QGridLayout* grid = new QGridLayout(meAsWidget);
 
 	QHBoxLayout* btnBox = new QHBoxLayout();
-	if (/* DISABLES CODE */ (false)) {
+	if (/* DISABLES CODE */ (false))
+	{
 		m_reloadPluginButton = new QPushButton(QObject::tr("Reload Plugin"), meAsWidget);
 		btnBox->addWidget(m_reloadPluginButton, 0);
 	}
@@ -149,9 +154,12 @@ Lv2ViewBase::Lv2ViewBase(QWidget* meAsWidget, Lv2ControlBase* ctrlBase)
 		break;
 	}
 
-	if (m_reloadPluginButton || m_toggleUIButton || m_helpButton) {
+	if (m_reloadPluginButton || m_toggleUIButton || m_helpButton)
+	{
 		grid->addLayout(btnBox, Rows::ButtonRow, 0, 1, m_colNum);
-	} else {
+	}
+	else
+	{
 		delete btnBox;
 	}
 
@@ -168,11 +176,15 @@ void Lv2ViewBase::toggleUI() {}
 
 void Lv2ViewBase::toggleHelp(bool visible)
 {
-	if (m_helpWindow) {
-		if (visible) {
+	if (m_helpWindow)
+	{
+		if (visible)
+		{
 			m_helpWindow->show();
 			m_helpWindow->raise();
-		} else {
+		}
+		else
+		{
 			m_helpWindow->hide();
 		}
 	}

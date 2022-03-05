@@ -47,7 +47,8 @@ public:
 	{
 		sample_t ym0;
 		sample_t ypM;
-		for (int i = 0; i < m_oversample; i++) {
+		for (int i = 0; i < m_oversample; i++)
+		{
 			// Output at pickup position
 			m_outsamp[i] = fromBridgeAccess(m_fromBridge, m_pickupLoc);
 			m_outsamp[i] += toBridgeAccess(m_toBridge, m_pickupLoc);
@@ -101,26 +102,36 @@ private:
 		float r;
 		float offset;
 
-		if (!_state) {
-			for (int i = 0; i < _pick; i++) {
+		if (!_state)
+		{
+			for (int i = 0; i < _pick; i++)
+			{
 				r = static_cast<float>(rand()) / RAND_MAX;
 				offset = (m_randomize / 2.0f - m_randomize) * r;
 				_dl->data[i] = _scale * _values[_dl->length - i - 1] + offset;
 			}
-			for (int i = _pick; i < _dl->length; i++) {
+			for (int i = _pick; i < _dl->length; i++)
+			{
 				r = static_cast<float>(rand()) / RAND_MAX;
 				offset = (m_randomize / 2.0f - m_randomize) * r;
 				_dl->data[i] = _scale * _values[i - _pick] + offset;
 			}
-		} else {
-			if (_len + _pick > _dl->length) {
-				for (int i = _pick; i < _dl->length; i++) {
+		}
+		else
+		{
+			if (_len + _pick > _dl->length)
+			{
+				for (int i = _pick; i < _dl->length; i++)
+				{
 					r = static_cast<float>(rand()) / RAND_MAX;
 					offset = (m_randomize / 2.0f - m_randomize) * r;
 					_dl->data[i] = _scale * _values[i - _pick] + offset;
 				}
-			} else {
-				for (int i = 0; i < _len; i++) {
+			}
+			else
+			{
+				for (int i = 0; i < _len; i++)
+				{
 					r = static_cast<float>(rand()) / RAND_MAX;
 					offset = (m_randomize / 2.0f - m_randomize) * r;
 					_dl->data[i + _pick] = _scale * _values[i] + offset;
@@ -166,10 +177,12 @@ private:
 	static inline sample_t dlAccess(delayLine* _dl, int _position)
 	{
 		sample_t* outpos = _dl->pointer + _position;
-		while (outpos < _dl->data) {
+		while (outpos < _dl->data)
+		{
 			outpos += _dl->length;
 		}
-		while (outpos > _dl->end) {
+		while (outpos > _dl->end)
+		{
 			outpos -= _dl->length;
 		}
 		return (*outpos);

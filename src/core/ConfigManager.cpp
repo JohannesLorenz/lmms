@@ -52,9 +52,9 @@ ConfigManager::ConfigManager()
 	: m_version(defaultVersion())
 	, m_configVersion(UPGRADE_METHODS.size())
 {
-	if (QFileInfo::exists(qApp->applicationDirPath() + PORTABLE_MODE_FILE)) {
-		initPortableWorkingDir();
-	} else {
+	if (QFileInfo::exists(qApp->applicationDirPath() + PORTABLE_MODE_FILE)) { initPortableWorkingDir(); }
+	else
+	{
 		initInstalledWorkingDir();
 	}
 	m_dataDir = "data:/";
@@ -62,7 +62,8 @@ ConfigManager::ConfigManager()
 	m_sf2Dir = m_workingDir + SF2_PATH;
 	m_gigDir = m_workingDir + GIG_PATH;
 	m_themeDir = defaultThemeDir();
-	if (!qgetenv("LMMS_DATA_DIR").isEmpty()) {
+	if (!qgetenv("LMMS_DATA_DIR").isEmpty())
+	{
 		QDir::addSearchPath("data", QString::fromLocal8Bit(qgetenv("LMMS_DATA_DIR")));
 	}
 	initDevelopmentWorkingDir();
@@ -82,12 +83,14 @@ void ConfigManager::upgrade_1_1_90()
 	if (value("mixer", "audiodev").startsWith("PulseAudio (")) { setValue("mixer", "audiodev", "PulseAudio"); }
 
 	// MidiAlsaRaw used to store the device info as "Device" instead of "device"
-	if (value("MidiAlsaRaw", "device").isNull()) {
+	if (value("MidiAlsaRaw", "device").isNull())
+	{
 		// copy "device" = "Device" and then delete the old "Device" (further down)
 		QString oldDevice = value("MidiAlsaRaw", "Device");
 		setValue("MidiAlsaRaw", "device", oldDevice);
 	}
-	if (!value("MidiAlsaRaw", "device").isNull()) {
+	if (!value("MidiAlsaRaw", "device").isNull())
+	{
 		// delete the old "Device" in the case that we just copied it to "device"
 		//   or if the user somehow set both the "Device" and "device" fields
 		deleteValue("MidiAlsaRaw", "Device");
@@ -97,7 +100,8 @@ void ConfigManager::upgrade_1_1_90()
 void ConfigManager::upgrade_1_1_91()
 {
 	// rename displaydbv to displaydbfs
-	if (!value("app", "displaydbv").isNull()) {
+	if (!value("app", "displaydbv").isNull())
+	{
 		setValue("app", "displaydbfs", value("app", "displaydbv"));
 		deleteValue("app", "displaydbv");
 	}
@@ -109,8 +113,10 @@ void ConfigManager::upgrade_1_2_2()
 	// attributes from the old element to the new one
 	std::vector<QString> attrs = {"audiodev", "mididev", "framesperaudiobuffer", "hqaudio", "samplerate"};
 
-	for (auto attr : attrs) {
-		if (!value("mixer", attr).isNull()) {
+	for (auto attr : attrs)
+	{
+		if (!value("mixer", attr).isNull())
+		{
 			setValue("audioengine", attr, value("mixer", attr));
 			deleteValue("mixer", attr);
 		}
@@ -215,7 +221,8 @@ void ConfigManager::addRecentlyOpenedProject(const QString& file)
 {
 	QFileInfo recentFile(file);
 	if (recentFile.suffix().toLower() == "mmp" || recentFile.suffix().toLower() == "mmpz"
-		|| recentFile.suffix().toLower() == "mpt") {
+		|| recentFile.suffix().toLower() == "mpt")
+	{
 		m_recentlyOpenedProjects.removeAll(file);
 		if (m_recentlyOpenedProjects.size() > 50) { m_recentlyOpenedProjects.removeLast(); }
 		m_recentlyOpenedProjects.push_front(file);
@@ -225,8 +232,10 @@ void ConfigManager::addRecentlyOpenedProject(const QString& file)
 
 const QString& ConfigManager::value(const QString& cls, const QString& attribute) const
 {
-	if (m_settings.contains(cls)) {
-		for (stringPairVector::const_iterator it = m_settings[cls].begin(); it != m_settings[cls].end(); ++it) {
+	if (m_settings.contains(cls))
+	{
+		for (stringPairVector::const_iterator it = m_settings[cls].begin(); it != m_settings[cls].end(); ++it)
+		{
 			if ((*it).first == attribute) { return (*it).second; }
 		}
 	}
@@ -242,10 +251,14 @@ const QString& ConfigManager::value(const QString& cls, const QString& attribute
 
 void ConfigManager::setValue(const QString& cls, const QString& attribute, const QString& value)
 {
-	if (m_settings.contains(cls)) {
-		for (QPair<QString, QString>& pair : m_settings[cls]) {
-			if (pair.first == attribute) {
-				if (pair.second != value) {
+	if (m_settings.contains(cls))
+	{
+		for (QPair<QString, QString>& pair : m_settings[cls])
+		{
+			if (pair.first == attribute)
+			{
+				if (pair.second != value)
+				{
 					pair.second = value;
 					emit valueChanged(cls, attribute, value);
 				}
@@ -259,9 +272,12 @@ void ConfigManager::setValue(const QString& cls, const QString& attribute, const
 
 void ConfigManager::deleteValue(const QString& cls, const QString& attribute)
 {
-	if (m_settings.contains(cls)) {
-		for (stringPairVector::iterator it = m_settings[cls].begin(); it != m_settings[cls].end(); ++it) {
-			if ((*it).first == attribute) {
+	if (m_settings.contains(cls))
+	{
+		for (stringPairVector::iterator it = m_settings[cls].begin(); it != m_settings[cls].end(); ++it)
+		{
+			if ((*it).first == attribute)
+			{
 				m_settings[cls].erase(it);
 				return;
 			}
@@ -278,10 +294,12 @@ void ConfigManager::loadConfigFile(const QString& configFile)
 	QFile cfg_file(m_lmmsRcFile);
 	QDomDocument dom_tree;
 
-	if (cfg_file.open(QIODevice::ReadOnly)) {
+	if (cfg_file.open(QIODevice::ReadOnly))
+	{
 		QString errorString;
 		int errorLine, errorCol;
-		if (dom_tree.setContent(&cfg_file, false, &errorString, &errorLine, &errorCol)) {
+		if (dom_tree.setContent(&cfg_file, false, &errorString, &errorLine, &errorCol))
+		{
 			// get the head information from the DOM
 			QDomElement root = dom_tree.documentElement();
 
@@ -291,29 +309,39 @@ void ConfigManager::loadConfigFile(const QString& configFile)
 			if (!root.attribute("version").isNull()) { m_version = root.attribute("version"); }
 
 			// Get the version of the configuration file (for upgrade purposes)
-			if (root.attribute("configversion").isNull()) {
+			if (root.attribute("configversion").isNull())
+			{
 				m_configVersion = legacyConfigVersion(); // No configversion attribute found
-			} else {
+			}
+			else
+			{
 				bool success;
 				m_configVersion = root.attribute("configversion").toUInt(&success);
 				if (!success) qWarning("Config Version conversion failure.");
 			}
 
 			// create the settings-map out of the DOM
-			while (!node.isNull()) {
-				if (node.isElement() && node.toElement().hasAttributes()) {
+			while (!node.isNull())
+			{
+				if (node.isElement() && node.toElement().hasAttributes())
+				{
 					stringPairVector attr;
 					QDomNamedNodeMap node_attr = node.toElement().attributes();
-					for (int i = 0; i < node_attr.count(); ++i) {
+					for (int i = 0; i < node_attr.count(); ++i)
+					{
 						QDomNode n = node_attr.item(i);
 						if (n.isAttr()) { attr.push_back(qMakePair(n.toAttr().name(), n.toAttr().value())); }
 					}
 					m_settings[node.nodeName()] = attr;
-				} else if (node.nodeName() == "recentfiles") {
+				}
+				else if (node.nodeName() == "recentfiles")
+				{
 					m_recentlyOpenedProjects.clear();
 					QDomNode n = node.firstChild();
-					while (!n.isNull()) {
-						if (n.isElement() && n.toElement().hasAttributes()) {
+					while (!n.isNull())
+					{
+						if (n.isElement() && n.toElement().hasAttributes())
+						{
 							m_recentlyOpenedProjects << n.toElement().attribute("path");
 						}
 						n = n.nextSibling();
@@ -322,7 +350,8 @@ void ConfigManager::loadConfigFile(const QString& configFile)
 				node = node.nextSibling();
 			}
 
-			if (value("paths", "theme") != "") {
+			if (value("paths", "theme") != "")
+			{
 				m_themeDir = value("paths", "theme");
 #ifdef LMMS_BUILD_WIN32
 				// Detect a QDir/QFile hang on Windows
@@ -332,7 +361,8 @@ void ConfigManager::loadConfigFile(const QString& configFile)
 				bool badPath = false;
 #endif
 
-				if (badPath || !QDir(m_themeDir).exists() || !QFile(m_themeDir + "/style.css").exists()) {
+				if (badPath || !QDir(m_themeDir).exists() || !QFile(m_themeDir + "/style.css").exists())
+				{
 					m_themeDir = defaultThemeDir();
 				}
 				m_themeDir = ensureTrailingSlash(m_themeDir);
@@ -350,7 +380,9 @@ void ConfigManager::loadConfigFile(const QString& configFile)
 			setSF2File(value("paths", "defaultsf2"));
 #endif
 			setBackgroundPicFile(value("paths", "backgroundtheme"));
-		} else if (getGUI() != nullptr) {
+		}
+		else if (getGUI() != nullptr)
+		{
 			QMessageBox::warning(nullptr, MainWindow::tr("Configuration file"),
 				MainWindow::tr("Error while parsing configuration file at line %1:%2: %3")
 					.arg(errorLine)
@@ -362,7 +394,8 @@ void ConfigManager::loadConfigFile(const QString& configFile)
 
 	// Plugins are searched recursively, blacklist problematic locations
 	if (m_vstDir.isEmpty() || m_vstDir == QDir::separator() || m_vstDir == "/"
-		|| m_vstDir == ensureTrailingSlash(QDir::homePath()) || !QDir(m_vstDir).exists()) {
+		|| m_vstDir == ensureTrailingSlash(QDir::homePath()) || !QDir(m_vstDir).exists())
+	{
 #ifdef LMMS_BUILD_WIN32
 		QString programFiles = QString::fromLocal8Bit(getenv("ProgramFiles"));
 		m_vstDir = programFiles + "/VstPlugins/";
@@ -374,7 +407,8 @@ void ConfigManager::loadConfigFile(const QString& configFile)
 	if (m_ladspaDir.isEmpty()) { m_ladspaDir = userLadspaDir(); }
 
 #ifdef LMMS_HAVE_STK
-	if (m_stkDir.isEmpty() || m_stkDir == QDir::separator() || m_stkDir == "/" || !QDir(m_stkDir).exists()) {
+	if (m_stkDir.isEmpty() || m_stkDir == QDir::separator() || m_stkDir == "/" || !QDir(m_stkDir).exists())
+	{
 #if defined(LMMS_BUILD_WIN32)
 		m_stkDir = m_dataDir + "stk/rawwaves/";
 #else
@@ -421,9 +455,11 @@ void ConfigManager::saveConfigFile()
 	lmms_config.setAttribute("configversion", m_configVersion);
 	doc.appendChild(lmms_config);
 
-	for (settingsMap::iterator it = m_settings.begin(); it != m_settings.end(); ++it) {
+	for (settingsMap::iterator it = m_settings.begin(); it != m_settings.end(); ++it)
+	{
 		QDomElement n = doc.createElement(it.key());
-		for (stringPairVector::iterator it2 = (*it).begin(); it2 != (*it).end(); ++it2) {
+		for (stringPairVector::iterator it2 = (*it).begin(); it2 != (*it).end(); ++it2)
+		{
 			n.setAttribute((*it2).first, (*it2).second);
 		}
 		lmms_config.appendChild(n);
@@ -431,7 +467,8 @@ void ConfigManager::saveConfigFile()
 
 	QDomElement recent_files = doc.createElement("recentfiles");
 
-	for (QStringList::iterator it = m_recentlyOpenedProjects.begin(); it != m_recentlyOpenedProjects.end(); ++it) {
+	for (QStringList::iterator it = m_recentlyOpenedProjects.begin(); it != m_recentlyOpenedProjects.end(); ++it)
+	{
 		QDomElement n = doc.createElement("file");
 		n.setAttribute("path", *it);
 		recent_files.appendChild(n);
@@ -441,7 +478,8 @@ void ConfigManager::saveConfigFile()
 	QString xml = "<?xml version=\"1.0\"?>\n" + doc.toString(2);
 
 	QFile outfile(m_lmmsRcFile);
-	if (!outfile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+	if (!outfile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+	{
 		QString title, message;
 		title = MainWindow::tr("Could not open file");
 		message = MainWindow::tr("Could not open file %1 "
@@ -451,7 +489,8 @@ void ConfigManager::saveConfigFile()
 								 "the directory containing the "
 								 "file and try again!")
 					  .arg(m_lmmsRcFile);
-		if (getGUI() != nullptr) {
+		if (getGUI() != nullptr)
+		{
 			QMessageBox::critical(nullptr, title, message, QMessageBox::Ok, QMessageBox::NoButton);
 		}
 		return;
@@ -485,22 +524,26 @@ void ConfigManager::initDevelopmentWorkingDir()
 	// If in tests, get parent directory
 	if (appPath.dirName() == "tests") { appPath.cdUp(); }
 	QFile cmakeCache(appPath.absoluteFilePath("CMakeCache.txt"));
-	if (cmakeCache.exists()) {
+	if (cmakeCache.exists())
+	{
 		cmakeCache.open(QFile::ReadOnly);
 		QTextStream stream(&cmakeCache);
 
 		// Find the lines containing something like lmms_SOURCE_DIR:static=<dir>
 		// and lmms_BINARY_DIR:static=<dir>
 		int done = 0;
-		while (!stream.atEnd()) {
+		while (!stream.atEnd())
+		{
 			QString line = stream.readLine();
 
-			if (line.startsWith("lmms_SOURCE_DIR:")) {
+			if (line.startsWith("lmms_SOURCE_DIR:"))
+			{
 				QString srcDir = line.section('=', -1).trimmed();
 				QDir::addSearchPath("data", srcDir + "/data/");
 				done++;
 			}
-			if (line.startsWith("lmms_BINARY_DIR:")) {
+			if (line.startsWith("lmms_BINARY_DIR:"))
+			{
 				m_lmmsRcFile = line.section('=', -1).trimmed() + QDir::separator() + ".lmmsrc.xml";
 				done++;
 			}
@@ -519,11 +562,13 @@ unsigned int ConfigManager::legacyConfigVersion()
 
 	createdWith.setCompareType(ProjectVersion::Build);
 
-	if (createdWith < "1.1.90") {
-		return 0;
-	} else if (createdWith < "1.1.91") {
+	if (createdWith < "1.1.90") { return 0; }
+	else if (createdWith < "1.1.91")
+	{
 		return 1;
-	} else {
+	}
+	else
+	{
 		return 2;
 	}
 }

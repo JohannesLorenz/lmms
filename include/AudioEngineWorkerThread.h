@@ -85,7 +85,8 @@ public:
 	template <typename T> static void fillJobQueue(const T& _vec, JobQueue::OperationMode _opMode = JobQueue::Static)
 	{
 		resetJobQueue(_opMode);
-		for (typename T::ConstIterator it = _vec.begin(); it != _vec.end(); ++it) {
+		for (typename T::ConstIterator it = _vec.begin(); it != _vec.end(); ++it)
+		{
 			addJob(*it);
 		}
 	}

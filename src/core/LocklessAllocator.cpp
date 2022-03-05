@@ -59,7 +59,8 @@ LocklessAllocator::LocklessAllocator(size_t nmemb, size_t size)
 LocklessAllocator::~LocklessAllocator()
 {
 	int available = m_available;
-	if (available != m_capacity) {
+	if (available != m_capacity)
+	{
 		fprintf(stderr,
 			"LocklessAllocator: "
 			"Destroying with elements still allocated\n");
@@ -73,7 +74,8 @@ LocklessAllocator::~LocklessAllocator()
 static int ffs(int i)
 {
 	if (!i) { return 0; }
-	for (int j = 0;;) {
+	for (int j = 0;;)
+	{
 		if (i & 1 << j++) { return j; }
 	}
 }
@@ -85,18 +87,23 @@ void* LocklessAllocator::alloc()
 	// in http://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange.
 	// Let's use sequentially-consistent ops to be safe for now.
 	int available = m_available.load();
-	do {
-		if (!available) {
+	do
+	{
+		if (!available)
+		{
 			fprintf(stderr, "LocklessAllocator: No free space\n");
 			return nullptr;
 		}
 	} while (!m_available.compare_exchange_weak(available, available - 1));
 
 	const size_t startIndex = m_startIndex++ % m_freeStateSets;
-	for (size_t set = startIndex;; set = (set + 1) % m_freeStateSets) {
-		for (int freeState = m_freeState[set]; freeState != -1;) {
+	for (size_t set = startIndex;; set = (set + 1) % m_freeStateSets)
+	{
+		for (int freeState = m_freeState[set]; freeState != -1;)
+		{
 			int bit = ffs(~freeState) - 1;
-			if (m_freeState[set].compare_exchange_weak(freeState, freeState | 1 << bit)) {
+			if (m_freeState[set].compare_exchange_weak(freeState, freeState | 1 << bit))
+			{
 				return m_pool + (SIZEOF_SET * set + bit) * m_elementSize;
 			}
 		}
@@ -106,7 +113,8 @@ void* LocklessAllocator::alloc()
 void LocklessAllocator::free(void* ptr)
 {
 	ptrdiff_t diff = (char*)ptr - m_pool;
-	if (diff < 0 || diff % m_elementSize) {
+	if (diff < 0 || diff % m_elementSize)
+	{
 	invalid:
 		fprintf(stderr, "LocklessAllocator: Invalid pointer\n");
 		return;
@@ -117,7 +125,8 @@ void LocklessAllocator::free(void* ptr)
 	int bit = offset % SIZEOF_SET;
 	int mask = 1 << bit;
 	int prevState = m_freeState[set].fetch_and(~mask);
-	if (!(prevState & mask)) {
+	if (!(prevState & mask))
+	{
 		fprintf(stderr, "LocklessAllocator: Block not in use\n");
 		return;
 	}

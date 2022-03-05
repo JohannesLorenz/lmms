@@ -73,7 +73,8 @@ MicrotunerConfig::MicrotunerConfig()
 	QLabel* scaleLabel = new QLabel(tr("Scale:"));
 	microtunerLayout->addWidget(scaleLabel, 0, 0, 1, 2, Qt::AlignBottom);
 
-	for (unsigned int i = 0; i < MaxScaleCount; i++) {
+	for (unsigned int i = 0; i < MaxScaleCount; i++)
+	{
 		m_scaleComboModel.addItem(QString::number(i) + ": " + Engine::getSong()->getScale(i)->getDescription());
 	}
 	ComboBox* scaleCombo = new ComboBox();
@@ -112,7 +113,8 @@ MicrotunerConfig::MicrotunerConfig()
 	QLabel* keymapLabel = new QLabel(tr("Keymap:"));
 	microtunerLayout->addWidget(keymapLabel, 0, 2, 1, 2, Qt::AlignBottom);
 
-	for (unsigned int i = 0; i < MaxKeymapCount; i++) {
+	for (unsigned int i = 0; i < MaxKeymapCount; i++)
+	{
 		m_keymapComboModel.addItem(QString::number(i) + ": " + Engine::getSong()->getKeymap(i)->getDescription());
 	}
 	ComboBox* keymapCombo = new ComboBox();
@@ -211,11 +213,15 @@ MicrotunerConfig::MicrotunerConfig()
  */
 void MicrotunerConfig::updateScaleList(int index)
 {
-	if (index >= 0 && index < MaxScaleCount) {
+	if (index >= 0 && index < MaxScaleCount)
+	{
 		m_scaleComboModel.replaceItem(
 			index, QString::number(index) + ": " + Engine::getSong()->getScale(index)->getDescription());
-	} else {
-		for (int i = 0; i < MaxScaleCount; i++) {
+	}
+	else
+	{
+		for (int i = 0; i < MaxScaleCount; i++)
+		{
 			m_scaleComboModel.replaceItem(
 				i, QString::number(i) + ": " + Engine::getSong()->getScale(i)->getDescription());
 		}
@@ -228,11 +234,15 @@ void MicrotunerConfig::updateScaleList(int index)
  */
 void MicrotunerConfig::updateKeymapList(int index)
 {
-	if (index >= 0 && index < MaxKeymapCount) {
+	if (index >= 0 && index < MaxKeymapCount)
+	{
 		m_keymapComboModel.replaceItem(
 			index, QString::number(index) + ": " + Engine::getSong()->getKeymap(index)->getDescription());
-	} else {
-		for (int i = 0; i < MaxKeymapCount; i++) {
+	}
+	else
+	{
+		for (int i = 0; i < MaxKeymapCount; i++)
+		{
 			m_keymapComboModel.replaceItem(
 				i, QString::number(i) + ": " + Engine::getSong()->getKeymap(i)->getDescription());
 		}
@@ -254,7 +264,8 @@ void MicrotunerConfig::updateScaleForm()
 	// fill in the intervals
 	m_scaleTextEdit->setPlainText("");
 	const std::vector<Interval>& intervals = newScale->getIntervals();
-	for (std::size_t i = 1; i < intervals.size(); i++) {
+	for (std::size_t i = 1; i < intervals.size(); i++)
+	{
 		m_scaleTextEdit->appendPlainText(intervals[i].getString());
 	}
 	// scroll back to the top
@@ -277,10 +288,11 @@ void MicrotunerConfig::updateKeymapForm()
 
 	m_keymapTextEdit->setPlainText("");
 	const std::vector<int>& map = newMap->getMap();
-	for (std::size_t i = 0; i < map.size(); i++) {
-		if (map[i] >= 0) {
-			m_keymapTextEdit->appendPlainText(QString::number(map[i]));
-		} else {
+	for (std::size_t i = 0; i < map.size(); i++)
+	{
+		if (map[i] >= 0) { m_keymapTextEdit->appendPlainText(QString::number(map[i])); }
+		else
+		{
 			m_keymapTextEdit->appendPlainText("x");
 		}
 	}
@@ -305,18 +317,21 @@ bool MicrotunerConfig::validateScaleForm()
 
 	// check name
 	QString name = m_scaleNameEdit->text();
-	if (name.length() > 0 && name[0] == '!') {
+	if (name.length() > 0 && name[0] == '!')
+	{
 		fail(tr("Scale name cannot start with an exclamation mark"));
 		return false;
 	}
-	if (name.contains('\n')) {
+	if (name.contains('\n'))
+	{
 		fail(tr("Scale name cannot contain a new-line character"));
 		return false;
 	}
 
 	// check intervals
 	QStringList input = m_scaleTextEdit->toPlainText().split('\n', QString::SkipEmptyParts);
-	for (auto& line : input) {
+	for (auto& line : input)
+	{
 		if (line.isEmpty()) { continue; }
 		if (line[0] == '!') { continue; } // comment
 		QString firstSection = line.section(QRegExp("\\s+|/"), 0, 0, QString::SectionSkipEmpty);
@@ -324,27 +339,33 @@ bool MicrotunerConfig::validateScaleForm()
 		{
 			bool ok = true;
 			firstSection.toFloat(&ok);
-			if (!ok) {
+			if (!ok)
+			{
 				fail(tr("Interval defined in cents cannot be converted to a number"));
 				return false;
 			}
-		} else // ratio mode
+		}
+		else // ratio mode
 		{
 			bool ok = true;
 			int num = 1, den = 1;
 			num = firstSection.toInt(&ok);
-			if (!ok) {
+			if (!ok)
+			{
 				fail(tr("Numerator of an interval defined as a ratio cannot be converted to a number"));
 				return false;
 			}
-			if (line.contains('/')) {
+			if (line.contains('/'))
+			{
 				den = line.split('/').at(1).section(QRegExp("\\s+"), 0, 0, QString::SectionSkipEmpty).toInt(&ok);
 			}
-			if (!ok) {
+			if (!ok)
+			{
 				fail(tr("Denominator of an interval defined as a ratio cannot be converted to a number"));
 				return false;
 			}
-			if (num * den < 0) {
+			if (num * den < 0)
+			{
 				fail(tr("Interval defined as a ratio cannot be negative"));
 				return false;
 			}
@@ -363,18 +384,21 @@ bool MicrotunerConfig::validateKeymapForm()
 
 	// check name
 	QString name = m_keymapNameEdit->text();
-	if (name.length() > 0 && name[0] == '!') {
+	if (name.length() > 0 && name[0] == '!')
+	{
 		fail(tr("Keymap name cannot start with an exclamation mark"));
 		return false;
 	}
-	if (name.contains('\n')) {
+	if (name.contains('\n'))
+	{
 		fail(tr("Keymap name cannot contain a new-line character"));
 		return false;
 	}
 
 	// check key mappings
 	QStringList input = m_keymapTextEdit->toPlainText().split('\n', QString::SkipEmptyParts);
-	for (auto& line : input) {
+	for (auto& line : input)
+	{
 		if (line.isEmpty()) { continue; }
 		if (line[0] == '!') { continue; } // comment
 		QString firstSection = line.section(QRegExp("\\s+"), 0, 0, QString::SectionSkipEmpty);
@@ -383,11 +407,13 @@ bool MicrotunerConfig::validateKeymapForm()
 		bool ok = true;
 		int deg = 0;
 		deg = firstSection.toInt(&ok);
-		if (!ok) {
+		if (!ok)
+		{
 			fail(tr("Scale degree cannot be converted to a whole number"));
 			return false;
 		}
-		if (deg < 0) {
+		if (deg < 0)
+		{
 			fail(tr("Scale degree cannot be negative"));
 			return false;
 		}
@@ -408,18 +434,21 @@ bool MicrotunerConfig::applyScale()
 	newIntervals.push_back(Interval(1, 1));
 
 	QStringList input = m_scaleTextEdit->toPlainText().split('\n', QString::SkipEmptyParts);
-	for (auto& line : input) {
+	for (auto& line : input)
+	{
 		if (line.isEmpty()) { continue; }
 		if (line[0] == '!') { continue; } // comment
 		QString firstSection = line.section(QRegExp("\\s+|/"), 0, 0, QString::SectionSkipEmpty);
 		if (firstSection.contains('.')) // cent mode
 		{
 			newIntervals.push_back(Interval(firstSection.toFloat()));
-		} else // ratio mode
+		}
+		else // ratio mode
 		{
 			int num = 1, den = 1;
 			num = firstSection.toInt();
-			if (line.contains('/')) {
+			if (line.contains('/'))
+			{
 				den = line.split('/').at(1).section(QRegExp("\\s+"), 0, 0, QString::SectionSkipEmpty).toInt();
 			}
 			newIntervals.push_back(Interval(num, den));
@@ -446,11 +475,13 @@ bool MicrotunerConfig::applyKeymap()
 	std::vector<int> newMap;
 
 	QStringList input = m_keymapTextEdit->toPlainText().split('\n', QString::SkipEmptyParts);
-	for (auto& line : input) {
+	for (auto& line : input)
+	{
 		if (line.isEmpty()) { continue; }
 		if (line[0] == '!') { continue; } // comment
 		QString firstSection = line.section(QRegExp("\\s+"), 0, 0, QString::SectionSkipEmpty);
-		if (firstSection == "x") {
+		if (firstSection == "x")
+		{
 			newMap.push_back(-1); // not mapped
 			continue;
 		}
@@ -464,7 +495,8 @@ bool MicrotunerConfig::applyKeymap()
 		m_lastKeyModel.value(), m_middleKeyModel.value(), m_baseKeyModel.value(), m_baseFreqModel.value());
 	song->setKeymap(m_keymapComboModel.value(), newKeymap);
 
-	if (newKeymap->getDegree(newKeymap->getBaseKey()) == -1) {
+	if (newKeymap->getDegree(newKeymap->getBaseKey()) == -1)
+	{
 		QMessageBox::warning(this, tr("Invalid keymap"),
 			tr("Base key is not mapped to any scale degree. No sound will be produced as there is no way to assign "
 			   "reference frequency to any note."));
@@ -482,7 +514,8 @@ bool MicrotunerConfig::loadScaleFromFile()
 	QString fileName = FileDialog::getOpenFileName(this, tr("Open scale"), "", tr("Scala scale definition (*.scl)"));
 	if (fileName == "") { return false; }
 	QFile file(fileName);
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+	{
 		QMessageBox::critical(this, tr("Scale load failure"), tr("Unable to open selected file."));
 		return false;
 	}
@@ -491,10 +524,12 @@ bool MicrotunerConfig::loadScaleFromFile()
 
 	m_scaleNameEdit->setText("");
 	m_scaleTextEdit->clear();
-	while (!stream.atEnd() && i < limit) {
+	while (!stream.atEnd() && i < limit)
+	{
 		QString line = stream.readLine();
 		if (line != "" && line[0] == '!') { continue; } // comment
-		switch (i) {
+		switch (i)
+		{
 		case -2: m_scaleNameEdit->setText(line); break;			// first non-comment line = name or description
 		case -1: limit = line.toInt(); break;					// second non-comment line = degree count
 		default: m_scaleTextEdit->appendPlainText(line); break; // all other lines = interval definitions
@@ -514,7 +549,8 @@ bool MicrotunerConfig::loadKeymapFromFile()
 	QString fileName = FileDialog::getOpenFileName(this, tr("Open keymap"), "", tr("Scala keymap definition (*.kbm)"));
 	if (fileName == "") { return false; }
 	QFile file(fileName);
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+	{
 		QMessageBox::critical(this, tr("Keymap load failure"), tr("Unable to open selected file."));
 		return false;
 	}
@@ -524,16 +560,19 @@ bool MicrotunerConfig::loadKeymapFromFile()
 	m_keymapNameEdit->setText(QFileInfo(fileName).baseName()); // .kbm does not store description, use file name
 	m_keymapTextEdit->clear();
 
-	while (!stream.atEnd() && i < limit) {
+	while (!stream.atEnd() && i < limit)
+	{
 		QString line = stream.readLine();
-		if (line != "" && line[0] == '!') {
+		if (line != "" && line[0] == '!')
+		{
 			if (line.length() > 1 && line[1] == '!' && i == -7) // LMMS extension: double "!" occuring before any
 			{													// value is loaded marks a description field.
 				m_keymapNameEdit->setText(line.mid(2));
 			}
 			continue;
 		}
-		switch (i) {
+		switch (i)
+		{
 		case -7: limit = line.toInt(); break;					   // first non-comment line = keymap size
 		case -6: m_firstKeyModel.setValue(line.toInt()); break;	   // second non-comment line = first key
 		case -5: m_lastKeyModel.setValue(line.toInt()); break;	   // third non-comment line = last key
@@ -560,7 +599,8 @@ bool MicrotunerConfig::saveScaleToFile()
 	if (fileName == "") { return false; }
 	if (QFileInfo(fileName).suffix() != "scl") { fileName = fileName + ".scl"; }
 	QFile file(fileName);
-	if (!file.open(QIODevice::WriteOnly)) {
+	if (!file.open(QIODevice::WriteOnly))
+	{
 		QMessageBox::critical(this, tr("Scale save failure"), tr("Unable to open selected file for writing."));
 		return false;
 	}
@@ -594,7 +634,8 @@ bool MicrotunerConfig::saveKeymapToFile()
 	if (fileName == "") { return false; }
 	if (QFileInfo(fileName).suffix() != "kbm") { fileName = fileName + ".kbm"; }
 	QFile file(fileName);
-	if (!file.open(QIODevice::WriteOnly)) {
+	if (!file.open(QIODevice::WriteOnly))
+	{
 		QMessageBox::critical(this, tr("Keymap save failure"), tr("Unable to open selected file for writing."));
 		return false;
 	}
@@ -639,9 +680,9 @@ void MicrotunerConfig::loadSettings(const QDomElement& element) { MainWindow::re
 
 void MicrotunerConfig::closeEvent(QCloseEvent* ce)
 {
-	if (parentWidget()) {
-		parentWidget()->hide();
-	} else {
+	if (parentWidget()) { parentWidget()->hide(); }
+	else
+	{
 		hide();
 	}
 	ce->ignore();

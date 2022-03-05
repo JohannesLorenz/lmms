@@ -108,7 +108,8 @@ SidInstrument::SidInstrument(InstrumentTrack* _instrument_track)
 	, m_volumeModel(15.0f, 0.0f, 15.0f, 1.0f, this, tr("Volume"))
 	, m_chipModel(sidMOS8580, 0, NumChipModels - 1, this, tr("Chip model"))
 {
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 3; ++i)
+	{
 		m_voice[i] = new voiceObject(this, i);
 	}
 }
@@ -118,7 +119,8 @@ SidInstrument::~SidInstrument() {}
 void SidInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this)
 {
 	// voices
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 3; ++i)
+	{
 		const QString is = QString::number(i);
 
 		m_voice[i]->m_pulseWidthModel.saveSettings(_doc, _this, "pulsewidth" + is);
@@ -148,7 +150,8 @@ void SidInstrument::saveSettings(QDomDocument& _doc, QDomElement& _this)
 void SidInstrument::loadSettings(const QDomElement& _this)
 {
 	// voices
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 3; ++i)
+	{
 		const QString is = QString::number(i);
 
 		m_voice[i]->m_pulseWidthModel.loadSettings(_this, "pulsewidth" + is);
@@ -181,7 +184,8 @@ f_cnt_t SidInstrument::desiredReleaseFrames() const
 {
 	const float samplerate = Engine::audioEngine()->processingSampleRate();
 	int maxrel = 0;
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 3; ++i)
+	{
 		if (maxrel < m_voice[i]->m_releaseModel.value()) maxrel = (int)m_voice[i]->m_releaseModel.value();
 	}
 
@@ -199,11 +203,13 @@ static int sid_fillbuffer(unsigned char* sidreg, SID* sid, int tdelta, short* pt
 
 	int badline = rand() % NUMSIDREGS;
 
-	for (c = 0; c < NUMSIDREGS; c++) {
+	for (c = 0; c < NUMSIDREGS; c++)
+	{
 		unsigned char o = sidorder[c];
 
 		// Extra delay for loading the waveform (and mt_chngate,x)
-		if ((o == 4) || (o == 11) || (o == 18)) {
+		if ((o == 4) || (o == 11) || (o == 18))
+		{
 			tdelta2 = SIDWAVEDELAY;
 			result = sid->clock(tdelta2, ptr, samples);
 			total += result;
@@ -213,7 +219,8 @@ static int sid_fillbuffer(unsigned char* sidreg, SID* sid, int tdelta, short* pt
 		}
 
 		// Possible random badline delay once per writing
-		if ((badline == c) && (residdelay)) {
+		if ((badline == c) && (residdelay))
+		{
 			tdelta2 = residdelay;
 			result = sid->clock(tdelta2, ptr, samples);
 			total += result;
@@ -244,7 +251,8 @@ void SidInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
 	const int clockrate = C64_PAL_CYCLES_PER_SEC;
 	const int samplerate = Engine::audioEngine()->processingSampleRate();
 
-	if (tfp == 0) {
+	if (tfp == 0)
+	{
 		SID* sid = new SID();
 		sid->set_sampling_parameters(clockrate, SAMPLE_FAST, samplerate);
 		sid->set_chip_model(MOS8580);
@@ -261,13 +269,14 @@ void SidInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
 	short* buf = reinterpret_cast<short*>(_working_buffer + offset);
 	unsigned char sidreg[NUMSIDREGS];
 
-	for (int c = 0; c < NUMSIDREGS; c++) {
+	for (int c = 0; c < NUMSIDREGS; c++)
+	{
 		sidreg[c] = 0x00;
 	}
 
-	if ((ChipModel)m_chipModel.value() == sidMOS6581) {
-		sid->set_chip_model(MOS6581);
-	} else {
+	if ((ChipModel)m_chipModel.value() == sidMOS6581) { sid->set_chip_model(MOS6581); }
+	else
+	{
 		sid->set_chip_model(MOS8580);
 	}
 
@@ -277,7 +286,8 @@ void SidInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
 	reg8 base = 0;
 	float freq = 0.0;
 	float note = 0.0;
-	for (reg8 i = 0; i < 3; ++i) {
+	for (reg8 i = 0; i < 3; ++i)
+	{
 		base = i * 7;
 		// freq ( Fn = Fout / Fclk * 16777216 ) + coarse detuning
 		freq = _n->frequency();
@@ -298,7 +308,8 @@ void SidInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
 		data8 += m_voice[i]->m_syncModel.value() ? 2 : 0;
 		data8 += m_voice[i]->m_ringModModel.value() ? 4 : 0;
 		data8 += m_voice[i]->m_testModel.value() ? 8 : 0;
-		switch (m_voice[i]->m_waveFormModel.value()) {
+		switch (m_voice[i]->m_waveFormModel.value())
+		{
 		default: break;
 		case voiceObject::NoiseWave: data8 += 128; break;
 		case voiceObject::SquareWave: data8 += 64; break;
@@ -343,7 +354,8 @@ void SidInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
 	data8 = data16 & 0x000F;
 	data8 += m_voice3OffModel.value() ? 128 : 0;
 
-	switch (m_filterModeModel.value()) {
+	switch (m_filterModeModel.value())
+	{
 	default: break;
 	case LowPass: data8 += 16; break;
 	case BandPass: data8 += 32; break;
@@ -356,9 +368,11 @@ void SidInstrument::playNote(NotePlayHandle* _n, sampleFrame* _working_buffer)
 	if (num != frames) printf("!!!Not enough samples\n");
 
 	// loop backwards to avoid overwriting data in the short-to-float conversion
-	for (fpp_t frame = frames - 1; frame >= 0; frame--) {
+	for (fpp_t frame = frames - 1; frame >= 0; frame--)
+	{
 		sample_t s = float(buf[frame]) / 32768.0;
-		for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch) {
+		for (ch_cnt_t ch = 0; ch < DEFAULT_CHANNELS; ++ch)
+		{
 			_working_buffer[frame + offset][ch] = s;
 		}
 	}
@@ -453,7 +467,8 @@ SidInstrumentView::SidInstrumentView(Instrument* _instrument, QWidget* _parent)
 	m_sidTypeBtnGrp->addButton(mos6581_btn);
 	m_sidTypeBtnGrp->addButton(mos8580_btn);
 
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 3; i++)
+	{
 		Knob* ak = new sidKnob(this);
 		ak->setHintText(tr("Attack:"), "");
 		ak->move(7, 114 + i * 50);
@@ -547,7 +562,8 @@ void SidInstrumentView::updateKnobHint()
 {
 	SidInstrument* k = castModel<SidInstrument>();
 
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 3; ++i)
+	{
 		m_voiceKnobs[i].m_attKnob->setHintText(tr("Attack:") + " ",
 			" (" + QString::fromLatin1(attackTime[(int)k->m_voice[i]->m_attackModel.value()]) + ")");
 		ToolTip::add(m_voiceKnobs[i].m_attKnob, attackTime[(int)k->m_voice[i]->m_attackModel.value()]);
@@ -574,7 +590,8 @@ void SidInstrumentView::updateKnobHint()
 void SidInstrumentView::updateKnobToolTip()
 {
 	SidInstrument* k = castModel<SidInstrument>();
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 3; ++i)
+	{
 		ToolTip::add(m_voiceKnobs[i].m_sustKnob, QString::number((int)k->m_voice[i]->m_sustainModel.value()));
 		ToolTip::add(
 			m_voiceKnobs[i].m_crsKnob, QString::number((int)k->m_voice[i]->m_coarseModel.value()) + " semitones");
@@ -594,7 +611,8 @@ void SidInstrumentView::modelChanged()
 	m_offButton->setModel(&k->m_voice3OffModel);
 	m_sidTypeBtnGrp->setModel(&k->m_chipModel);
 
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 3; ++i)
+	{
 		m_voiceKnobs[i].m_attKnob->setModel(&k->m_voice[i]->m_attackModel);
 		m_voiceKnobs[i].m_decKnob->setModel(&k->m_voice[i]->m_decayModel);
 		m_voiceKnobs[i].m_sustKnob->setModel(&k->m_voice[i]->m_sustainModel);
@@ -608,7 +626,8 @@ void SidInstrumentView::modelChanged()
 		m_voiceKnobs[i].m_testButton->setModel(&k->m_voice[i]->m_testModel);
 	}
 
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 3; ++i)
+	{
 		connect(&k->m_voice[i]->m_attackModel, SIGNAL(dataChanged()), this, SLOT(updateKnobHint()));
 		connect(&k->m_voice[i]->m_decayModel, SIGNAL(dataChanged()), this, SLOT(updateKnobHint()));
 		connect(&k->m_voice[i]->m_releaseModel, SIGNAL(dataChanged()), this, SLOT(updateKnobHint()));

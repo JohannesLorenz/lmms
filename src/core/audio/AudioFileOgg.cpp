@@ -73,13 +73,15 @@ bool AudioFileOgg::startEncoding()
 	bitrate_t minimalBitrate = nominalBitrate();
 	bitrate_t maximumBitrate = nominalBitrate();
 
-	if (useVariableBitRate) {
+	if (useVariableBitRate)
+	{
 		minimalBitrate = minBitrate(); // min for vbr
 		maximumBitrate = maxBitrate(); // max for vbr
 	}
 
 	m_rate = sampleRate(); // default-samplerate
-	if (m_rate > 48000) {
+	if (m_rate > 48000)
+	{
 		m_rate = 48000;
 		setSampleRate(48000);
 	}
@@ -90,17 +92,21 @@ bool AudioFileOgg::startEncoding()
 	vorbis_info_init(&m_vi);
 
 	if (vorbis_encode_setup_managed(&m_vi, m_channels, m_rate, (maximumBitrate > 0) ? maximumBitrate * 1000 : -1,
-			nominalBitrate() * 1000, (minimalBitrate > 0) ? minimalBitrate * 1000 : -1)) {
+			nominalBitrate() * 1000, (minimalBitrate > 0) ? minimalBitrate * 1000 : -1))
+	{
 		printf("Mode initialization failed: invalid parameters for "
 			   "bitrate\n");
 		vorbis_info_clear(&m_vi);
 		return false;
 	}
 
-	if (useVariableBitRate) {
+	if (useVariableBitRate)
+	{
 		// Turn off management entirely (if it was turned on).
 		vorbis_encode_ctl(&m_vi, OV_ECTL_RATEMANAGE_SET, nullptr);
-	} else {
+	}
+	else
+	{
 		vorbis_encode_ctl(&m_vi, OV_ECTL_RATEMANAGE_AVG, nullptr);
 	}
 
@@ -139,10 +145,12 @@ bool AudioFileOgg::startEncoding()
 	ogg_stream_packetin(&m_os, &header_comments);
 	ogg_stream_packetin(&m_os, &header_codebooks);
 
-	while ((result = ogg_stream_flush(&m_os, &m_og))) {
+	while ((result = ogg_stream_flush(&m_os, &m_og)))
+	{
 		if (!result) { break; }
 		int ret = writePage();
-		if (ret != m_og.header_len + m_og.body_len) {
+		if (ret != m_og.header_len + m_og.body_len)
+		{
 			// clean up
 			finishEncoding();
 			return false;
@@ -157,8 +165,10 @@ void AudioFileOgg::writeBuffer(const surroundSampleFrame* _ab, const fpp_t _fram
 	int eos = 0;
 
 	float** buffer = vorbis_analysis_buffer(&m_vd, _frames * BYTES_PER_SAMPLE * channels());
-	for (fpp_t frame = 0; frame < _frames; ++frame) {
-		for (ch_cnt_t chnl = 0; chnl < channels(); ++chnl) {
+	for (fpp_t frame = 0; frame < _frames; ++frame)
+	{
+		for (ch_cnt_t chnl = 0; chnl < channels(); ++chnl)
+		{
 			buffer[chnl][frame] = _ab[frame][chnl] * _master_gain;
 		}
 	}
@@ -167,24 +177,28 @@ void AudioFileOgg::writeBuffer(const surroundSampleFrame* _ab, const fpp_t _fram
 
 	// While we can get enough data from the library to analyse,
 	// one block at a time...
-	while (vorbis_analysis_blockout(&m_vd, &m_vb) == 1) {
+	while (vorbis_analysis_blockout(&m_vd, &m_vb) == 1)
+	{
 		// Do the main analysis, creating a packet
 		vorbis_analysis(&m_vb, nullptr);
 		vorbis_bitrate_addblock(&m_vb);
 
-		while (vorbis_bitrate_flushpacket(&m_vd, &m_op)) {
+		while (vorbis_bitrate_flushpacket(&m_vd, &m_op))
+		{
 			// Add packet to bitstream
 			ogg_stream_packetin(&m_os, &m_op);
 
 			// If we've gone over a page boundary, we can do
 			// actual output, so do so (for however many pages
 			// are available)
-			while (!eos) {
+			while (!eos)
+			{
 				int result = ogg_stream_pageout(&m_os, &m_og);
 				if (!result) { break; }
 
 				int ret = writePage();
-				if (ret != m_og.header_len + m_og.body_len) {
+				if (ret != m_og.header_len + m_og.body_len)
+				{
 					printf("failed writing to "
 						   "outstream\n");
 					return;
@@ -198,7 +212,8 @@ void AudioFileOgg::writeBuffer(const surroundSampleFrame* _ab, const fpp_t _fram
 
 void AudioFileOgg::finishEncoding()
 {
-	if (m_ok) {
+	if (m_ok)
+	{
 		// just for flushing buffers...
 		writeBuffer(nullptr, 0, 0.0f);
 

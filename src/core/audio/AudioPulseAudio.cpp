@@ -62,7 +62,8 @@ AudioPulseAudio::~AudioPulseAudio() { stopProcessing(); }
 QString AudioPulseAudio::probeDevice()
 {
 	QString dev = ConfigManager::inst()->value("audiopa", "device");
-	if (dev.isEmpty()) {
+	if (dev.isEmpty())
+	{
 		if (getenv("AUDIODEV") != nullptr) { return getenv("AUDIODEV"); }
 		return "default";
 	}
@@ -82,7 +83,8 @@ void AudioPulseAudio::stopProcessing()
 
 void AudioPulseAudio::applyQualitySettings()
 {
-	if (hqAudio()) {
+	if (hqAudio())
+	{
 		//		setSampleRate( engine::audioEngine()->processingSampleRate() );
 	}
 
@@ -92,7 +94,8 @@ void AudioPulseAudio::applyQualitySettings()
 /* This routine is called whenever the stream state changes */
 static void stream_state_callback(pa_stream* s, void* userdata)
 {
-	switch (pa_stream_get_state(s)) {
+	switch (pa_stream_get_state(s))
+	{
 	case PA_STREAM_CREATING:
 	case PA_STREAM_TERMINATED: break;
 
@@ -107,7 +110,8 @@ static void stream_state_callback(pa_stream* s, void* userdata)
 static void context_state_callback(pa_context* c, void* userdata)
 {
 	AudioPulseAudio* _this = static_cast<AudioPulseAudio*>(userdata);
-	switch (pa_context_get_state(c)) {
+	switch (pa_context_get_state(c))
+	{
 	case PA_CONTEXT_CONNECTING:
 	case PA_CONTEXT_AUTHORIZING:
 	case PA_CONTEXT_SETTING_NAME: break;
@@ -150,14 +154,16 @@ static void context_state_callback(pa_context* c, void* userdata)
 void AudioPulseAudio::run()
 {
 	pa_mainloop* mainLoop = pa_mainloop_new();
-	if (!mainLoop) {
+	if (!mainLoop)
+	{
 		qCritical("pa_mainloop_new() failed.\n");
 		return;
 	}
 	pa_mainloop_api* mainloop_api = pa_mainloop_get_api(mainLoop);
 
 	pa_context* context = pa_context_new(mainloop_api, "lmms");
-	if (context == nullptr) {
+	if (context == nullptr)
+	{
 		qCritical("pa_context_new() failed.");
 		return;
 	}
@@ -168,19 +174,23 @@ void AudioPulseAudio::run()
 	// connect the context
 	pa_context_connect(context, nullptr, (pa_context_flags)0, nullptr);
 
-	while (!m_connectedSemaphore.tryAcquire()) {
+	while (!m_connectedSemaphore.tryAcquire())
+	{
 		pa_mainloop_iterate(mainLoop, 1, nullptr);
 	}
 
 	// run the main loop
-	if (m_connected) {
+	if (m_connected)
+	{
 		int ret = 0;
 		m_quit = false;
 		while (m_quit == false && pa_mainloop_iterate(mainLoop, 1, &ret) >= 0) {}
 
 		pa_stream_disconnect(m_s);
 		pa_stream_unref(m_s);
-	} else {
+	}
+	else
+	{
 		const fpp_t fpp = audioEngine()->framesPerPeriod();
 		surroundSampleFrame* temp = new surroundSampleFrame[fpp];
 		while (getNextBuffer(temp)) {}
@@ -200,9 +210,11 @@ void AudioPulseAudio::streamWriteCallback(pa_stream* s, size_t length)
 	int_sample_t* pcmbuf = (int_sample_t*)pa_xmalloc(fpp * channels() * sizeof(int_sample_t));
 
 	size_t fd = 0;
-	while (fd < length / 4 && m_quit == false) {
+	while (fd < length / 4 && m_quit == false)
+	{
 		const fpp_t frames = getNextBuffer(temp);
-		if (!frames) {
+		if (!frames)
+		{
 			m_quit = true;
 			break;
 		}
@@ -217,7 +229,8 @@ void AudioPulseAudio::streamWriteCallback(pa_stream* s, size_t length)
 
 void AudioPulseAudio::signalConnected(bool connected)
 {
-	if (!m_connected) {
+	if (!m_connected)
+	{
 		m_connected = connected;
 		m_connectedSemaphore.release();
 	}

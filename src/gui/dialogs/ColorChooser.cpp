@@ -27,7 +27,8 @@
 void ColorChooser::setPalette(QVector<QColor> colors)
 {
 	const int max = qMin(colors.size(), 48);
-	for (int i = 0; i < max; i++) {
+	for (int i = 0; i < max; i++)
+	{
 		ColorChooser::setStandardColor(i, colors[i]);
 	}
 }
@@ -45,7 +46,8 @@ ColorChooser* ColorChooser::withPalette(Palette palette)
 //! Return a certain palette
 QVector<QColor> ColorChooser::getPalette(Palette palette)
 {
-	switch (palette) {
+	switch (palette)
+	{
 	case Palette::Mixer: return nicePalette(140);
 	case Palette::Track: return nicePalette(150);
 	default: return defaultPalette();
@@ -56,7 +58,8 @@ QVector<QColor> ColorChooser::getPalette(Palette palette)
 QVector<QColor> ColorChooser::defaultPalette()
 {
 	QVector<QColor> result(48);
-	for (int i = 0; i < 48; i++) {
+	for (int i = 0; i < 48; i++)
+	{
 		result[i] = (QColorDialog::standardColor(i));
 	}
 	return result;
@@ -66,8 +69,10 @@ QVector<QColor> ColorChooser::defaultPalette()
 QVector<QColor> ColorChooser::nicePalette(int base)
 {
 	QVector<QColor> result(48);
-	for (int x = 0; x < 8; x++) {
-		for (int y = 0; y < 6; y++) {
+	for (int x = 0; x < 8; x++)
+	{
+		for (int y = 0; y < 6; y++)
+		{
 			result[6 * x + y].setHsl(qMax(0, 44 * x - 1), 150 - 20 * y, base - 10 * y);
 		}
 	}

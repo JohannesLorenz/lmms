@@ -69,12 +69,14 @@ ProjectRenderer::ProjectRenderer(const AudioEngine::qualitySettings& qualitySett
 {
 	AudioFileDeviceInstantiaton audioEncoderFactory = fileEncodeDevices[exportFileFormat].m_getDevInst;
 
-	if (audioEncoderFactory) {
+	if (audioEncoderFactory)
+	{
 		bool successful = false;
 
 		m_fileDev
 			= audioEncoderFactory(outputFilename, outputSettings, DEFAULT_CHANNELS, Engine::audioEngine(), successful);
-		if (!successful) {
+		if (!successful)
+		{
 			delete m_fileDev;
 			m_fileDev = nullptr;
 		}
@@ -88,7 +90,8 @@ ProjectRenderer::~ProjectRenderer() {}
 ProjectRenderer::ExportFileFormats ProjectRenderer::getFileFormatFromExtension(const QString& _ext)
 {
 	int idx = 0;
-	while (fileEncodeDevices[idx].m_fileFormat != NumFileFormats) {
+	while (fileEncodeDevices[idx].m_fileFormat != NumFileFormats)
+	{
 		if (QString(fileEncodeDevices[idx].m_extension) == _ext) { return (fileEncodeDevices[idx].m_fileFormat); }
 		++idx;
 	}
@@ -104,7 +107,8 @@ QString ProjectRenderer::getFileExtensionFromFormat(ExportFileFormats fmt)
 void ProjectRenderer::startProcessing()
 {
 
-	if (isReady()) {
+	if (isReady())
+	{
 		// Have to do audio engine stuff with GUI-thread affinity in order to
 		// make slots connected to sampleRateChanged()-signals being called immediately.
 		Engine::audioEngine()->setAudioDevice(m_fileDev, m_qualitySettings, false, false);
@@ -144,10 +148,12 @@ void ProjectRenderer::run()
 	Engine::audioEngine()->startProcessing(false);
 
 	// Continually track and emit progress percentage to listeners.
-	while (!Engine::getSong()->isExportDone() && !m_abort) {
+	while (!Engine::getSong()->isExportDone() && !m_abort)
+	{
 		m_fileDev->processNextBuffer();
 		const int nprog = Engine::getSong()->getExportProgress();
-		if (m_progress != nprog) {
+		if (m_progress != nprog)
+		{
 			m_progress = nprog;
 			emit progressChanged(m_progress);
 		}
@@ -178,7 +184,8 @@ void ProjectRenderer::updateConsoleProgress()
 	char buf[80];
 	char prog[cols + 1];
 
-	for (int i = 0; i < cols; ++i) {
+	for (int i = 0; i < cols; ++i)
+	{
 		prog[i] = (i * 100 / cols <= m_progress ? '-' : ' ');
 	}
 	prog[cols] = 0;

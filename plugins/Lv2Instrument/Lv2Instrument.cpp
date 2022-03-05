@@ -54,9 +54,11 @@ Lv2Instrument::Lv2Instrument(InstrumentTrack* instrumentTrackArg, Descriptor::Su
 	: Instrument(instrumentTrackArg, &lv2instrument_plugin_descriptor, key)
 	, Lv2ControlBase(this, key->attributes["uri"])
 {
-	if (Lv2ControlBase::isValid()) {
+	if (Lv2ControlBase::isValid())
+	{
 #ifdef LV2_INSTRUMENT_USE_MIDI
-		for (int i = 0; i < NumKeys; ++i) {
+		for (int i = 0; i < NumKeys; ++i)
+		{
 			m_runningNotes[i] = 0;
 		}
 #endif
@@ -137,14 +139,17 @@ Lv2InsView::Lv2InsView(Lv2Instrument* _instrument, QWidget* _parent)
 	, Lv2ViewBase(this, _instrument)
 {
 	setAutoFillBackground(true);
-	if (m_reloadPluginButton) {
+	if (m_reloadPluginButton)
+	{
 		connect(m_reloadPluginButton, &QPushButton::clicked, this,
 			[this]() { this->castModel<Lv2Instrument>()->reloadPlugin(); });
 	}
-	if (m_toggleUIButton) {
+	if (m_toggleUIButton)
+	{
 		connect(m_toggleUIButton, &QPushButton::toggled, this, [this]() { toggleUI(); });
 	}
-	if (m_helpButton) {
+	if (m_helpButton)
+	{
 		connect(m_helpButton, &QPushButton::toggled, this, [this](bool visible) { toggleHelp(visible); });
 	}
 }
@@ -156,7 +161,8 @@ void Lv2InsView::dragEnterEvent(QDragEnterEvent* _dee)
 
 	void (QDragEnterEvent::*reaction)(void) = &QDragEnterEvent::ignore;
 
-	if (_dee->mimeData()->hasFormat(mimeType(MimeType::StringPair))) {
+	if (_dee->mimeData()->hasFormat(mimeType(MimeType::StringPair)))
+	{
 		const QString txt = _dee->mimeData()->data(mimeType(MimeType::StringPair));
 		if (txt.section(':', 0, 0) == "pluginpresetfile") { reaction = &QDragEnterEvent::acceptProposedAction; }
 	}
@@ -168,7 +174,8 @@ void Lv2InsView::dropEvent(QDropEvent* _de)
 {
 	const QString type = StringPairDrag::decodeKey(_de);
 	const QString value = StringPairDrag::decodeValue(_de);
-	if (type == "pluginpresetfile") {
+	if (type == "pluginpresetfile")
+	{
 		castModel<Lv2Instrument>()->loadFile(value);
 		_de->accept();
 		return;
@@ -185,7 +192,8 @@ PLUGIN_EXPORT Plugin* lmms_plugin_main(Model* _parent, void* _data)
 {
 	using KeyType = Plugin::Descriptor::SubPluginFeatures::Key;
 	Lv2Instrument* ins = new Lv2Instrument(static_cast<InstrumentTrack*>(_parent), static_cast<KeyType*>(_data));
-	if (!ins->isValid()) {
+	if (!ins->isValid())
+	{
 		delete ins;
 		ins = nullptr;
 	}

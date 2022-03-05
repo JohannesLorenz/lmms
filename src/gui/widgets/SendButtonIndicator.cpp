@@ -29,10 +29,13 @@ void SendButtonIndicator::mousePressEvent(QMouseEvent* e)
 	int from = m_mv->currentMixerLine()->channelIndex();
 	int to = m_parent->channelIndex();
 	FloatModel* sendModel = mix->channelSendModel(from, to);
-	if (sendModel == nullptr) {
+	if (sendModel == nullptr)
+	{
 		// not sending. create a mixer send.
 		mix->createChannelSend(from, to);
-	} else {
+	}
+	else
+	{
 		// sending. delete the mixer send.
 		mix->deleteChannelSend(from, to);
 	}

@@ -52,7 +52,8 @@ void AudioFileMP3::writeBuffer(const surroundSampleFrame* _buf, const fpp_t _fra
 
 	// TODO Why isn't the gain applied by the driver but inside the device?
 	std::vector<float> interleavedDataBuffer(_frames * 2);
-	for (fpp_t i = 0; i < _frames; ++i) {
+	for (fpp_t i = 0; i < _frames; ++i)
+	{
 		interleavedDataBuffer[2 * i] = _buf[i][0] * _master_gain;
 		interleavedDataBuffer[2 * i + 1] = _buf[i][1] * _master_gain;
 	}
@@ -80,7 +81,8 @@ void AudioFileMP3::flushRemainingBuffers()
 
 MPEG_mode mapToMPEG_mode(OutputSettings::StereoMode stereoMode)
 {
-	switch (stereoMode) {
+	switch (stereoMode)
+	{
 	case OutputSettings::StereoMode_Stereo: return STEREO;
 	case OutputSettings::StereoMode_JointStereo: return JOINT_STEREO;
 	case OutputSettings::StereoMode_Mono: return MONO;

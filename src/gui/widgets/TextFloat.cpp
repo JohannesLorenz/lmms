@@ -74,14 +74,15 @@ TextFloat* TextFloat::displayMessage(const QString& _msg, int _timeout, QWidget*
 {
 	QWidget* mw = getGUI()->mainWindow();
 	TextFloat* tf = new TextFloat;
-	if (_parent != nullptr) {
-		tf->moveGlobal(_parent, QPoint(_parent->width() + 2, 0));
-	} else {
+	if (_parent != nullptr) { tf->moveGlobal(_parent, QPoint(_parent->width() + 2, 0)); }
+	else
+	{
 		tf->moveGlobal(mw, QPoint(32, mw->height() - tf->height() - 8 - _add_y_margin));
 	}
 	tf->setText(_msg);
 	tf->show();
-	if (_timeout > 0) {
+	if (_timeout > 0)
+	{
 		tf->setAttribute(Qt::WA_DeleteOnClose, true);
 		QTimer::singleShot(_timeout, tf, SLOT(close()));
 	}
@@ -113,12 +114,13 @@ void TextFloat::paintEvent(QPaintEvent* _pe)
 
 	/*	p.drawRect( 0, 0, rect().right(), rect().bottom() );*/
 
-	if (m_title.isEmpty()) {
-		p.drawText(opt.rect, Qt::AlignCenter, m_text);
-	} else {
+	if (m_title.isEmpty()) { p.drawText(opt.rect, Qt::AlignCenter, m_text); }
+	else
+	{
 		int text_x = opt.rect.left() + 2;
 		int text_y = opt.rect.top() + 12;
-		if (m_pixmap.isNull() == false) {
+		if (m_pixmap.isNull() == false)
+		{
 			p.drawPixmap(opt.rect.topLeft() + QPoint(5, 5), m_pixmap);
 			text_x += m_pixmap.width() + 8;
 		}
@@ -136,7 +138,8 @@ void TextFloat::updateSize()
 {
 	QFontMetrics metrics(pointSize<8>(font()));
 	QRect textBound = metrics.boundingRect(m_text);
-	if (!m_title.isEmpty()) {
+	if (!m_title.isEmpty())
+	{
 		QFont f = pointSize<8>(font());
 		f.setBold(true);
 		int title_w = QFontMetrics(f).boundingRect(m_title).width();

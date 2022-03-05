@@ -54,7 +54,8 @@ Effect::Effect(const Plugin::Descriptor* _desc, Model* _parent, const Descriptor
 
 Effect::~Effect()
 {
-	for (int i = 0; i < 2; ++i) {
+	for (int i = 0; i < 2; ++i)
+	{
 		if (m_srcState[i] != nullptr) { src_delete(m_srcState[i]); }
 	}
 }
@@ -76,8 +77,10 @@ void Effect::loadSettings(const QDomElement& _this)
 	m_gateModel.loadSettings(_this, "gate");
 
 	QDomNode node = _this.firstChild();
-	while (!node.isNull()) {
-		if (node.isElement()) {
+	while (!node.isNull())
+	{
+		if (node.isElement())
+		{
 			if (controls()->nodeName() == node.nodeName()) { controls()->restoreState(node.toElement()); }
 		}
 		node = node.nextSibling();
@@ -88,7 +91,8 @@ Effect* Effect::instantiate(const QString& pluginName, Model* _parent, Descripto
 {
 	Plugin* p = Plugin::instantiateWithKey(pluginName, _parent, _key);
 	// check whether instantiated plugin is an effect
-	if (dynamic_cast<Effect*>(p) != nullptr) {
+	if (dynamic_cast<Effect*>(p) != nullptr)
+	{
 		// everything ok, so return pointer
 		Effect* effect = dynamic_cast<Effect*>(p);
 		effect->m_parent = dynamic_cast<EffectChain*>(_parent);
@@ -107,13 +111,17 @@ void Effect::checkGate(double _out_sum)
 
 	// Check whether we need to continue processing input.  Restart the
 	// counter if the threshold has been exceeded.
-	if (_out_sum - gate() <= typeInfo<float>::minEps()) {
+	if (_out_sum - gate() <= typeInfo<float>::minEps())
+	{
 		incrementBufferCount();
-		if (bufferCount() > timeout()) {
+		if (bufferCount() > timeout())
+		{
 			stopRunning();
 			resetBufferCount();
 		}
-	} else {
+	}
+	else
+	{
 		resetBufferCount();
 	}
 }
@@ -122,12 +130,14 @@ PluginView* Effect::instantiateView(QWidget* _parent) { return new EffectView(th
 
 void Effect::reinitSRC()
 {
-	for (int i = 0; i < 2; ++i) {
+	for (int i = 0; i < 2; ++i)
+	{
 		if (m_srcState[i] != nullptr) { src_delete(m_srcState[i]); }
 		int error;
 		if ((m_srcState[i] = src_new(
 				 Engine::audioEngine()->currentQualitySettings().libsrcInterpolation(), DEFAULT_CHANNELS, &error))
-			== nullptr) {
+			== nullptr)
+		{
 			qFatal("Error: src_new() failed in effect.cpp!\n");
 		}
 	}
@@ -144,7 +154,8 @@ void Effect::resample(int _i, const sampleFrame* _src_buf, sample_rate_t _src_sr
 	m_srcData[_i].src_ratio = (double)_dst_sr / _src_sr;
 	m_srcData[_i].end_of_input = 0;
 	int error;
-	if ((error = src_process(m_srcState[_i], &m_srcData[_i]))) {
+	if ((error = src_process(m_srcState[_i], &m_srcData[_i])))
+	{
 		qFatal("Effect::resample(): error while resampling: %s\n", src_strerror(error));
 	}
 }
