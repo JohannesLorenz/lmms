@@ -31,6 +31,7 @@ with tempfile.TemporaryDirectory() as tmpdir:
     # get the repo and its submodules
     subprocess.run(['git', 'init'], check=True)
     subprocess.run(['git', 'remote', 'add', 'origin', remote], check=True)
+    subprocess.run(['git', 'fetch', '--depth=1', 'origin', 'check-strings-why-does-actions-not-work-2'], check=True)
     subprocess.run(['git', 'fetch', '--depth=1', 'origin', ref], check=True)
     subprocess.run(['git', 'checkout', ref], check=True)
     subprocess.run(['git', 'submodule', 'update', '--depth=1', '--init'], check=True)
@@ -40,6 +41,9 @@ with tempfile.TemporaryDirectory() as tmpdir:
     print('--->8--- Script output BEGIN --->8---')
     print(res.stdout)
     print('--->8--- Script output END   --->8---')
+    print('--->8--- Script error output BEGIN --->8---')
+    print(res.stderr)
+    print('--->8--- Script error output END   --->8---')
     # make sure script returned "error" (because we test for errors) and that the output is as expected
     if res.returncode == 0:
         raise RuntimeError("Script \"check-strings\" no errors, but errors were expected")
