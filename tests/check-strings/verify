@@ -11,7 +11,7 @@ lmms_main_path = Path(__file__).resolve().parent.parent.parent
 ref = 'f56fc68b669b59f525ad133a0376feaba2a1a4ec'
 
 # find out a remote URL where we can fetch "ref" from
-res = subprocess.run(['git', 'rev-parse', '--verify', ref], capture_output=True, text=True)
+res = subprocess.run(['git', 'rev-parse', '-q', '--verify', ref+'^{commit}'], capture_output=True, text=True)
 if res.returncode == 0:
     remote = str(lmms_main_path)
 else:
@@ -25,6 +25,7 @@ else:
         else:
             raise RuntimeError(
                 "Sorry, I can find ref " + ref + " neither in the repo nor in the remotes \"origin\" and \"upstream\"")
+remote = remote.rstrip()
 
 with tempfile.TemporaryDirectory() as tmpdir:
     os.chdir(tmpdir)
