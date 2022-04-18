@@ -8,7 +8,7 @@ import os
 lmms_main_path = Path(__file__).resolve().parent.parent.parent
 
 res = subprocess.run(['git', 'rev-parse', 'HEAD'], capture_output=True, text=True, check=True)
-head = res.stdout
+head = res.stdout.rstrip()
 
 # test with a stable LMMS ref to always get the same expectations
 ref = 'f56fc68b669b59f525ad133a0376feaba2a1a4ec'
