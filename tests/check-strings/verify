@@ -30,8 +30,9 @@ with tempfile.TemporaryDirectory() as tmpdir:
 	os.chdir(tmpdir)
 	# get the repo and its submodules
 	subprocess.run(['git', 'init'], check=True)
-	subprocess.run(['git', 'fetch', '--depth=1', remote, 'master'], check=True)
-	subprocess.run(['git', 'fetch', '--depth=1', remote, ref], check=True)
+    subprocess.run(['git', 'remote', 'add', 'origin', remote], check=True)
+	subprocess.run(['git', 'fetch', '--depth=1', 'origin', 'master'], check=True)
+	subprocess.run(['git', 'fetch', '--depth=1', 'origin', ref], check=True)
 	subprocess.run(['git', 'checkout', ref], check=True)
 	subprocess.run(['git', 'submodule', 'update', '--depth=1', '--init'], check=True)
 	# run script
