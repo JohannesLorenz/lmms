@@ -94,20 +94,19 @@ for c in sorted(classes_found):
 
 caption('themes')
 
-if 0:
-    for theme in sorted([d for d in Path('data/themes').iterdir() if d.is_dir()]):
-        stylesheet = theme / 'style.css'
-        idents = {
-            item.value[1]
-            for rule in cssutils.parseString(stylesheet.read_text(encoding='utf-8'))
-            if rule.type == rule.STYLE_RULE
-            for selector in rule.selectorList
-            for item in selector.seq
-            if item.type == 'type-selector' and not item.value[1].startswith('Q')
-        }
-        missing_classes = classes - idents
-        for class_in_sheet in sorted(missing_classes):
-            error(str(stylesheet), f'Class does not exist in source code: {class_in_sheet}')
+for theme in sorted([d for d in Path('data/themes').iterdir() if d.is_dir()]):
+    stylesheet = theme / 'style.css'
+    idents = {
+        item.value[1]
+        for rule in cssutils.parseString(stylesheet.read_text(encoding='utf-8'))
+        if rule.type == rule.STYLE_RULE
+        for selector in rule.selectorList
+        for item in selector.seq
+        if item.type == 'type-selector' and not item.value[1].startswith('Q')
+    }
+    missing_classes = idents - classes
+    for class_in_sheet in sorted(missing_classes):
+        error(str(stylesheet), f'Class does not exist in source code: {class_in_sheet}')
 
 
 caption('patches (checks only plugins/)')
