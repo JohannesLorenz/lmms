@@ -10,8 +10,8 @@ import re
 import subprocess
 import xml.etree.ElementTree as ElementTree
 from pathlib import Path
-#import cssutils
-#cssutils.log.enabled = False
+import cssutils
+cssutils.log.enabled = False
 
 
 # global variables
