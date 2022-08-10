@@ -30,6 +30,8 @@
 #ifndef LMMS_SEMAPHORE_H
 #define LMMS_SEMAPHORE_H
 
+#include "lmmsconfig.h"
+
 #ifdef LMMS_BUILD_APPLE
 #    include <mach/mach.h>
 #elif defined(LMMS_BUILD_WIN32)
