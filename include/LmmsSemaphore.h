@@ -40,6 +40,8 @@
 
 #include <system_error>
 
+namespace lmms {
+
 /**
    A counting semaphore.
 
@@ -83,5 +85,7 @@ private:
 	sem_t sem;
 #endif
 };
+
+} // namespace lmms
 
 #endif // LMMS_SEMAPHORE_H

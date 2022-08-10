@@ -37,6 +37,8 @@
 
 #include <system_error>
 
+namespace lmms {
+
 #ifdef LMMS_BUILD_APPLE
 Semaphore::Semaphore(unsigned val)
 {
@@ -131,6 +133,8 @@ bool Semaphore::try_wait()
 {
 	return (sem_trywait(&sem) == 0);
 }
+
+} // namespace lmms
 
 #endif
 
