@@ -29,7 +29,7 @@
 
 #include "LmmsSemaphore.h"
 
-#if defined(LMMS_BUILD_WIN32) || defined(LMMS_BUILD_WIN64)
+#if defined(LMMS_BUILD_WIN32)
 #    include <limits.h>
 #else
 #    include <errno.h>

@@ -32,7 +32,7 @@
 
 #ifdef LMMS_BUILD_APPLE
 #    include <mach/mach.h>
-#elif defined(LMMS_BUILD_WIN32) || defined(LMMS_BUILD_WIN64)
+#elif defined(LMMS_BUILD_WIN32)
 #    include <windows.h>
 #else
 #    include <semaphore.h>
