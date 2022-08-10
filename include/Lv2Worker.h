@@ -34,7 +34,7 @@
 #include <thread>
 
 #include "LocklessRingBuffer.h"
-#include "Semaphore.h"
+#include "LmmsSemaphore.h"
 
 namespace lmms
 {

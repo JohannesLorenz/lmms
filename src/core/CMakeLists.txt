@@ -70,7 +70,7 @@ set(LMMS_SRCS
 	core/SamplePlayHandle.cpp
 	core/SampleRecordHandle.cpp
 	core/Scale.cpp
-	core/Semaphore.cpp
+	core/LmmsSemaphore.cpp
 	core/SerializingObject.cpp
 	core/Song.cpp
 	core/TempoSyncKnobModel.cpp

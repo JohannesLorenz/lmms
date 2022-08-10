@@ -27,7 +27,7 @@
  * File src/zix/sem.h
  */
 
-#include "Semaphore.h"
+#include "LmmsSemaphore.h"
 
 #if defined(LMMS_BUILD_WIN32)
 #    include <limits.h>
