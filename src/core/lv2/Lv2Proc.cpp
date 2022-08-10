@@ -1,7 +1,7 @@
 /*
  * Lv2Proc.cpp - Lv2 processor class
  *
- * Copyright (c) 2019-2020 Johannes Lorenz <jlsf2013$users.sourceforge.net, $=@>
+ * Copyright (c) 2019-2022 Johannes Lorenz <jlsf2013$users.sourceforge.net, $=@>
  *
  * This file is part of LMMS - https://lmms.io
  *
@@ -30,6 +30,7 @@
 #include <lv2/lv2plug.in/ns/ext/midi/midi.h>
 #include <lv2/lv2plug.in/ns/ext/atom/atom.h>
 #include <lv2/lv2plug.in/ns/ext/resize-port/resize-port.h>
+#include <lv2/lv2plug.in/ns/ext/worker/worker.h>
 #include <QDebug>
 #include <QtGlobal>
 
@@ -161,6 +162,7 @@ Plugin::PluginTypes Lv2Proc::check(const LilvPlugin *plugin,
 Lv2Proc::Lv2Proc(const LilvPlugin *plugin, Model* parent) :
 	LinkedModelGroup(parent),
 	m_plugin(plugin),
+	m_work_lock(1),
 	m_midiInputBuf(m_maxMidiInputEvents),
 	m_midiInputReader(m_midiInputBuf)
 {
@@ -332,6 +334,14 @@ void Lv2Proc::copyBuffersToCore(sampleFrame* buf,
 void Lv2Proc::run(fpp_t frames)
 {
 	lilv_instance_run(m_instance, static_cast<uint32_t>(frames));
+
+	if (m_worker)
+	{
+		// Process any worker replies
+		m_worker.value().emitResponses();
+		// Notify the plugin the run() cycle is finished
+		if (m_worker) { m_worker->notifyPluginThatRunFinished(); }
+	}
 }
 
 
@@ -365,7 +375,7 @@ void Lv2Proc::handleMidiInputEvent(const MidiEvent &event, const TimePos &time, 
 	else
 	{
 		qWarning() << "Warning: Caught MIDI event for an Lv2 instrument"
-					<< "that can not hande MIDI... Ignoring";
+					<< "that can not handle MIDI... Ignoring";
 	}
 }
 
@@ -399,6 +409,13 @@ void Lv2Proc::initPlugin()
 
 	if (m_instance)
 	{
+		const LV2_Worker_Interface* iface = (const LV2_Worker_Interface*)
+			lilv_instance_get_extension_data(m_instance, LV2_WORKER__interface);
+		if(iface) {
+			bool threaded = !Engine::audioEngine()->renderOnly();
+			m_worker.emplace(lilv_instance_get_handle(m_instance), iface, m_work_lock, threaded);
+		}
+
 		for (std::size_t portNum = 0; portNum < m_ports.size(); ++portNum)
 			connectPort(portNum);
 		lilv_instance_activate(m_instance);
@@ -472,8 +489,17 @@ void Lv2Proc::initMOptions()
 
 void Lv2Proc::initPluginSpecificFeatures()
 {
+	// options
 	initMOptions();
 	m_features[LV2_OPTIONS__options] = const_cast<LV2_Options_Option*>(m_options.feature());
+
+	// worker (if plugin has worker extension)
+	Lv2Manager* mgr = Engine::getLv2Manager();
+	if (lilv_plugin_has_extension_data(m_plugin, mgr->uri(LV2_WORKER__interface).get())) {
+		m_features[LV2_WORKER__schedule] = const_cast<LV2_Worker_Schedule*>(m_worker->feature());
+		// note: the worker interface can not be instantiated yet - it requires m_instance
+		//       see initPlugin()
+	}
 }
 
 
