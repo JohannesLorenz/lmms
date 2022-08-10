@@ -32,6 +32,7 @@
 #include <lilv/lilv.h>
 #include <lv2/lv2plug.in/ns/ext/buf-size/buf-size.h>
 #include <lv2/lv2plug.in/ns/ext/options/options.h>
+#include <lv2/lv2plug.in/ns/ext/worker/worker.h>
 #include <QDebug>
 #include <QElapsedTimer>
 
@@ -76,6 +77,7 @@ Lv2Manager::Lv2Manager() :
 	m_supportedFeatureURIs.insert(LV2_URID__map);
 	m_supportedFeatureURIs.insert(LV2_URID__unmap);
 	m_supportedFeatureURIs.insert(LV2_OPTIONS__options);
+	m_supportedFeatureURIs.insert(LV2_WORKER__schedule);
 	// min/max is always passed in the options
 	m_supportedFeatureURIs.insert(LV2_BUF_SIZE__boundedBlockLength);
 	// block length is only changed initially in AudioEngine CTOR

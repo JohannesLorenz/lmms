@@ -31,10 +31,12 @@
 
 #include <lilv/lilv.h>
 #include <memory>
+#include <optional>
 
 #include "Lv2Basics.h"
 #include "Lv2Features.h"
 #include "Lv2Options.h"
+#include "Lv2Worker.h"
 #include "LinkedModelGroups.h"
 #include "Plugin.h"
 #include "../src/3rdparty/ringbuffer/include/ringbuffer/ringbuffer.h"
@@ -172,7 +174,13 @@ private:
 	const LilvPlugin* m_plugin;
 	LilvInstance* m_instance;
 	Lv2Features m_features;
+
+	// options
 	Lv2Options m_options;
+
+	// worker
+	std::optional<Lv2Worker> m_worker;
+	Semaphore m_work_lock; // this must be shared by different workers
 
 	// full list of ports
 	std::vector<std::unique_ptr<Lv2Ports::PortBase>> m_ports;
