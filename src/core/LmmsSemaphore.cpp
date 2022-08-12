@@ -76,7 +76,7 @@ bool Semaphore::try_wait()
 Semaphore::Semaphore(unsigned initial)
 {
 	if(CreateSemaphore(NULL, initial, LONG_MAX, NULL) == nullptr)
-		throw std::system_error(GetLastError(), std::syssystem_category(), "Could not create semaphore");
+		throw std::system_error(GetLastError(), std::system_category(), "Could not create semaphore");
 }
 
 Semaphore::~Semaphore()
@@ -92,7 +92,7 @@ void Semaphore::post()
 void Semaphore::wait()
 {
 	if (WaitForSingleObject(sem, INFINITE) != WAIT_OBJECT_0) {
-		throw std::system_error(GetLastError(), std::syssystem_category(), "Waiting for semaphore failed");
+		throw std::system_error(GetLastError(), std::system_category(), "Waiting for semaphore failed");
 	}
 }
 
