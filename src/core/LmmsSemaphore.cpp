@@ -134,7 +134,7 @@ bool Semaphore::try_wait()
 	return (sem_trywait(&sem) == 0);
 }
 
-} // namespace lmms
-
 #endif
+
+} // namespace lmms
 
