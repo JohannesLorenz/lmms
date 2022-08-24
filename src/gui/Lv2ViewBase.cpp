@@ -74,8 +74,15 @@ Lv2ViewProc::Lv2ViewProc(QWidget* parent, Lv2Proc* ctrlBase, int colNum) :
 					case PortVis::Integer:
 					{
 						sample_rate_t sr = Engine::audioEngine()->processingSampleRate();
-						m_control = new LcdControl((port.max(sr) <= 9.0f) ? 1 : 2,
-													m_par);
+						auto pmin = port.min(sr);
+						auto pmax = port.max(sr);
+						int num_digits =
+							(pmin <= -10.f)
+							? 3 // [-99,...]
+							: (pmin <= -1.f || pmax >= 10.f)
+								? 2  // [-9,99]
+								: 1; // [0,9]
+						m_control = new LcdControl(num_digits, m_par);
 						break;
 					}
 					case PortVis::Enumeration:
