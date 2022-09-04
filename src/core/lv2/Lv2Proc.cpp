@@ -569,6 +569,7 @@ void Lv2Proc::createPort(std::size_t portNum)
 					case Lv2Ports::Vis::Enumeration:
 					{
 						auto comboModel = new ComboBoxModel(nullptr, dispName);
+						comboModel->setInitValue(meta.def());
 						LilvScalePoints* sps =
 							lilv_port_get_scale_points(m_plugin, lilvPort);
 						LILV_FOREACH(scale_points, i, sps)
@@ -582,7 +583,6 @@ void Lv2Proc::createPort(std::size_t portNum)
 						}
 						lilv_scale_points_free(sps);
 						ctrl->m_connectedModel.reset(comboModel);
-						// TODO: use default value on comboModel, too?
 						break;
 					}
 					case Lv2Ports::Vis::Toggled:
