@@ -114,10 +114,10 @@ std::vector<PluginIssue> Meta::get(const LilvPlugin *plugin,
 
 	m_optional = hasProperty(LV2_CORE__connectionOptional);
 
-	m_vis = hasProperty(LV2_CORE__integer)
-		? Vis::Integer // WARNING: this may still be changed below
-		: hasProperty(LV2_CORE__enumeration)
-		? Vis::Enumeration
+	m_vis = hasProperty(LV2_CORE__enumeration)
+		? Vis::Enumeration // WARNING: this may still be changed below
+		: hasProperty(LV2_CORE__integer)
+		? Vis::Integer
 		: hasProperty(LV2_CORE__toggled)
 		? Vis::Toggled
 		: Vis::Generic;
