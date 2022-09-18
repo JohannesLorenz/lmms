@@ -589,6 +589,15 @@ void Lv2Proc::createPort(std::size_t portNum)
 							}
 							lilv_scale_points_free(sps);
 						}
+						for(std::size_t i = 0; i < ctrl->m_scalePointMap.size(); ++i)
+						{
+							if(meta.def() == ctrl->m_scalePointMap[i])
+							{
+								comboModel->setValue(i);
+								comboModel->setInitValue(i);
+								break;
+							}
+						}
 						ctrl->m_connectedModel.reset(comboModel);
 						break;
 					}
