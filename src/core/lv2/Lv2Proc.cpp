@@ -568,20 +568,27 @@ void Lv2Proc::createPort(std::size_t portNum)
 						break;
 					case Lv2Ports::Vis::Enumeration:
 					{
-						auto comboModel = new ComboBoxModel(nullptr, dispName);
-						comboModel->setInitValue(meta.def());
-						LilvScalePoints* sps =
-							lilv_port_get_scale_points(m_plugin, lilvPort);
-						LILV_FOREACH(scale_points, i, sps)
+						ComboBoxModel* comboModel = new ComboBoxModel(nullptr, dispName);
+
 						{
-							const LilvScalePoint* sp = lilv_scale_points_get(sps, i);
-							ctrl->m_scalePointMap.push_back(lilv_node_as_float(
-											lilv_scale_point_get_value(sp)));
-							comboModel->addItem(
-								lilv_node_as_string(
-									lilv_scale_point_get_label(sp)));
+							LilvScalePoints* sps =
+								lilv_port_get_scale_points(m_plugin, lilvPort);
+							// temporary map, since lilv may return scale points in random order
+							std::map<float, const char*> scalePointMap;
+							LILV_FOREACH(scale_points, i, sps)
+							{
+								const LilvScalePoint* sp = lilv_scale_points_get(sps, i);
+								const float f = lilv_node_as_float(lilv_scale_point_get_value(sp));
+								const char* s = lilv_node_as_string(lilv_scale_point_get_label(sp));
+								scalePointMap[f] = s;
+							}
+							for (const auto& sp : scalePointMap)
+							{
+								ctrl->m_scalePointMap.push_back(sp.first);
+								comboModel->addItem(sp.second);
+							}
+							lilv_scale_points_free(sps);
 						}
-						lilv_scale_points_free(sps);
 						ctrl->m_connectedModel.reset(comboModel);
 						break;
 					}
