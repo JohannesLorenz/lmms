@@ -162,7 +162,7 @@ Plugin::PluginTypes Lv2Proc::check(const LilvPlugin *plugin,
 Lv2Proc::Lv2Proc(const LilvPlugin *plugin, Model* parent) :
 	LinkedModelGroup(parent),
 	m_plugin(plugin),
-	m_work_lock(1),
+	m_workLock(1),
 	m_midiInputBuf(m_maxMidiInputEvents),
 	m_midiInputReader(m_midiInputBuf)
 {
@@ -413,7 +413,7 @@ void Lv2Proc::initPlugin()
 			lilv_instance_get_extension_data(m_instance, LV2_WORKER__interface);
 		if(iface) {
 			bool threaded = !Engine::audioEngine()->renderOnly();
-			m_worker.emplace(lilv_instance_get_handle(m_instance), iface, m_work_lock, threaded);
+			m_worker.emplace(lilv_instance_get_handle(m_instance), iface, m_workLock, threaded);
 		}
 
 		for (std::size_t portNum = 0; portNum < m_ports.size(); ++portNum)

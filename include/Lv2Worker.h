@@ -54,7 +54,7 @@ public:
 	void emitResponses();
 	void notifyPluginThatRunFinished()
 	{
-		if(iface->end_run) { iface->end_run(m_scheduleFeature.handle); }
+		if(m_iface->end_run) { m_iface->end_run(m_scheduleFeature.handle); }
 	}
 
 	// to be called only by static functions
@@ -67,19 +67,19 @@ private:
 	static std::size_t bufferSize();  //!< size of internal buffers
 
 	// parameters
-	const LV2_Worker_Interface* iface;
-	bool threaded;
-	LV2_Handle handle;
+	const LV2_Worker_Interface* m_iface;
+	bool m_threaded;
+	LV2_Handle m_handle;
 	LV2_Worker_Schedule m_scheduleFeature;
 
 	// threading/synchronization
-	std::thread thread;
-	std::vector<char> response;
-	LocklessRingBuffer<char> requests, responses;
-	LocklessRingBufferReader<char> requestsReader, responsesReader;
-	std::atomic<bool> exit = false;
-	Semaphore sem;
-	Semaphore& work_lock;
+	std::thread m_thread;
+	std::vector<char> m_response;
+	LocklessRingBuffer<char> m_requests, m_responses;
+	LocklessRingBufferReader<char> m_requestsReader, m_responsesReader;
+	std::atomic<bool> m_exit = false;
+	Semaphore m_sem;
+	Semaphore& m_workLock;
 };
 
 

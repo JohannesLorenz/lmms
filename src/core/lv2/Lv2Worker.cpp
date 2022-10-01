@@ -74,25 +74,25 @@ Lv2Worker::Lv2Worker(LV2_Handle handle,
 	const LV2_Worker_Interface* iface,
 	Semaphore& common_work_lock,
 	bool threaded) :
-	iface(iface),
-	threaded(threaded),
-	handle(handle),
-	response(bufferSize()),
-	requests(bufferSize()),
-	responses(bufferSize()),
-	requestsReader(requests),
-	responsesReader(responses),
-	sem(0),
-	work_lock(common_work_lock)
+	m_iface(iface),
+	m_threaded(threaded),
+	m_handle(handle),
+	m_response(bufferSize()),
+	m_requests(bufferSize()),
+	m_responses(bufferSize()),
+	m_requestsReader(m_requests),
+	m_responsesReader(m_responses),
+	m_sem(0),
+	m_workLock(common_work_lock)
 {
 	assert(iface);
 	m_scheduleFeature.handle = static_cast<LV2_Worker_Schedule_Handle>(this);
 	m_scheduleFeature.schedule_work = staticScheduleWork;
 
-	if (threaded) { thread = std::thread(&Lv2Worker::workerFunc, this); }
+	if (threaded) { m_thread = std::thread(&Lv2Worker::workerFunc, this); }
 
-	requests.mlock();
-	responses.mlock();
+	m_requests.mlock();
+	m_responses.mlock();
 }
 
 
@@ -100,10 +100,10 @@ Lv2Worker::Lv2Worker(LV2_Handle handle,
 
 Lv2Worker::~Lv2Worker()
 {
-	exit = true;
-	if(threaded) {
-		sem.post();
-		thread.join();
+	m_exit = true;
+	if(m_threaded) {
+		m_sem.post();
+		m_thread.join();
 	}
 }
 
@@ -114,8 +114,8 @@ LV2_Worker_Status Lv2Worker::respond(uint32_t size, const void* data)
 {
 	if(!size) { return LV2_WORKER_ERR_UNKNOWN; }
 
-	responses.write((const char*)&size, sizeof(size));
-	responses.write((const char*)data, size);
+	m_responses.write((const char*)&size, sizeof(size));
+	m_responses.write((const char*)data, size);
 	return LV2_WORKER_SUCCESS;
 }
 
@@ -127,24 +127,24 @@ void *Lv2Worker::workerFunc()
 	std::vector<char> buf;
 	uint32_t size;
 	while (true) {
-		sem.wait();
-		if (exit) break;
-		const std::size_t read_space = requestsReader.read_space();
-		if (read_space <= sizeof(size)) continue; // (should not happen)
+		m_sem.wait();
+		if (m_exit) break;
+		const std::size_t readSpace = m_requestsReader.read_space();
+		if (readSpace <= sizeof(size)) continue; // (should not happen)
 
-		requestsReader.read(sizeof(size)).copy((char*)&size, sizeof(size));
-		Q_ASSERT(read_space - sizeof(size) >= size);
+		m_requestsReader.read(sizeof(size)).copy((char*)&size, sizeof(size));
+		Q_ASSERT(readSpace - sizeof(size) >= size);
 		try {
 			buf.resize(size);
 		} catch(...) {
 			qWarning() << "Error: reallocating buffer failed";
 			return nullptr;
 		}
-		requestsReader.read(size).copy(buf.data(), size);
+		m_requestsReader.read(size).copy(buf.data(), size);
 
-		work_lock.wait();
-		iface->work(handle, staticWorkerRespond, this, size, buf.data());
-		work_lock.post();
+		m_workLock.wait();
+		m_iface->work(m_handle, staticWorkerRespond, this, size, buf.data());
+		m_workLock.post();
 	}
 	return nullptr;
 }
@@ -156,16 +156,16 @@ LV2_Worker_Status Lv2Worker::scheduleWork(uint32_t size, const void *data)
 {
 	if (!size) { return LV2_WORKER_ERR_UNKNOWN; }
 
-	if (threaded) {
+	if (m_threaded) {
 		// Schedule a request to be executed by the worker thread
-		requests.write((const char*)&size, sizeof(size));
-		requests.write((const char*)data, size);
-		sem.post();
+		m_requests.write((const char*)&size, sizeof(size));
+		m_requests.write((const char*)data, size);
+		m_sem.post();
 	} else {
 		// Execute work immediately in this thread
-		work_lock.wait();
-		iface->work(handle, staticWorkerRespond, this, size, data);
-		work_lock.post();
+		m_workLock.wait();
+		m_iface->work(m_handle, staticWorkerRespond, this, size, data);
+		m_workLock.post();
 	}
 
 	return LV2_WORKER_SUCCESS;
@@ -176,13 +176,13 @@ LV2_Worker_Status Lv2Worker::scheduleWork(uint32_t size, const void *data)
 
 void Lv2Worker::emitResponses()
 {
-	if (!exit) {
-		std::size_t read_space = responsesReader.read_space();
+	if (!m_exit) {
+		std::size_t read_space = m_responsesReader.read_space();
 		uint32_t size;
 		while (read_space > sizeof(size)) {
-			responsesReader.read(sizeof(size)).copy((char*)&size, sizeof(size));
-			responsesReader.read(size).copy(response.data(), size);
-			iface->work_response(handle, size, response.data());
+			m_responsesReader.read(sizeof(size)).copy((char*)&size, sizeof(size));
+			m_responsesReader.read(size).copy(m_response.data(), size);
+			m_iface->work_response(m_handle, size, m_response.data());
 			read_space -= sizeof(size) + size;
 		}
 	}

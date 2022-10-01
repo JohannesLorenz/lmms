@@ -76,15 +76,15 @@ public:
 
 	void post();
 	void wait();
-	bool try_wait();
+	bool tryWait();
 
 private:
 #ifdef LMMS_BUILD_APPLE
-	semaphore_t sem;
+	semaphore_t m_sem;
 #elif defined(LMMS_BUILD_WIN32)
-	HANDLE sem;
+	HANDLE m_sem;
 #else
-	sem_t sem;
+	sem_t m_sem;
 #endif
 };
 

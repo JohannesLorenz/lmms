@@ -180,7 +180,7 @@ private:
 
 	// worker
 	std::optional<Lv2Worker> m_worker;
-	Semaphore m_work_lock; // this must be shared by different workers
+	Semaphore m_workLock; // this must be shared by different workers
 
 	// full list of ports
 	std::vector<std::unique_ptr<Lv2Ports::PortBase>> m_ports;
