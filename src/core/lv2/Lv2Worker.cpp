@@ -122,7 +122,7 @@ LV2_Worker_Status Lv2Worker::respond(uint32_t size, const void* data)
 
 
 
-void *Lv2Worker::workerFunc()
+void Lv2Worker::workerFunc()
 {
 	std::vector<char> buf;
 	uint32_t size;
@@ -138,7 +138,7 @@ void *Lv2Worker::workerFunc()
 			buf.resize(size);
 		} catch(...) {
 			qWarning() << "Error: reallocating buffer failed";
-			return nullptr;
+			return;
 		}
 		m_requestsReader.read(size).copy(buf.data(), size);
 
@@ -146,7 +146,6 @@ void *Lv2Worker::workerFunc()
 		m_iface->work(m_handle, staticWorkerRespond, this, size, buf.data());
 		m_workLock.post();
 	}
-	return nullptr;
 }
 
 

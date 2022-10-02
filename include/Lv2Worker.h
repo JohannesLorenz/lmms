@@ -63,7 +63,7 @@ public:
 
 private:
 	// functions
-	void* workerFunc();
+	void workerFunc();
 	static std::size_t bufferSize();  //!< size of internal buffers
 
 	// parameters

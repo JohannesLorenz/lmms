@@ -582,10 +582,10 @@ void Lv2Proc::createPort(std::size_t portNum)
 								const char* s = lilv_node_as_string(lilv_scale_point_get_label(sp));
 								scalePointMap[f] = s;
 							}
-							for (const auto& sp : scalePointMap)
+							for (const auto& [f,s] : scalePointMap)
 							{
-								ctrl->m_scalePointMap.push_back(sp.first);
-								comboModel->addItem(sp.second);
+								ctrl->m_scalePointMap.push_back(f);
+								comboModel->addItem(s);
 							}
 							lilv_scale_points_free(sps);
 						}

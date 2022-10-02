@@ -75,7 +75,7 @@ bool Semaphore::tryWait()
 
 Semaphore::Semaphore(unsigned initial)
 {
-	if(CreateSemaphore(NULL, initial, LONG_MAX, NULL) == nullptr)
+	if(CreateSemaphore(nullptr, initial, LONG_MAX, nullptr) == nullptr)
 		throw std::system_error(GetLastError(), std::system_category(), "Could not create semaphore");
 }
 
@@ -86,7 +86,7 @@ Semaphore::~Semaphore()
 
 void Semaphore::post()
 {
-	ReleaseSemaphore(m_sem, 1, NULL);
+	ReleaseSemaphore(m_sem, 1, nullptr);
 }
 
 void Semaphore::wait()
