@@ -177,6 +177,15 @@ Lv2Proc::~Lv2Proc() { shutdownPlugin(); }
 
 
 
+void Lv2Proc::reload()
+{
+	shutdownPlugin();
+	initPlugin();
+}
+
+
+
+
 void Lv2Proc::dumpPorts()
 {
 	std::size_t num = 0;
@@ -438,10 +447,15 @@ void Lv2Proc::shutdownPlugin()
 {
 	if (m_valid)
 	{
+		if(m_worker) { m_worker.reset(); }
+
 		lilv_instance_deactivate(m_instance);
 		lilv_instance_free(m_instance);
 		m_instance = nullptr;
+
+		m_features.clear();
 	}
+	m_valid = true;
 }
 
 

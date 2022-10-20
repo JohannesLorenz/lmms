@@ -57,6 +57,8 @@ public:
 	Lv2Instrument(InstrumentTrack *instrumentTrackArg,
 		 Descriptor::SubPluginFeatures::Key* key);
 	~Lv2Instrument() override;
+	void reload();
+	void onSampleRateChanged();
 	//! Must be checked after ctor or reload
 	bool isValid() const;
 
@@ -103,6 +105,7 @@ private:
 #ifdef LV2_INSTRUMENT_USE_MIDI
 	int m_runningNotes[NumKeys];
 #endif
+	void clearRunningNotes();
 
 	friend class gui::Lv2InsView;
 };

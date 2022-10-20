@@ -60,6 +60,9 @@ private slots:
 	void changeControl();
 
 private:
+	void onSampleRateChanged();
+	void reload();
+
 	DataFile::Types settingsType() override;
 	void setNameFromFile(const QString &name) override;
 
