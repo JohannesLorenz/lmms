@@ -194,6 +194,10 @@ jobs:
           ../cmake/build_win${{ matrix.arch }}.sh
       - name: Build
         run: cmake --build build
+      - name: Run tests
+        run: |
+          cd build/tests
+          WINEPREFIX=/tmp/lmms-wineprefix wine ctest --output-on-failure -j2
       - name: Package
         run: cmake --build build --target package
       - name: Upload artifacts
@@ -284,6 +288,10 @@ jobs:
             ${{ steps.cache-deps.outputs.cache-hit == 'true' && 'NO' || 'YES' }}
       - name: Build
         run: cmake --build build
+      - name: Run tests
+        run: |
+          $result = & "ctest" "--test-dir" "build"
+          if($result.Matches.Count -eq 0) { exit 1 }
       - name: Package
         run: cmake --build build --target package
       - name: Upload artifacts
