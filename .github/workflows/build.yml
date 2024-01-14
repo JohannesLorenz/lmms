@@ -171,7 +171,10 @@ jobs:
         run: |
           add-apt-repository ppa:git-core/ppa
           apt-get update
-          apt-get --yes install git
+          apt-get --yes install git wine-stable p7zip-full
+          dpkg --add-architecture i386  # add i386 arch for wine32
+          apt-get --yes update
+          apt-get --yes install wine32
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Check out
         uses: actions/checkout@v3
