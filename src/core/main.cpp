@@ -394,7 +394,7 @@ int main( int argc, char * * argv )
 	else { qDebug() << "SUIL_MODULE_DIR already set to" << qgetenv("SUIL_MODULE_DIR"); }
 
 	suil_init(&argc, &argv, SUIL_ARG_NONE);
-#endif
+#endif // LMMS_HAVE_SUIL
 
 	// second of two command-line parsing stages
 	for( int i = 1; i < argc; ++i )
