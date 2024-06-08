@@ -41,13 +41,11 @@
 #include "SongEditor.h"
 
 #include <QApplication>
-#include <QDebug>
 #include <QDir>
 #include <QtGlobal>
 #include <QLabel>
 #include <QMessageBox>
 #include <QSplashScreen>
-#include <QtGlobal>
 
 #ifdef LMMS_BUILD_WIN32
 #include <windows.h>
@@ -105,30 +103,6 @@ GuiApplication::GuiApplication()
 #ifdef LMMS_BUILD_APPLE
 	QApplication::setAttribute(Qt::AA_DontShowIconsInMenus, true);
 #endif
-
-#ifdef LMMS_HAVE_SUIL
-	if(qgetenv("SUIL_MODULE_DIR").isEmpty())
-	{
-		qDebug() << "ApplicationDirPath:" << qApp->applicationDirPath();
-// Load Suil modules from a bundled application
-#if defined(LMMS_BUILD_WIN32)
-		if(qApp->applicationDirPath().contains("/Program Files/")) {
-			qputenv("SUIL_MODULE_DIR", qApp->applicationDirPath().append("/../suil-0/").toUtf8());
-		}
-#elif defined(LMMS_BUILD_APPLE)
-		if(qApp->applicationDirPath().endsWith("/Contents/MacOS")) {
-			qputenv("SUIL_MODULE_DIR", qApp->applicationDirPath().append("/../Frameworks/suil-0/").toUtf8());
-		}
-#else
-		if(qApp->applicationDirPath().contains("/squashfs-root/") ||
-				qApp->applicationDirPath().contains("/.mount_lmms-") ||
-				qApp->applicationDirPath().startsWith("/opt/lmms/")) {
-			qputenv("SUIL_MODULE_DIR", qApp->applicationDirPath().append("/../lib/suil-0/").toUtf8());
-		}
-#endif
-	}
-	else { qDebug() << "SUIL_MODULE_DIR already set to" << qgetenv("SUIL_MODULE_DIR"); }
-#endif // LMMS_HAVE_SUIL
 
 	// Show splash screen
 	QSplashScreen splashScreen( embed::getIconPixmap( "splash" ) );

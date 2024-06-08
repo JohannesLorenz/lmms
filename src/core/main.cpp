@@ -313,11 +313,6 @@ int main( int argc, char * * argv )
 	bool renderTracks = false;
 	QString fileToLoad, fileToImport, renderOut, profilerOutputFile, configFile;
 
-	// Arguments shall always be passed to suil before anything else
-#ifdef LMMS_HAVE_SUIL
-	suil_init(&argc, &argv, SUIL_ARG_NONE);
-#endif
-
 	// first of two command-line parsing stages
 	for( int i = 1; i < argc; ++i )
 	{
@@ -372,6 +367,34 @@ int main( int argc, char * * argv )
 	AudioEngine::qualitySettings qs(AudioEngine::qualitySettings::Interpolation::Linear);
 	OutputSettings os( 44100, OutputSettings::BitRateSettings(160, false), OutputSettings::BitDepth::Depth16Bit, OutputSettings::StereoMode::JointStereo );
 	ProjectRenderer::ExportFileFormat eff = ProjectRenderer::ExportFileFormat::Wave;
+
+	// Arguments shall always be passed to suil before anything else
+	// we are not 100% compliant here...
+#ifdef LMMS_HAVE_SUIL
+	if(qgetenv("SUIL_MODULE_DIR").isEmpty())
+	{
+		qDebug() << "ApplicationDirPath:" << qApp->applicationDirPath();
+		// Load Suil modules from a bundled application
+#if defined(LMMS_BUILD_WIN32)
+		if(qApp->applicationDirPath().contains("/Program Files/")) {
+			qputenv("SUIL_MODULE_DIR", qApp->applicationDirPath().append("/../suil-0/").toUtf8());
+		}
+#elif defined(LMMS_BUILD_APPLE)
+		if(qApp->applicationDirPath().endsWith("/Contents/MacOS")) {
+			qputenv("SUIL_MODULE_DIR", qApp->applicationDirPath().append("/../Frameworks/suil-0/").toUtf8());
+		}
+#else
+		if(qApp->applicationDirPath().contains("/squashfs-root/") ||
+				qApp->applicationDirPath().contains("/.mount_lmms-") ||
+				qApp->applicationDirPath().startsWith("/opt/lmms/")) {
+			qputenv("SUIL_MODULE_DIR", qApp->applicationDirPath().append("/../lib/suil-0/").toUtf8());
+		}
+#endif
+	}
+	else { qDebug() << "SUIL_MODULE_DIR already set to" << qgetenv("SUIL_MODULE_DIR"); }
+
+	suil_init(&argc, &argv, SUIL_ARG_NONE);
+#endif
 
 	// second of two command-line parsing stages
 	for( int i = 1; i < argc; ++i )
