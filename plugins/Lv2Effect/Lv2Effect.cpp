@@ -72,15 +72,15 @@ Effect::ProcessStatus Lv2Effect::processImpl(SampleFrame* buf, const fpp_t frame
 {
 	Q_ASSERT(frames <= static_cast<fpp_t>(m_tmpOutputSmps.size()));
 
-	m_controls.copyBuffersFromLmms(buf, frames);
-	m_controls.copyModelsFromLmms();
+	m_controls.copyBuffersFromCore(buf, frames);
+	m_controls.copyModelsFromCore();
 
 //	m_pluginMutex.lock();
 	m_controls.run(frames);
 //	m_pluginMutex.unlock();
 
-	m_controls.copyModelsToLmms();
-	m_controls.copyBuffersToLmms(m_tmpOutputSmps.data(), frames);
+	m_controls.copyModelsToCore();
+	m_controls.copyBuffersToCore(m_tmpOutputSmps.data(), frames);
 
 	bool corrupt = wetLevel() < 0; // #3261 - if w < 0, bash w := 0, d := 1
 	const float d = corrupt ? 1 : dryLevel();
