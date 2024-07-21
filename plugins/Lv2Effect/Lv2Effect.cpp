@@ -1,7 +1,7 @@
 /*
  * Lv2Effect.cpp - implementation of LV2 effect
  *
- * Copyright (c) 2018-2023 Johannes Lorenz <jlsf2013$users.sourceforge.net, $=@>
+ * Copyright (c) 2018-2024 Johannes Lorenz <jlsf2013$users.sourceforge.net, $=@>
  *
  * This file is part of LMMS - https://lmms.io
  *
@@ -72,15 +72,15 @@ ProcessStatus Lv2Effect::processImpl(std::span<SampleFrame> inOut)
 {
 	Q_ASSERT(inOut.size() <= static_cast<fpp_t>(m_tmpOutputSmps.size()));
 
-	m_controls.copyBuffersFromLmms(inOut.data(), inOut.size());
-	m_controls.copyModelsFromLmms();
+	m_controls.copyBuffersFromCore(inOut.data(), inOut.size());
+	m_controls.copyModelsFromCore();
 
 //	m_pluginMutex.lock();
 	m_controls.run(inOut.size());
 //	m_pluginMutex.unlock();
 
-	m_controls.copyModelsToLmms();
-	m_controls.copyBuffersToLmms(m_tmpOutputSmps.data(), inOut.size());
+	m_controls.copyModelsToCore();
+	m_controls.copyBuffersToCore(m_tmpOutputSmps.data(), inOut.size());
 
 	bool corrupt = wetLevel() < 0; // #3261 - if w < 0, bash w := 0, d := 1
 	const float d = corrupt ? 1 : dryLevel();

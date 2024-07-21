@@ -1,7 +1,7 @@
 /*
  * Lv2Instrument.h - implementation of LV2 instrument
  *
- * Copyright (c) 2018-2023 Johannes Lorenz <jlsf2013$users.sourceforge.net, $=@>
+ * Copyright (c) 2018-2024 Johannes Lorenz <jlsf2013$users.sourceforge.net, $=@>
  *
  * This file is part of LMMS - https://lmms.io
  *
@@ -30,8 +30,8 @@
 
 #include "Instrument.h"
 #include "InstrumentView.h"
-#include "Lv2ControlBase.h"
-#include "Lv2ViewBase.h"
+#include "Lv2ProcView.h"
+#include "Lv2Proc.h"
 #include "Note.h"
 
 // whether to use MIDI vs playHandle
@@ -49,7 +49,7 @@ class Lv2InsView;
 }
 
 // TODO: Add support for pin connector and a variable number of audio input/output ports
-class Lv2Instrument : public Instrument, public Lv2ControlBase
+class Lv2Instrument : public Instrument, public Lv2Proc
 {
 	Q_OBJECT
 signals:
@@ -74,7 +74,7 @@ public:
 	/*
 		realtime funcs
 	*/
-	bool hasNoteInput() const override { return Lv2ControlBase::hasNoteInput(); }
+	bool hasNoteInput() const override { return Lv2Proc::hasNoteInput(); }
 #ifdef LV2_INSTRUMENT_USE_MIDI
 	bool handleMidiEvent(const MidiEvent &event,
 		const TimePos &time = TimePos(), f_cnt_t offset = 0) override;
@@ -107,7 +107,7 @@ namespace gui
 {
 
 
-class Lv2InsView : public InstrumentView, public Lv2ViewBase
+class Lv2InsView : public InstrumentView, public Lv2ProcView
 {
 Q_OBJECT
 public:
