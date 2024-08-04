@@ -68,8 +68,6 @@ public:
 	InstrumentTrackWindow( InstrumentTrackView * _tv );
 	~InstrumentTrackWindow() override;
 
-	void resizeEvent(QResizeEvent* event) override;
-
 
 	// parent for all internal tab-widgets
 	TabWidget * tabWidgetParent()
