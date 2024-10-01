@@ -264,6 +264,7 @@ InstrumentTrackWindow::InstrumentTrackWindow( InstrumentTrackView * _itv ) :
 	m_tabWidget->addTab(m_midiView, tr("MIDI"), "midi_tab", 4);
 	m_tabWidget->addTab(m_tuningView, tr("Tuning and transposition"), "tuning_tab", 5);
 
+
 	// setup piano-widget
 	m_pianoView = new PianoView( this );
 	m_pianoView->setMinimumHeight( PIANO_HEIGHT );
