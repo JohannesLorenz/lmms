@@ -97,7 +97,9 @@ private:
 
 	widgetStack m_widgets;
 
+	//! whether the TabWidget itself is, in principle, resizable, or not
 	bool	m_resizable;
+	//! whether at least one child has fixed size, forcing the TabWidget to be fixed, too
 	bool	m_fixedDueToChild = false;
 	int 	m_activeTab;
 	QString m_caption;      // Tab caption, used as the tooltip text on icon tabs
