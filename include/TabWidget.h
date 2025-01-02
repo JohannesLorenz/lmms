@@ -43,8 +43,8 @@ public:
 	TabWidget(const QString& caption, QWidget* parent,
 				bool usePixmap = false, bool resizable = false);
 	~TabWidget() override = default;
-
-	void addTab(QWidget* w, const QString& name, const char* pixmap = nullptr, int idx = -1);
+	
+	void addTab(QWidget* w, const QString& name, const char* pixmap = nullptr, int idx = -1, bool fixedSize = false);
 
 	void setActiveTab(int idx);
 
@@ -98,6 +98,7 @@ private:
 	widgetStack m_widgets;
 
 	bool	m_resizable;
+	bool	m_fixedDueToChild = false;
 	int 	m_activeTab;
 	QString m_caption;      // Tab caption, used as the tooltip text on icon tabs
 	quint8 	m_tabbarHeight; // The height of the tab bar

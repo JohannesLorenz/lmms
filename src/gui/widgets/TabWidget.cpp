@@ -68,7 +68,7 @@ TabWidget::TabWidget(const QString& caption, QWidget* parent, bool usePixmap,
 
 }
 
-void TabWidget::addTab(QWidget* w, const QString& name, const char* pixmap, int idx)
+void TabWidget::addTab(QWidget* w, const QString& name, const char* pixmap, int idx, bool fixedSize)
 {
 	// Append tab when position is not given
 	if (idx < 0/* || m_widgets.contains(idx) == true*/)
@@ -85,14 +85,15 @@ void TabWidget::addTab(QWidget* w, const QString& name, const char* pixmap, int 
 	widgetDesc d = {w, pixmap, name, tab_width};
 	m_widgets[idx] = d;
 
-	// Position tab's window
+	// Position tab's window and update size
 	if (!m_resizable)
 	{
 		w->setFixedSize(width() - 4, height() - m_tabbarHeight);
 	}
 	else
 	{
-		w->setSizePolicy(sizePolicy());
+		if(fixedSize)
+			w->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	}
 	if(w->minimumHeight() > minimumHeight() || w->minimumSizeHint().height() > minimumHeight()) { setMinimumHeight(w->minimumHeight()); }
 	if(w->minimumWidth() > minimumWidth() || w->minimumSizeHint().width() > minimumWidth()) { setMinimumWidth(w->minimumWidth()); }

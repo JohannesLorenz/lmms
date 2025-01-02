@@ -24,6 +24,7 @@
 
 #include "InstrumentTrackWindow.h"
 
+#include <QDebug>
 #include <QDir>
 #include <QDropEvent>
 #include <QHBoxLayout>
@@ -503,7 +504,7 @@ void InstrumentTrackWindow::updateInstrumentView()
 	if( m_track->m_instrument != nullptr )
 	{
 		m_instrumentView = m_track->m_instrument->createView( m_tabWidget );
-		m_tabWidget->addTab( m_instrumentView, tr( "Plugin" ), "plugin_tab", 0 );
+		m_tabWidget->addTab( m_instrumentView, tr( "Plugin" ), "plugin_tab", 0, !m_instrumentView->isResizable() );
 		m_tabWidget->setActiveTab( 0 );
 
 		m_ssView->setFunctionsHidden(m_track->m_instrument->isSingleStreamed());

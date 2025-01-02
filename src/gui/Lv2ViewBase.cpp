@@ -350,6 +350,7 @@ Lv2ViewProc::Lv2ViewProc(QWidget* parent, Lv2Proc* proc, int colNum) :
 			setSizePolicy(expanding);
 			parent->setSizePolicy(expanding);
 		}
+		// "Plugin UI is resizable" / "Plugin UI is not resizable"
 		qDebug() << "Plugin UI" << (m_isResizable ? "is" : "is not") << "resizable";
 
 		m_timer = new Timer(this);
