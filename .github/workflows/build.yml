@@ -60,7 +60,7 @@ jobs:
         run: |
           build/install/bin/lmms --version | grep "Copyright (c) .* LMMS Developers"
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: linux
           path: build/lmms-*.AppImage
@@ -144,7 +144,7 @@ jobs:
         run: |
           build/LMMS.app/Contents/MacOS/lmms --version | grep "Copyright (c) .* LMMS Developers"
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos
           path: build/lmms-*.dmg
@@ -222,7 +222,7 @@ jobs:
         run: |
           WINEPREFIX=/tmp/lmms-wineprefix wine "build/install/lmms.exe" --version | grep "Copyright (c) .* LMMS Developers"
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mingw${{ matrix.arch }}
           path: build/lmms-*.exe
@@ -332,7 +332,7 @@ jobs:
             $result = & "${env:ProgramFiles${{ matrix.config.programfiles-suffix }}}/LMMS/lmms.exe" "--version" | Select-String -Pattern "Copyright \(c\) .* LMMS Developers"
             if($result.Matches.Count -eq 0) { exit 1 }
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: msvc-${{ matrix.config.arch }}
           path: build\lmms-*.exe
