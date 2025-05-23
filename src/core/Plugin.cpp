@@ -50,7 +50,7 @@ static Plugin::Descriptor dummyPluginDescriptor =
 	QT_TRANSLATE_NOOP( "PluginBrowser", "no description" ),
 	"Tobias Doerffel <tobydox/at/users.sf.net>",
 	0x0100,
-	Plugin::Undefined,
+	Plugin::Type::Undefined,
 	&dummyLoader,
 	nullptr
 } ;
@@ -69,13 +69,6 @@ Plugin::Plugin(const Descriptor * descriptor, Model * parent, const
 	{
 		m_descriptor = &dummyPluginDescriptor;
 	}
-}
-
-
-
-
-Plugin::~Plugin()
-{
 }
 
 
@@ -233,8 +226,8 @@ Plugin * Plugin::instantiate(const QString& pluginName, Model * parent,
 	}
 	else
 	{
-		InstantiationHook instantiationHook;
-		if ((instantiationHook = ( InstantiationHook ) pi.library->resolve( "lmms_plugin_main" )))
+		auto instantiationHook = reinterpret_cast<InstantiationHook>(pi.library->resolve("lmms_plugin_main"));
+		if (instantiationHook)
 		{
 			inst = instantiationHook(parent, data);
 			if(inst)

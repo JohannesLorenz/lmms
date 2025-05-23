@@ -37,13 +37,15 @@
 // general LMMS includes
 #include "DataFile.h"
 #include "LinkedModelGroups.h"
-#include "lmms_basics.h"
+#include "LmmsTypes.h"
 
 // includes from the spa library
 #include <spa/spa_fwd.h>
 
 namespace lmms
 {
+
+class SampleFrame;
 
 namespace gui
 {
@@ -57,7 +59,7 @@ class SpaControlBase : public LinkedModelGroups
 	friend class gui::SpaViewBase;
 public:
 	SpaControlBase(Model *that, const QString &uniqueName,
-				DataFile::Types settingsType);
+				DataFile::Type settingsType);
 	~SpaControlBase() override;
 
 	std::vector<std::unique_ptr<SpaProc>>& controls() { return m_procs; }
@@ -74,8 +76,8 @@ public:
 	bool hasUi() const;
 	void uiExtShow(bool doShow);
 	void copyModelsFromLmms();
-	void copyBuffersFromLmms(const sampleFrame *buf, fpp_t frames);
-	void copyBuffersToLmms(sampleFrame *buf, fpp_t frames) const;
+	void copyBuffersFromLmms(const SampleFrame *buf, fpp_t frames);
+	void copyBuffersToLmms(SampleFrame *buf, fpp_t frames) const;
 	void run(unsigned frames);
 
 	AutomatableModel *modelAtPort(const QString &dest);

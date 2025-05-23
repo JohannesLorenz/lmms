@@ -22,17 +22,18 @@
  *
  */
 
-#ifndef AUTOMATABLE_MODEL_H
-#define AUTOMATABLE_MODEL_H
+#ifndef LMMS_AUTOMATABLE_MODEL_H
+#define LMMS_AUTOMATABLE_MODEL_H
 
+#include <cmath>
 #include <QMap>
 #include <QMutex>
+#include <QRegularExpression>
 
 #include "JournallingObject.h"
 #include "Model.h"
 #include "TimePos.h"
 #include "ValueBuffer.h"
-#include "MemoryManager.h"
 #include "ModelVisitor.h"
 
 
@@ -76,12 +77,10 @@ class ControllerConnection;
 class LMMS_EXPORT AutomatableModel : public Model, public JournallingObject
 {
 	Q_OBJECT
-	MM_OPERATORS
 public:
+	using AutoModelVector = std::vector<AutomatableModel*>;
 
-	typedef QVector<AutomatableModel *> AutoModelVector;
-
-	enum ScaleType
+	enum class ScaleType
 	{
 		Linear,
 		Logarithmic,
@@ -145,7 +144,7 @@ public:
 	template<bool>
 	static bool castValue( const float v )
 	{
-		return ( qRound( v ) != 0 );
+		return (std::round(v) != 0);
 	}
 
 
@@ -232,11 +231,11 @@ public:
 	}
 	void setScaleLogarithmic( bool setToTrue = true )
 	{
-		setScaleType( setToTrue ? Logarithmic : Linear );
+		setScaleType( setToTrue ? ScaleType::Logarithmic : ScaleType::Linear );
 	}
 	bool isScaleLogarithmic() const
 	{
-		return m_scaleType == Logarithmic;
+		return m_scaleType == ScaleType::Logarithmic;
 	}
 
 	void setStep( const float step );
@@ -504,10 +503,8 @@ public:
 	QString displayValue( const float val ) const override;
 } ;
 
-typedef QMap<AutomatableModel*, float> AutomatedValueMap;
-
+using AutomatedValueMap = QMap<AutomatableModel*, float>;
 
 } // namespace lmms
 
-#endif
-
+#endif // LMMS_AUTOMATABLE_MODEL_H

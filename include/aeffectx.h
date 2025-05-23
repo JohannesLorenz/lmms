@@ -22,7 +22,6 @@
  *
  */
 
-
 #ifndef AEFFECTX_H
 #define AEFFECTX_H
 
@@ -296,8 +295,6 @@ public:
 
 } ;
 
+using audioMasterCallback = intptr_t (VST_CALL_CONV*)(AEffect*, int32_t, int32_t, intptr_t, void*, float);
 
-
-typedef intptr_t (VST_CALL_CONV * audioMasterCallback)( AEffect * , int32_t, int32_t, intptr_t, void * , float );
-
-#endif
+#endif // AEFFECTX_H

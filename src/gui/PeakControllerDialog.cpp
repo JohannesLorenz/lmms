@@ -45,19 +45,13 @@ PeakControllerDialog::PeakControllerDialog( Controller * _model, QWidget * _pare
 	
 	setToolTip(tr("LFO Controller"));
 
-	QLabel * l = new QLabel( this );
+	auto l = new QLabel(this);
 	l->setText( "Use FX's controls" );
 	l->move(10, 10);
 
 	setModel( _model );
 }
 
-
-
-
-PeakControllerDialog::~PeakControllerDialog()
-{
-}
 
 
 

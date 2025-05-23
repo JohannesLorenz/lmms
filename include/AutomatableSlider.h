@@ -22,9 +22,8 @@
  *
  */
 
-
-#ifndef AUTOMATABLE_SLIDER_H
-#define AUTOMATABLE_SLIDER_H
+#ifndef LMMS_GUI_AUTOMATABLE_SLIDER_H
+#define LMMS_GUI_AUTOMATABLE_SLIDER_H
 
 #include <QSlider>
 
@@ -39,7 +38,7 @@ class AutomatableSlider : public QSlider, public IntModelView
 	Q_OBJECT
 public:
 	AutomatableSlider( QWidget * _parent, const QString & _name = QString() );
-	~AutomatableSlider() override;
+	~AutomatableSlider() override = default;
 
 	bool showStatus()
 	{
@@ -73,8 +72,8 @@ private slots:
 } ;
 
 
-typedef IntModel sliderModel;
+using sliderModel = IntModel;
 
 } // namespace lmms::gui
 
-#endif
+#endif // LMMS_GUI_AUTOMATABLE_SLIDER_H

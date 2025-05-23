@@ -31,6 +31,7 @@
 #include "ControllerConnection.h"
 #include "embed.h"
 #include "GuiApplication.h"
+#include "KeyboardShortcuts.h"
 #include "MainWindow.h"
 #include "StringPairDrag.h"
 #include "Clipboard.h"
@@ -55,7 +56,7 @@ void AutomatableModelView::addDefaultActions( QMenu* menu )
 {
 	AutomatableModel* model = modelUntyped();
 
-	AutomatableModelViewSlots* amvSlots = new AutomatableModelViewSlots( this, menu );
+	auto amvSlots = new AutomatableModelViewSlots(this, menu);
 
 	menu->addAction( embed::getIconPixmap( "reload" ),
 						AutomatableModel::tr( "&Reset (%1%2)" ).
@@ -171,12 +172,12 @@ void AutomatableModelView::unsetModel()
 
 void AutomatableModelView::mousePressEvent( QMouseEvent* event )
 {
-	if( event->button() == Qt::LeftButton && event->modifiers() & Qt::ControlModifier )
+	if (event->button() == Qt::LeftButton && event->modifiers() & KBD_COPY_MODIFIER)
 	{
 		new gui::StringPairDrag( "automatable_model", QString::number( modelUntyped()->id() ), QPixmap(), widget() );
 		event->accept();
 	}
-	else if( event->button() == Qt::MidButton )
+	else if( event->button() == Qt::MiddleButton )
 	{
 		modelUntyped()->reset();
 	}
@@ -230,7 +231,7 @@ void AutomatableModelViewSlots::execConnectionDialog()
 			// New
 			else
 			{
-				ControllerConnection* cc = new ControllerConnection(d.chosenController());
+				auto cc = new ControllerConnection(d.chosenController());
 				m->setControllerConnection( cc );
 				//cc->setTargetName( m->displayName() );
 			}

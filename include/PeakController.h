@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef PEAK_CONTROLLER_H
-#define PEAK_CONTROLLER_H
+#ifndef LMMS_PEAK_CONTROLLER_H
+#define LMMS_PEAK_CONTROLLER_H
 
 #include "Controller.h"
 #include "ControllerDialog.h"
@@ -36,8 +36,7 @@ namespace lmms
 
 class PeakControllerEffect;
 
-typedef QVector<PeakControllerEffect *> PeakControllerEffectVector;
-
+using PeakControllerEffectVector = std::vector<PeakControllerEffect*>;
 
 class LMMS_EXPORT PeakController : public Controller
 {
@@ -92,7 +91,7 @@ class PeakControllerDialog : public ControllerDialog
 	Q_OBJECT
 public:
 	PeakControllerDialog( Controller * _controller, QWidget * _parent );
-	~PeakControllerDialog() override;
+	~PeakControllerDialog() override = default;
 
 protected:
 	void contextMenuEvent( QContextMenuEvent * _me ) override;
@@ -108,4 +107,4 @@ protected:
 
 } // namespace lmms
 
-#endif
+#endif // LMMS_PEAK_CONTROLLER_H

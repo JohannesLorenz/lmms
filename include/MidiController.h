@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef MIDI_CONTROLLER_H
-#define MIDI_CONTROLLER_H
+#ifndef LMMS_MIDI_CONTROLLER_H
+#define LMMS_MIDI_CONTROLLER_H
 
 #include <QWidget>
 
@@ -48,8 +48,9 @@ class MidiController : public Controller, public MidiEventProcessor
 {
 	Q_OBJECT
 public:
+	static constexpr int NONE = -1;
 	MidiController( Model * _parent );
-	~MidiController() override;
+	~MidiController() override = default;
 
 	void processInEvent( const MidiEvent & _me,
 					const TimePos & _time, f_cnt_t offset = 0 ) override;
@@ -92,4 +93,4 @@ protected:
 
 } // namespace lmms
 
-#endif
+#endif // LMMS_MIDI_CONTROLLER_H

@@ -19,7 +19,7 @@
 
 namespace lmms {
 
-SpaProc::SpaProc(Model *parent, const spa::descriptor* desc, DataFile::Types settingsType) :
+SpaProc::SpaProc(Model *parent, const spa::descriptor* desc, DataFile::Type settingsType) :
 	LinkedModelGroup(parent),
 	m_spaDescriptor(desc),
 	m_ports(Engine::audioEngine()->framesPerPeriod()),
@@ -114,7 +114,7 @@ void SpaProc::loadFile(const QString &file, bool user)
 void SpaProc::reloadPlugin()
 {
 	// refresh ports that are only read on restore
-	m_ports.samplerate = Engine::audioEngine()->processingSampleRate();
+	m_ports.samplerate = Engine::audioEngine()->outputSampleRate();
 	int16_t fpp = Engine::audioEngine()->framesPerPeriod();
 	assert(fpp >= 0);
 	m_ports.buffersize = static_cast<unsigned>(fpp);
@@ -445,7 +445,7 @@ void SpaProc::initPlugin()
 //		m_pluginMutex.unlock();
 	}
 
-	m_ports.samplerate = Engine::audioEngine()->processingSampleRate();
+	m_ports.samplerate = Engine::audioEngine()->outputSampleRate();
 	spa::simple_vec<spa::simple_str> portNames =
 		m_spaDescriptor->port_names();
 	for (const spa::simple_str &portname : portNames)
@@ -528,7 +528,7 @@ unsigned SpaProc::netPort() const { return m_plugin->net_port(); }
 namespace detail {
 
 void copyBuffersFromCore(std::vector<float>& portBuf,
-	const sampleFrame *lmmsBuf,
+	const SampleFrame *lmmsBuf,
 	unsigned channel, fpp_t frames)
 {
 	for (std::size_t f = 0; f < static_cast<unsigned>(frames); ++f)
@@ -540,7 +540,7 @@ void copyBuffersFromCore(std::vector<float>& portBuf,
 
 
 
-void addBuffersFromCore(std::vector<float>& portBuf, const sampleFrame *lmmsBuf,
+void addBuffersFromCore(std::vector<float>& portBuf, const SampleFrame *lmmsBuf,
 	unsigned channel, fpp_t frames)
 {
 	for (std::size_t f = 0; f < static_cast<unsigned>(frames); ++f)
@@ -552,7 +552,7 @@ void addBuffersFromCore(std::vector<float>& portBuf, const sampleFrame *lmmsBuf,
 
 
 
-void copyBuffersToCore(const std::vector<float>& portBuf, sampleFrame *lmmsBuf,
+void copyBuffersToCore(const std::vector<float>& portBuf, SampleFrame *lmmsBuf,
 	unsigned channel, fpp_t frames)
 {
 	for (std::size_t f = 0; f < static_cast<unsigned>(frames); ++f)
@@ -563,7 +563,7 @@ void copyBuffersToCore(const std::vector<float>& portBuf, sampleFrame *lmmsBuf,
 
 } // namespace detail
 
-void SpaProc::copyBuffersFromCore(const sampleFrame *buf,
+void SpaProc::copyBuffersFromCore(const SampleFrame *buf,
 									unsigned offset, unsigned num,
 									fpp_t frames)
 {
@@ -584,7 +584,7 @@ void SpaProc::copyBuffersFromCore(const sampleFrame *buf,
 
 
 
-void SpaProc::copyBuffersToCore(sampleFrame* buf,
+void SpaProc::copyBuffersToCore(SampleFrame* buf,
 								unsigned offset, unsigned num,
 								fpp_t frames) const
 {

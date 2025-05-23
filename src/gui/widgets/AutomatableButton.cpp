@@ -29,6 +29,7 @@
 
 #include "CaptionMenu.h"
 #include "StringPairDrag.h"
+#include "KeyboardShortcuts.h"
 
 
 namespace lmms::gui
@@ -111,7 +112,7 @@ void AutomatableButton::contextMenuEvent( QContextMenuEvent * _me )
 void AutomatableButton::mousePressEvent( QMouseEvent * _me )
 {
 	if( _me->button() == Qt::LeftButton &&
-			! ( _me->modifiers() & Qt::ControlModifier ) )
+			! ( _me->modifiers() & KBD_COPY_MODIFIER ) )
 	{
         // User simply clicked, toggle if needed
 		if( isCheckable() )
@@ -126,7 +127,7 @@ void AutomatableButton::mousePressEvent( QMouseEvent * _me )
 		if( m_group )
 		{
 			// A group, we must get process it instead
-			AutomatableModelView* groupView = (AutomatableModelView*)m_group;
+			auto groupView = (AutomatableModelView*)m_group;
 			new StringPairDrag( "automatable_model",
 					QString::number( groupView->modelUntyped()->id() ),
 					QPixmap(), widget() );
@@ -192,10 +193,9 @@ automatableButtonGroup::automatableButtonGroup( QWidget * _parent,
 
 automatableButtonGroup::~automatableButtonGroup()
 {
-	for( QList<AutomatableButton *>::iterator it = m_buttons.begin();
-					it != m_buttons.end(); ++it )
+	for (const auto& button : m_buttons)
 	{
-		( *it )->m_group = nullptr;
+		button->m_group = nullptr;
 	}
 }
 

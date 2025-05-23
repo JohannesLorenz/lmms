@@ -36,9 +36,8 @@
 namespace lmms
 {
 
-
-typedef struct PortDescription port_desc_t;
-typedef QVector<port_desc_t *> multi_proc_t;
+struct port_desc_t;
+using multi_proc_t = QVector<port_desc_t*>;
 
 class LadspaEffect : public Effect
 {
@@ -48,9 +47,8 @@ public:
 			const Descriptor::SubPluginFeatures::Key * _key );
 	~LadspaEffect() override;
 
-	bool processAudioBuffer( sampleFrame * _buf,
-							const fpp_t _frames ) override;
-	
+	ProcessStatus processImpl(SampleFrame* buf, const fpp_t frames) override;
+
 	void setControl( int _control, LADSPA_Data _data );
 
 	EffectControls * controls() override

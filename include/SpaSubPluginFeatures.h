@@ -44,7 +44,7 @@ private:
 	static spa::descriptor *spaDescriptor(const Key &k);
 
 public:
-	SpaSubPluginFeatures(Plugin::PluginTypes _type);
+	SpaSubPluginFeatures(Plugin::Type _type);
 
 	virtual void fillDescriptionWidget(
 		QWidget *_parent, const Key *k) const override;

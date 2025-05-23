@@ -22,9 +22,8 @@
  *
  */
 
-
-#ifndef PATTERN_STORE_H
-#define PATTERN_STORE_H
+#ifndef LMMS_PATTERN_STORE_H
+#define LMMS_PATTERN_STORE_H
 
 #include "TrackContainer.h"
 #include "ComboBoxModel.h"
@@ -68,7 +67,7 @@ class LMMS_EXPORT PatternStore : public TrackContainer
 	mapPropertyFromModel(int, currentPattern, setCurrentPattern, m_patternComboBoxModel);
 public:
 	PatternStore();
-	~PatternStore() override;
+	~PatternStore() override = default;
 
 	virtual bool play(TimePos start, const fpp_t frames, const f_cnt_t frameBase, int clipNum = -1);
 
@@ -114,4 +113,4 @@ private:
 
 } // namespace lmms
 
-#endif
+#endif // LMMS_PATTERN_STORE_H

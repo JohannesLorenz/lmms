@@ -22,9 +22,8 @@
  *
  */
 
-
-#ifndef TRACK_CONTAINER_VIEW_H
-#define TRACK_CONTAINER_VIEW_H
+#ifndef LMMS_GUI_TRACK_CONTAINER_VIEW_H
+#define LMMS_GUI_TRACK_CONTAINER_VIEW_H
 
 #include <QVector>
 #include <QScrollArea>
@@ -148,6 +147,7 @@ public:
 		return "trackcontainerview";
 	}
 
+	unsigned int totalHeightOfTracks() const;
 
 	RubberBand *rubberBand() const;
 
@@ -166,25 +166,17 @@ public slots:
 
 
 protected:
-	static const int DEFAULT_PIXELS_PER_BAR = 16;
-
-	void resizeEvent( QResizeEvent * ) override;
+	static const int DEFAULT_PIXELS_PER_BAR = 128;
 
 	TimePos m_currentPosition;
 
 
 private:
-	enum Actions
-	{
-		AddTrack,
-		RemoveTrack
-	} ;
-
 	class scrollArea : public QScrollArea
 	{
 	public:
 		scrollArea( TrackContainerView* parent );
-		~scrollArea() override;
+		~scrollArea() override = default;
 
 	protected:
 		void wheelEvent( QWheelEvent * _we ) override;
@@ -196,7 +188,7 @@ private:
 	friend class TrackContainerView::scrollArea;
 
 	TrackContainer* m_tc;
-	typedef QList<TrackView *> trackViewList;
+	using trackViewList = QList<TrackView*>;
 	trackViewList m_trackViews;
 
 	scrollArea * m_scrollArea;
@@ -206,10 +198,9 @@ private:
 
 	RubberBand * m_rubberBand;
 
-
-
 signals:
 	void positionChanged( const lmms::TimePos & _pos );
+	void tracksRealigned();
 
 
 } ;
@@ -219,4 +210,4 @@ signals:
 
 } // namespace lmms
 
-#endif
+#endif // LMMS_GUI_TRACK_CONTAINER_VIEW_H

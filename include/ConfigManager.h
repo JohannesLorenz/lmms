@@ -22,18 +22,17 @@
  *
  */
 
-
-#ifndef CONFIG_MGR_H
-#define CONFIG_MGR_H
+#ifndef LMMS_CONFIG_MANAGER_H
+#define LMMS_CONFIG_MANAGER_H
 
 #include "lmmsconfig.h"
 
 #include <QMap>
 #include <QPair>
 #include <QStringList>
-#include <QVector>
 #include <QObject>
 
+#include <vector>
 #include "lmms_export.h"
 
 
@@ -221,6 +220,8 @@ public:
 		return m_recentlyOpenedProjects;
 	}
 
+	const QStringList& favoriteItems() { return m_favoriteItems; }
+
 	QString localeDir() const
 	{
 		return m_dataDir + LOCALE_PATH;
@@ -237,6 +238,7 @@ public:
 
 	QString defaultVersion() const;
 
+	static bool enableBlockedPlugins();
 
 	static QStringList availableVstEmbedMethods();
 	QString vstEmbedMethod() const;
@@ -246,11 +248,12 @@ public:
 
 	void addRecentlyOpenedProject(const QString & _file);
 
-	const QString & value(const QString & cls,
-					const QString & attribute) const;
-	const QString & value(const QString & cls,
-					const QString & attribute,
-					const QString & defaultVal) const;
+	void addFavoriteItem(const QString& item);
+	void removeFavoriteItem(const QString& item);
+	bool isFavoriteItem(const QString& item);
+
+	QString value(const QString& cls, const QString& attribute, const QString& defaultVal = "") const;
+
 	void setValue(const QString & cls, const QString & attribute,
 						const QString & value);
 	void deleteValue(const QString & cls, const QString & attribute);
@@ -275,6 +278,7 @@ public:
 
 signals:
 	void valueChanged( QString cls, QString attribute, QString value );
+	void favoritesChanged();
 
 private:
 	static ConfigManager * s_instanceOfMe;
@@ -310,9 +314,10 @@ private:
 	QString m_version;
 	unsigned int m_configVersion;
 	QStringList m_recentlyOpenedProjects;
+	QStringList m_favoriteItems;
 
-	typedef QVector<QPair<QString, QString> > stringPairVector;
-	typedef QMap<QString, stringPairVector> settingsMap;
+	using stringPairVector = std::vector<QPair<QString, QString>>;
+	using settingsMap = QMap<QString, stringPairVector>;
 	settingsMap m_settings;
 
 
@@ -322,4 +327,4 @@ private:
 
 } // namespace lmms
 
-#endif
+#endif // LMMS_CONFIG_MANAGER_H

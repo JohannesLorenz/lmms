@@ -22,9 +22,8 @@
  *
  */
 
-
-#ifndef CAPTION_MENU_H
-#define CAPTION_MENU_H
+#ifndef LMMS_GUI_CAPTION_MENU_H
+#define LMMS_GUI_CAPTION_MENU_H
 
 #include <QMenu>
 
@@ -41,10 +40,10 @@ class LMMS_EXPORT CaptionMenu : public QMenu
 	Q_OBJECT
 public:
 	CaptionMenu( const QString & _title, QWidget * _parent = 0 );
-	~CaptionMenu() override;
+	~CaptionMenu() override = default;
 } ;
 
 
 } // namespace lmms::gui
 
-#endif
+#endif // LMMS_GUI_CAPTION_MENU_H

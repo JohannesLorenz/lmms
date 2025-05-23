@@ -28,9 +28,9 @@
 
 #include "Instrument.h"
 #include "InstrumentView.h"
+#include "Sample.h"
 #include "SampleBuffer.h"
 #include "AutomatableModel.h"
-#include "MemoryManager.h"
 
 namespace lmms
 {
@@ -60,7 +60,7 @@ public:
 	~PatmanInstrument() override;
 
 	void playNote( NotePlayHandle * _n,
-						sampleFrame * _working_buffer ) override;
+						SampleFrame* _working_buffer ) override;
 	void deleteNotePluginData( NotePlayHandle * _n ) override;
 
 
@@ -71,9 +71,9 @@ public:
 
 	QString nodeName() const override;
 
-	f_cnt_t desiredReleaseFrames() const override
+	float desiredReleaseTimeMs() const override
 	{
-		return( 128 );
+		return 3.f;
 	}
 
 	gui::PluginView* instantiateView( QWidget * _parent ) override;
@@ -84,31 +84,30 @@ public slots:
 
 
 private:
-	typedef struct
+	struct handle_data
 	{
-		MM_OPERATORS
-		SampleBuffer::handleState* state;
+		Sample::PlaybackState* state;
 		bool tuned;
-		SampleBuffer* sample;
-	} handle_data;
+		std::shared_ptr<Sample> sample;
+	};
 
 	QString m_patchFile;
-	QVector<SampleBuffer *> m_patchSamples;
+	QVector<std::shared_ptr<Sample>> m_patchSamples;
 	BoolModel m_loopedModel;
 	BoolModel m_tunedModel;
 
 
-	enum LoadErrors
+	enum class LoadError
 	{
-		LoadOK,
-		LoadOpen,
-		LoadNotGUS,
-		LoadInstruments,
-		LoadLayers,
-		LoadIO
+		OK,
+		Open,
+		NotGUS,
+		Instruments,
+		Layers,
+		IO
 	} ;
 
-	LoadErrors loadPatch( const QString & _filename );
+	LoadError loadPatch( const QString & _filename );
 	void unloadCurrentPatch();
 
 	void selectSample( NotePlayHandle * _n );
@@ -131,7 +130,7 @@ class PatmanView : public InstrumentViewFixedSize
 	Q_OBJECT
 public:
 	PatmanView( Instrument * _instrument, QWidget * _parent );
-	~PatmanView() override;
+	~PatmanView() override = default;
 
 
 public slots:

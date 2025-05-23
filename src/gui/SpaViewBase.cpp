@@ -35,7 +35,7 @@
 #include "Controls.h"
 #include "embed.h"
 #include "Engine.h"
-#include "gui_templates.h"
+#include "FontHelper.h"
 #include "SpaControlBase.h"
 #include "SpaOscModel.h"
 #include "SpaProc.h"
@@ -61,7 +61,7 @@ SpaViewBase::SpaViewBase(QWidget* meAsWidget, SpaControlBase *ctrlBase)
 		m_toggleUIButton->setChecked(false);
 		m_toggleUIButton->setIcon(embed::getIconPixmap("zoom"));
 		m_toggleUIButton->setFont(
-			pointSize<8>(m_toggleUIButton->font()));
+			adjustedToPixelSize(m_toggleUIButton->font(), 8));
 		m_toggleUIButton->setWhatsThis(
 			QObject::tr("Click here to show or hide the "
 				"graphical user interface (GUI)"));

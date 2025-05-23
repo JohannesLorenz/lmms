@@ -42,7 +42,7 @@ namespace lmms
 //! Class to keep track of all SPA plugins
 class SpaManager
 {
-	Plugin::PluginTypes computePluginType(spa::descriptor *desc);
+	Plugin::Type computePluginType(spa::descriptor *desc);
 
 public:
 	struct SpaInfo
@@ -51,7 +51,7 @@ public:
 		/*const*/ QString m_path;
 		QLibrary *m_lib = nullptr;
 		spa::descriptor *m_descriptor;
-		Plugin::PluginTypes m_type;
+		Plugin::Type m_type;
 		SpaInfo(const SpaInfo &) = delete;
 		SpaInfo() = default;
 		void cleanup();

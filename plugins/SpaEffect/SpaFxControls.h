@@ -42,7 +42,7 @@ class SpaFxControls : public EffectControls, public SpaControlBase
 {
 	Q_OBJECT
 
-	//DataFile::Types settingsType() override;
+	//DataFile::Type settingsType() override;
 	void setNameFromFile(const QString &name) override;
 
 public:

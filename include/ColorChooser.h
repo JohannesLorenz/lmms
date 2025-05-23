@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef COLOR_CHOOSER_H
-#define COLOR_CHOOSER_H
+#ifndef LMMS_GUI_COLOR_CHOOSER_H
+#define LMMS_GUI_COLOR_CHOOSER_H
 
 #include <QApplication>
 #include <QColor>
@@ -34,13 +34,13 @@ namespace lmms::gui
 {
 
 
-class ColorChooser: public QColorDialog
+class ColorChooser : public QColorDialog
 {
 public:
 	ColorChooser(const QColor &initial, QWidget *parent): QColorDialog(initial, parent) {};
 	ColorChooser(QWidget *parent): QColorDialog(parent) {};
 	//! For getting a color without having to initialise a color dialog
-	ColorChooser() {};
+	ColorChooser() = default;
 	enum class Palette {Default, Track, Mixer};
 	//! Set global palette via array, checking bounds
 	void setPalette (QVector<QColor>);
@@ -68,5 +68,4 @@ private:
 
 } // namespace lmms::gui
 
-#endif
-
+#endif // LMMS_GUI_COLOR_CHOOSER_H

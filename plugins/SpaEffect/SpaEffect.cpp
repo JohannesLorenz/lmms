@@ -43,10 +43,10 @@ Plugin::Descriptor PLUGIN_EXPORT spaeffect_plugin_descriptor =
 		"plugin for using arbitrary SPA-effects inside LMMS."),
 	"Johannes Lorenz <j.git$$$lorenz-ho.me, $$$=@>",
 	0x0100,
-	Plugin::Effect,
+	Plugin::Type::Effect,
 	new PluginPixmapLoader("logo"),
 	nullptr,
-	new SpaSubPluginFeatures(Plugin::Effect)
+	new SpaSubPluginFeatures(Plugin::Type::Effect)
 };
 
 }
@@ -61,13 +61,8 @@ SpaEffect::~SpaEffect()
 {
 }
 
-bool SpaEffect::processAudioBuffer(sampleFrame *buf, const fpp_t frames)
+Effect::ProcessStatus SpaEffect::processImpl(SampleFrame *buf, const fpp_t frames)
 {
-	if(!isEnabled() || !isRunning())
-	{
-		return false;
-	}
-
 	SpaFxControls& ctrl = m_controls;
 
 	ctrl.copyBuffersFromLmms(buf, frames);
@@ -81,7 +76,7 @@ bool SpaEffect::processAudioBuffer(sampleFrame *buf, const fpp_t frames)
 
 	// TODO: check gate
 
-	return isRunning();
+	return ProcessStatus::ContinueIfNotQuiet;
 }
 
 unsigned SpaEffect::netPort(std::size_t chan) const

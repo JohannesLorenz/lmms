@@ -40,12 +40,11 @@ AutomationTrackView::AutomationTrackView( AutomationTrack * _at, TrackContainerV
 	TrackView( _at, tcv )
 {
         setFixedHeight( 32 );
-	TrackLabelButton * tlb = new TrackLabelButton( this,
-						getTrackSettingsWidget() );
-	tlb->setIcon( embed::getIconPixmap( "automation_track" ) );
-	tlb->move( 3, 1 );
-	tlb->show();
-	setModel( _at );
+		auto tlb = new TrackLabelButton(this, getTrackSettingsWidget());
+		tlb->setIcon(embed::getIconPixmap("automation_track"));
+		tlb->move(3, 1);
+		tlb->show();
+		setModel(_at);
 }
 
 void AutomationTrackView::dragEnterEvent( QDragEnterEvent * _dee )
@@ -62,7 +61,7 @@ void AutomationTrackView::dropEvent( QDropEvent * _de )
 	QString val = StringPairDrag::decodeValue( _de );
 	if( type == "automatable_model" )
 	{
-		AutomatableModel * mod = Engine::getAutomatableModel(val,
+		auto mod = Engine::getAutomatableModel(val,
 			_de->mimeData()->hasFormat( "application/x-osc-stringpair"));
 
 		if( mod != nullptr )
@@ -81,7 +80,7 @@ void AutomationTrackView::dropEvent( QDropEvent * _de )
 			}
 
 			Clip * clip = getTrack()->createClip( pos );
-			AutomationClip * autoClip = dynamic_cast<AutomationClip *>( clip );
+			auto autoClip = dynamic_cast<AutomationClip*>(clip);
 			autoClip->addObject( mod );
 		}
 

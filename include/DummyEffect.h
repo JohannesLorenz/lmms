@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef DUMMY_EFFECT_H
-#define DUMMY_EFFECT_H
+#ifndef LMMS_DUMMY_EFFECT_H
+#define LMMS_DUMMY_EFFECT_H
 
 #include <QDomElement>
 
@@ -50,7 +50,7 @@ public:
 
 } ;
 
-}
+} // namespace gui
 
 class DummyEffectControls : public EffectControls
 {
@@ -60,9 +60,7 @@ public:
 	{
 	}
 
-	~DummyEffectControls() override
-	{
-	}
+	~DummyEffectControls() override = default;
 
 	int controlCount() override
 	{
@@ -100,20 +98,19 @@ public:
 		m_originalPluginData( originalPluginData )
 	{
 		setName();
+		setDontRun(true);
 	}
 
-	~DummyEffect() override
-	{
-	}
+	~DummyEffect() override = default;
 
 	EffectControls * controls() override
 	{
 		return &m_controls;
 	}
 
-	bool processAudioBuffer( sampleFrame *, const fpp_t ) override
+	ProcessStatus processImpl(SampleFrame*, const fpp_t) override
 	{
-		return false;
+		return ProcessStatus::Sleep;
 	}
 
 	const QDomElement& originalPluginData() const
@@ -153,4 +150,4 @@ private:
 
 } // namespace lmms
 
-#endif
+#endif // LMMS_DUMMY_EFFECT_H

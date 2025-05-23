@@ -38,13 +38,6 @@ RubberBand::RubberBand( QWidget * _parent ) :
 
 
 
-RubberBand::~RubberBand()
-{
-}
-
-
-
-
 QVector<selectableObject *> RubberBand::selectedObjects() const
 {
 	QVector<selectableObject *> so = selectableObjects();
@@ -84,10 +77,9 @@ QVector<selectableObject *> RubberBand::selectableObjects() const
 
 	QList<selectableObject *> l =
 			parentWidget()->findChildren<selectableObject *>();
-	for( QList<selectableObject *>::iterator it = l.begin(); it != l.end();
-									++it )
+	for (const auto& obj : l)
 	{
-		so.push_back( *it );
+		so.push_back(obj);
 	}
 	return( so );
 }

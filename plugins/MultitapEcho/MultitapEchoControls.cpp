@@ -58,11 +58,6 @@ MultitapEchoControls::MultitapEchoControls( MultitapEchoEffect * eff ) :
 }
 
 
-MultitapEchoControls::~MultitapEchoControls()
-{
-}
-
-
 void MultitapEchoControls::saveSettings( QDomDocument & doc, QDomElement & parent )
 {
 	m_steps.saveSettings( doc, parent, "steps" );
@@ -152,7 +147,7 @@ void MultitapEchoControls::lpSamplesChanged( int begin, int end )
 	const float * samples = m_lpGraph.samples();
 	for( int i = begin; i <= end; ++i )
 	{
-		m_effect->m_lpFreq[i] = 20.0f * std::pow(10.f, samples[i] );
+		m_effect->m_lpFreq[i] = 20.0f * fastPow10f(samples[i]);
 	}
 	m_effect->updateFilters( begin, end );
 }
@@ -177,7 +172,7 @@ void MultitapEchoControls::lengthChanged()
 
 void MultitapEchoControls::sampleRateChanged()
 {
-	m_effect->m_sampleRate = Engine::audioEngine()->processingSampleRate();
+	m_effect->m_sampleRate = Engine::audioEngine()->outputSampleRate();
 	m_effect->m_sampleRatio = 1.0f / m_effect->m_sampleRate;
 	m_effect->updateFilters( 0, 19 );
 }

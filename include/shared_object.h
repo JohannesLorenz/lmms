@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef SHARED_OBJECT_H
-#define SHARED_OBJECT_H
+#ifndef LMMS_SHARED_OBJECT_H
+#define LMMS_SHARED_OBJECT_H
 
 #include <atomic>
 
@@ -39,9 +39,7 @@ public:
 	{
 	}
 
-	virtual ~sharedObject()
-	{
-	}
+	virtual ~sharedObject() = default;
 
 	template<class T>
 	static T* ref( T* object )
@@ -88,4 +86,4 @@ private:
 
 } // namespace lmms
 
-#endif
+#endif // LMMS_SHARED_OBJECT_H

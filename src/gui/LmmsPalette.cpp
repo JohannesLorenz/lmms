@@ -52,10 +52,6 @@ LmmsPalette::LmmsPalette( QWidget * parent, QStyle * stylearg ) :
 	ensurePolished();
 }
 
-LmmsPalette::~LmmsPalette()
-{
-}
-
 #define ACCESSMET( read, write ) \
 	QColor LmmsPalette:: read () const \
 	{	return m_##read ; } \
@@ -79,7 +75,7 @@ QPalette LmmsPalette::palette() const
 {
 	QPalette pal = QApplication::style()->standardPalette();
 	
-	pal.setColor( QPalette::Background, 		background() );	
+	pal.setColor( QPalette::Window, 			background() );
 	pal.setColor( QPalette::WindowText, 		windowText() );	
 	pal.setColor( QPalette::Base, 				base() );	
 	pal.setColor( QPalette::ButtonText, 		buttonText() );	

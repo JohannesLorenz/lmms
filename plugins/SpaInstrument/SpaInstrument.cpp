@@ -58,15 +58,15 @@ Plugin::Descriptor PLUGIN_EXPORT spainstrument_plugin_descriptor =
 		"plugin for using arbitrary SPA instruments inside LMMS."),
 	"Johannes Lorenz <j.git$$$lorenz-ho.me, $$$=@>",
 	0x0100,
-	Plugin::Instrument,
+	Plugin::Type::Instrument,
 	new PluginPixmapLoader("logo"),
 	nullptr,
-	new SpaSubPluginFeatures(Plugin::Instrument)
+	new SpaSubPluginFeatures(Plugin::Type::Instrument)
 };
 
 }
 
-/*DataFile::Types SpaInstrument::settingsType()
+/*DataFile::Type SpaInstrument::settingsType()
 {
 	return DataFile::InstrumentTrackSettings;
 }*/
@@ -78,7 +78,13 @@ void SpaInstrument::setNameFromFile(const QString &name)
 
 SpaInstrument::SpaInstrument(InstrumentTrack *instrumentTrackArg,
 	Descriptor::SubPluginFeatures::Key *key) :
-	Instrument(instrumentTrackArg, &spainstrument_plugin_descriptor, key),
+	Instrument(instrumentTrackArg, &spainstrument_plugin_descriptor, key,
+#ifdef SPA_INSTRUMENT_USE_MIDI
+		Flag::IsSingleStreamed | Flag::IsMidiBased
+#else
+		Flag::IsSingleStreamed;
+#endif
+	),
 	SpaControlBase(this, key->attributes["plugin"],
 		DataFile::Type::InstrumentTrackSettings)
 {
@@ -99,8 +105,8 @@ SpaInstrument::SpaInstrument(InstrumentTrack *instrumentTrackArg,
 SpaInstrument::~SpaInstrument()
 {
 	Engine::audioEngine()->removePlayHandlesOfTypes(instrumentTrack(),
-		PlayHandle::TypeNotePlayHandle |
-						  PlayHandle::TypeInstrumentPlayHandle);
+		PlayHandle::Type::NotePlayHandle |
+		PlayHandle::Type::InstrumentPlayHandle);
 }
 
 void SpaInstrument::saveSettings(QDomDocument &doc, QDomElement &that)
@@ -115,7 +121,7 @@ void SpaInstrument::loadSettings(const QDomElement &that)
 
 // not yet working
 #ifndef SPA_INSTRUMENT_USE_MIDI
-void SpaInstrument::playNote(NotePlayHandle *nph, sampleFrame *)
+void SpaInstrument::playNote(NotePlayHandle *nph, SampleFrame *)
 {
 	// no idea what that means
 	if (nph->isMasterNote() || (nph->hasParent() && nph->isReleased()))
@@ -157,7 +163,7 @@ void SpaInstrument::playNote(NotePlayHandle *nph, sampleFrame *)
 }
 #endif
 
-void SpaInstrument::play(sampleFrame *buf)
+void SpaInstrument::play(SampleFrame *buf)
 {	
 	copyModelsFromLmms();
 

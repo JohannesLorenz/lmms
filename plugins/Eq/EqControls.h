@@ -44,9 +44,7 @@ class EqControls : public EffectControls
 	Q_OBJECT
 public:
 	explicit EqControls( EqEffect* effect );
-	~EqControls() override
-	{
-	}
+	~EqControls() override = default;
 
 	void saveSettings ( QDomDocument& doc, QDomElement& parent ) override;
 
@@ -68,6 +66,8 @@ public:
 	float m_inPeakR;
 	float m_outPeakL;
 	float m_outPeakR;
+
+	// The following are linear peaks
 	float m_lowShelfPeakL, m_lowShelfPeakR;
 	float m_para1PeakL, m_para1PeakR;
 	float m_para2PeakL, m_para2PeakR;

@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef SIDE_BAR_WIDGET_H
-#define SIDE_BAR_WIDGET_H
+#ifndef LMMS_GUI_SIDE_BAR_WIDGET_H
+#define LMMS_GUI_SIDE_BAR_WIDGET_H
 
 #include <QPixmap>
 #include <QVBoxLayout>
@@ -41,7 +41,7 @@ class SideBarWidget : public QWidget
 public:
 	SideBarWidget( const QString & _title, const QPixmap & _icon,
 							QWidget * _parent );
-	~SideBarWidget() override;
+	~SideBarWidget() override = default;
 
 	inline const QPixmap & icon() const
 	{
@@ -90,4 +90,4 @@ private:
 
 } // namespace lmms::gui
 
-#endif
+#endif // LMMS_GUI_SIDE_BAR_WIDGET_H

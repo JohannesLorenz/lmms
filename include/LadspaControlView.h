@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef LADSPA_CONTROL_VIEW_H
-#define LADSPA_CONTROL_VIEW_H
+#ifndef LMMS_GUI_LADSPA_CONTROL_VIEW_H
+#define LMMS_GUI_LADSPA_CONTROL_VIEW_H
 
 #include <QWidget>
 
@@ -43,7 +43,7 @@ class LMMS_EXPORT LadspaControlView : public QWidget, public ModelView
 	Q_OBJECT
 public:
 	LadspaControlView( QWidget * _parent, LadspaControl * _ctl );
-	~LadspaControlView() override;
+	~LadspaControlView() override = default;
 
 private:
 	LadspaControl * m_ctl;
@@ -55,4 +55,4 @@ private:
 
 } // namespace lmms
 
-#endif
+#endif // LMMS_GUI_LADSPA_CONTROL_VIEW_H

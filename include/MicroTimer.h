@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef MICRO_TIMER_H
-#define MICRO_TIMER_H
+#ifndef LMMS_MICRO_TIMER_H
+#define LMMS_MICRO_TIMER_H
 
 #include <chrono>
 
@@ -36,7 +36,7 @@ class MicroTimer
 
 public:
 	MicroTimer();
-	~MicroTimer();
+	~MicroTimer() = default;
 
 	void reset();
 	int elapsed() const;
@@ -48,4 +48,4 @@ private:
 
 } // namespace lmms
 
-#endif // MICRO_TIMER_H
+#endif // LMMS_MICRO_TIMER_H

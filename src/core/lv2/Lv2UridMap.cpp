@@ -33,13 +33,13 @@ namespace lmms
 
 static LV2_URID staticMap(LV2_URID_Map_Handle handle, const char* uri)
 {
-	UridMap* map = static_cast<UridMap*>(handle);
+	auto map = static_cast<UridMap*>(handle);
 	return map->map(uri);
 }
 
 static const char* staticUnmap(LV2_URID_Unmap_Handle handle, LV2_URID urid)
 {
-	UridMap* map = static_cast<UridMap*>(handle);
+	auto map = static_cast<UridMap*>(handle);
 	return map->unmap(urid);
 }
 
@@ -76,12 +76,12 @@ LV2_URID UridMap::map(const char *uri)
 		if (itr == m_map.end())
 		{
 			// 1 is the first free URID
-			std::size_t index = 1u + m_unMap.size();
+			const auto index = static_cast<LV2_URID>(1u + m_unMap.size());
 			auto pr = m_map.emplace(std::move(uriStr), index);
 			if (pr.second)
 			{
 				m_unMap.emplace_back(pr.first->first.c_str());
-				result = static_cast<LV2_URID>(index);
+				result = index;
 			}
 		}
 		else { result = itr->second; }

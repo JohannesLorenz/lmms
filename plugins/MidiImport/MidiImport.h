@@ -41,7 +41,7 @@ class MidiImport : public ImportFilter
 	Q_OBJECT
 public:
 	MidiImport( const QString & _file );
-	~MidiImport() override;
+	~MidiImport() override = default;
 
 	gui::PluginView* instantiateView( QWidget * ) override
 	{
@@ -61,10 +61,10 @@ private:
 
 	inline int readInt( int _bytes )
 	{
-		int c, value = 0;
+		int value = 0;
 		do
 		{
-			c = readByte();
+			int c = readByte();
 			if( c == -1 )
 			{
 				return( -1 );
@@ -120,8 +120,7 @@ private:
 		}
 	}
 
-
-	typedef QVector<QPair<int, MidiEvent> > EventVector;
+	using EventVector = QVector<QPair<int, MidiEvent>>;
 	EventVector m_events;
 	int m_timingDivision;
 

@@ -56,20 +56,21 @@ ControllerView::ControllerView( Controller * _model, QWidget * _parent ) :
 {
 	this->setFrameStyle( QFrame::StyledPanel );
 	this->setFrameShadow( QFrame::Raised );
+	setFocusPolicy(Qt::StrongFocus);
 
-	QVBoxLayout *vBoxLayout = new QVBoxLayout(this);
+	auto vBoxLayout = new QVBoxLayout(this);
 
-	QHBoxLayout *hBox = new QHBoxLayout();
+	auto hBox = new QHBoxLayout();
 	vBoxLayout->addLayout(hBox);
 
-	QLabel *label = new QLabel( "<b>" + _model->displayName() + "</b>", this);
+	auto label = new QLabel("<b>" + _model->displayName() + "</b>", this);
 	QSizePolicy sizePolicy = label->sizePolicy();
 	sizePolicy.setHorizontalStretch(1);
 	label->setSizePolicy(sizePolicy);
 
 	hBox->addWidget(label);
 
-	QPushButton * controlsButton = new QPushButton( tr( "Controls" ), this );
+	auto controlsButton = new QPushButton(tr("Controls"), this);
 	connect( controlsButton, SIGNAL(clicked()), SLOT(editControls()));
 
 	hBox->addWidget(controlsButton);
@@ -136,16 +137,16 @@ void ControllerView::closeControls()
 	m_show = true;
 }
 
+void ControllerView::moveUp() { emit movedUp(this); }
 
-void ControllerView::deleteController()
-{
-	emit( deleteController( this ) );
-}
+void ControllerView::moveDown() { emit movedDown(this); }
+
+void ControllerView::removeController() { emit removedController(this); }
 
 void ControllerView::renameController()
 {
 	bool ok;
-	Controller * c = castModel<Controller>();
+	auto c = castModel<Controller>();
 	QString new_name = QInputDialog::getText( this,
 			tr( "Rename controller" ),
 			tr( "Enter the new name for this controller" ),
@@ -153,7 +154,7 @@ void ControllerView::renameController()
 	if( ok && !new_name.isEmpty() )
 	{
 		c->setName( new_name );
-		if( getController()->type() == Controller::LfoController )
+		if( getController()->type() == Controller::ControllerType::Lfo )
 		{
 			m_controllerDlg->setWindowTitle( tr( "LFO" ) + " (" + new_name + ")" );
 		}
@@ -213,10 +214,13 @@ void ControllerView::modelChanged()
 
 void ControllerView::contextMenuEvent( QContextMenuEvent * )
 {
-	QPointer<CaptionMenu> contextMenu = new CaptionMenu( model()->displayName(), this );
-	contextMenu->addAction( embed::getIconPixmap( "cancel" ),
-						tr( "&Remove this controller" ),
-						this, SLOT(deleteController()));
+	Controller* c = castModel<Controller>();
+	QPointer<CaptionMenu> contextMenu = new CaptionMenu(c->name(), this);
+	contextMenu->addAction(embed::getIconPixmap("arp_up"), tr("Move &up"), this, &ControllerView::moveUp);
+	contextMenu->addAction(embed::getIconPixmap("arp_down"), tr("Move &down"), this, &ControllerView::moveDown);
+	contextMenu->addSeparator();
+	contextMenu->addAction(
+		embed::getIconPixmap("cancel"), tr("&Remove this controller"), this, &ControllerView::removeController);
 	contextMenu->addAction( tr("Re&name this controller"), this, SLOT(renameController()));
 	contextMenu->addSeparator();
 	contextMenu->exec( QCursor::pos() );

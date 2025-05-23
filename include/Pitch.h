@@ -22,16 +22,15 @@
  *
  */
 
-#ifndef PITCH_H
-#define PITCH_H
+#ifndef LMMS_PITCH_H
+#define LMMS_PITCH_H
 
 #include <cstdint>
 
 namespace lmms
 {
 
-
-typedef int16_t pitch_t;
+using pitch_t = int16_t;
 
 constexpr pitch_t CentsPerSemitone = 100;
 constexpr pitch_t MinPitchDefault = -CentsPerSemitone;
@@ -41,4 +40,4 @@ constexpr pitch_t DefaultPitch = 0;
 
 } // namespace lmms
 
-#endif
+#endif // LMMS_PITCH_H

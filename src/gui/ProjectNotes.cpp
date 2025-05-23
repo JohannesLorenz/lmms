@@ -40,6 +40,7 @@
 #include "embed.h"
 #include "Engine.h"
 #include "GuiApplication.h"
+#include "KeyboardShortcuts.h"
 #include "MainWindow.h"
 #include "Song.h"
 
@@ -84,13 +85,6 @@ ProjectNotes::ProjectNotes() :
 
 
 
-ProjectNotes::~ProjectNotes()
-{
-}
-
-
-
-
 void ProjectNotes::clear()
 {
 	m_edit->setHtml( tr( "Enter project notes here" ) );
@@ -115,10 +109,8 @@ void ProjectNotes::setText( const QString & _text )
 void ProjectNotes::setupActions()
 {
 	QToolBar * tb = addToolBar( tr( "Edit Actions" ) );
-	QAction * a;
 
-	a = new QAction( embed::getIconPixmap( "edit_undo" ), tr( "&Undo" ),
-									this );
+	auto a = new QAction(embed::getIconPixmap("edit_undo"), tr("&Undo"), this);
 	a->setShortcut( tr( "%1+Z" ).arg(UI_CTRL_KEY) );
 	connect( a, SIGNAL(triggered()), m_edit, SLOT(undo()));
 	tb->addAction( a );
@@ -193,8 +185,7 @@ void ProjectNotes::setupActions()
 	connect( m_actionTextUnderline, SIGNAL(triggered()), this,
 						SLOT(textUnderline()));
 
-
-	QActionGroup * grp = new QActionGroup( tb );
+	auto grp = new QActionGroup(tb);
 	connect( grp, SIGNAL(triggered(QAction*)), this,
 					SLOT(textAlign(QAction*)));
 

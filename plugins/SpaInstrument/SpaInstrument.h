@@ -68,18 +68,9 @@ public:
 	bool handleMidiEvent(const MidiEvent &event,
 		const class TimePos &time = TimePos(), f_cnt_t offset = 0) override;
 #else
-	void playNote(NotePlayHandle *nph, sampleFrame *) override;
+	void playNote(NotePlayHandle *nph, SampleFrame *) override;
 #endif
-	void play(sampleFrame *buf) override;
-
-	Flags flags() const override
-	{
-#ifdef SPA_INSTRUMENT_USE_MIDI
-		return IsSingleStreamed | IsMidiBased;
-#else
-		return IsSingleStreamed;
-#endif
-	}
+	void play(SampleFrame *buf) override;
 
 	gui::PluginView *instantiateView(QWidget *parent) override;
 

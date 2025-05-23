@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef IMPORT_FILTER_H
-#define IMPORT_FILTER_H
+#ifndef LMMS_IMPORT_FILTER_H
+#define LMMS_IMPORT_FILTER_H
 
 #include <QFile>
 
@@ -42,7 +42,7 @@ class LMMS_EXPORT ImportFilter : public Plugin
 public:
 	ImportFilter( const QString & _file_name,
 					const Descriptor * _descriptor );
-	~ImportFilter() override;
+	~ImportFilter() override = default;
 
 
 	// tries to import given file to given track-container by having all
@@ -114,4 +114,4 @@ private:
 
 } // namespace lmms
 
-#endif
+#endif // LMMS_IMPORT_FILTER_H

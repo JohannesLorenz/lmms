@@ -41,17 +41,14 @@ class DynProcControls : public EffectControls
 {
 	Q_OBJECT
 public:
-	enum StereoModes
+	enum class StereoMode
 	{
-		SM_Maximum,
-		SM_Average,
-		SM_Unlinked,
-		NumStereoModes
+		Maximum,
+		Average,
+		Unlinked
 	};
 	DynProcControls( DynProcEffect * _eff );
-	~DynProcControls() override
-	{
-	}
+	~DynProcControls() override = default;
 
 	void saveSettings( QDomDocument & _doc, QDomElement & _parent ) override;
 	void loadSettings( const QDomElement & _this ) override;

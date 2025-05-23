@@ -24,9 +24,8 @@
  *
  */
 
-
-#ifndef LADSPA_MANAGER_H
-#define LADSPA_MANAGER_H
+#ifndef LMMS_LADSPA_MANAGER_H
+#define LMMS_LADSPA_MANAGER_H
 
 #include <ladspa.h>
 
@@ -37,7 +36,7 @@
 
 
 #include "lmms_export.h"
-#include "lmms_basics.h"
+#include "LmmsTypes.h"
 
 
 namespace lmms
@@ -45,10 +44,10 @@ namespace lmms
 
 const float NOHINT = -99342.2243f;
 
-typedef QPair<QString, QString> ladspa_key_t;
-typedef QPair<QString, ladspa_key_t> sortable_plugin_t;
-typedef QList<sortable_plugin_t> l_sortable_plugin_t;
-typedef QList<ladspa_key_t> l_ladspa_key_t;
+using ladspa_key_t = QPair<QString, QString>;
+using sortable_plugin_t = QPair<QString, ladspa_key_t>;
+using l_sortable_plugin_t = QList<sortable_plugin_t>;
+using l_ladspa_key_t = QList<ladspa_key_t>;
 
 /* LadspaManager provides a database of LADSPA plug-ins.  Upon instantiation,
 it loads all of the plug-ins found in the LADSPA_PATH environmental variable
@@ -63,25 +62,24 @@ calls using:
 
 as the plug-in key. */
 
-enum LadspaPluginType
+enum class LadspaPluginType
 {
-	SOURCE,
-	TRANSFER,
-	VALID,
-	INVALID,
-	SINK,
-	OTHER
+	Source,
+	Transfer,
+	Valid,
+	Invalid,
+	Sink,
+	Other
 };
 
-typedef struct LadspaManagerStorage
+struct LadspaManagerDescription
 {
 	LADSPA_Descriptor_Function descriptorFunction;
 	uint32_t index;
 	LadspaPluginType type;
 	uint16_t inputChannels;
 	uint16_t outputChannels;
-} LadspaManagerDescription;
-
+};
 
 class LMMS_EXPORT LadspaManager
 {
@@ -342,8 +340,7 @@ private:
 	const LADSPA_PortRangeHint* getPortRangeHint( const ladspa_key_t& _plugin,
 													uint32_t _port );
 
-	typedef QMap<ladspa_key_t, LadspaManagerDescription *>
-						LadspaManagerMapType;
+	using LadspaManagerMapType = QMap<ladspa_key_t, LadspaManagerDescription*>;
 	LadspaManagerMapType m_ladspaManagerMap;
 	l_sortable_plugin_t m_sortedPlugins;
 
@@ -352,4 +349,4 @@ private:
 
 } // namespace lmms
 
-#endif
+#endif // LMMS_LADSPA_MANAGER_H

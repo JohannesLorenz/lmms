@@ -51,7 +51,7 @@ spa::descriptor *SpaSubPluginFeatures::spaDescriptor(
 	return Engine::getSPAManager()->getDescriptor(k.attributes["plugin"]);
 }
 
-SpaSubPluginFeatures::SpaSubPluginFeatures(Plugin::PluginTypes _type) :
+SpaSubPluginFeatures::SpaSubPluginFeatures(Plugin::Type _type) :
 	SubPluginFeatures(_type)
 {
 }
@@ -151,15 +151,14 @@ const PixmapLoader *SpaSubPluginFeatures::logo(
 	spa::descriptor *spaDes = spaDescriptor(k);
 
 	const char **xpm = nullptr;
-	QString xpmKey;
+	std::string xpmKey;
 	if(spaDes)
 	{
 		xpm = spaDes->xpm_load();
-		QString uniqueName = spa::unique_name(*spaDes).c_str();
-		xpmKey = "spa-plugin:" + uniqueName;
+		xpmKey = "spa-plugin:" + spa::unique_name(*spaDes);
 	}
 
-	return xpm ? new PixmapLoader(QString("xpm:" + xpmKey), xpm)
+	return xpm ? new PixmapLoader("xpm:" + xpmKey, xpm)
 		   : new PixmapLoader("plugins");
 }
 

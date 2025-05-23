@@ -22,9 +22,8 @@
  *
  */
 
-
-#ifndef PROJECT_NOTES_H
-#define PROJECT_NOTES_H
+#ifndef LMMS_GUI_PROJECT_NOTES_H
+#define LMMS_GUI_PROJECT_NOTES_H
 
 #include <QMainWindow>
 
@@ -44,7 +43,7 @@ class LMMS_EXPORT ProjectNotes : public QMainWindow, public SerializingObject
 	Q_OBJECT
 public:
 	ProjectNotes();
-	~ProjectNotes() override;
+	~ProjectNotes() override = default;
 
 	void clear();
 	void setText( const QString & _text );
@@ -94,4 +93,4 @@ private:
 
 } // namespace lmms::gui
 
-#endif
+#endif // LMMS_GUI_PROJECT_NOTES_H

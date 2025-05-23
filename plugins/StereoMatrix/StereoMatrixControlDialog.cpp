@@ -23,10 +23,9 @@
  */
 
 
-
-
 #include "StereoMatrixControlDialog.h"
 
+#include <QHBoxLayout>
 #include "embed.h"
 #include "Knob.h"
 #include "StereoMatrixControls.h"
@@ -35,39 +34,32 @@ namespace lmms::gui
 {
 
 
-StereoMatrixControlDialog::StereoMatrixControlDialog(
-	StereoMatrixControls * _controls ) :
-	EffectControlDialog( _controls )
+StereoMatrixControlDialog::StereoMatrixControlDialog(StereoMatrixControls* controls) :
+	EffectControlDialog(controls)
 {
-
-	setFixedSize( 160, 185 );
-
-	setAutoFillBackground( true );
 	QPalette pal;
-	pal.setBrush( backgroundRole(),
-				PLUGIN_NAME::getIconPixmap( "artwork" ) );
-	setPalette( pal );
+	setAutoFillBackground(true);
+	setFixedSize(160, 185);
+	pal.setBrush(backgroundRole(), PLUGIN_NAME::getIconPixmap("artwork"));
+	setPalette(pal);
 
+	auto layout = new QHBoxLayout(this);
 
-	Knob * llKnob = new Knob( knobBright_26, this );
-	llKnob->setModel( &_controls->m_llModel );
-	llKnob->setHintText( tr( "Left to Left Vol:" ) , "" );
-	llKnob->move( 10, 79 );
+	const auto makeKnob = [this, layout](
+		FloatModel *model,
+		const QString &txt_before
+	) {
+		auto k = new Knob(KnobType::Bright26, this);
+		k->setModel(model);
+		k->setHintText(txt_before, "");
+		layout->addWidget(k, 0, Qt::AlignHCenter);
+		return k;
+	};
 
-	Knob * lrKnob = new Knob( knobBright_26, this );
-	lrKnob->setModel( &_controls->m_lrModel );
-	lrKnob->setHintText( tr( "Left to Right Vol:" ) , "" );
-	lrKnob->move( 48, 79 );
-
-	Knob * rlKnob = new Knob( knobBright_26, this );
-	rlKnob->setModel( &_controls->m_rlModel );
-	rlKnob->setHintText( tr( "Right to Left Vol:" ) , "" );
-	rlKnob->move( 85, 79 );
-
-	Knob * rrKnob = new Knob( knobBright_26, this );
-	rrKnob->setModel( &_controls->m_rrModel );
-	rrKnob->setHintText( tr( "Right to Right Vol:" ) , "" );
-	rrKnob->move( 123, 79 );
+	makeKnob(&controls->m_llModel, tr("Left to Left Vol:"));
+	makeKnob(&controls->m_lrModel, tr("Left to Right Vol:"));
+	makeKnob(&controls->m_rlModel, tr("Right to Left Vol:"));
+	makeKnob(&controls->m_rrModel, tr("Right to Right Vol:"));
 }
 
 

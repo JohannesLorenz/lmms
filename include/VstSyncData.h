@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef VST_SYNC_DATA_H
-#define VST_SYNC_DATA_H
+#ifndef LMMS_VST_SYNC_DATA_H
+#define LMMS_VST_SYNC_DATA_H
 
 namespace lmms
 {
@@ -46,7 +46,6 @@ struct VstSyncData
 	int timeSigDenom;
 	bool isPlaying;
 	bool isCycle;
-	bool hasSHM;
 	float cycleStart;
 	float cycleEnd;
 	bool m_playbackJumped;
@@ -62,4 +61,4 @@ struct VstSyncData
 
 } // namespace lmms
 
-#endif
+#endif // LMMS_VST_SYNC_DATA_H

@@ -33,6 +33,7 @@
 #include <spa/spa.h>
 
 #include "ConfigManager.h"
+#include "lmms_constants.h"
 #include "Plugin.h"
 #include "PluginFactory.h"
 
@@ -84,7 +85,7 @@ SpaManager::SpaManager()
 					info.m_type = computePluginType(
 						info.m_descriptor);
 					if (info.m_type !=
-						Plugin::PluginTypes::Undefined)
+						Plugin::Type::Undefined)
 					{
 						qDebug()
 							<< "SpaManager: Adding "
@@ -141,7 +142,7 @@ SpaManager::~SpaManager()
 	}
 }
 
-Plugin::PluginTypes SpaManager::computePluginType(spa::descriptor *desc)
+Plugin::Type SpaManager::computePluginType(spa::descriptor *desc)
 {
 	spa::plugin *plug = desc->instantiate();
 
@@ -166,37 +167,37 @@ Plugin::PluginTypes SpaManager::computePluginType(spa::descriptor *desc)
 		}
 		catch (spa::port_not_found &)
 		{
-			return Plugin::PluginTypes::Undefined;
+			return Plugin::Type::Undefined;
 		}
 	}
 
 	delete plug;
 
-	Plugin::PluginTypes res;
+	Plugin::Type res;
 	if (tyc.m_inCount > 2 || tyc.m_outCount > 2)
 	{
-		res = Plugin::PluginTypes::Undefined;
+		res = Plugin::Type::Undefined;
 	} // TODO: enable mono effects?
 	else if ((tyc.m_inCount == 2 && tyc.m_outCount == 2)
 		|| (tyc.m_inCount == 1 && tyc.m_outCount == 1))
 	{
-		res = Plugin::PluginTypes::Effect;
+		res = Plugin::Type::Effect;
 	}
 	else if (tyc.m_inCount == 0 && (tyc.m_outCount == 2 || tyc.m_inCount == 1))
 	{
-		res = Plugin::PluginTypes::Instrument;
+		res = Plugin::Type::Instrument;
 	}
 	else
 	{
-		res = Plugin::PluginTypes::Other;
+		res = Plugin::Type::Other;
 	}
 
 	qDebug() << "Plugin type of " << spa::unique_name(*desc).c_str() << ":";
-	qDebug() << (res == Plugin::PluginTypes::Undefined
+	qDebug() << (res == Plugin::Type::Undefined
 			? "  undefined"
-			: res == Plugin::PluginTypes::Effect
+			: res == Plugin::Type::Effect
 				? "  effect"
-				: res == Plugin::PluginTypes::Instrument
+				: res == Plugin::Type::Instrument
 					? "  instrument"
 					: "  other");
 

@@ -23,12 +23,10 @@
  *
  */
 
-#ifndef LADSPA_2_LMMS_H
-#define LADSPA_2_LMMS_H
-
+#ifndef LMMS_LADSPA_2_LMMS_H
+#define LMMS_LADSPA_2_LMMS_H
 
 #include "LadspaManager.h"
-
 
 namespace lmms
 {
@@ -68,7 +66,7 @@ public:
 
 private:
 	Ladspa2LMMS();
-	~Ladspa2LMMS() override;
+	~Ladspa2LMMS() override = default;
 
 	l_sortable_plugin_t m_instruments;
 	l_sortable_plugin_t m_validEffects;
@@ -83,4 +81,4 @@ private:
 
 } // namespace lmms
 
-#endif
+#endif // LMMS_LADSPA_2_LMMS_H

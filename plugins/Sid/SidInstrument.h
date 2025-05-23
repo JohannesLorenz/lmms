@@ -48,17 +48,18 @@ class PixmapButton;
 class VoiceObject : public Model
 {
 	Q_OBJECT
-	MM_OPERATORS
 public:
-	enum WaveForm {
-		SquareWave = 0,
-		TriangleWave,
-		SawWave,
-		NoiseWave,
-		NumWaveShapes
+	enum class WaveForm {
+		Square = 0,
+		Triangle,
+		Saw,
+		Noise,
+		Count
 	};
+	constexpr static auto NumWaveShapes = static_cast<std::size_t>(WaveForm::Count);
+
 	VoiceObject( Model * _parent, int _idx );
-	~VoiceObject() override;
+	~VoiceObject() override = default;
 
 
 private:
@@ -82,25 +83,26 @@ class SidInstrument : public Instrument
 {
 	Q_OBJECT
 public:
-	enum FilerType {
+	enum class FilterType {
 		HighPass = 0,
 		BandPass,
 		LowPass,
-		NumFilterTypes
+		Count
 	};
+	constexpr static auto NumFilterTypes = static_cast<std::size_t>(FilterType::Count);
 	
-	enum ChipModel {
-		sidMOS6581 = 0,
-		sidMOS8580,
-		NumChipModels
+	enum class ChipModel {
+		MOS6581 = 0,
+		MOS8580,
+		Count
 	};
-
+	constexpr static auto NumChipModels = static_cast<std::size_t>(ChipModel::Count);
 
 	SidInstrument( InstrumentTrack * _instrument_track );
-	~SidInstrument() override;
+	~SidInstrument() override = default;
 
 	void playNote( NotePlayHandle * _n,
-						sampleFrame * _working_buffer ) override;
+						SampleFrame* _working_buffer ) override;
 	void deleteNotePluginData( NotePlayHandle * _n ) override;
 
 
@@ -109,7 +111,7 @@ public:
 
 	QString nodeName() const override;
 
-	f_cnt_t desiredReleaseFrames() const override;
+	float desiredReleaseTimeMs() const override;
 
 	gui::PluginView* instantiateView( QWidget * _parent ) override;
 
@@ -147,7 +149,7 @@ class SidInstrumentView : public InstrumentViewFixedSize
 	Q_OBJECT
 public:
 	SidInstrumentView( Instrument * _instrument, QWidget * _parent );
-	~SidInstrumentView() override;
+	~SidInstrumentView() override = default;
 
 private:
 	void modelChanged() override;
@@ -181,9 +183,7 @@ private:
 			m_testButton( testb )
 		{
 		}
-		voiceKnobs()
-		{
-		}
+		voiceKnobs() = default;
 		Knob * m_attKnob;
 		Knob * m_decKnob;
 		Knob * m_sustKnob;

@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef INSTRUMENT_MIDI_IO_VIEW_H
-#define INSTRUMENT_MIDI_IO_VIEW_H
+#ifndef LMMS_GUI_INSTRUMENT_MIDI_IO_VIEW_H
+#define LMMS_GUI_INSTRUMENT_MIDI_IO_VIEW_H
 
 #include <QWidget>
 
@@ -50,7 +50,7 @@ class InstrumentMidiIOView : public QWidget, public ModelView
 	Q_OBJECT
 public:
 	InstrumentMidiIOView( QWidget* parent );
-	~InstrumentMidiIOView() override;
+	~InstrumentMidiIOView() override = default;
 
 
 private:
@@ -77,4 +77,4 @@ private:
 
 } // namespace lmms
 
-#endif
+#endif // LMMS_GUI_INSTRUMENT_MIDI_IO_VIEW_H

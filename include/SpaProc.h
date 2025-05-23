@@ -8,13 +8,14 @@
 
 #include "DataFile.h"
 #include "LinkedModelGroups.h"
-#include "lmms_basics.h"
+#include "LmmsTypes.h"
 #include "Note.h"
 #include "../src/3rdparty/ringbuffer/include/ringbuffer/ringbuffer.h"
 
 namespace lmms {
 
 class AutomatableModel;
+class SampleFrame;
 
 class SpaProc : public LinkedModelGroup
 {
@@ -23,7 +24,7 @@ class SpaProc : public LinkedModelGroup
 
 public:
 	SpaProc(Model *parent, const spa::descriptor* desc,
-			DataFile::Types settingsType);
+			DataFile::Type settingsType);
 	~SpaProc() override;
 	//! Check if ctor succeeded
 	bool isValid() const { return m_valid; }
@@ -95,8 +96,8 @@ public:
 
 	void copyModelsToPorts();
 
-	void copyBuffersFromCore(const sampleFrame *buf, unsigned offset, unsigned num, fpp_t frames);
-	void copyBuffersToCore(sampleFrame *buf, unsigned offset, unsigned num, fpp_t frames) const;
+	void copyBuffersFromCore(const SampleFrame *buf, unsigned offset, unsigned num, fpp_t frames);
+	void copyBuffersToCore(SampleFrame *buf, unsigned offset, unsigned num, fpp_t frames) const;
 
 	void uiExtShow(bool doShow);
 	void saveState(QDomDocument &doc, QDomElement &that);
@@ -111,7 +112,7 @@ private:
 	friend struct TypeChecker;
 	std::atomic_flag m_writeOscInUse;
 	bool m_valid = true;
-	const DataFile::Types m_settingsType;
+	const DataFile::Type m_settingsType;
 
 	int m_runningNotes[NumKeys];
 

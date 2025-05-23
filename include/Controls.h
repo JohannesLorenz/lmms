@@ -22,10 +22,8 @@
  *
  */
 
-#ifndef CONTROLS_H
-#define CONTROLS_H
-
-
+#ifndef LMMS_GUI_CONTROLS_H
+#define LMMS_GUI_CONTROLS_H
 
 // headers only required for covariance
 #include "AutomatableModel.h"
@@ -66,7 +64,7 @@ public:
 	virtual AutomatableModel* model() = 0;
 	virtual AutomatableModelView* modelView() = 0;
 
-	virtual ~Control();
+	virtual ~Control() = default;
 };
 
 
@@ -83,7 +81,7 @@ public:
 	AutomatableModelView* modelView() override;
 
 	KnobControl(QWidget* parent = nullptr);
-	~KnobControl() override;
+	~KnobControl() override = default;
 };
 
 
@@ -102,7 +100,7 @@ public:
 	AutomatableModelView* modelView() override;
 
 	ComboControl(QWidget* parent = nullptr);
-	~ComboControl() override;
+	~ComboControl() override = default;
 };
 
 
@@ -119,7 +117,7 @@ public:
 	AutomatableModelView* modelView() override;
 
 	LcdControl(int numDigits, QWidget* parent = nullptr);
-	~LcdControl() override;
+	~LcdControl() override = default;
 };
 
 
@@ -138,7 +136,7 @@ public:
 	AutomatableModelView* modelView() override;
 
 	CheckControl(QWidget* parent = nullptr);
-	~CheckControl() override;
+	~CheckControl() override = default;
 };
 
 
@@ -146,4 +144,4 @@ public:
 
 } // namespace lmms
 
-#endif // CONTROLS_H
+#endif // LMMS_GUI_CONTROLS_H

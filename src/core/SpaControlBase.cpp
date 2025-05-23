@@ -35,6 +35,7 @@
 #include <spa/spa.h>
 
 #include "Engine.h"
+#include "lmms_constants.h"
 #include "SpaManager.h"
 #include "SpaProc.h"
 
@@ -42,7 +43,7 @@ namespace lmms
 {
 
 SpaControlBase::SpaControlBase(Model* that, const QString& uniqueName,
-								DataFile::Types settingsType) :
+								DataFile::Type settingsType) :
 	m_spaDescriptor(Engine::getSPAManager()->getDescriptor(uniqueName)),
 	m_that(that)
 {
@@ -209,7 +210,7 @@ void SpaControlBase::copyModelsFromLmms() {
 
 
 
-void SpaControlBase::copyBuffersFromLmms(const sampleFrame *buf, fpp_t frames) {
+void SpaControlBase::copyBuffersFromLmms(const SampleFrame *buf, fpp_t frames) {
 	unsigned offset = 0;
 	for (std::unique_ptr<SpaProc>& c : m_procs) {
 		c->copyBuffersFromCore(buf, offset, m_channelsPerProc, frames);
@@ -220,7 +221,7 @@ void SpaControlBase::copyBuffersFromLmms(const sampleFrame *buf, fpp_t frames) {
 
 
 
-void SpaControlBase::copyBuffersToLmms(sampleFrame *buf, fpp_t frames) const {
+void SpaControlBase::copyBuffersToLmms(SampleFrame *buf, fpp_t frames) const {
 	unsigned offset = 0;
 	for (const std::unique_ptr<SpaProc>& c : m_procs) {
 		c->copyBuffersToCore(buf, offset, m_channelsPerProc, frames);

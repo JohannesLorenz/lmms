@@ -51,7 +51,7 @@ namespace lmms::Clipboard
 
 	void copyString( const QString & str, MimeType mT )
 	{
-		QMimeData *content = new QMimeData;
+		auto content = new QMimeData;
 
 		content->setData( mimeType( mT ), str.toUtf8() );
 		QApplication::clipboard()->setMimeData( content, QClipboard::Clipboard );
@@ -72,7 +72,7 @@ namespace lmms::Clipboard
 	{
 		QString finalString = key + ":" + value;
 
-		QMimeData *content = new QMimeData;
+		auto content = new QMimeData;
 		content->setData( mimeType( MimeType::StringPair ), finalString.toUtf8() );
 		QApplication::clipboard()->setMimeData( content, QClipboard::Clipboard );
 	}

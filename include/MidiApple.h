@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef MIDI_APPLE_H
-#define MIDI_APPLE_H
+#ifndef LMMS_MIDI_APPLE_H
+#define LMMS_MIDI_APPLE_H
 
 #include "lmmsconfig.h"
 
@@ -140,7 +140,7 @@ private:
 	QMap<MIDIEndpointRef, MIDIPortRef> m_sourcePortRef;
 
 	// subscriptions
-	typedef QMap<QString, MidiPortList> SubMap;
+	using SubMap = QMap<QString, MidiPortList>;
 	SubMap m_inputSubs;
 	SubMap m_outputSubs;
 
@@ -155,5 +155,4 @@ signals:
 
 #endif // LMMS_BUILD_APPLE
 
-
-#endif
+#endif // LMMS_MIDI_APPLE_H

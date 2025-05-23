@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef EXPORT_FILTER_H
-#define EXPORT_FILTER_H
+#ifndef LMMS_EXPORT_FILTER_H
+#define LMMS_EXPORT_FILTER_H
 
 #include <QFile>
 
@@ -40,7 +40,7 @@ class LMMS_EXPORT ExportFilter : public Plugin
 {
 public:
 	ExportFilter( const Descriptor * _descriptor ) : Plugin( _descriptor, nullptr ) {}
-	~ExportFilter() override {}
+	~ExportFilter() override = default;
 
 
 	virtual bool tryExport(const TrackContainer::TrackList &tracks,
@@ -69,4 +69,4 @@ private:
 
 } // namespace lmms
 
-#endif
+#endif // LMMS_EXPORT_FILTER_H
