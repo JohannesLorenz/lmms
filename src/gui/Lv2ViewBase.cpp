@@ -280,7 +280,7 @@ Lv2ViewProc::Lv2ViewProc(QWidget* parent, Lv2Proc* proc, int colNum) :
 				return (portId == (std::size_t)-1 ? LV2UI_INVALID_PORT_INDEX : portId);
 			},
 			nullptr, nullptr);
-		Q_ASSERT(m_uiHost);
+		Q_ASSERT(m_uiHost);  // this usually just fails on alloc failure
 		suil_host_set_touch_func(m_uiHost,
 			[](void* controller, uint32_t port_index, bool grabbed)
 			{
@@ -325,15 +325,18 @@ Lv2ViewProc::Lv2ViewProc(QWidget* parent, Lv2Proc* proc, int colNum) :
 				bundlePath.get(),
 				binaryPath.get(),
 				uiFeatures);
-		if (!m_uiInstance)  // TODO: fallback to default UI
-		{
-			qWarning() << "Failed to load plugin UI";
-		}
-		else
+		if (m_uiInstance)
 		{
 			qDebug() << "Created new plugin UI" << lilv_node_as_uri(lilv_ui_get_uri(m_ui)) << lilv_node_as_uri(m_uiType);
 		}
+		else
+		{
+			qWarning() << "Failed to load plugin UI";
+		}
+	}
 
+	if (m_uiInstance)
+	{
 		m_uiInstanceWidget = static_cast<QWidget*>(suil_instance_get_widget(m_uiInstance));
 		assert(m_uiInstanceWidget);
 		//m_uiInstanceWidget->setParent(this);
@@ -369,6 +372,7 @@ Lv2ViewProc::Lv2ViewProc(QWidget* parent, Lv2Proc* proc, int colNum) :
 	else
 #endif // LMMS_HAVE_SUIL
 	{
+		// Setup LMMS-UI
 		class SetupTheWidget : public Lv2Ports::ConstVisitor
 		{
 		public:
