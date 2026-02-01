@@ -38,6 +38,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QTextStream>
+#include <experimental/simd>
 
 #ifdef LMMS_BUILD_WIN32
 #include <windows.h>
@@ -247,6 +248,9 @@ int noInputFileError()
 int main( int argc, char * * argv )
 {
 	using namespace lmms;
+
+	std::experimental::native_simd<int> a;
+	(void)a;
 
 	bool coreOnly = false;
 	bool fullscreen = true;
