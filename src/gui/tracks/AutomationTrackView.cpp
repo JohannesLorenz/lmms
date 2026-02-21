@@ -26,6 +26,7 @@
 #include "AutomationTrackView.h"
 #include "AutomationClip.h"
 #include "AutomationTrack.h"
+#include "DeprecationHelper.h"
 #include "embed.h"
 #include "Engine.h"
 #include "ProjectJournal.h"
@@ -66,13 +67,10 @@ void AutomationTrackView::dropEvent( QDropEvent * _de )
 
 		if( mod != nullptr )
 		{
-			TimePos pos = TimePos( trackContainerView()->
-							currentPosition() +
-				( _de->pos().x() -
-					getTrackContentWidget()->x() ) *
-						TimePos::ticksPerBar() /
-		static_cast<int>( trackContainerView()->pixelsPerBar() ) )
-				.toAbsoluteBar();
+			const int deX = position(_de).x();
+			TimePos pos = TimePos(trackContainerView()->currentPosition()
+				+ (deX - getTrackContentWidget()->x()) * TimePos::ticksPerBar()
+				/ static_cast<int>(trackContainerView()->pixelsPerBar())).toAbsoluteBar();
 
 			if( pos.getTicks() < 0 )
 			{

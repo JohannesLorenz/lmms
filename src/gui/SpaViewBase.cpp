@@ -111,7 +111,7 @@ SpaViewProc::SpaViewProc(QWidget* parent, SpaProc *proc,
 				switch (port.m_vis)
 				{
 					case PortVis::None:
-						m_control = new KnobControl(m_par);
+						m_control = new KnobControl(port.name(), m_par);
 						break;
 					case PortVis::Integer:
 						m_control = new LcdControl((port.m_max <= 9.0f) ? 1 : 2,
@@ -160,7 +160,7 @@ SpaViewProc::SpaViewProc(QWidget* parent, SpaProc *proc,
 		{
 			case 'f':
 			{
-				control = new KnobControl(this);
+				control = new KnobControl(ports.m_id.c_str(), this);
 				control->setText(ports.m_connectedModel.m_floatModel->displayName());
 			//	wdg = k;
 				//modelView = k;
@@ -227,7 +227,7 @@ void SpaViewProc::modelAdded(AutomatableModel *mdl)
 		QWidget* m_parent;
 		void visit(FloatModel& fm) override
 		{
-			m_control = new KnobControl(m_parent);
+			m_control = new KnobControl(fm.displayName(), m_parent);
 			FloatOscModel& om = dynamic_cast<FloatOscModel&>(fm);
 			m_control->setText(om.displayName());
 		}
