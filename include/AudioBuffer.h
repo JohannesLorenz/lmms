@@ -68,6 +68,34 @@ namespace lmms
  *       Conveniently, if you take `m_accessBuffer` and offset it by `channelIndex`, you get another `float**`
  *       starting at that channel. This what the `float**` buffer stored in each ChannelGroup is.
  *
+ * Buffer layout diagram (example: 3 channels, 4 frames per channel, 2 groups: [2ch] + [1ch]):
+ *
+ *   m_groups[0].m_buffers = &m_accessBuffer[0]     m_groups[1].m_buffers = &m_accessBuffer[2]
+ *   (float**, 2 channels)                          (float**, 1 channel)
+ *           |                                              |
+ *           v                                              v
+ *   m_accessBuffer (vector<float*>, 3 pointers):
+ *   ┌───────────┬───────────┬───────────┐
+ *   │   [0]     │   [1]     │   [2]     │
+ *   └─────┬─────┴─────┬─────┴─────┬─────┘
+ *         |           |           |
+ *         v           v           v
+ *   m_sourceBuffer (vector<float>, 3 × 4 = 12 contiguous floats):
+ *   ┌──────────────────┬──────────────────┬──────────────────┐
+ *   │ ch0: f0 f1 f2 f3 │ ch1: f0 f1 f2 f3 │ ch2: f0 f1 f2 f3 │
+ *   └──────────────────┴──────────────────┴──────────────────┘
+ *
+ *   m_interleavedBuffer (vector<float>, 2 × 4 = 8 floats, optional):
+ *   ┌──────────────────────────────────────────────────────────────┐
+ *   │ (ch0,f0)(ch1,f0) | (ch0,f1)(ch1,f1) | (ch0,f2)(ch1,f2) | ...│
+ *   └──────────────────────────────────────────────────────────────┘
+ *
+ *   m_silenceFlags (bitset<MaxChannelsPerAudioBuffer>):
+ *   ┌─────┬─────┬─────┬─ ··· ─┐
+ *   │  0  │  1  │  0  │  ...  │  1 = silent, 0 = non-silent (or unknown)
+ *   └─────┴─────┴─────┴─ ··· ─┘
+ *    ch0   ch1   ch2
+ *
  * Naming notes:
  * - When this class is used in an instrument track or mixer channel, its channels could be referred to
  *       as "track channels" or "internal channels", since they are equivalent to the "track channels" used
