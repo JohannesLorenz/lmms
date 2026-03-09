@@ -76,6 +76,11 @@ set(LMMS_SRCS
 	core/LmmsSemaphore.cpp
 	core/SerializingObject.cpp
 	core/Song.cpp
+	core/SpaControlBase.cpp
+	core/SpaManager.cpp
+	core/SpaOscModel.cpp
+	core/SpaProc.cpp
+	core/SpaSubPluginFeatures.cpp
 	core/TempoSyncKnobModel.cpp
 	core/ThreadPool.cpp
 	core/Timeline.cpp

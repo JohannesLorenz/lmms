@@ -228,7 +228,8 @@ bool DataFile::validate( QString extension )
 	case Type::Unknown:
 		if (! ( extension == "mmp" || extension == "mpt" || extension == "mmpz" ||
 				extension == "xpf" || extension == "xml" ||
-				( extension == "xiz" && ! getPluginFactory()->pluginSupportingExtension(extension).isNull()) ||
+				( (extension == "xiz" || extension == "xmz") &&
+					! getPluginFactory()->pluginSupportingExtension(extension).isNull()) ||
 				extension == "sf2" || extension == "sf3" || extension == "pat" || extension == "mid" ||
 				extension == "dll"
 #ifdef LMMS_BUILD_LINUX

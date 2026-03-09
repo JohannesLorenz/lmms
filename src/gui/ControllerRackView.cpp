@@ -35,11 +35,14 @@
 #include "ControllerView.h"
 #include "DeprecationHelper.h"
 #include "embed.h"
+#include "Clipboard.h"
+#include "ControllerConnection.h"
 #include "GuiApplication.h"
 #include "LfoController.h"
 #include "MainWindow.h"
 #include "Song.h"
 #include "SubWindow.h"
+#include "StringPairDrag.h"
 
 namespace lmms::gui
 {
@@ -91,6 +94,8 @@ ControllerRackView::ControllerRackView() :
 	subWin->resize( 350, 200 );
 	subWin->setFixedWidth( 350 );
 	subWin->setMinimumHeight( 200 );
+
+	setAcceptDrops(true);
 }
 
 
@@ -233,7 +238,7 @@ void ControllerRackView::addController()
 
 
 void ControllerRackView::closeEvent( QCloseEvent * _ce )
- {
+{
 	if( parentWidget() )
 	{
 		parentWidget()->hide();
@@ -243,7 +248,47 @@ void ControllerRackView::closeEvent( QCloseEvent * _ce )
 		hide();
 	}
 	_ce->ignore();
- }
+}
+
+
+
+
+void ControllerRackView::dragEnterEvent( QDragEnterEvent *dee )
+{
+	StringPairDrag::processDragEnterEvent( dee, "automatable_model" );
+}
+
+
+
+
+void ControllerRackView::dropEvent( QDropEvent *de )
+{
+	QString type = StringPairDrag::decodeKey( de );
+	QString val = StringPairDrag::decodeValue( de );
+	// qDebug() << "DROP: type/val:" << type << ", " << val;
+
+	// dragging on the rack view - i.e. not on a controller,
+	// but away from any controller - shall remove the connection
+	if( type == "automatable_model" )
+	{
+		AutomatableModel* mod =
+		Engine::getAutomatableModel( val,
+			!de->mimeData()->hasFormat(Clipboard::mimeType(Clipboard::MimeType::StringPair)));
+
+		if (mod)
+		{
+			de->acceptProposedAction();
+
+			if( mod->controllerConnection() )
+			{
+				delete mod->controllerConnection();
+				mod->setControllerConnection( nullptr );
+			}
+
+			delete mod;
+		}
+	}
+}
 
 
 } // namespace lmms::gui

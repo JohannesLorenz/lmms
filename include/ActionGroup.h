@@ -26,6 +26,7 @@
 #define LMMS_GUI_ACTION_GROUP_H
 
 #include <QActionGroup>
+#include "Controls.h"
 
 namespace lmms::gui
 {

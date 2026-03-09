@@ -1,7 +1,7 @@
 /*
- * ActionGroup.cpp - wrapper around QActionGroup to provide a more useful triggered(int) slot
+ * SpaControlDialog.h - control dialog for amplifier effect
  *
- * Copyright (c) 2014 Lukas W <lukaswhl/at/gmail.com>
+ * Copyright (c) 2018-2019 Johannes Lorenz <j.git$$$lorenz-ho.me, $$$=@>
  *
  * This file is part of LMMS - https://lmms.io
  *
@@ -22,39 +22,36 @@
  *
  */
 
-#include "ActionGroup.h"
+#ifndef SPA_FX_CONTROL_DIALOG_H
+#define SPA_FX_CONTROL_DIALOG_H
+
+#include "EffectControlDialog.h"
+#include "SpaViewBase.h"
+
+namespace lmms
+{
+	class SpaFxControls;
+}
 
 namespace lmms::gui
 {
 
-ActionGroup::ActionGroup(QObject* parent) : QActionGroup(parent)
+class SpaFxControlDialog : public EffectControlDialog, public SpaViewBase
 {
-	connect(this, SIGNAL(triggered(QAction*)), this, SLOT(actionTriggered_(QAction*)));
-}
+	Q_OBJECT
 
-QAction* ActionGroup::addAction(QAction* a)
-{
-	a->setCheckable(true);
+	SpaFxControls *spaControls();
+	void modelChanged() override;
 
-	return QActionGroup::addAction(a);
-}
+public:
+	SpaFxControlDialog(class SpaFxControls *controls);
+	virtual ~SpaFxControlDialog() override {}
 
-QAction* ActionGroup::addAction(const QString& text)
-{
-	return addAction(new QAction(text, this));
-}
-
-QAction* ActionGroup::addAction(const QIcon& icon, const QString& text)
-{
-	return addAction(new QAction(icon, text, this));
-}
-
-void ActionGroup::actionTriggered_(QAction* action)
-{
-	Q_ASSERT(action != 0);
-	Q_ASSERT(actions().contains(action));
-
-	emit triggered(actions().indexOf(action));
-}
+private slots:
+	void toggleUI();
+	void reloadPlugin();
+};
 
 } // namespace lmms::gui
+
+#endif

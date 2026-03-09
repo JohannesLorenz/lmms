@@ -173,7 +173,7 @@ static bool affected(QDomElement & instrument)
 
 	return name == "zynaddsubfx" ||
 		name  == "vestige" || name == "lv2instrument" ||
-		name  == "carlapatchbay" || name == "carlarack";
+		name  == "carlapatchbay" || name == "carlarack" || name == "spainstrument";
 }
 
 static void fixTrack(QDomElement & track, std::set<unsigned int> & automatedBaseNoteIds)

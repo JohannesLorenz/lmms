@@ -63,6 +63,8 @@ SET(LMMS_PLUGIN_LIST
 	Sid
 	SlewDistortion
 	SlicerT
+	SpaEffect
+	SpaInstrument
 	SpectrumAnalyzer
 	StereoEnhancer
 	StereoMatrix

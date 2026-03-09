@@ -334,7 +334,7 @@ void SampleClipView::paintEvent( QPaintEvent * pe )
 
 	/* if( m_clip->isRecord() )
 	{
-		p.setFont( pointSize<7>( p.font() ) );
+		p.setFont(pointSize(p.font(), 7));
 
 		p.setPen( textShadowColor() );
 		p.drawText( 10, p.fontMetrics().height()+1, "Rec" );
