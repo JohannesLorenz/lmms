@@ -50,3 +50,6 @@
 [submodule "plugins/MidiImport/portsmf"]
 	path = plugins/MidiImport/portsmf
 	url = https://github.com/portsmf/portsmf
+[submodule "src/3rdparty/suil/suil"]
+	path = src/3rdparty/suil/suil
+	url = https://github.com/lv2/suil.git
