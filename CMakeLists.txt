@@ -287,7 +287,10 @@ else()
 endif()
 
 IF(WANT_SUIL)
-	SET(LMMS_HAVE_SUIL TRUE)  # is later handled via subdirectory src/3rdparty/suil
+	SET(LMMS_HAVE_SUIL TRUE)  # build is handled via subdirectory src/3rdparty/suil
+	SET(SUIL_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/src/3rdparty/suil/suil/include")
+	SET(SUIL_LIBRARY_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/src/3rdparty/suil/suil/")
+	SET(SUIL_LIBRARIES "suil-0")
 	SET(STATUS_SUIL "OK")
 ELSE(WANT_SUIL)
 	SET(STATUS_SUIL "not built as requested")

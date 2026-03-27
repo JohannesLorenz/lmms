@@ -4,11 +4,15 @@
 ## START SINGLE
 # CMAKE_MINIMUM_REQUIRED(VERSION 3.13)
 #
-project(
-    suil
-    VERSION 0.10.26
-    LANGUAGES C CXX
-)
+# project(
+#     suil
+#     VERSION 0.10.26
+#     LANGUAGES C CXX
+# )
+
+set(SUIL_VERSION 0.10.26)
+set(SUIL_VERSION_MAJOR 0)
+
 #
 # set(QT_VERSION_MAJOR 5)
 #
@@ -20,7 +24,7 @@ if(CMAKE_BUILD_TYPE MATCHES "Release")
 endif()
 
 include(GNUInstallDirs)
-set(SUIL_VERSIONED_NAME "suil-${PROJECT_VERSION_MAJOR}")
+set(SUIL_VERSIONED_NAME "suil-${SUIL_VERSION_MAJOR}")
 set(SUIL_MODULE_DIR "${CMAKE_INSTALL_LIBDIR}/${SUIL_VERSIONED_NAME}")
 
 if(APPLE)
@@ -192,7 +196,7 @@ if(WIN32)
 	endif()
 	set(SUIL_SOVERSION "")
 else()
-	set(SUIL_SOVERSION ${PROJECT_VERSION_MAJOR})
+	set(SUIL_SOVERSION ${SUIL_VERSION_MAJOR})
 endif()
 
 ################
@@ -266,15 +270,15 @@ set_target_properties(${SUIL_VERSIONED_NAME} PROPERTIES
 
 # Versioning
 set_target_properties(${SUIL_VERSIONED_NAME} PROPERTIES
-    VERSION ${PROJECT_VERSION}
+    VERSION ${SUIL_VERSION}
     SOVERSION ${SUIL_SOVERSION}
 )
 
 # macOS dylib versions
 if(APPLE)
     set_target_properties(${SUIL_VERSIONED_NAME} PROPERTIES
-        MACHO_CURRENT_VERSION ${PROJECT_VERSION}
-        MACHO_COMPATIBILITY_VERSION "${PROJECT_VERSION_MAJOR}.0.0"
+        MACHO_CURRENT_VERSION ${SUIL_VERSION}
+        MACHO_COMPATIBILITY_VERSION "${SUIL_VERSION_MAJOR}.0.0"
     )
 endif()
 
@@ -381,10 +385,11 @@ target_link_libraries(suil_cocoa_in_qt${QT_VERSION_MAJOR}
 
 endif()
 
-set (SUIL_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/suil/include")
-set (SUIL_LIBRARY_DIRS "${CMAKE_CURRENT_SOURCE_DIR}")
+#set (SUIL_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/suil/include")
+#set (SUIL_LIBRARY_DIRS "${CMAKE_CURRENT_SOURCE_DIR}")
+#set (SUIL_LIBRARIES "suil-0")
 #set (SUIL_LIBRARIES "suil_x11_in_qt${QT_VERSION_MAJOR}")
-set (SUIL_LIBRARIES "suil-0")
+
 
 # if qt5_dep.found() and qt5_x11_dep.found() and x11_dep.found()
 #   shared_module(
